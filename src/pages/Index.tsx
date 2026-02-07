@@ -3,12 +3,14 @@ import { NutritionEntry, formatDate } from "@/types/nutrition";
 import { loadEntries, saveEntries } from "@/lib/storage";
 import NutritionForm from "@/components/NutritionForm";
 import NutritionTable from "@/components/NutritionTable";
-import { ChevronLeft, ChevronRight, Apple } from "lucide-react";
+import WeeklyOverview from "@/components/WeeklyOverview";
+import { ChevronLeft, ChevronRight, Apple, BarChart3, List } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const Index = () => {
   const [entries, setEntries] = useState<NutritionEntry[]>([]);
   const [selectedDate, setSelectedDate] = useState(formatDate(new Date()));
+  const [activeTab, setActiveTab] = useState<"log" | "weekly">("log");
 
   useEffect(() => {
     setEntries(loadEntries());
@@ -58,6 +60,30 @@ const Index = () => {
               </div>
               <h1 className="text-lg font-bold tracking-tight">NährLog</h1>
             </div>
+            <div className="flex items-center gap-1 bg-muted rounded-lg p-0.5">
+              <button
+                onClick={() => setActiveTab("log")}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition-colors ${
+                  activeTab === "log"
+                    ? "bg-background text-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                <List className="w-3.5 h-3.5" />
+                Protokoll
+              </button>
+              <button
+                onClick={() => setActiveTab("weekly")}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition-colors ${
+                  activeTab === "weekly"
+                    ? "bg-background text-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                <BarChart3 className="w-3.5 h-3.5" />
+                Woche
+              </button>
+            </div>
           </div>
         </div>
       </header>
@@ -92,26 +118,34 @@ const Index = () => {
           </Button>
         </div>
 
-        {/* Form Card */}
-        <div className="glass-card rounded-xl p-4 mb-6">
-          <h2 className="text-sm font-semibold text-muted-foreground mb-3 uppercase tracking-wider">
-            Neuer Eintrag
-          </h2>
-          <NutritionForm onAdd={handleAdd} selectedDate={selectedDate} />
-        </div>
+        {activeTab === "log" ? (
+          <>
+            {/* Form Card */}
+            <div className="glass-card rounded-xl p-4 mb-6">
+              <h2 className="text-sm font-semibold text-muted-foreground mb-3 uppercase tracking-wider">
+                Neuer Eintrag
+              </h2>
+              <NutritionForm onAdd={handleAdd} selectedDate={selectedDate} />
+            </div>
 
-        {/* Table Card */}
-        <div className="glass-card rounded-xl p-4">
-          <h2 className="text-sm font-semibold text-muted-foreground mb-3 uppercase tracking-wider">
-            Tagesübersicht
-            {todayEntries.length > 0 && (
-              <span className="ml-2 inline-flex items-center justify-center w-5 h-5 rounded-full bg-primary text-primary-foreground text-xs font-bold">
-                {todayEntries.length}
-              </span>
-            )}
-          </h2>
-          <NutritionTable entries={todayEntries} onDelete={handleDelete} />
-        </div>
+            {/* Table Card */}
+            <div className="glass-card rounded-xl p-4">
+              <h2 className="text-sm font-semibold text-muted-foreground mb-3 uppercase tracking-wider">
+                Tagesübersicht
+                {todayEntries.length > 0 && (
+                  <span className="ml-2 inline-flex items-center justify-center w-5 h-5 rounded-full bg-primary text-primary-foreground text-xs font-bold">
+                    {todayEntries.length}
+                  </span>
+                )}
+              </h2>
+              <NutritionTable entries={todayEntries} onDelete={handleDelete} />
+            </div>
+          </>
+        ) : (
+          <div className="glass-card rounded-xl p-4">
+            <WeeklyOverview entries={entries} selectedDate={selectedDate} />
+          </div>
+        )}
       </main>
     </div>
   );

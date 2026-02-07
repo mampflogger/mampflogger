@@ -1,0 +1,276 @@
+import { useMemo } from "react";
+import { NutritionEntry, calculateDailySummary, formatDate } from "@/types/nutrition";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  Cell,
+} from "recharts";
+
+interface WeeklyOverviewProps {
+  entries: NutritionEntry[];
+  selectedDate: string;
+}
+
+interface DayData {
+  label: string;
+  date: string;
+  calories: number;
+  protein: number;
+  carbs: number;
+  fat: number;
+  fiber: number;
+  isToday: boolean;
+}
+
+const WEEKDAY_SHORT = ["So", "Mo", "Di", "Mi", "Do", "Fr", "Sa"];
+
+const COLORS = {
+  calories: "hsl(152, 55%, 42%)",
+  caloriesMuted: "hsl(152, 35%, 72%)",
+  protein: "hsl(152, 55%, 42%)",
+  carbs: "hsl(45, 85%, 55%)",
+  fat: "hsl(15, 75%, 55%)",
+};
+
+const WeeklyOverview = ({ entries, selectedDate }: WeeklyOverviewProps) => {
+  const weekData = useMemo(() => {
+    const today = new Date(selectedDate + "T00:00:00");
+    const days: DayData[] = [];
+
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date(today);
+      d.setDate(d.getDate() - i);
+      const dateStr = formatDate(d);
+      const dayEntries = entries.filter((e) => e.date === dateStr);
+      const summary = calculateDailySummary(dayEntries);
+
+      days.push({
+        label: WEEKDAY_SHORT[d.getDay()],
+        date: dateStr,
+        calories: summary.totalCalories,
+        protein: summary.totalProtein,
+        carbs: summary.totalCarbs,
+        fat: summary.totalFat,
+        fiber: summary.totalFiber,
+        isToday: i === 0,
+      });
+    }
+
+    return days;
+  }, [entries, selectedDate]);
+
+  const weekTotals = useMemo(() => {
+    const totals = weekData.reduce(
+      (acc, d) => ({
+        calories: acc.calories + d.calories,
+        protein: acc.protein + d.protein,
+        carbs: acc.carbs + d.carbs,
+        fat: acc.fat + d.fat,
+      }),
+      { calories: 0, protein: 0, carbs: 0, fat: 0 }
+    );
+
+    const avgCalories = Math.round(totals.calories / 7);
+    const totalMacroWeight = totals.protein + totals.carbs + totals.fat;
+
+    return {
+      avgCalories,
+      totalCalories: totals.calories,
+      proteinPercent: totalMacroWeight > 0 ? Math.round((totals.protein / totalMacroWeight) * 100) : 0,
+      carbsPercent: totalMacroWeight > 0 ? Math.round((totals.carbs / totalMacroWeight) * 100) : 0,
+      fatPercent: totalMacroWeight > 0 ? Math.round((totals.fat / totalMacroWeight) * 100) : 0,
+      protein: Math.round(totals.protein * 10) / 10,
+      carbs: Math.round(totals.carbs * 10) / 10,
+      fat: Math.round(totals.fat * 10) / 10,
+    };
+  }, [weekData]);
+
+  const maxCalories = useMemo(
+    () => Math.max(...weekData.map((d) => d.calories), 100),
+    [weekData]
+  );
+
+  const CaloriesTooltip = ({ active, payload }: any) => {
+    if (!active || !payload?.length) return null;
+    const data = payload[0].payload as DayData;
+    const d = new Date(data.date + "T00:00:00");
+    const dateLabel = d.toLocaleDateString("de-DE", { day: "numeric", month: "short" });
+
+    return (
+      <div className="rounded-lg border border-border bg-popover px-3 py-2 shadow-md text-xs">
+        <p className="font-semibold text-popover-foreground">{dateLabel}</p>
+        <p className="text-muted-foreground mt-0.5">
+          <span className="font-bold text-popover-foreground">{data.calories}</span> kcal
+        </p>
+        <p className="text-muted-foreground">
+          E {data.protein}g · KH {data.carbs}g · F {data.fat}g
+        </p>
+      </div>
+    );
+  };
+
+  return (
+    <div className="space-y-5 animate-fade-in">
+      {/* Stats Row */}
+      <div className="grid grid-cols-2 gap-3">
+        <div className="rounded-xl bg-accent/40 p-3 text-center">
+          <p className="text-xs text-muted-foreground font-medium">Ø Kalorien / Tag</p>
+          <p className="text-2xl font-bold text-foreground mt-0.5">{weekTotals.avgCalories}</p>
+          <p className="text-xs text-muted-foreground">kcal</p>
+        </div>
+        <div className="rounded-xl bg-accent/40 p-3 text-center">
+          <p className="text-xs text-muted-foreground font-medium">Gesamt 7 Tage</p>
+          <p className="text-2xl font-bold text-foreground mt-0.5">{weekTotals.totalCalories.toLocaleString("de-DE")}</p>
+          <p className="text-xs text-muted-foreground">kcal</p>
+        </div>
+      </div>
+
+      {/* Calories Bar Chart */}
+      <div>
+        <h3 className="text-xs font-semibold text-muted-foreground mb-3 uppercase tracking-wider">
+          Kalorien pro Tag
+        </h3>
+        <div className="h-44">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={weekData} margin={{ top: 4, right: 0, left: -20, bottom: 0 }}>
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(145, 15%, 88%)" />
+              <XAxis
+                dataKey="label"
+                axisLine={false}
+                tickLine={false}
+                tick={{ fontSize: 11, fill: "hsl(160, 10%, 45%)" }}
+              />
+              <YAxis
+                axisLine={false}
+                tickLine={false}
+                tick={{ fontSize: 10, fill: "hsl(160, 10%, 45%)" }}
+                domain={[0, Math.ceil(maxCalories * 1.15)]}
+              />
+              <Tooltip content={<CaloriesTooltip />} cursor={{ fill: "hsl(145, 35%, 90%, 0.4)" }} />
+              <Bar dataKey="calories" radius={[6, 6, 0, 0]} maxBarSize={36}>
+                {weekData.map((entry, index) => (
+                  <Cell
+                    key={index}
+                    fill={entry.isToday ? COLORS.calories : COLORS.caloriesMuted}
+                  />
+                ))}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+
+      {/* Macro Distribution */}
+      <div>
+        <h3 className="text-xs font-semibold text-muted-foreground mb-3 uppercase tracking-wider">
+          Makro-Verteilung (7 Tage)
+        </h3>
+
+        {/* Macro bar */}
+        <div className="flex gap-1 h-4 rounded-full overflow-hidden bg-muted">
+          {weekTotals.proteinPercent > 0 && (
+            <div
+              className="rounded-full transition-all duration-500"
+              style={{ width: `${weekTotals.proteinPercent}%`, backgroundColor: COLORS.protein }}
+              title={`Eiweiß: ${weekTotals.proteinPercent}%`}
+            />
+          )}
+          {weekTotals.carbsPercent > 0 && (
+            <div
+              className="rounded-full transition-all duration-500"
+              style={{ width: `${weekTotals.carbsPercent}%`, backgroundColor: COLORS.carbs }}
+              title={`KH: ${weekTotals.carbsPercent}%`}
+            />
+          )}
+          {weekTotals.fatPercent > 0 && (
+            <div
+              className="rounded-full transition-all duration-500"
+              style={{ width: `${weekTotals.fatPercent}%`, backgroundColor: COLORS.fat }}
+              title={`Fett: ${weekTotals.fatPercent}%`}
+            />
+          )}
+        </div>
+
+        {/* Macro legend */}
+        <div className="grid grid-cols-3 gap-2 mt-3">
+          <div className="flex items-center gap-2 text-xs">
+            <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: COLORS.protein }} />
+            <div>
+              <span className="font-semibold">{weekTotals.proteinPercent}%</span>
+              <span className="text-muted-foreground ml-1">Eiweiß</span>
+              <p className="text-muted-foreground">{weekTotals.protein}g</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 text-xs">
+            <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: COLORS.carbs }} />
+            <div>
+              <span className="font-semibold">{weekTotals.carbsPercent}%</span>
+              <span className="text-muted-foreground ml-1">KH</span>
+              <p className="text-muted-foreground">{weekTotals.carbs}g</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 text-xs">
+            <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: COLORS.fat }} />
+            <div>
+              <span className="font-semibold">{weekTotals.fatPercent}%</span>
+              <span className="text-muted-foreground ml-1">Fett</span>
+              <p className="text-muted-foreground">{weekTotals.fat}g</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Daily macro stacked bars */}
+      <div>
+        <h3 className="text-xs font-semibold text-muted-foreground mb-3 uppercase tracking-wider">
+          Makros pro Tag (g)
+        </h3>
+        <div className="h-40">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={weekData} margin={{ top: 4, right: 0, left: -20, bottom: 0 }}>
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(145, 15%, 88%)" />
+              <XAxis
+                dataKey="label"
+                axisLine={false}
+                tickLine={false}
+                tick={{ fontSize: 11, fill: "hsl(160, 10%, 45%)" }}
+              />
+              <YAxis
+                axisLine={false}
+                tickLine={false}
+                tick={{ fontSize: 10, fill: "hsl(160, 10%, 45%)" }}
+              />
+              <Tooltip
+                content={({ active, payload }) => {
+                  if (!active || !payload?.length) return null;
+                  const data = payload[0].payload as DayData;
+                  const d = new Date(data.date + "T00:00:00");
+                  const dateLabel = d.toLocaleDateString("de-DE", { day: "numeric", month: "short" });
+                  return (
+                    <div className="rounded-lg border border-border bg-popover px-3 py-2 shadow-md text-xs">
+                      <p className="font-semibold text-popover-foreground mb-1">{dateLabel}</p>
+                      <p><span style={{ color: COLORS.protein }}>●</span> Eiweiß: {data.protein}g</p>
+                      <p><span style={{ color: COLORS.carbs }}>●</span> KH: {data.carbs}g</p>
+                      <p><span style={{ color: COLORS.fat }}>●</span> Fett: {data.fat}g</p>
+                    </div>
+                  );
+                }}
+                cursor={{ fill: "hsl(145, 35%, 90%, 0.4)" }}
+              />
+              <Bar dataKey="protein" stackId="macros" fill={COLORS.protein} radius={[0, 0, 0, 0]} maxBarSize={36} name="Eiweiß" />
+              <Bar dataKey="carbs" stackId="macros" fill={COLORS.carbs} radius={[0, 0, 0, 0]} maxBarSize={36} name="KH" />
+              <Bar dataKey="fat" stackId="macros" fill={COLORS.fat} radius={[6, 6, 0, 0]} maxBarSize={36} name="Fett" />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default WeeklyOverview;
