@@ -4,6 +4,7 @@ import { loadEntries, saveEntries } from "@/lib/storage";
 import NutritionForm from "@/components/NutritionForm";
 import NutritionTable from "@/components/NutritionTable";
 import WeeklyOverview from "@/components/WeeklyOverview";
+import ImportDialog from "@/components/ImportDialog";
 import { ChevronLeft, ChevronRight, Apple, BarChart3, List } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -29,6 +30,12 @@ const Index = () => {
 
   const handleDelete = (id: string) => {
     const updated = entries.filter((e) => e.id !== id);
+    setEntries(updated);
+    saveEntries(updated);
+  };
+
+  const handleImport = (newEntries: NutritionEntry[]) => {
+    const updated = [...entries, ...newEntries];
     setEntries(updated);
     saveEntries(updated);
   };
@@ -60,29 +67,32 @@ const Index = () => {
               </div>
               <h1 className="text-lg font-bold tracking-tight">NährLog</h1>
             </div>
-            <div className="flex items-center gap-1 bg-muted rounded-lg p-0.5">
-              <button
-                onClick={() => setActiveTab("log")}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition-colors ${
-                  activeTab === "log"
-                    ? "bg-background text-foreground shadow-sm"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                <List className="w-3.5 h-3.5" />
-                Protokoll
-              </button>
-              <button
-                onClick={() => setActiveTab("weekly")}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition-colors ${
-                  activeTab === "weekly"
-                    ? "bg-background text-foreground shadow-sm"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                <BarChart3 className="w-3.5 h-3.5" />
-                Woche
-              </button>
+            <div className="flex items-center gap-1.5">
+              <div className="flex items-center gap-1 bg-muted rounded-lg p-0.5">
+                <button
+                  onClick={() => setActiveTab("log")}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition-colors ${
+                    activeTab === "log"
+                      ? "bg-background text-foreground shadow-sm"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  <List className="w-3.5 h-3.5" />
+                  Protokoll
+                </button>
+                <button
+                  onClick={() => setActiveTab("weekly")}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition-colors ${
+                    activeTab === "weekly"
+                      ? "bg-background text-foreground shadow-sm"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  <BarChart3 className="w-3.5 h-3.5" />
+                  Woche
+                </button>
+              </div>
+              <ImportDialog onImport={handleImport} />
             </div>
           </div>
         </div>
