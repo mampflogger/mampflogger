@@ -1,9 +1,10 @@
-import { useState } from "react";
-import { NutritionEntry, generateId, formatDate } from "@/types/nutrition";
+import { useState, useRef, useEffect, useCallback } from "react";
+import { NutritionEntry, generateId } from "@/types/nutrition";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Plus } from "lucide-react";
+import { FoodItem, searchFood } from "@/data/foodDatabase";
 
 interface NutritionFormProps {
   onAdd: (entry: NutritionEntry) => void;
@@ -23,9 +24,95 @@ const NutritionForm = ({ onAdd, selectedDate }: NutritionFormProps) => {
   const [fat, setFat] = useState("");
   const [fiber, setFiber] = useState("");
 
+  // Autocomplete state
+  const [suggestions, setSuggestions] = useState<FoodItem[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [selectedFood, setSelectedFood] = useState<FoodItem | null>(null);
+  const [highlightIndex, setHighlightIndex] = useState(-1);
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const listRef = useRef<HTMLUListElement>(null);
+
+  // Close suggestions on outside click
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node)) {
+        setShowSuggestions(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const applyFoodValues = useCallback((item: FoodItem, qty: number) => {
+    const factor = qty / item.baseAmount;
+    setCalories(String(Math.round(item.calories * factor * 100) / 100));
+    setProtein(String(Math.round(item.protein * factor * 100) / 100));
+    setCarbs(String(Math.round(item.carbs * factor * 100) / 100));
+    setFat(String(Math.round(item.fat * factor * 100) / 100));
+    setFiber(String(Math.round(item.fiber * factor * 100) / 100));
+  }, []);
+
+  const handleFoodChange = (value: string) => {
+    setFood(value);
+    setSelectedFood(null);
+    const results = searchFood(value);
+    setSuggestions(results);
+    setShowSuggestions(results.length > 0);
+    setHighlightIndex(-1);
+  };
+
+  const handleSelectFood = (item: FoodItem) => {
+    setFood(item.name);
+    setSelectedFood(item);
+    setSuggestions([]);
+    setShowSuggestions(false);
+    setHighlightIndex(-1);
+
+    // Set default amount to baseAmount and fill values
+    const defaultAmount = item.baseAmount;
+    setAmount(String(defaultAmount));
+    applyFoodValues(item, defaultAmount);
+  };
+
+  const handleAmountChange = (value: string) => {
+    setAmount(value);
+    if (selectedFood && value) {
+      const qty = parseFloat(value);
+      if (!isNaN(qty) && qty > 0) {
+        applyFoodValues(selectedFood, qty);
+      }
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (!showSuggestions || suggestions.length === 0) return;
+
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setHighlightIndex((prev) => (prev < suggestions.length - 1 ? prev + 1 : 0));
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setHighlightIndex((prev) => (prev > 0 ? prev - 1 : suggestions.length - 1));
+    } else if (e.key === "Enter" && highlightIndex >= 0) {
+      e.preventDefault();
+      handleSelectFood(suggestions[highlightIndex]);
+    } else if (e.key === "Escape") {
+      setShowSuggestions(false);
+    }
+  };
+
+  // Scroll highlighted item into view
+  useEffect(() => {
+    if (highlightIndex >= 0 && listRef.current) {
+      const items = listRef.current.children;
+      if (items[highlightIndex]) {
+        (items[highlightIndex] as HTMLElement).scrollIntoView({ block: "nearest" });
+      }
+    }
+  }, [highlightIndex]);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-
     if (!food.trim()) return;
 
     const entry: NutritionEntry = {
@@ -55,6 +142,9 @@ const NutritionForm = ({ onAdd, selectedDate }: NutritionFormProps) => {
     setCarbs("");
     setFat("");
     setFiber("");
+    setSelectedFood(null);
+    setSuggestions([]);
+    setShowSuggestions(false);
   };
 
   return (
@@ -73,7 +163,7 @@ const NutritionForm = ({ onAdd, selectedDate }: NutritionFormProps) => {
             className="h-11 bg-muted/50"
           />
         </div>
-        <div>
+        <div ref={wrapperRef} className="relative">
           <Label htmlFor="food" className="text-xs font-medium text-muted-foreground mb-1.5 block">
             Lebensmittel
           </Label>
@@ -82,10 +172,42 @@ const NutritionForm = ({ onAdd, selectedDate }: NutritionFormProps) => {
             type="text"
             placeholder="z.B. Haferflocken"
             value={food}
-            onChange={(e) => setFood(e.target.value)}
+            onChange={(e) => handleFoodChange(e.target.value)}
+            onFocus={() => {
+              if (suggestions.length > 0) setShowSuggestions(true);
+            }}
+            onKeyDown={handleKeyDown}
             className="h-11 bg-muted/50"
+            autoComplete="off"
             required
           />
+          {showSuggestions && suggestions.length > 0 && (
+            <ul
+              ref={listRef}
+              className="absolute z-50 top-full left-0 right-0 mt-1 max-h-52 overflow-y-auto rounded-lg border border-border bg-popover shadow-lg"
+            >
+              {suggestions.map((item, index) => (
+                <li
+                  key={item.name}
+                  className={`flex items-center justify-between px-3 py-2.5 text-sm cursor-pointer transition-colors ${
+                    index === highlightIndex
+                      ? "bg-accent text-accent-foreground"
+                      : "hover:bg-muted/60"
+                  }`}
+                  onMouseDown={(e) => {
+                    e.preventDefault();
+                    handleSelectFood(item);
+                  }}
+                  onMouseEnter={() => setHighlightIndex(index)}
+                >
+                  <span className="font-medium truncate">{item.name}</span>
+                  <span className="text-xs text-muted-foreground ml-2 whitespace-nowrap">
+                    {item.calories} kcal / {item.baseUnit}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
       </div>
 
@@ -93,7 +215,7 @@ const NutritionForm = ({ onAdd, selectedDate }: NutritionFormProps) => {
       <div className="grid grid-cols-2 gap-3">
         <div>
           <Label htmlFor="amount" className="text-xs font-medium text-muted-foreground mb-1.5 block">
-            Menge (g/ml)
+            Menge {selectedFood ? `(${selectedFood.baseUnit === "1 Stk" ? "Stk" : "g/ml"})` : "(g/ml)"}
           </Label>
           <Input
             id="amount"
@@ -102,7 +224,7 @@ const NutritionForm = ({ onAdd, selectedDate }: NutritionFormProps) => {
             step="any"
             placeholder="0"
             value={amount}
-            onChange={(e) => setAmount(e.target.value)}
+            onChange={(e) => handleAmountChange(e.target.value)}
             className="h-11 bg-muted/50"
           />
         </div>
