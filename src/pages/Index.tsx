@@ -122,7 +122,6 @@ const Index = () => {
             size="icon"
             onClick={() => navigateDay(1)}
             className="h-9 w-9"
-            disabled={isToday}
           >
             <ChevronRight className="w-5 h-5" />
           </Button>
