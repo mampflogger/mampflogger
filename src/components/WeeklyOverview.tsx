@@ -1,6 +1,12 @@
 import { useMemo } from "react";
 import { NutritionEntry, calculateDailySummary, formatDate } from "@/types/nutrition";
 import {
+  UserProfile,
+  DailyActivity,
+  calculateTDEE,
+  getActivityForDate,
+} from "@/types/profile";
+import {
   BarChart,
   Bar,
   XAxis,
@@ -10,10 +16,13 @@ import {
   ResponsiveContainer,
   Cell,
 } from "recharts";
+import { TrendingDown, TrendingUp } from "lucide-react";
 
 interface WeeklyOverviewProps {
   entries: NutritionEntry[];
   selectedDate: string;
+  profile?: UserProfile | null;
+  activities?: DailyActivity[];
 }
 
 interface DayData {
@@ -37,7 +46,7 @@ const COLORS = {
   fat: "hsl(15, 75%, 55%)",
 };
 
-const WeeklyOverview = ({ entries, selectedDate }: WeeklyOverviewProps) => {
+const WeeklyOverview = ({ entries, selectedDate, profile, activities = [] }: WeeklyOverviewProps) => {
   const weekData = useMemo(() => {
     const today = new Date(selectedDate + "T00:00:00");
     const days: DayData[] = [];
@@ -90,6 +99,24 @@ const WeeklyOverview = ({ entries, selectedDate }: WeeklyOverviewProps) => {
     };
   }, [weekData]);
 
+  // 14-day average deficit
+  const avgDeficit14 = useMemo(() => {
+    if (!profile) return null;
+    const today = new Date(selectedDate + "T00:00:00");
+    let totalDeficit = 0;
+    for (let i = 0; i < 14; i++) {
+      const d = new Date(today);
+      d.setDate(d.getDate() - i);
+      const dateStr = formatDate(d);
+      const dayEntries = entries.filter((e) => e.date === dateStr);
+      const daySummary = calculateDailySummary(dayEntries);
+      const dayActivity = getActivityForDate(activities, dateStr);
+      const tdee = calculateTDEE(profile, dayActivity);
+      totalDeficit += tdee - daySummary.totalCalories;
+    }
+    return Math.round(totalDeficit / 14);
+  }, [profile, entries, activities, selectedDate]);
+
   const maxCalories = useMemo(
     () => Math.max(...weekData.map((d) => d.calories), 100),
     [weekData]
@@ -117,12 +144,30 @@ const WeeklyOverview = ({ entries, selectedDate }: WeeklyOverviewProps) => {
   return (
     <div className="space-y-5 animate-fade-in">
       {/* Stats Row */}
-      <div className="grid grid-cols-2 gap-3">
+      <div className={`grid gap-3 ${avgDeficit14 !== null ? "grid-cols-3" : "grid-cols-2"}`}>
         <div className="rounded-xl bg-accent/40 p-3 text-center">
           <p className="text-xs text-muted-foreground font-medium">Ø Kalorien / Tag</p>
           <p className="text-2xl font-bold text-foreground mt-0.5">{weekTotals.avgCalories}</p>
           <p className="text-xs text-muted-foreground">kcal</p>
         </div>
+
+        {avgDeficit14 !== null && (
+          <div className={`rounded-xl p-3 text-center ${avgDeficit14 > 0 ? "bg-primary/10" : "bg-destructive/10"}`}>
+            <p className="text-xs text-muted-foreground font-medium">Ø Defizit 14 T.</p>
+            <div className="flex items-center justify-center gap-1 mt-0.5">
+              {avgDeficit14 > 0 ? (
+                <TrendingDown className="w-4 h-4 text-primary" />
+              ) : (
+                <TrendingUp className="w-4 h-4 text-destructive" />
+              )}
+              <p className={`text-2xl font-bold ${avgDeficit14 > 0 ? "text-primary" : "text-destructive"}`}>
+                {Math.abs(avgDeficit14)}
+              </p>
+            </div>
+            <p className="text-xs text-muted-foreground">kcal / Tag</p>
+          </div>
+        )}
+
         <div className="rounded-xl bg-accent/40 p-3 text-center">
           <p className="text-xs text-muted-foreground font-medium">Gesamt 7 Tage</p>
           <p className="text-2xl font-bold text-foreground mt-0.5">{weekTotals.totalCalories.toLocaleString("de-DE")}</p>
