@@ -5,6 +5,7 @@ import NutritionForm from "@/components/NutritionForm";
 import NutritionTable from "@/components/NutritionTable";
 import WeeklyOverview from "@/components/WeeklyOverview";
 import ImportDialog from "@/components/ImportDialog";
+import DeleteRangeDialog from "@/components/DeleteRangeDialog";
 import { ChevronLeft, ChevronRight, Apple, BarChart3, List } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -38,6 +39,18 @@ const Index = () => {
     const updated = [...entries, ...newEntries];
     setEntries(updated);
     saveEntries(updated);
+  };
+
+  const countEntriesInRange = (from: string, to: string): number => {
+    return entries.filter((e) => e.date >= from && e.date <= to).length;
+  };
+
+  const deleteEntriesInRange = (from: string, to: string): number => {
+    const toDelete = entries.filter((e) => e.date >= from && e.date <= to);
+    const updated = entries.filter((e) => e.date < from || e.date > to);
+    setEntries(updated);
+    saveEntries(updated);
+    return toDelete.length;
   };
 
   const navigateDay = (offset: number) => {
@@ -92,6 +105,7 @@ const Index = () => {
                   Woche
                 </button>
               </div>
+              <DeleteRangeDialog onCount={countEntriesInRange} onDelete={deleteEntriesInRange} />
               <ImportDialog onImport={handleImport} />
             </div>
           </div>
