@@ -1,11 +1,26 @@
 import { useState, useEffect, useMemo } from "react";
-import { NutritionEntry, formatDate } from "@/types/nutrition";
+import { NutritionEntry, formatDate, calculateDailySummary } from "@/types/nutrition";
+import {
+  UserProfile,
+  DailyActivity,
+  loadProfile,
+  saveProfile,
+  loadActivities,
+  saveActivities,
+  getActivityForDate,
+  setActivityForDate,
+  calculateActivityBonus,
+  calculateTDEE,
+} from "@/types/profile";
 import { loadEntries, saveEntries } from "@/lib/storage";
 import NutritionForm from "@/components/NutritionForm";
 import NutritionTable from "@/components/NutritionTable";
 import WeeklyOverview from "@/components/WeeklyOverview";
 import ImportDialog from "@/components/ImportDialog";
 import DeleteRangeDialog from "@/components/DeleteRangeDialog";
+import ProfileDialog from "@/components/ProfileDialog";
+import ActivityInput from "@/components/ActivityInput";
+import DeficitDisplay from "@/components/DeficitDisplay";
 import { ChevronLeft, ChevronRight, Apple, BarChart3, List } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -13,14 +28,28 @@ const Index = () => {
   const [entries, setEntries] = useState<NutritionEntry[]>([]);
   const [selectedDate, setSelectedDate] = useState(formatDate(new Date()));
   const [activeTab, setActiveTab] = useState<"log" | "weekly">("log");
+  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [activities, setActivities] = useState<DailyActivity[]>([]);
 
   useEffect(() => {
     setEntries(loadEntries());
+    setProfile(loadProfile());
+    setActivities(loadActivities());
   }, []);
 
   const todayEntries = useMemo(
     () => entries.filter((e) => e.date === selectedDate),
     [entries, selectedDate]
+  );
+
+  const todaySummary = useMemo(
+    () => calculateDailySummary(todayEntries),
+    [todayEntries]
+  );
+
+  const currentActivity = useMemo(
+    () => getActivityForDate(activities, selectedDate),
+    [activities, selectedDate]
   );
 
   const handleAdd = (entry: NutritionEntry) => {
@@ -41,6 +70,17 @@ const Index = () => {
     saveEntries(updated);
   };
 
+  const handleSaveProfile = (p: UserProfile) => {
+    setProfile(p);
+    saveProfile(p);
+  };
+
+  const handleActivityChange = (activity: DailyActivity) => {
+    const updated = setActivityForDate(activities, activity);
+    setActivities(updated);
+    saveActivities(updated);
+  };
+
   const countEntriesInRange = (from: string, to: string): number => {
     return entries.filter((e) => e.date >= from && e.date <= to).length;
   };
@@ -52,6 +92,24 @@ const Index = () => {
     saveEntries(updated);
     return toDelete.length;
   };
+
+  // 14-day average deficit
+  const avgDeficit14 = useMemo(() => {
+    if (!profile) return null;
+    const today = new Date(selectedDate + "T00:00:00");
+    let totalDeficit = 0;
+    for (let i = 0; i < 14; i++) {
+      const d = new Date(today);
+      d.setDate(d.getDate() - i);
+      const dateStr = formatDate(d);
+      const dayEntries = entries.filter((e) => e.date === dateStr);
+      const daySummary = calculateDailySummary(dayEntries);
+      const dayActivity = getActivityForDate(activities, dateStr);
+      const tdee = calculateTDEE(profile, dayActivity);
+      totalDeficit += tdee - daySummary.totalCalories;
+    }
+    return Math.round(totalDeficit / 14);
+  }, [profile, entries, activities, selectedDate]);
 
   const navigateDay = (offset: number) => {
     const current = new Date(selectedDate + "T00:00:00");
@@ -105,6 +163,7 @@ const Index = () => {
                   Woche
                 </button>
               </div>
+              <ProfileDialog profile={profile} onSave={handleSaveProfile} />
               <DeleteRangeDialog onCount={countEntriesInRange} onDelete={deleteEntriesInRange} />
               <ImportDialog onImport={handleImport} />
             </div>
@@ -143,6 +202,20 @@ const Index = () => {
 
         {activeTab === "log" ? (
           <>
+            {/* Activity Input */}
+            {profile && (
+              <div className="glass-card rounded-xl p-4 mb-6">
+                <h2 className="text-sm font-semibold text-muted-foreground mb-3 uppercase tracking-wider">
+                  Bewegung
+                </h2>
+                <ActivityInput
+                  activity={currentActivity}
+                  onChange={handleActivityChange}
+                  activityBonus={calculateActivityBonus(currentActivity)}
+                />
+              </div>
+            )}
+
             {/* Form Card */}
             <div className="glass-card rounded-xl p-4 mb-6">
               <h2 className="text-sm font-semibold text-muted-foreground mb-3 uppercase tracking-wider">
@@ -150,6 +223,20 @@ const Index = () => {
               </h2>
               <NutritionForm onAdd={handleAdd} selectedDate={selectedDate} />
             </div>
+
+            {/* Deficit Display */}
+            {profile && (
+              <div className="glass-card rounded-xl p-4 mb-6">
+                <h2 className="text-sm font-semibold text-muted-foreground mb-3 uppercase tracking-wider">
+                  Kaloriendefizit
+                </h2>
+                <DeficitDisplay
+                  profile={profile}
+                  activity={currentActivity}
+                  consumedCalories={todaySummary.totalCalories}
+                />
+              </div>
+            )}
 
             {/* Table Card */}
             <div className="glass-card rounded-xl p-4">
@@ -166,7 +253,12 @@ const Index = () => {
           </>
         ) : (
           <div className="glass-card rounded-xl p-4">
-            <WeeklyOverview entries={entries} selectedDate={selectedDate} />
+            <WeeklyOverview
+              entries={entries}
+              selectedDate={selectedDate}
+              profile={profile}
+              activities={activities}
+            />
           </div>
         )}
       </main>
