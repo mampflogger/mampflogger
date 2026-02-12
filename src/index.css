@@ -39,6 +39,11 @@
     --success: 152 60% 45%;
     --success-foreground: 0 0% 100%;
 
+    --macro-pro: 210 70% 50%;
+    --macro-fat: 45 85% 55%;
+    --macro-kh: 0 72% 55%;
+    --macro-fib: 140 60% 42%;
+
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
     --sidebar-primary: 240 5.9% 10%;

@@ -6,6 +6,13 @@ interface NutritionTableProps {
   onDelete: (id: string) => void;
 }
 
+const MACRO_COLORS = {
+  pro: "hsl(var(--macro-pro))",
+  fat: "hsl(var(--macro-fat))",
+  kh: "hsl(var(--macro-kh))",
+  fib: "hsl(var(--macro-fib))",
+};
+
 const NutritionTable = ({ entries, onDelete }: NutritionTableProps) => {
   if (entries.length === 0) {
     return (
@@ -29,10 +36,10 @@ const NutritionTable = ({ entries, onDelete }: NutritionTableProps) => {
               <th className="text-left py-2.5 px-2 text-xs font-semibold text-muted-foreground">Lebensmittel</th>
               <th className="text-right py-2.5 px-2 text-xs font-semibold text-muted-foreground">Menge</th>
               <th className="text-right py-2.5 px-2 text-xs font-semibold text-muted-foreground">kcal</th>
-              <th className="text-right py-2.5 px-2 text-xs font-semibold text-muted-foreground">Eiweiß</th>
-              <th className="text-right py-2.5 px-2 text-xs font-semibold text-muted-foreground">KH</th>
-              <th className="text-right py-2.5 px-2 text-xs font-semibold text-muted-foreground">Fett</th>
-              <th className="text-right py-2.5 px-2 text-xs font-semibold text-muted-foreground">Ballast</th>
+              <th className="text-right py-2.5 px-2 text-xs font-semibold" style={{ color: MACRO_COLORS.pro }}>PRO</th>
+              <th className="text-right py-2.5 px-2 text-xs font-semibold" style={{ color: MACRO_COLORS.fat }}>FAT</th>
+              <th className="text-right py-2.5 px-2 text-xs font-semibold" style={{ color: MACRO_COLORS.kh }}>KH</th>
+              <th className="text-right py-2.5 px-2 text-xs font-semibold" style={{ color: MACRO_COLORS.fib }}>FIB</th>
               <th className="w-10"></th>
             </tr>
           </thead>
@@ -46,10 +53,10 @@ const NutritionTable = ({ entries, onDelete }: NutritionTableProps) => {
                 <td className="py-2.5 px-2 font-medium max-w-[140px] truncate">{entry.food}</td>
                 <td className="py-2.5 px-2 text-right text-muted-foreground">{entry.amount}</td>
                 <td className="py-2.5 px-2 text-right font-semibold">{Math.round(entry.calories)}</td>
-                <td className="py-2.5 px-2 text-right">{entry.protein.toFixed(1)}</td>
-                <td className="py-2.5 px-2 text-right">{entry.carbs.toFixed(1)}</td>
-                <td className="py-2.5 px-2 text-right">{entry.fat.toFixed(1)}</td>
-                <td className="py-2.5 px-2 text-right">{entry.fiber.toFixed(1)}</td>
+                <td className="py-2.5 px-2 text-right">{Math.round(entry.protein)}</td>
+                <td className="py-2.5 px-2 text-right">{Math.round(entry.fat)}</td>
+                <td className="py-2.5 px-2 text-right">{Math.round(entry.carbs)}</td>
+                <td className="py-2.5 px-2 text-right">{Math.round(entry.fiber)}</td>
                 <td className="py-2.5 px-1">
                   <button
                     onClick={() => onDelete(entry.id)}
@@ -63,33 +70,34 @@ const NutritionTable = ({ entries, onDelete }: NutritionTableProps) => {
             ))}
           </tbody>
           <tfoot>
-            {/* Summary row */}
             <tr className="border-t-2 border-primary/20 bg-accent/30">
               <td className="py-3 px-2 font-bold text-xs" colSpan={3}>
                 Summe
               </td>
               <td className="py-3 px-2 text-right font-bold">{summary.totalCalories}</td>
               <td className="py-3 px-2 text-right font-bold">{summary.totalProtein}</td>
-              <td className="py-3 px-2 text-right font-bold">{summary.totalCarbs}</td>
               <td className="py-3 px-2 text-right font-bold">{summary.totalFat}</td>
+              <td className="py-3 px-2 text-right font-bold">{summary.totalCarbs}</td>
               <td className="py-3 px-2 text-right font-bold">{summary.totalFiber}</td>
               <td></td>
             </tr>
-            {/* Percentage row */}
             <tr className="bg-accent/20">
               <td className="py-2.5 px-2 text-xs text-muted-foreground font-medium" colSpan={4}>
                 Makro-Verteilung (Gewicht)
               </td>
-              <td className="py-2.5 px-2 text-right text-xs font-semibold text-accent-foreground">
+              <td className="py-2.5 px-2 text-right text-xs font-semibold" style={{ color: MACRO_COLORS.pro }}>
                 {summary.proteinPercent}%
               </td>
-              <td className="py-2.5 px-2 text-right text-xs font-semibold text-accent-foreground">
-                {summary.carbsPercent}%
-              </td>
-              <td className="py-2.5 px-2 text-right text-xs font-semibold text-accent-foreground">
+              <td className="py-2.5 px-2 text-right text-xs font-semibold" style={{ color: MACRO_COLORS.fat }}>
                 {summary.fatPercent}%
               </td>
-              <td className="py-2.5 px-2" colSpan={2}></td>
+              <td className="py-2.5 px-2 text-right text-xs font-semibold" style={{ color: MACRO_COLORS.kh }}>
+                {summary.carbsPercent}%
+              </td>
+              <td className="py-2.5 px-2 text-right text-xs font-semibold" style={{ color: MACRO_COLORS.fib }}>
+                {summary.fiberPercent}%
+              </td>
+              <td></td>
             </tr>
           </tfoot>
         </table>
@@ -99,38 +107,49 @@ const NutritionTable = ({ entries, onDelete }: NutritionTableProps) => {
       <div className="mt-4 flex gap-1 h-3 rounded-full overflow-hidden bg-muted">
         {summary.proteinPercent > 0 && (
           <div
-            className="bg-primary rounded-full transition-all duration-500"
-            style={{ width: `${summary.proteinPercent}%` }}
-            title={`Eiweiß: ${summary.proteinPercent}%`}
-          />
-        )}
-        {summary.carbsPercent > 0 && (
-          <div
-            className="bg-primary/60 rounded-full transition-all duration-500"
-            style={{ width: `${summary.carbsPercent}%` }}
-            title={`KH: ${summary.carbsPercent}%`}
+            className="rounded-full transition-all duration-500"
+            style={{ width: `${summary.proteinPercent}%`, backgroundColor: MACRO_COLORS.pro }}
+            title={`PRO: ${summary.proteinPercent}%`}
           />
         )}
         {summary.fatPercent > 0 && (
           <div
-            className="bg-primary/30 rounded-full transition-all duration-500"
-            style={{ width: `${summary.fatPercent}%` }}
-            title={`Fett: ${summary.fatPercent}%`}
+            className="rounded-full transition-all duration-500"
+            style={{ width: `${summary.fatPercent}%`, backgroundColor: MACRO_COLORS.fat }}
+            title={`FAT: ${summary.fatPercent}%`}
+          />
+        )}
+        {summary.carbsPercent > 0 && (
+          <div
+            className="rounded-full transition-all duration-500"
+            style={{ width: `${summary.carbsPercent}%`, backgroundColor: MACRO_COLORS.kh }}
+            title={`KH: ${summary.carbsPercent}%`}
+          />
+        )}
+        {summary.fiberPercent > 0 && (
+          <div
+            className="rounded-full transition-all duration-500"
+            style={{ width: `${summary.fiberPercent}%`, backgroundColor: MACRO_COLORS.fib }}
+            title={`FIB: ${summary.fiberPercent}%`}
           />
         )}
       </div>
       <div className="flex justify-between mt-2 text-xs text-muted-foreground">
         <span className="flex items-center gap-1.5">
-          <span className="w-2.5 h-2.5 rounded-full bg-primary inline-block" />
-          Eiweiß {summary.proteinPercent}%
+          <span className="w-2.5 h-2.5 rounded-full inline-block" style={{ backgroundColor: MACRO_COLORS.pro }} />
+          PRO {summary.proteinPercent}%
         </span>
         <span className="flex items-center gap-1.5">
-          <span className="w-2.5 h-2.5 rounded-full bg-primary/60 inline-block" />
+          <span className="w-2.5 h-2.5 rounded-full inline-block" style={{ backgroundColor: MACRO_COLORS.fat }} />
+          FAT {summary.fatPercent}%
+        </span>
+        <span className="flex items-center gap-1.5">
+          <span className="w-2.5 h-2.5 rounded-full inline-block" style={{ backgroundColor: MACRO_COLORS.kh }} />
           KH {summary.carbsPercent}%
         </span>
         <span className="flex items-center gap-1.5">
-          <span className="w-2.5 h-2.5 rounded-full bg-primary/30 inline-block" />
-          Fett {summary.fatPercent}%
+          <span className="w-2.5 h-2.5 rounded-full inline-block" style={{ backgroundColor: MACRO_COLORS.fib }} />
+          FIB {summary.fiberPercent}%
         </span>
       </div>
     </div>
