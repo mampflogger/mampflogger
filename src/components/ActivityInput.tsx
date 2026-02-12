@@ -1,7 +1,8 @@
 import { DailyActivity } from "@/types/profile";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Footprints, Route } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Footprints } from "lucide-react";
 
 interface ActivityInputProps {
   activity: DailyActivity;
@@ -12,8 +13,8 @@ interface ActivityInputProps {
 const ActivityInput = ({ activity, onChange, activityBonus }: ActivityInputProps) => {
   return (
     <div className="space-y-3">
-      <div className="grid grid-cols-2 gap-3">
-        <div>
+      <div className="flex items-center gap-3">
+        <div className="flex-1">
           <Label htmlFor="steps" className="text-xs font-medium text-muted-foreground mb-1.5 flex items-center gap-1.5">
             <Footprints className="w-3.5 h-3.5" />
             Schritte
@@ -30,28 +31,28 @@ const ActivityInput = ({ activity, onChange, activityBonus }: ActivityInputProps
             className="h-11 bg-muted/50"
           />
         </div>
-        <div>
-          <Label htmlFor="jogging" className="text-xs font-medium text-muted-foreground mb-1.5 flex items-center gap-1.5">
-            <Route className="w-3.5 h-3.5" />
-            Joggen (km)
-          </Label>
-          <Input
-            id="jogging"
-            type="number"
-            inputMode="decimal"
-            step="0.1"
-            value={activity.joggingKm || ""}
-            onChange={(e) =>
-              onChange({ ...activity, joggingKm: parseFloat(e.target.value) || 0 })
-            }
-            placeholder="0"
-            className="h-11 bg-muted/50"
-          />
+        <div className="flex flex-col gap-2 pt-5">
+          <label className="flex items-center gap-1.5 cursor-pointer">
+            <Checkbox
+              checked={activity.intensity === "low"}
+              onCheckedChange={() => onChange({ ...activity, intensity: "low" })}
+            />
+            <span className="text-xs font-medium text-muted-foreground">Low</span>
+          </label>
+          <label className="flex items-center gap-1.5 cursor-pointer">
+            <Checkbox
+              checked={activity.intensity === "high"}
+              onCheckedChange={() => onChange({ ...activity, intensity: "high" })}
+            />
+            <span className="text-xs font-medium text-muted-foreground">High</span>
+          </label>
         </div>
       </div>
       {activityBonus > 0 && (
         <div className="flex items-center justify-between rounded-lg bg-accent/40 px-3 py-2">
-          <span className="text-xs text-muted-foreground font-medium">Bewegungsbonus</span>
+          <span className="text-xs text-muted-foreground font-medium">
+            Bewegungsbonus ({activity.intensity === "high" ? "Powerwalking" : "Spazieren"})
+          </span>
           <span className="text-sm font-bold text-foreground">+{activityBonus} kcal</span>
         </div>
       )}

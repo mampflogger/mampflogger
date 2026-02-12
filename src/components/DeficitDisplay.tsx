@@ -19,7 +19,7 @@ const DeficitDisplay = ({ profile, activity, consumedCalories }: DeficitDisplayP
       <div className="flex items-center justify-between text-xs text-muted-foreground">
         <span className="flex items-center gap-1">
           <Flame className="w-3.5 h-3.5" />
-          Grundumsatz
+          Grundumsatz (inkl. NEAT)
         </span>
         <span className="font-semibold text-foreground">{bmr} kcal</span>
       </div>

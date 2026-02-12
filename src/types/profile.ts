@@ -9,7 +9,7 @@ export interface UserProfile {
 export interface DailyActivity {
   date: string; // YYYY-MM-DD
   steps: number;
-  joggingKm: number;
+  intensity: "low" | "high";
 }
 
 const PROFILE_KEY = "nutrition-log-profile";
@@ -42,7 +42,7 @@ export function saveActivities(activities: DailyActivity[]): void {
 }
 
 export function getActivityForDate(activities: DailyActivity[], date: string): DailyActivity {
-  return activities.find((a) => a.date === date) || { date, steps: 0, joggingKm: 0 };
+  return activities.find((a) => a.date === date) || { date, steps: 0, intensity: "low" as const };
 }
 
 export function setActivityForDate(
@@ -59,26 +59,27 @@ export function setActivityForDate(
 }
 
 /**
- * BMR using Mifflin-St Jeor equation
- * Male:   10 × weight(kg) + 6.25 × height(cm) − 5 × age − 161 + 166 = 10w + 6.25h - 5a + 5
- * Female: 10 × weight(kg) + 6.25 × height(cm) − 5 × age − 161
+ * BMR using Mifflin-St Jeor equation + NEAT factor (1.2)
+ * NEAT = Non-Exercise Activity Thermogenesis
+ * Male:   (10 × weight + 6.25 × height − 5 × age + 5) × 1.2
+ * Female: (10 × weight + 6.25 × height − 5 × age − 161) × 1.2
  */
 export function calculateBMR(profile: UserProfile): number {
   const currentYear = new Date().getFullYear();
   const age = currentYear - profile.birthYear;
   const base = 10 * profile.weightKg + 6.25 * profile.heightCm - 5 * age;
-  return Math.round(profile.gender === "male" ? base + 5 : base - 161);
+  const bmr = profile.gender === "male" ? base + 5 : base - 161;
+  return Math.round(bmr * 1.2);
 }
 
 /**
  * Activity bonus calories:
- * Steps: ~0.04 kcal per step (conservative)
- * Jogging: ~70 kcal per km (average)
+ * Low intensity (spazieren): ~0.03 kcal per step
+ * High intensity (powerwalking): ~0.06 kcal per step
  */
 export function calculateActivityBonus(activity: DailyActivity): number {
-  const stepsBonus = activity.steps * 0.04;
-  const joggingBonus = activity.joggingKm * 70;
-  return Math.round(stepsBonus + joggingBonus);
+  const caloriesPerStep = activity.intensity === "high" ? 0.06 : 0.03;
+  return Math.round(activity.steps * caloriesPerStep);
 }
 
 export function calculateTDEE(profile: UserProfile, activity: DailyActivity): number {
