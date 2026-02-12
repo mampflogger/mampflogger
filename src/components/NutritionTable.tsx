@@ -29,18 +29,18 @@ const NutritionTable = ({ entries, onDelete }: NutritionTableProps) => {
   return (
     <div className="animate-slide-up">
       <div className="overflow-x-auto -mx-4 px-4">
-        <table className="w-full text-sm min-w-[600px]">
+        <table className="w-full text-xs min-w-[480px]">
           <thead>
             <tr className="border-b border-border">
-              <th className="text-left py-2.5 px-2 text-xs font-semibold text-muted-foreground">Zeit</th>
-              <th className="text-left py-2.5 px-2 text-xs font-semibold text-muted-foreground">Lebensmittel</th>
-              <th className="text-right py-2.5 px-2 text-xs font-semibold text-muted-foreground">Menge</th>
-              <th className="text-right py-2.5 px-2 text-xs font-semibold text-muted-foreground">kcal</th>
-              <th className="text-right py-2.5 px-2 text-xs font-semibold" style={{ color: MACRO_COLORS.pro }}>PRO</th>
-              <th className="text-right py-2.5 px-2 text-xs font-semibold" style={{ color: MACRO_COLORS.fat }}>FAT</th>
-              <th className="text-right py-2.5 px-2 text-xs font-semibold" style={{ color: MACRO_COLORS.kh }}>KH</th>
-              <th className="text-right py-2.5 px-2 text-xs font-semibold" style={{ color: MACRO_COLORS.fib }}>FIB</th>
-              <th className="w-10"></th>
+              <th className="text-left py-2 px-1 font-semibold text-muted-foreground">Zeit</th>
+              <th className="text-left py-2 px-1 font-semibold text-muted-foreground">Lebensmittel</th>
+              <th className="text-right py-2 px-1 font-semibold text-muted-foreground">g/ml</th>
+              <th className="text-right py-2 px-1 font-semibold text-muted-foreground">kcal</th>
+              <th className="text-right py-2 px-1 font-semibold" style={{ color: MACRO_COLORS.pro }}>PRO</th>
+              <th className="text-right py-2 px-1 font-semibold" style={{ color: MACRO_COLORS.fat }}>FAT</th>
+              <th className="text-right py-2 px-1 font-semibold" style={{ color: MACRO_COLORS.kh }}>KH</th>
+              <th className="text-right py-2 px-1 font-semibold" style={{ color: MACRO_COLORS.fib }}>FIB</th>
+              <th className="w-8"></th>
             </tr>
           </thead>
           <tbody>
@@ -49,21 +49,21 @@ const NutritionTable = ({ entries, onDelete }: NutritionTableProps) => {
                 key={entry.id}
                 className="border-b border-border/50 hover:bg-muted/30 transition-colors"
               >
-                <td className="py-2.5 px-2 text-muted-foreground font-mono text-xs">{entry.time}</td>
-                <td className="py-2.5 px-2 font-medium max-w-[140px] truncate">{entry.food}</td>
-                <td className="py-2.5 px-2 text-right text-muted-foreground">{entry.amount}</td>
-                <td className="py-2.5 px-2 text-right font-semibold">{Math.round(entry.calories)}</td>
-                <td className="py-2.5 px-2 text-right">{Math.round(entry.protein)}</td>
-                <td className="py-2.5 px-2 text-right">{Math.round(entry.fat)}</td>
-                <td className="py-2.5 px-2 text-right">{Math.round(entry.carbs)}</td>
-                <td className="py-2.5 px-2 text-right">{Math.round(entry.fiber)}</td>
-                <td className="py-2.5 px-1">
+                <td className="py-2 px-1 text-muted-foreground font-mono">{entry.time}</td>
+                <td className="py-2 px-1 font-medium max-w-[120px] truncate">{entry.food}</td>
+                <td className="py-2 px-1 text-right text-muted-foreground">{entry.amount}</td>
+                <td className="py-2 px-1 text-right font-semibold">{Math.round(entry.calories)}</td>
+                <td className="py-2 px-1 text-right">{Math.round(entry.protein)}</td>
+                <td className="py-2 px-1 text-right">{Math.round(entry.fat)}</td>
+                <td className="py-2 px-1 text-right">{Math.round(entry.carbs)}</td>
+                <td className="py-2 px-1 text-right">{Math.round(entry.fiber)}</td>
+                <td className="py-2 px-0.5">
                   <button
                     onClick={() => onDelete(entry.id)}
-                    className="p-1.5 rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+                    className="p-1 rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
                     aria-label="Eintrag löschen"
                   >
-                    <Trash2 className="w-3.5 h-3.5" />
+                    <Trash2 className="w-3 h-3" />
                   </button>
                 </td>
               </tr>
@@ -71,30 +71,30 @@ const NutritionTable = ({ entries, onDelete }: NutritionTableProps) => {
           </tbody>
           <tfoot>
             <tr className="border-t-2 border-primary/20 bg-accent/30">
-              <td className="py-3 px-2 font-bold text-xs" colSpan={3}>
+              <td className="py-2 px-1 font-bold" colSpan={3}>
                 Summe
               </td>
-              <td className="py-3 px-2 text-right font-bold">{summary.totalCalories}</td>
-              <td className="py-3 px-2 text-right font-bold">{summary.totalProtein}</td>
-              <td className="py-3 px-2 text-right font-bold">{summary.totalFat}</td>
-              <td className="py-3 px-2 text-right font-bold">{summary.totalCarbs}</td>
-              <td className="py-3 px-2 text-right font-bold">{summary.totalFiber}</td>
+              <td className="py-2 px-1 text-right font-bold">{summary.totalCalories}</td>
+              <td className="py-2 px-1 text-right font-bold">{summary.totalProtein}</td>
+              <td className="py-2 px-1 text-right font-bold">{summary.totalFat}</td>
+              <td className="py-2 px-1 text-right font-bold">{summary.totalCarbs}</td>
+              <td className="py-2 px-1 text-right font-bold">{summary.totalFiber}</td>
               <td></td>
             </tr>
             <tr className="bg-accent/20">
-              <td className="py-2.5 px-2 text-xs text-muted-foreground font-medium" colSpan={4}>
-                Makro-Verteilung (Gewicht)
+              <td className="py-2 px-1 text-muted-foreground font-medium" colSpan={4}>
+                Makro %
               </td>
-              <td className="py-2.5 px-2 text-right text-xs font-semibold" style={{ color: MACRO_COLORS.pro }}>
+              <td className="py-2 px-1 text-right font-semibold" style={{ color: MACRO_COLORS.pro }}>
                 {summary.proteinPercent}%
               </td>
-              <td className="py-2.5 px-2 text-right text-xs font-semibold" style={{ color: MACRO_COLORS.fat }}>
+              <td className="py-2 px-1 text-right font-semibold" style={{ color: MACRO_COLORS.fat }}>
                 {summary.fatPercent}%
               </td>
-              <td className="py-2.5 px-2 text-right text-xs font-semibold" style={{ color: MACRO_COLORS.kh }}>
+              <td className="py-2 px-1 text-right font-semibold" style={{ color: MACRO_COLORS.kh }}>
                 {summary.carbsPercent}%
               </td>
-              <td className="py-2.5 px-2 text-right text-xs font-semibold" style={{ color: MACRO_COLORS.fib }}>
+              <td className="py-2 px-1 text-right font-semibold" style={{ color: MACRO_COLORS.fib }}>
                 {summary.fiberPercent}%
               </td>
               <td></td>
