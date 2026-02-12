@@ -20,6 +20,7 @@ export interface DailySummary {
   proteinPercent: number;
   carbsPercent: number;
   fatPercent: number;
+  fiberPercent: number;
 }
 
 export function calculateDailySummary(entries: NutritionEntry[]): DailySummary {
@@ -29,17 +30,18 @@ export function calculateDailySummary(entries: NutritionEntry[]): DailySummary {
   const totalFat = entries.reduce((sum, e) => sum + e.fat, 0);
   const totalFiber = entries.reduce((sum, e) => sum + e.fiber, 0);
 
-  const totalMacroWeight = totalProtein + totalCarbs + totalFat;
+  const totalMacroWeight = totalProtein + totalCarbs + totalFat + totalFiber;
 
   return {
     totalCalories,
-    totalProtein: Math.round(totalProtein * 10) / 10,
-    totalCarbs: Math.round(totalCarbs * 10) / 10,
-    totalFat: Math.round(totalFat * 10) / 10,
-    totalFiber: Math.round(totalFiber * 10) / 10,
+    totalProtein: Math.round(totalProtein),
+    totalCarbs: Math.round(totalCarbs),
+    totalFat: Math.round(totalFat),
+    totalFiber: Math.round(totalFiber),
     proteinPercent: totalMacroWeight > 0 ? Math.round((totalProtein / totalMacroWeight) * 100) : 0,
     carbsPercent: totalMacroWeight > 0 ? Math.round((totalCarbs / totalMacroWeight) * 100) : 0,
     fatPercent: totalMacroWeight > 0 ? Math.round((totalFat / totalMacroWeight) * 100) : 0,
+    fiberPercent: totalMacroWeight > 0 ? Math.round((totalFiber / totalMacroWeight) * 100) : 0,
   };
 }
 

@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { NutritionEntry, formatDate, calculateDailySummary } from "@/types/nutrition";
+import { exportEntriesToCsv } from "@/lib/csvExport";
 import {
   UserProfile,
   DailyActivity,
@@ -21,7 +22,7 @@ import DeleteRangeDialog from "@/components/DeleteRangeDialog";
 import ProfileDialog from "@/components/ProfileDialog";
 import ActivityInput from "@/components/ActivityInput";
 import DeficitDisplay from "@/components/DeficitDisplay";
-import { ChevronLeft, ChevronRight, Apple, BarChart3, List } from "lucide-react";
+import { ChevronLeft, ChevronRight, Apple, BarChart3, List, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const Index = () => {
@@ -166,6 +167,16 @@ const Index = () => {
               <ProfileDialog profile={profile} onSave={handleSaveProfile} />
               <DeleteRangeDialog onCount={countEntriesInRange} onDelete={deleteEntriesInRange} />
               <ImportDialog onImport={handleImport} />
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8"
+                onClick={() => exportEntriesToCsv(entries)}
+                title="CSV Export"
+                disabled={entries.length === 0}
+              >
+                <Download className="w-4 h-4" />
+              </Button>
             </div>
           </div>
         </div>

@@ -38,12 +38,16 @@ interface DayData {
 
 const WEEKDAY_SHORT = ["So", "Mo", "Di", "Mi", "Do", "Fr", "Sa"];
 
+const MACRO_COLORS = {
+  pro: "hsl(var(--macro-pro))",
+  fat: "hsl(var(--macro-fat))",
+  kh: "hsl(var(--macro-kh))",
+  fib: "hsl(var(--macro-fib))",
+};
+
 const COLORS = {
   calories: "hsl(152, 55%, 42%)",
   caloriesMuted: "hsl(152, 35%, 72%)",
-  protein: "hsl(152, 55%, 42%)",
-  carbs: "hsl(45, 85%, 55%)",
-  fat: "hsl(15, 75%, 55%)",
 };
 
 const WeeklyOverview = ({ entries, selectedDate, profile, activities = [] }: WeeklyOverviewProps) => {
@@ -80,12 +84,13 @@ const WeeklyOverview = ({ entries, selectedDate, profile, activities = [] }: Wee
         protein: acc.protein + d.protein,
         carbs: acc.carbs + d.carbs,
         fat: acc.fat + d.fat,
+        fiber: acc.fiber + d.fiber,
       }),
-      { calories: 0, protein: 0, carbs: 0, fat: 0 }
+      { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 }
     );
 
     const avgCalories = Math.round(totals.calories / 7);
-    const totalMacroWeight = totals.protein + totals.carbs + totals.fat;
+    const totalMacroWeight = totals.protein + totals.carbs + totals.fat + totals.fiber;
 
     return {
       avgCalories,
@@ -93,9 +98,11 @@ const WeeklyOverview = ({ entries, selectedDate, profile, activities = [] }: Wee
       proteinPercent: totalMacroWeight > 0 ? Math.round((totals.protein / totalMacroWeight) * 100) : 0,
       carbsPercent: totalMacroWeight > 0 ? Math.round((totals.carbs / totalMacroWeight) * 100) : 0,
       fatPercent: totalMacroWeight > 0 ? Math.round((totals.fat / totalMacroWeight) * 100) : 0,
-      protein: Math.round(totals.protein * 10) / 10,
-      carbs: Math.round(totals.carbs * 10) / 10,
-      fat: Math.round(totals.fat * 10) / 10,
+      fiberPercent: totalMacroWeight > 0 ? Math.round((totals.fiber / totalMacroWeight) * 100) : 0,
+      protein: Math.round(totals.protein),
+      carbs: Math.round(totals.carbs),
+      fat: Math.round(totals.fat),
+      fiber: Math.round(totals.fiber),
     };
   }, [weekData]);
 
@@ -135,7 +142,7 @@ const WeeklyOverview = ({ entries, selectedDate, profile, activities = [] }: Wee
           <span className="font-bold text-popover-foreground">{data.calories}</span> kcal
         </p>
         <p className="text-muted-foreground">
-          E {data.protein}g · KH {data.carbs}g · F {data.fat}g
+          PRO {data.protein}g · FAT {data.fat}g · KH {data.carbs}g · FIB {data.fiber}g
         </p>
       </div>
     );
@@ -216,43 +223,56 @@ const WeeklyOverview = ({ entries, selectedDate, profile, activities = [] }: Wee
           Makro-Verteilung (7 Tage)
         </h3>
 
-        {/* Macro bar */}
         <div className="flex gap-1 h-4 rounded-full overflow-hidden bg-muted">
           {weekTotals.proteinPercent > 0 && (
             <div
               className="rounded-full transition-all duration-500"
-              style={{ width: `${weekTotals.proteinPercent}%`, backgroundColor: COLORS.protein }}
-              title={`Eiweiß: ${weekTotals.proteinPercent}%`}
-            />
-          )}
-          {weekTotals.carbsPercent > 0 && (
-            <div
-              className="rounded-full transition-all duration-500"
-              style={{ width: `${weekTotals.carbsPercent}%`, backgroundColor: COLORS.carbs }}
-              title={`KH: ${weekTotals.carbsPercent}%`}
+              style={{ width: `${weekTotals.proteinPercent}%`, backgroundColor: MACRO_COLORS.pro }}
+              title={`PRO: ${weekTotals.proteinPercent}%`}
             />
           )}
           {weekTotals.fatPercent > 0 && (
             <div
               className="rounded-full transition-all duration-500"
-              style={{ width: `${weekTotals.fatPercent}%`, backgroundColor: COLORS.fat }}
-              title={`Fett: ${weekTotals.fatPercent}%`}
+              style={{ width: `${weekTotals.fatPercent}%`, backgroundColor: MACRO_COLORS.fat }}
+              title={`FAT: ${weekTotals.fatPercent}%`}
+            />
+          )}
+          {weekTotals.carbsPercent > 0 && (
+            <div
+              className="rounded-full transition-all duration-500"
+              style={{ width: `${weekTotals.carbsPercent}%`, backgroundColor: MACRO_COLORS.kh }}
+              title={`KH: ${weekTotals.carbsPercent}%`}
+            />
+          )}
+          {weekTotals.fiberPercent > 0 && (
+            <div
+              className="rounded-full transition-all duration-500"
+              style={{ width: `${weekTotals.fiberPercent}%`, backgroundColor: MACRO_COLORS.fib }}
+              title={`FIB: ${weekTotals.fiberPercent}%`}
             />
           )}
         </div>
 
-        {/* Macro legend */}
-        <div className="grid grid-cols-3 gap-2 mt-3">
+        <div className="grid grid-cols-4 gap-2 mt-3">
           <div className="flex items-center gap-2 text-xs">
-            <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: COLORS.protein }} />
+            <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: MACRO_COLORS.pro }} />
             <div>
               <span className="font-semibold">{weekTotals.proteinPercent}%</span>
-              <span className="text-muted-foreground ml-1">Eiweiß</span>
+              <span className="text-muted-foreground ml-1">PRO</span>
               <p className="text-muted-foreground">{weekTotals.protein}g</p>
             </div>
           </div>
           <div className="flex items-center gap-2 text-xs">
-            <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: COLORS.carbs }} />
+            <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: MACRO_COLORS.fat }} />
+            <div>
+              <span className="font-semibold">{weekTotals.fatPercent}%</span>
+              <span className="text-muted-foreground ml-1">FAT</span>
+              <p className="text-muted-foreground">{weekTotals.fat}g</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 text-xs">
+            <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: MACRO_COLORS.kh }} />
             <div>
               <span className="font-semibold">{weekTotals.carbsPercent}%</span>
               <span className="text-muted-foreground ml-1">KH</span>
@@ -260,11 +280,11 @@ const WeeklyOverview = ({ entries, selectedDate, profile, activities = [] }: Wee
             </div>
           </div>
           <div className="flex items-center gap-2 text-xs">
-            <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: COLORS.fat }} />
+            <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: MACRO_COLORS.fib }} />
             <div>
-              <span className="font-semibold">{weekTotals.fatPercent}%</span>
-              <span className="text-muted-foreground ml-1">Fett</span>
-              <p className="text-muted-foreground">{weekTotals.fat}g</p>
+              <span className="font-semibold">{weekTotals.fiberPercent}%</span>
+              <span className="text-muted-foreground ml-1">FIB</span>
+              <p className="text-muted-foreground">{weekTotals.fiber}g</p>
             </div>
           </div>
         </div>
@@ -299,17 +319,19 @@ const WeeklyOverview = ({ entries, selectedDate, profile, activities = [] }: Wee
                   return (
                     <div className="rounded-lg border border-border bg-popover px-3 py-2 shadow-md text-xs">
                       <p className="font-semibold text-popover-foreground mb-1">{dateLabel}</p>
-                      <p><span style={{ color: COLORS.protein }}>●</span> Eiweiß: {data.protein}g</p>
-                      <p><span style={{ color: COLORS.carbs }}>●</span> KH: {data.carbs}g</p>
-                      <p><span style={{ color: COLORS.fat }}>●</span> Fett: {data.fat}g</p>
+                      <p><span style={{ color: MACRO_COLORS.pro }}>●</span> PRO: {data.protein}g</p>
+                      <p><span style={{ color: MACRO_COLORS.fat }}>●</span> FAT: {data.fat}g</p>
+                      <p><span style={{ color: MACRO_COLORS.kh }}>●</span> KH: {data.carbs}g</p>
+                      <p><span style={{ color: MACRO_COLORS.fib }}>●</span> FIB: {data.fiber}g</p>
                     </div>
                   );
                 }}
                 cursor={{ fill: "hsl(145, 35%, 90%, 0.4)" }}
               />
-              <Bar dataKey="protein" stackId="macros" fill={COLORS.protein} radius={[0, 0, 0, 0]} maxBarSize={36} name="Eiweiß" />
-              <Bar dataKey="carbs" stackId="macros" fill={COLORS.carbs} radius={[0, 0, 0, 0]} maxBarSize={36} name="KH" />
-              <Bar dataKey="fat" stackId="macros" fill={COLORS.fat} radius={[6, 6, 0, 0]} maxBarSize={36} name="Fett" />
+              <Bar dataKey="protein" stackId="macros" fill={MACRO_COLORS.pro} radius={[0, 0, 0, 0]} maxBarSize={36} name="PRO" />
+              <Bar dataKey="fat" stackId="macros" fill={MACRO_COLORS.fat} radius={[0, 0, 0, 0]} maxBarSize={36} name="FAT" />
+              <Bar dataKey="carbs" stackId="macros" fill={MACRO_COLORS.kh} radius={[0, 0, 0, 0]} maxBarSize={36} name="KH" />
+              <Bar dataKey="fiber" stackId="macros" fill={MACRO_COLORS.fib} radius={[6, 6, 0, 0]} maxBarSize={36} name="FIB" />
             </BarChart>
           </ResponsiveContainer>
         </div>
