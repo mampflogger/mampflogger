@@ -2,7 +2,7 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { NutritionEntry, generateId } from "@/types/nutrition";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Check } from "lucide-react";
+
 import { FoodItem, searchFood } from "@/data/foodDatabase";
 
 interface NutritionFormProps {
@@ -141,26 +141,18 @@ const NutritionForm = ({ onAdd, selectedDate }: NutritionFormProps) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="animate-fade-in relative">
-      {/* Submit button - top right green circle checkmark */}
-      <button
-        type="submit"
-        className="absolute -top-1 -right-1 w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center hover:bg-primary/90 transition-colors shadow-md z-10"
-        style={{ backgroundColor: "hsl(142, 71%, 45%)" }}
-        title="Eintrag hinzufügen"
-      >
-        <Check className="w-4 h-4" />
-      </button>
-
-      {/* Row 1: Time, Amount, Food */}
-      <div className="grid grid-cols-[80px_70px_1fr] gap-2 mb-2">
+    <form onSubmit={handleSubmit} className="animate-fade-in">
+      {/* Row 1: Time, Amount, Food (5 equal columns: time=1, amount=1, food=3) */}
+      <div className="grid grid-cols-5 gap-2 mb-2">
         <div>
           <Label htmlFor="time" className="text-[10px] font-medium text-muted-foreground mb-1 block">
             Uhrzeit
           </Label>
           <Input
             id="time"
-            type="time"
+            type="text"
+            pattern="[0-9]{2}:[0-9]{2}"
+            placeholder="08:00"
             value={time}
             onChange={(e) => setTime(e.target.value)}
             className="h-9 bg-muted/50 text-xs px-2"
@@ -181,7 +173,7 @@ const NutritionForm = ({ onAdd, selectedDate }: NutritionFormProps) => {
             className="h-9 bg-muted/50 text-xs px-2"
           />
         </div>
-        <div ref={wrapperRef} className="relative">
+        <div ref={wrapperRef} className="relative col-span-3">
           <Label htmlFor="food" className="text-[10px] font-medium text-muted-foreground mb-1 block">
             Lebensmittel
           </Label>
@@ -195,7 +187,7 @@ const NutritionForm = ({ onAdd, selectedDate }: NutritionFormProps) => {
               if (suggestions.length > 0) setShowSuggestions(true);
             }}
             onKeyDown={handleKeyDown}
-            className="h-9 bg-muted/50 text-xs px-2 pr-8"
+            className="h-9 bg-muted/50 text-xs px-2"
             autoComplete="off"
             required
           />
@@ -230,7 +222,7 @@ const NutritionForm = ({ onAdd, selectedDate }: NutritionFormProps) => {
       </div>
 
       {/* Row 2: Calories + Macros */}
-      <div className="grid grid-cols-5 gap-2">
+      <div className="grid grid-cols-5 gap-2 mb-2">
         <div>
           <Label htmlFor="calories" className="text-[10px] font-medium text-muted-foreground mb-1 block">
             kcal
@@ -307,6 +299,15 @@ const NutritionForm = ({ onAdd, selectedDate }: NutritionFormProps) => {
           />
         </div>
       </div>
+
+      {/* Submit button */}
+      <button
+        type="submit"
+        className="w-full h-9 rounded-md text-sm font-semibold transition-colors text-primary-foreground"
+        style={{ backgroundColor: "hsl(142, 71%, 45%)" }}
+      >
+        Hinzufügen
+      </button>
     </form>
   );
 };
