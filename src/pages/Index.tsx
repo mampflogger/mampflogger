@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { NutritionEntry, formatDate, calculateDailySummary } from "@/types/nutrition";
-import { exportEntriesToCsv } from "@/lib/csvExport";
+import { exportEntriesToCsv, exportFoodDatabaseCsv, exportCalorieBalanceCsv } from "@/lib/csvExport";
 import {
   UserProfile,
   DailyActivity,
@@ -22,8 +22,14 @@ import DeleteRangeDialog from "@/components/DeleteRangeDialog";
 import ProfileDialog from "@/components/ProfileDialog";
 import ActivityInput from "@/components/ActivityInput";
 import DeficitDisplay from "@/components/DeficitDisplay";
-import { ChevronLeft, ChevronRight, Apple, BarChart3, List, Download } from "lucide-react";
+import { ChevronLeft, ChevronRight, Apple, BarChart3, List, Download, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const Index = () => {
   const [entries, setEntries] = useState<NutritionEntry[]>([]);
@@ -94,24 +100,6 @@ const Index = () => {
     return toDelete.length;
   };
 
-  // 14-day average deficit
-  const avgDeficit14 = useMemo(() => {
-    if (!profile) return null;
-    const today = new Date(selectedDate + "T00:00:00");
-    let totalDeficit = 0;
-    for (let i = 0; i < 14; i++) {
-      const d = new Date(today);
-      d.setDate(d.getDate() - i);
-      const dateStr = formatDate(d);
-      const dayEntries = entries.filter((e) => e.date === dateStr);
-      const daySummary = calculateDailySummary(dayEntries);
-      const dayActivity = getActivityForDate(activities, dateStr);
-      const tdee = calculateTDEE(profile, dayActivity);
-      totalDeficit += tdee - daySummary.totalCalories;
-    }
-    return Math.round(totalDeficit / 14);
-  }, [profile, entries, activities, selectedDate]);
-
   const navigateDay = (offset: number) => {
     const current = new Date(selectedDate + "T00:00:00");
     current.setDate(current.getDate() + offset);
@@ -137,7 +125,7 @@ const Index = () => {
               <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
                 <Apple className="w-4.5 h-4.5 text-primary-foreground" />
               </div>
-              <h1 className="text-lg font-bold tracking-tight">NährLog</h1>
+              <h1 className="text-lg font-bold tracking-tight">FoodLog</h1>
             </div>
             <div className="flex items-center gap-1.5">
               <div className="flex items-center gap-1 bg-muted rounded-lg p-0.5">
@@ -167,16 +155,30 @@ const Index = () => {
               <ProfileDialog profile={profile} onSave={handleSaveProfile} />
               <DeleteRangeDialog onCount={countEntriesInRange} onDelete={deleteEntriesInRange} />
               <ImportDialog onImport={handleImport} />
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8"
-                onClick={() => exportEntriesToCsv(entries)}
-                title="CSV Export"
-                disabled={entries.length === 0}
-              >
-                <Download className="w-4 h-4" />
-              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8"
+                    title="Export"
+                    disabled={entries.length === 0}
+                  >
+                    <Download className="w-4 h-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={() => exportEntriesToCsv(entries)}>
+                    Ernährungsprotokoll
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => exportCalorieBalanceCsv(entries)}>
+                    Kalorienbilanz
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => exportFoodDatabaseCsv()}>
+                    Lebensmittelliste
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </div>
         </div>
@@ -184,12 +186,12 @@ const Index = () => {
 
       <main className="max-w-lg mx-auto px-4 pb-8">
         {/* Date Navigation */}
-        <div className="flex items-center justify-between py-4">
+        <div className="flex items-center justify-between py-3">
           <Button
             variant="ghost"
             size="icon"
             onClick={() => navigateDay(-1)}
-            className="h-9 w-9"
+            className="h-8 w-8"
           >
             <ChevronLeft className="w-5 h-5" />
           </Button>
@@ -205,7 +207,7 @@ const Index = () => {
             variant="ghost"
             size="icon"
             onClick={() => navigateDay(1)}
-            className="h-9 w-9"
+            className="h-8 w-8"
           >
             <ChevronRight className="w-5 h-5" />
           </Button>
@@ -215,8 +217,8 @@ const Index = () => {
           <>
             {/* Activity Input */}
             {profile && (
-              <div className="glass-card rounded-xl p-4 mb-6">
-                <h2 className="text-sm font-semibold text-muted-foreground mb-3 uppercase tracking-wider">
+              <div className="glass-card rounded-xl p-3 mb-4">
+                <h2 className="text-[10px] font-semibold text-muted-foreground mb-2 uppercase tracking-wider">
                   Bewegung
                 </h2>
                 <ActivityInput
@@ -228,8 +230,8 @@ const Index = () => {
             )}
 
             {/* Form Card */}
-            <div className="glass-card rounded-xl p-4 mb-6">
-              <h2 className="text-sm font-semibold text-muted-foreground mb-3 uppercase tracking-wider">
+            <div className="glass-card rounded-xl p-3 mb-4">
+              <h2 className="text-[10px] font-semibold text-muted-foreground mb-2 uppercase tracking-wider">
                 Neuer Eintrag
               </h2>
               <NutritionForm onAdd={handleAdd} selectedDate={selectedDate} />
@@ -237,8 +239,8 @@ const Index = () => {
 
             {/* Deficit Display */}
             {profile && (
-              <div className="glass-card rounded-xl p-4 mb-6">
-                <h2 className="text-sm font-semibold text-muted-foreground mb-3 uppercase tracking-wider">
+              <div className="glass-card rounded-xl p-3 mb-4">
+                <h2 className="text-[10px] font-semibold text-muted-foreground mb-2 uppercase tracking-wider">
                   Kaloriendefizit
                 </h2>
                 <DeficitDisplay
@@ -250,11 +252,11 @@ const Index = () => {
             )}
 
             {/* Table Card */}
-            <div className="glass-card rounded-xl p-4">
-              <h2 className="text-sm font-semibold text-muted-foreground mb-3 uppercase tracking-wider">
+            <div className="glass-card rounded-xl p-3">
+              <h2 className="text-[10px] font-semibold text-muted-foreground mb-2 uppercase tracking-wider">
                 Tagesübersicht
                 {todayEntries.length > 0 && (
-                  <span className="ml-2 inline-flex items-center justify-center w-5 h-5 rounded-full bg-primary text-primary-foreground text-xs font-bold">
+                  <span className="ml-2 inline-flex items-center justify-center w-4 h-4 rounded-full bg-primary text-primary-foreground text-[10px] font-bold">
                     {todayEntries.length}
                   </span>
                 )}
