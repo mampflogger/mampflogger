@@ -106,12 +106,12 @@ const WeeklyOverview = ({ entries, selectedDate, profile, activities = [] }: Wee
     };
   }, [weekData]);
 
-  // 14-day average deficit
-  const avgDeficit14 = useMemo(() => {
+  // Rolling 7-day average deficit
+  const avgDeficit7 = useMemo(() => {
     if (!profile) return null;
     const today = new Date(selectedDate + "T00:00:00");
     let totalDeficit = 0;
-    for (let i = 0; i < 14; i++) {
+    for (let i = 0; i < 7; i++) {
       const d = new Date(today);
       d.setDate(d.getDate() - i);
       const dateStr = formatDate(d);
@@ -121,7 +121,7 @@ const WeeklyOverview = ({ entries, selectedDate, profile, activities = [] }: Wee
       const tdee = calculateTDEE(profile, dayActivity);
       totalDeficit += tdee - daySummary.totalCalories;
     }
-    return Math.round(totalDeficit / 14);
+    return Math.round(totalDeficit / 7);
   }, [profile, entries, activities, selectedDate]);
 
   const maxCalories = useMemo(
@@ -150,36 +150,36 @@ const WeeklyOverview = ({ entries, selectedDate, profile, activities = [] }: Wee
 
   return (
     <div className="space-y-5 animate-fade-in">
-      {/* Stats Row */}
-      <div className={`grid gap-3 ${avgDeficit14 !== null ? "grid-cols-3" : "grid-cols-2"}`}>
-        <div className="rounded-xl bg-accent/40 p-3 text-center">
-          <p className="text-xs text-muted-foreground font-medium">Ø Kalorien / Tag</p>
-          <p className="text-2xl font-bold text-foreground mt-0.5">{weekTotals.avgCalories}</p>
-          <p className="text-xs text-muted-foreground">kcal</p>
-        </div>
-
-        {avgDeficit14 !== null && (
-          <div className={`rounded-xl p-3 text-center ${avgDeficit14 > 0 ? "bg-primary/10" : "bg-destructive/10"}`}>
-            <p className="text-xs text-muted-foreground font-medium">Ø Defizit 14 T.</p>
-            <div className="flex items-center justify-center gap-1 mt-0.5">
-              {avgDeficit14 > 0 ? (
-                <TrendingDown className="w-4 h-4 text-primary" />
-              ) : (
-                <TrendingUp className="w-4 h-4 text-destructive" />
-              )}
-              <p className={`text-2xl font-bold ${avgDeficit14 > 0 ? "text-primary" : "text-destructive"}`}>
-                {Math.abs(avgDeficit14)}
-              </p>
-            </div>
-            <p className="text-xs text-muted-foreground">kcal / Tag</p>
-          </div>
-        )}
-
+      {/* Stats Row: Total | Avg/day | Avg deficit 7d */}
+      <div className={`grid gap-3 ${avgDeficit7 !== null ? "grid-cols-3" : "grid-cols-2"}`}>
         <div className="rounded-xl bg-accent/40 p-3 text-center">
           <p className="text-xs text-muted-foreground font-medium">Gesamt 7 Tage</p>
           <p className="text-2xl font-bold text-foreground mt-0.5">{weekTotals.totalCalories.toLocaleString("de-DE")}</p>
           <p className="text-xs text-muted-foreground">kcal</p>
         </div>
+
+        <div className="rounded-xl bg-accent/40 p-3 text-center">
+          <p className="text-xs text-muted-foreground font-medium">Ø kcal / Tag</p>
+          <p className="text-2xl font-bold text-foreground mt-0.5">{weekTotals.avgCalories}</p>
+          <p className="text-xs text-muted-foreground">kcal</p>
+        </div>
+
+        {avgDeficit7 !== null && (
+          <div className={`rounded-xl p-3 text-center ${avgDeficit7 > 0 ? "bg-primary/10" : "bg-destructive/10"}`}>
+            <p className="text-xs text-muted-foreground font-medium">Ø Defizit 7 T.</p>
+            <div className="flex items-center justify-center gap-1 mt-0.5">
+              {avgDeficit7 > 0 ? (
+                <TrendingDown className="w-4 h-4 text-primary" />
+              ) : (
+                <TrendingUp className="w-4 h-4 text-destructive" />
+              )}
+              <p className={`text-2xl font-bold ${avgDeficit7 > 0 ? "text-primary" : "text-destructive"}`}>
+                {Math.abs(avgDeficit7)}
+              </p>
+            </div>
+            <p className="text-xs text-muted-foreground">kcal / Tag</p>
+          </div>
+        )}
       </div>
 
       {/* Calories Bar Chart */}
