@@ -110,6 +110,11 @@
   input, select, textarea {
     font-size: 16px !important; /* Prevents zoom on iOS */
   }
+
+  /* Hide native time input clock icon */
+  input[type="time"]::-webkit-calendar-picker-indicator {
+    display: none;
+  }
 }
 
 @layer utilities {

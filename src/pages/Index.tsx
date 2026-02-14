@@ -16,6 +16,7 @@ import {
 import { loadEntries, saveEntries } from "@/lib/storage";
 import NutritionForm from "@/components/NutritionForm";
 import NutritionTable from "@/components/NutritionTable";
+import MacroBar from "@/components/MacroBar";
 import WeeklyOverview from "@/components/WeeklyOverview";
 import ImportDialog from "@/components/ImportDialog";
 import DeleteRangeDialog from "@/components/DeleteRangeDialog";
@@ -215,6 +216,34 @@ const Index = () => {
 
         {activeTab === "log" ? (
           <>
+            {/* Form Card */}
+            <div className="glass-card rounded-xl p-3 mb-4">
+              <h2 className="text-[10px] font-semibold text-muted-foreground mb-2 uppercase tracking-wider">
+                Neuer Eintrag
+              </h2>
+              <NutritionForm onAdd={handleAdd} selectedDate={selectedDate} />
+            </div>
+
+            {/* Macro Bar */}
+            {todayEntries.length > 0 && (
+              <div className="glass-card rounded-xl p-3 mb-4">
+                <MacroBar summary={todaySummary} />
+              </div>
+            )}
+
+            {/* Table Card */}
+            <div className="glass-card rounded-xl p-3 mb-4">
+              <h2 className="text-[10px] font-semibold text-muted-foreground mb-2 uppercase tracking-wider">
+                Tagesübersicht
+                {todayEntries.length > 0 && (
+                  <span className="ml-2 inline-flex items-center justify-center w-4 h-4 rounded-full bg-primary text-primary-foreground text-[10px] font-bold">
+                    {todayEntries.length}
+                  </span>
+                )}
+              </h2>
+              <NutritionTable entries={todayEntries} onDelete={handleDelete} />
+            </div>
+
             {/* Activity Input */}
             {profile && (
               <div className="glass-card rounded-xl p-3 mb-4">
@@ -229,19 +258,11 @@ const Index = () => {
               </div>
             )}
 
-            {/* Form Card */}
-            <div className="glass-card rounded-xl p-3 mb-4">
-              <h2 className="text-[10px] font-semibold text-muted-foreground mb-2 uppercase tracking-wider">
-                Neuer Eintrag
-              </h2>
-              <NutritionForm onAdd={handleAdd} selectedDate={selectedDate} />
-            </div>
-
-            {/* Deficit Display */}
+            {/* Calorie Balance */}
             {profile && (
-              <div className="glass-card rounded-xl p-3 mb-4">
+              <div className="glass-card rounded-xl p-3">
                 <h2 className="text-[10px] font-semibold text-muted-foreground mb-2 uppercase tracking-wider">
-                  Kaloriendefizit
+                  Kalorienbilanz
                 </h2>
                 <DeficitDisplay
                   profile={profile}
@@ -250,19 +271,6 @@ const Index = () => {
                 />
               </div>
             )}
-
-            {/* Table Card */}
-            <div className="glass-card rounded-xl p-3">
-              <h2 className="text-[10px] font-semibold text-muted-foreground mb-2 uppercase tracking-wider">
-                Tagesübersicht
-                {todayEntries.length > 0 && (
-                  <span className="ml-2 inline-flex items-center justify-center w-4 h-4 rounded-full bg-primary text-primary-foreground text-[10px] font-bold">
-                    {todayEntries.length}
-                  </span>
-                )}
-              </h2>
-              <NutritionTable entries={todayEntries} onDelete={handleDelete} />
-            </div>
           </>
         ) : (
           <div className="glass-card rounded-xl p-4">
