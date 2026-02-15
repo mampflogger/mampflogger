@@ -2,15 +2,16 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { NutritionEntry, generateId } from "@/types/nutrition";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-
 import { FoodItem, searchFood } from "@/data/foodDatabase";
 
 interface NutritionFormProps {
   onAdd: (entry: NutritionEntry) => void;
   selectedDate: string;
+  editingEntry?: NutritionEntry | null;
+  onCancelEdit?: () => void;
 }
 
-const NutritionForm = ({ onAdd, selectedDate }: NutritionFormProps) => {
+const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit }: NutritionFormProps) => {
   const now = new Date();
   const currentTime = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
 
@@ -29,6 +30,21 @@ const NutritionForm = ({ onAdd, selectedDate }: NutritionFormProps) => {
   const [highlightIndex, setHighlightIndex] = useState(-1);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLUListElement>(null);
+
+  // Load editing entry into form
+  useEffect(() => {
+    if (editingEntry) {
+      setTime(editingEntry.time);
+      setFood(editingEntry.food);
+      setAmount(String(editingEntry.amount));
+      setCalories(String(editingEntry.calories));
+      setProtein(String(editingEntry.protein));
+      setCarbs(String(editingEntry.carbs));
+      setFat(String(editingEntry.fat));
+      setFiber(String(editingEntry.fiber));
+      setSelectedFood(null);
+    }
+  }, [editingEntry]);
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -109,8 +125,8 @@ const NutritionForm = ({ onAdd, selectedDate }: NutritionFormProps) => {
     if (!food.trim()) return;
 
     const entry: NutritionEntry = {
-      id: generateId(),
-      date: selectedDate,
+      id: editingEntry?.id || generateId(),
+      date: editingEntry?.date || selectedDate,
       time,
       food: food.trim(),
       amount: parseFloat(amount) || 0,
@@ -138,6 +154,11 @@ const NutritionForm = ({ onAdd, selectedDate }: NutritionFormProps) => {
     setSelectedFood(null);
     setSuggestions([]);
     setShowSuggestions(false);
+  };
+
+  const handleCancel = () => {
+    resetForm();
+    onCancelEdit?.();
   };
 
   return (
@@ -224,90 +245,45 @@ const NutritionForm = ({ onAdd, selectedDate }: NutritionFormProps) => {
       {/* Row 2: Calories + Macros */}
       <div className="grid grid-cols-5 gap-2 mb-2">
         <div>
-          <Label htmlFor="calories" className="text-[10px] font-medium text-muted-foreground mb-1 block">
-            kcal
-          </Label>
-          <Input
-            id="calories"
-            type="number"
-            inputMode="decimal"
-            step="any"
-            placeholder="0"
-            value={calories}
-            onChange={(e) => setCalories(e.target.value)}
-            className="h-9 bg-muted/50 text-xs px-2"
-          />
+          <Label htmlFor="calories" className="text-[10px] font-medium text-muted-foreground mb-1 block">kcal</Label>
+          <Input id="calories" type="number" inputMode="decimal" step="any" placeholder="0" value={calories} onChange={(e) => setCalories(e.target.value)} className="h-9 bg-muted/50 text-xs px-2" />
         </div>
         <div>
-          <Label htmlFor="protein" className="text-[10px] font-medium text-muted-foreground mb-1 block">
-            PRO
-          </Label>
-          <Input
-            id="protein"
-            type="number"
-            inputMode="decimal"
-            step="any"
-            placeholder="0"
-            value={protein}
-            onChange={(e) => setProtein(e.target.value)}
-            className="h-9 bg-muted/50 text-xs px-2"
-          />
+          <Label htmlFor="protein" className="text-[10px] font-medium text-muted-foreground mb-1 block">PRO</Label>
+          <Input id="protein" type="number" inputMode="decimal" step="any" placeholder="0" value={protein} onChange={(e) => setProtein(e.target.value)} className="h-9 bg-muted/50 text-xs px-2" />
         </div>
         <div>
-          <Label htmlFor="fat" className="text-[10px] font-medium text-muted-foreground mb-1 block">
-            FAT
-          </Label>
-          <Input
-            id="fat"
-            type="number"
-            inputMode="decimal"
-            step="any"
-            placeholder="0"
-            value={fat}
-            onChange={(e) => setFat(e.target.value)}
-            className="h-9 bg-muted/50 text-xs px-2"
-          />
+          <Label htmlFor="fat" className="text-[10px] font-medium text-muted-foreground mb-1 block">FAT</Label>
+          <Input id="fat" type="number" inputMode="decimal" step="any" placeholder="0" value={fat} onChange={(e) => setFat(e.target.value)} className="h-9 bg-muted/50 text-xs px-2" />
         </div>
         <div>
-          <Label htmlFor="carbs" className="text-[10px] font-medium text-muted-foreground mb-1 block">
-            KH
-          </Label>
-          <Input
-            id="carbs"
-            type="number"
-            inputMode="decimal"
-            step="any"
-            placeholder="0"
-            value={carbs}
-            onChange={(e) => setCarbs(e.target.value)}
-            className="h-9 bg-muted/50 text-xs px-2"
-          />
+          <Label htmlFor="carbs" className="text-[10px] font-medium text-muted-foreground mb-1 block">KH</Label>
+          <Input id="carbs" type="number" inputMode="decimal" step="any" placeholder="0" value={carbs} onChange={(e) => setCarbs(e.target.value)} className="h-9 bg-muted/50 text-xs px-2" />
         </div>
         <div>
-          <Label htmlFor="fiber" className="text-[10px] font-medium text-muted-foreground mb-1 block">
-            FIB
-          </Label>
-          <Input
-            id="fiber"
-            type="number"
-            inputMode="decimal"
-            step="any"
-            placeholder="0"
-            value={fiber}
-            onChange={(e) => setFiber(e.target.value)}
-            className="h-9 bg-muted/50 text-xs px-2"
-          />
+          <Label htmlFor="fiber" className="text-[10px] font-medium text-muted-foreground mb-1 block">FIB</Label>
+          <Input id="fiber" type="number" inputMode="decimal" step="any" placeholder="0" value={fiber} onChange={(e) => setFiber(e.target.value)} className="h-9 bg-muted/50 text-xs px-2" />
         </div>
       </div>
 
       {/* Submit button */}
-      <button
-        type="submit"
-        className="w-full h-9 rounded-md text-sm font-semibold transition-colors text-primary-foreground"
-        style={{ backgroundColor: "hsl(142, 71%, 45%)" }}
-      >
-        Hinzufügen
-      </button>
+      <div className="flex gap-2">
+        <button
+          type="submit"
+          className="flex-1 h-9 rounded-md text-sm font-semibold transition-colors bg-primary text-primary-foreground hover:bg-primary/90"
+        >
+          {editingEntry ? "Speichern" : "Hinzufügen"}
+        </button>
+        {editingEntry && (
+          <button
+            type="button"
+            onClick={handleCancel}
+            className="h-9 px-4 rounded-md text-sm font-semibold text-muted-foreground bg-muted hover:bg-muted/80"
+          >
+            Abbrechen
+          </button>
+        )}
+      </div>
     </form>
   );
 };

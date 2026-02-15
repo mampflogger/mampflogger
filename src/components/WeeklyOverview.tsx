@@ -2,9 +2,9 @@ import { useMemo } from "react";
 import { NutritionEntry, calculateDailySummary, formatDate } from "@/types/nutrition";
 import {
   UserProfile,
-  DailyActivity,
-  calculateTDEE,
-  getActivityForDate,
+  BookedActivity,
+  calculateBMR,
+  calculateBookedActivityBonus,
 } from "@/types/profile";
 import {
   BarChart,
@@ -22,7 +22,7 @@ interface WeeklyOverviewProps {
   entries: NutritionEntry[];
   selectedDate: string;
   profile?: UserProfile | null;
-  activities?: DailyActivity[];
+  bookedActivities?: BookedActivity[];
 }
 
 interface DayData {
@@ -46,11 +46,11 @@ const MACRO_COLORS = {
 };
 
 const COLORS = {
-  calories: "hsl(152, 55%, 42%)",
-  caloriesMuted: "hsl(152, 35%, 72%)",
+  calories: "hsl(var(--primary))",
+  caloriesMuted: "hsl(var(--primary) / 0.5)",
 };
 
-const WeeklyOverview = ({ entries, selectedDate, profile, activities = [] }: WeeklyOverviewProps) => {
+const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [] }: WeeklyOverviewProps) => {
   const weekData = useMemo(() => {
     const today = new Date(selectedDate + "T00:00:00");
     const days: DayData[] = [];
@@ -106,10 +106,11 @@ const WeeklyOverview = ({ entries, selectedDate, profile, activities = [] }: Wee
     };
   }, [weekData]);
 
-  // Rolling 7-day average deficit
+  // Rolling 7-day average deficit using booked activities
   const avgDeficit7 = useMemo(() => {
     if (!profile) return null;
     const today = new Date(selectedDate + "T00:00:00");
+    const bmr = calculateBMR(profile);
     let totalDeficit = 0;
     for (let i = 0; i < 7; i++) {
       const d = new Date(today);
@@ -117,12 +118,11 @@ const WeeklyOverview = ({ entries, selectedDate, profile, activities = [] }: Wee
       const dateStr = formatDate(d);
       const dayEntries = entries.filter((e) => e.date === dateStr);
       const daySummary = calculateDailySummary(dayEntries);
-      const dayActivity = getActivityForDate(activities, dateStr);
-      const tdee = calculateTDEE(profile, dayActivity);
-      totalDeficit += tdee - daySummary.totalCalories;
+      const bonus = calculateBookedActivityBonus(bookedActivities, dateStr);
+      totalDeficit += (bmr + bonus) - daySummary.totalCalories;
     }
     return Math.round(totalDeficit / 7);
-  }, [profile, entries, activities, selectedDate]);
+  }, [profile, entries, bookedActivities, selectedDate]);
 
   const maxCalories = useMemo(
     () => Math.max(...weekData.map((d) => d.calories), 100),
@@ -150,7 +150,7 @@ const WeeklyOverview = ({ entries, selectedDate, profile, activities = [] }: Wee
 
   return (
     <div className="space-y-5 animate-fade-in">
-      {/* Stats Row: Total | Avg/day | Avg deficit 7d */}
+      {/* Stats Row */}
       <div className={`grid gap-3 ${avgDeficit7 !== null ? "grid-cols-3" : "grid-cols-2"}`}>
         <div className="rounded-xl bg-accent/40 p-3 text-center">
           <p className="text-xs text-muted-foreground font-medium">Gesamt 7 Tage</p>
@@ -190,26 +190,13 @@ const WeeklyOverview = ({ entries, selectedDate, profile, activities = [] }: Wee
         <div className="h-44">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={weekData} margin={{ top: 4, right: 0, left: -20, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(145, 15%, 88%)" />
-              <XAxis
-                dataKey="label"
-                axisLine={false}
-                tickLine={false}
-                tick={{ fontSize: 11, fill: "hsl(160, 10%, 45%)" }}
-              />
-              <YAxis
-                axisLine={false}
-                tickLine={false}
-                tick={{ fontSize: 10, fill: "hsl(160, 10%, 45%)" }}
-                domain={[0, Math.ceil(maxCalories * 1.15)]}
-              />
-              <Tooltip content={<CaloriesTooltip />} cursor={{ fill: "hsl(145, 35%, 90%, 0.4)" }} />
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
+              <XAxis dataKey="label" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} />
+              <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} domain={[0, Math.ceil(maxCalories * 1.15)]} />
+              <Tooltip content={<CaloriesTooltip />} cursor={{ fill: "hsl(var(--accent) / 0.4)" }} />
               <Bar dataKey="calories" radius={[6, 6, 0, 0]} maxBarSize={36}>
                 {weekData.map((entry, index) => (
-                  <Cell
-                    key={index}
-                    fill={entry.isToday ? COLORS.calories : COLORS.caloriesMuted}
-                  />
+                  <Cell key={index} fill={entry.isToday ? COLORS.calories : COLORS.caloriesMuted} />
                 ))}
               </Bar>
             </BarChart>
@@ -222,71 +209,28 @@ const WeeklyOverview = ({ entries, selectedDate, profile, activities = [] }: Wee
         <h3 className="text-xs font-semibold text-muted-foreground mb-3 uppercase tracking-wider">
           Makro-Verteilung (7 Tage)
         </h3>
-
         <div className="flex gap-1 h-4 rounded-full overflow-hidden bg-muted">
-          {weekTotals.proteinPercent > 0 && (
-            <div
-              className="rounded-full transition-all duration-500"
-              style={{ width: `${weekTotals.proteinPercent}%`, backgroundColor: MACRO_COLORS.pro }}
-              title={`PRO: ${weekTotals.proteinPercent}%`}
-            />
-          )}
-          {weekTotals.fatPercent > 0 && (
-            <div
-              className="rounded-full transition-all duration-500"
-              style={{ width: `${weekTotals.fatPercent}%`, backgroundColor: MACRO_COLORS.fat }}
-              title={`FAT: ${weekTotals.fatPercent}%`}
-            />
-          )}
-          {weekTotals.carbsPercent > 0 && (
-            <div
-              className="rounded-full transition-all duration-500"
-              style={{ width: `${weekTotals.carbsPercent}%`, backgroundColor: MACRO_COLORS.kh }}
-              title={`KH: ${weekTotals.carbsPercent}%`}
-            />
-          )}
-          {weekTotals.fiberPercent > 0 && (
-            <div
-              className="rounded-full transition-all duration-500"
-              style={{ width: `${weekTotals.fiberPercent}%`, backgroundColor: MACRO_COLORS.fib }}
-              title={`FIB: ${weekTotals.fiberPercent}%`}
-            />
-          )}
+          {weekTotals.proteinPercent > 0 && <div className="rounded-full transition-all duration-500" style={{ width: `${weekTotals.proteinPercent}%`, backgroundColor: MACRO_COLORS.pro }} />}
+          {weekTotals.fatPercent > 0 && <div className="rounded-full transition-all duration-500" style={{ width: `${weekTotals.fatPercent}%`, backgroundColor: MACRO_COLORS.fat }} />}
+          {weekTotals.carbsPercent > 0 && <div className="rounded-full transition-all duration-500" style={{ width: `${weekTotals.carbsPercent}%`, backgroundColor: MACRO_COLORS.kh }} />}
+          {weekTotals.fiberPercent > 0 && <div className="rounded-full transition-all duration-500" style={{ width: `${weekTotals.fiberPercent}%`, backgroundColor: MACRO_COLORS.fib }} />}
         </div>
-
         <div className="grid grid-cols-4 gap-2 mt-3">
-          <div className="flex items-center gap-2 text-xs">
-            <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: MACRO_COLORS.pro }} />
-            <div>
-              <span className="font-semibold">{weekTotals.proteinPercent}%</span>
-              <span className="text-muted-foreground ml-1">PRO</span>
-              <p className="text-muted-foreground">{weekTotals.protein}g</p>
+          {[
+            { key: "pro", label: "PRO", percent: weekTotals.proteinPercent, grams: weekTotals.protein },
+            { key: "fat", label: "FAT", percent: weekTotals.fatPercent, grams: weekTotals.fat },
+            { key: "kh", label: "KH", percent: weekTotals.carbsPercent, grams: weekTotals.carbs },
+            { key: "fib", label: "FIB", percent: weekTotals.fiberPercent, grams: weekTotals.fiber },
+          ].map((m) => (
+            <div key={m.key} className="flex items-center gap-2 text-xs">
+              <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: MACRO_COLORS[m.key as keyof typeof MACRO_COLORS] }} />
+              <div>
+                <span className="font-semibold">{m.percent}%</span>
+                <span className="text-muted-foreground ml-1">{m.label}</span>
+                <p className="text-muted-foreground">{m.grams}g</p>
+              </div>
             </div>
-          </div>
-          <div className="flex items-center gap-2 text-xs">
-            <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: MACRO_COLORS.fat }} />
-            <div>
-              <span className="font-semibold">{weekTotals.fatPercent}%</span>
-              <span className="text-muted-foreground ml-1">FAT</span>
-              <p className="text-muted-foreground">{weekTotals.fat}g</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-2 text-xs">
-            <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: MACRO_COLORS.kh }} />
-            <div>
-              <span className="font-semibold">{weekTotals.carbsPercent}%</span>
-              <span className="text-muted-foreground ml-1">KH</span>
-              <p className="text-muted-foreground">{weekTotals.carbs}g</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-2 text-xs">
-            <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: MACRO_COLORS.fib }} />
-            <div>
-              <span className="font-semibold">{weekTotals.fiberPercent}%</span>
-              <span className="text-muted-foreground ml-1">FIB</span>
-              <p className="text-muted-foreground">{weekTotals.fiber}g</p>
-            </div>
-          </div>
+          ))}
         </div>
       </div>
 
@@ -298,18 +242,9 @@ const WeeklyOverview = ({ entries, selectedDate, profile, activities = [] }: Wee
         <div className="h-40">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={weekData} margin={{ top: 4, right: 0, left: -20, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(145, 15%, 88%)" />
-              <XAxis
-                dataKey="label"
-                axisLine={false}
-                tickLine={false}
-                tick={{ fontSize: 11, fill: "hsl(160, 10%, 45%)" }}
-              />
-              <YAxis
-                axisLine={false}
-                tickLine={false}
-                tick={{ fontSize: 10, fill: "hsl(160, 10%, 45%)" }}
-              />
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
+              <XAxis dataKey="label" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} />
+              <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} />
               <Tooltip
                 content={({ active, payload }) => {
                   if (!active || !payload?.length) return null;
@@ -326,7 +261,7 @@ const WeeklyOverview = ({ entries, selectedDate, profile, activities = [] }: Wee
                     </div>
                   );
                 }}
-                cursor={{ fill: "hsl(145, 35%, 90%, 0.4)" }}
+                cursor={{ fill: "hsl(var(--accent) / 0.4)" }}
               />
               <Bar dataKey="protein" stackId="macros" fill={MACRO_COLORS.pro} radius={[0, 0, 0, 0]} maxBarSize={36} name="PRO" />
               <Bar dataKey="fat" stackId="macros" fill={MACRO_COLORS.fat} radius={[0, 0, 0, 0]} maxBarSize={36} name="FAT" />

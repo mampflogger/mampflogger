@@ -1,15 +1,14 @@
-import { UserProfile, DailyActivity, calculateBMR, calculateActivityBonus } from "@/types/profile";
+import { UserProfile, calculateBMR } from "@/types/profile";
 import { TrendingDown, TrendingUp, Flame, Zap } from "lucide-react";
 
 interface DeficitDisplayProps {
   profile: UserProfile;
-  activity: DailyActivity;
+  activityBonus: number;
   consumedCalories: number;
 }
 
-const DeficitDisplay = ({ profile, activity, consumedCalories }: DeficitDisplayProps) => {
+const DeficitDisplay = ({ profile, activityBonus, consumedCalories }: DeficitDisplayProps) => {
   const bmr = calculateBMR(profile);
-  const activityBonus = calculateActivityBonus(activity);
   const tdee = bmr + activityBonus;
   const deficit = tdee - consumedCalories;
   const isDeficit = deficit > 0;
@@ -27,17 +26,17 @@ const DeficitDisplay = ({ profile, activity, consumedCalories }: DeficitDisplayP
         <div className="flex items-center justify-between text-xs text-muted-foreground">
           <span className="flex items-center gap-1">
             <Zap className="w-3.5 h-3.5" />
-            Bewegung
+            Bewegungsbonus
           </span>
           <span className="font-semibold text-foreground">+{activityBonus} kcal</span>
         </div>
       )}
       <div className="flex items-center justify-between text-xs text-muted-foreground border-t border-border pt-2">
-        <span>Gesamtverbrauch (TDEE)</span>
+        <span>Kalorienbudget</span>
         <span className="font-semibold text-foreground">{tdee} kcal</span>
       </div>
       <div className="flex items-center justify-between text-xs text-muted-foreground">
-        <span>Gegessen</span>
+        <span>Kalorienaufnahme</span>
         <span className="font-semibold text-foreground">{consumedCalories} kcal</span>
       </div>
       <div className={`flex items-center justify-between pt-2 border-t border-border ${isDeficit ? "text-primary" : "text-destructive"}`}>
