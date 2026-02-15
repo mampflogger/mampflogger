@@ -23,7 +23,7 @@ import DeleteRangeDialog from "@/components/DeleteRangeDialog";
 import ProfileDialog from "@/components/ProfileDialog";
 import ActivityInput from "@/components/ActivityInput";
 import DeficitDisplay from "@/components/DeficitDisplay";
-import { ChevronLeft, ChevronRight, Apple, BarChart3, List, Download, ChevronDown } from "lucide-react";
+import { ChevronLeft, ChevronRight, Apple, BarChart3, List, Download, Moon, Sun } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -38,6 +38,16 @@ const Index = () => {
   const [activeTab, setActiveTab] = useState<"log" | "weekly">("log");
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [activities, setActivities] = useState<DailyActivity[]>([]);
+  const [darkMode, setDarkMode] = useState(() => {
+    const saved = localStorage.getItem("foodlog-dark-mode");
+    if (saved !== null) return saved === "true";
+    return window.matchMedia("(prefers-color-scheme: dark)").matches;
+  });
+
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", darkMode);
+    localStorage.setItem("foodlog-dark-mode", String(darkMode));
+  }, [darkMode]);
 
   useEffect(() => {
     setEntries(loadEntries());
@@ -154,6 +164,15 @@ const Index = () => {
                 </button>
               </div>
               <ProfileDialog profile={profile} onSave={handleSaveProfile} />
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8"
+                onClick={() => setDarkMode(!darkMode)}
+                title={darkMode ? "Light Mode" : "Dark Mode"}
+              >
+                {darkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+              </Button>
               <DeleteRangeDialog onCount={countEntriesInRange} onDelete={deleteEntriesInRange} />
               <ImportDialog onImport={handleImport} />
               <DropdownMenu>
