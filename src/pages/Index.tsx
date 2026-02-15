@@ -3,15 +3,13 @@ import { NutritionEntry, formatDate, calculateDailySummary } from "@/types/nutri
 import { exportEntriesToCsv, exportFoodDatabaseCsv, exportCalorieBalanceCsv } from "@/lib/csvExport";
 import {
   UserProfile,
-  DailyActivity,
+  BookedActivity,
   loadProfile,
   saveProfile,
-  loadActivities,
-  saveActivities,
-  getActivityForDate,
-  setActivityForDate,
-  calculateActivityBonus,
-  calculateTDEE,
+  loadBookedActivities,
+  saveBookedActivities,
+  calculateBookedActivityBonus,
+  calculateBMR,
 } from "@/types/profile";
 import { loadEntries, saveEntries } from "@/lib/storage";
 import NutritionForm from "@/components/NutritionForm";
@@ -37,7 +35,9 @@ const Index = () => {
   const [selectedDate, setSelectedDate] = useState(formatDate(new Date()));
   const [activeTab, setActiveTab] = useState<"log" | "weekly">("log");
   const [profile, setProfile] = useState<UserProfile | null>(null);
-  const [activities, setActivities] = useState<DailyActivity[]>([]);
+  const [bookedActivities, setBookedActivities] = useState<BookedActivity[]>([]);
+  const [editingEntry, setEditingEntry] = useState<NutritionEntry | null>(null);
+  const [editingActivity, setEditingActivity] = useState<BookedActivity | null>(null);
   const [darkMode, setDarkMode] = useState(() => {
     const saved = localStorage.getItem("foodlog-dark-mode");
     if (saved !== null) return saved === "true";
@@ -52,7 +52,7 @@ const Index = () => {
   useEffect(() => {
     setEntries(loadEntries());
     setProfile(loadProfile());
-    setActivities(loadActivities());
+    setBookedActivities(loadBookedActivities());
   }, []);
 
   const todayEntries = useMemo(
@@ -65,21 +65,35 @@ const Index = () => {
     [todayEntries]
   );
 
-  const currentActivity = useMemo(
-    () => getActivityForDate(activities, selectedDate),
-    [activities, selectedDate]
+  const activityBonus = useMemo(
+    () => calculateBookedActivityBonus(bookedActivities, selectedDate),
+    [bookedActivities, selectedDate]
   );
 
   const handleAdd = (entry: NutritionEntry) => {
-    const updated = [...entries, entry];
-    setEntries(updated);
-    saveEntries(updated);
+    // Check if editing existing entry
+    if (editingEntry) {
+      const updated = entries.map((e) => (e.id === editingEntry.id ? entry : e));
+      setEntries(updated);
+      saveEntries(updated);
+      setEditingEntry(null);
+    } else {
+      const updated = [...entries, entry];
+      setEntries(updated);
+      saveEntries(updated);
+    }
   };
 
   const handleDelete = (id: string) => {
     const updated = entries.filter((e) => e.id !== id);
     setEntries(updated);
     saveEntries(updated);
+  };
+
+  const handleEntryClick = (entry: NutritionEntry) => {
+    setEditingEntry(entry);
+    // Navigate to the entry's date
+    setSelectedDate(entry.date);
   };
 
   const handleImport = (newEntries: NutritionEntry[]) => {
@@ -93,10 +107,27 @@ const Index = () => {
     saveProfile(p);
   };
 
-  const handleActivityChange = (activity: DailyActivity) => {
-    const updated = setActivityForDate(activities, activity);
-    setActivities(updated);
-    saveActivities(updated);
+  const handleAddBookedActivity = (activity: BookedActivity) => {
+    const updated = [...bookedActivities, activity];
+    setBookedActivities(updated);
+    saveBookedActivities(updated);
+  };
+
+  const handleDeleteBookedActivity = (id: string) => {
+    const updated = bookedActivities.filter((a) => a.id !== id);
+    setBookedActivities(updated);
+    saveBookedActivities(updated);
+  };
+
+  const handleEditBookedActivity = (activity: BookedActivity) => {
+    const updated = bookedActivities.map((a) => (a.id === activity.id ? activity : a));
+    setBookedActivities(updated);
+    saveBookedActivities(updated);
+    setEditingActivity(null);
+  };
+
+  const handleActivityClick = (activity: BookedActivity) => {
+    setEditingActivity(activity);
   };
 
   const countEntriesInRange = (from: string, to: string): number => {
@@ -191,7 +222,7 @@ const Index = () => {
                   <DropdownMenuItem onClick={() => exportEntriesToCsv(entries)}>
                     Ernährungsprotokoll
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => exportCalorieBalanceCsv(entries)}>
+                  <DropdownMenuItem onClick={() => exportCalorieBalanceCsv(entries, bookedActivities)}>
                     Kalorienbilanz
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => exportFoodDatabaseCsv()}>
@@ -238,9 +269,14 @@ const Index = () => {
             {/* Form Card */}
             <div className="glass-card rounded-xl p-3 mb-4">
               <h2 className="text-[10px] font-semibold text-muted-foreground mb-2 uppercase tracking-wider">
-                Neuer Eintrag
+                {editingEntry ? "Eintrag bearbeiten" : "Neuer Eintrag"}
               </h2>
-              <NutritionForm onAdd={handleAdd} selectedDate={selectedDate} />
+              <NutritionForm
+                onAdd={handleAdd}
+                selectedDate={selectedDate}
+                editingEntry={editingEntry}
+                onCancelEdit={() => setEditingEntry(null)}
+              />
             </div>
 
             {/* Macro Bar */}
@@ -260,7 +296,11 @@ const Index = () => {
                   </span>
                 )}
               </h2>
-              <NutritionTable entries={todayEntries} onDelete={handleDelete} />
+              <NutritionTable
+                entries={todayEntries}
+                onDelete={handleDelete}
+                onEntryClick={handleEntryClick}
+              />
             </div>
 
             {/* Activity Input */}
@@ -270,9 +310,14 @@ const Index = () => {
                   Bewegung
                 </h2>
                 <ActivityInput
-                  activity={currentActivity}
-                  onChange={handleActivityChange}
-                  activityBonus={calculateActivityBonus(currentActivity)}
+                  bookedActivities={bookedActivities}
+                  selectedDate={selectedDate}
+                  onAddActivity={handleAddBookedActivity}
+                  onDeleteActivity={handleDeleteBookedActivity}
+                  onEditActivity={handleEditBookedActivity}
+                  editingActivity={editingActivity}
+                  onCancelEdit={() => setEditingActivity(null)}
+                  activityBonus={activityBonus}
                 />
               </div>
             )}
@@ -285,7 +330,7 @@ const Index = () => {
                 </h2>
                 <DeficitDisplay
                   profile={profile}
-                  activity={currentActivity}
+                  activityBonus={activityBonus}
                   consumedCalories={todaySummary.totalCalories}
                 />
               </div>
@@ -297,7 +342,7 @@ const Index = () => {
               entries={entries}
               selectedDate={selectedDate}
               profile={profile}
-              activities={activities}
+              bookedActivities={bookedActivities}
             />
           </div>
         )}

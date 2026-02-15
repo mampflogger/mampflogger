@@ -2,11 +2,11 @@ import { NutritionEntry, calculateDailySummary, formatDate } from "@/types/nutri
 import { FoodItem, foodDatabase } from "@/data/foodDatabase";
 import {
   UserProfile,
-  DailyActivity,
-  calculateTDEE,
-  getActivityForDate,
+  BookedActivity,
+  calculateBMR,
+  calculateBookedActivityBonus,
   loadProfile,
-  loadActivities,
+  loadBookedActivities,
 } from "@/types/profile";
 
 function downloadCsv(csv: string, filename: string) {
@@ -66,14 +66,13 @@ export function exportFoodDatabaseCsv(): void {
 }
 
 /** Export daily calorie balance (Kalorienbilanz) */
-export function exportCalorieBalanceCsv(entries: NutritionEntry[]): void {
+export function exportCalorieBalanceCsv(entries: NutritionEntry[], bookedActivities?: BookedActivity[]): void {
   const profile = loadProfile();
-  const activities = loadActivities();
+  const activities = bookedActivities || loadBookedActivities();
 
-  // Collect all unique dates
   const dates = [...new Set(entries.map((e) => e.date))].sort();
 
-  const header = "Datum;kcal;PRO;FAT;KH;FIB" + (profile ? ";TDEE;Defizit" : "");
+  const header = "Datum;kcal;PRO;FAT;KH;FIB" + (profile ? ";Bonus;Defizit" : "");
   const rows = dates.map((date) => {
     const dayEntries = entries.filter((e) => e.date === date);
     const summary = calculateDailySummary(dayEntries);
@@ -86,9 +85,10 @@ export function exportCalorieBalanceCsv(entries: NutritionEntry[]): void {
       summary.totalFiber,
     ];
     if (profile) {
-      const activity = getActivityForDate(activities, date);
-      const tdee = calculateTDEE(profile, activity);
-      base.push(tdee, tdee - summary.totalCalories);
+      const bonus = calculateBookedActivityBonus(activities, date);
+      const bmr = calculateBMR(profile);
+      const budget = bmr + bonus;
+      base.push(bonus, budget - summary.totalCalories);
     }
     return base.join(";");
   });
@@ -121,4 +121,32 @@ export function parseFoodDatabaseCsv(text: string): FoodItem[] {
   }
 
   return items;
+}
+
+/** Parse nutrition entries from CSV (semicolon-separated) */
+export function parseEntriesCsv(text: string): NutritionEntry[] {
+  const lines = text.trim().split("\n");
+  const entries: NutritionEntry[] = [];
+
+  for (const line of lines) {
+    const cols = line.split(";").map((c) => c.trim().replace(/^"|"$/g, ""));
+    if (cols.length < 9) continue;
+    const datum = cols[0];
+    if (!datum || datum.toLowerCase().includes("datum")) continue;
+
+    entries.push({
+      id: Date.now().toString(36) + Math.random().toString(36).slice(2, 7),
+      date: datum,
+      time: cols[1] || "00:00",
+      food: cols[2] || "",
+      amount: parseFloat(cols[3]) || 0,
+      calories: Math.round(parseFloat(cols[4]) || 0),
+      protein: parseFloat(cols[5]) || 0,
+      fat: parseFloat(cols[6]) || 0,
+      carbs: parseFloat(cols[7]) || 0,
+      fiber: parseFloat(cols[8]) || 0,
+    });
+  }
+
+  return entries;
 }

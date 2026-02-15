@@ -4,6 +4,7 @@ import { Trash2 } from "lucide-react";
 interface NutritionTableProps {
   entries: NutritionEntry[];
   onDelete: (id: string) => void;
+  onEntryClick?: (entry: NutritionEntry) => void;
 }
 
 const MACRO_COLORS = {
@@ -13,7 +14,7 @@ const MACRO_COLORS = {
   fib: "hsl(var(--macro-fib))",
 };
 
-const NutritionTable = ({ entries, onDelete }: NutritionTableProps) => {
+const NutritionTable = ({ entries, onDelete, onEntryClick }: NutritionTableProps) => {
   if (entries.length === 0) {
     return (
       <div className="text-center py-8 animate-fade-in">
@@ -47,7 +48,8 @@ const NutritionTable = ({ entries, onDelete }: NutritionTableProps) => {
             {sortedEntries.map((entry) => (
               <tr
                 key={entry.id}
-                className="border-b border-border/50 hover:bg-muted/30 transition-colors"
+                className="border-b border-border/50 hover:bg-muted/30 transition-colors cursor-pointer"
+                onClick={() => onEntryClick?.(entry)}
               >
                 <td className="py-1 px-0.5 text-muted-foreground font-mono">{entry.time}</td>
                 <td className="py-1 px-0.5 font-medium max-w-[100px] truncate">{entry.food}</td>
@@ -59,7 +61,10 @@ const NutritionTable = ({ entries, onDelete }: NutritionTableProps) => {
                 <td className="py-1 px-0.5 text-right">{Math.round(entry.fiber)}</td>
                 <td className="py-1 px-0">
                   <button
-                    onClick={() => onDelete(entry.id)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onDelete(entry.id);
+                    }}
                     className="p-0.5 rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
                     aria-label="Eintrag löschen"
                   >
@@ -71,9 +76,7 @@ const NutritionTable = ({ entries, onDelete }: NutritionTableProps) => {
           </tbody>
           <tfoot>
             <tr className="border-t-2 border-primary/20 bg-accent/30">
-              <td className="py-1 px-0.5 font-bold" colSpan={3}>
-                Summe
-              </td>
+              <td className="py-1 px-0.5 font-bold" colSpan={3}>Summe</td>
               <td className="py-1 px-0.5 text-right font-bold">{summary.totalCalories}</td>
               <td className="py-1 px-0.5 text-right font-bold">{summary.totalProtein}</td>
               <td className="py-1 px-0.5 text-right font-bold">{summary.totalFat}</td>
@@ -82,27 +85,16 @@ const NutritionTable = ({ entries, onDelete }: NutritionTableProps) => {
               <td></td>
             </tr>
             <tr className="bg-accent/20">
-              <td className="py-1 px-0.5 text-muted-foreground font-medium" colSpan={4}>
-                Makro %
-              </td>
-              <td className="py-1 px-0.5 text-right font-semibold" style={{ color: MACRO_COLORS.pro }}>
-                {summary.proteinPercent}%
-              </td>
-              <td className="py-1 px-0.5 text-right font-semibold" style={{ color: MACRO_COLORS.fat }}>
-                {summary.fatPercent}%
-              </td>
-              <td className="py-1 px-0.5 text-right font-semibold" style={{ color: MACRO_COLORS.kh }}>
-                {summary.carbsPercent}%
-              </td>
-              <td className="py-1 px-0.5 text-right font-semibold" style={{ color: MACRO_COLORS.fib }}>
-                {summary.fiberPercent}%
-              </td>
+              <td className="py-1 px-0.5 text-muted-foreground font-medium" colSpan={4}>Makro %</td>
+              <td className="py-1 px-0.5 text-right font-semibold" style={{ color: MACRO_COLORS.pro }}>{summary.proteinPercent}%</td>
+              <td className="py-1 px-0.5 text-right font-semibold" style={{ color: MACRO_COLORS.fat }}>{summary.fatPercent}%</td>
+              <td className="py-1 px-0.5 text-right font-semibold" style={{ color: MACRO_COLORS.kh }}>{summary.carbsPercent}%</td>
+              <td className="py-1 px-0.5 text-right font-semibold" style={{ color: MACRO_COLORS.fib }}>{summary.fiberPercent}%</td>
               <td></td>
             </tr>
           </tfoot>
         </table>
       </div>
-
     </div>
   );
 };

@@ -6,14 +6,42 @@ export interface UserProfile {
   gender: "male" | "female";
 }
 
-export interface DailyActivity {
+export interface ActivityType {
+  id: string;
+  name: string;
+  caloriesPerUnit: number;
+  unit: string; // e.g. "km", "min", "Schritte"
+}
+
+export interface BookedActivity {
+  id: string;
   date: string; // YYYY-MM-DD
+  activityTypeId: string;
+  activityName: string;
+  value: number;
+  calories: number;
+  unit: string;
+}
+
+// Keep for backward compat — will be replaced
+export interface DailyActivity {
+  date: string;
   steps: number;
   intensity: "low" | "high";
 }
 
 const PROFILE_KEY = "nutrition-log-profile";
 const ACTIVITY_KEY = "nutrition-log-activities";
+const ACTIVITY_TYPES_KEY = "foodlog-activity-types";
+const BOOKED_ACTIVITIES_KEY = "foodlog-booked-activities";
+
+// Default activity types
+const DEFAULT_ACTIVITY_TYPES: ActivityType[] = [
+  { id: "walking", name: "Spazieren", caloriesPerUnit: 0.03, unit: "Schritte" },
+  { id: "powerwalking", name: "Powerwalking", caloriesPerUnit: 0.06, unit: "Schritte" },
+  { id: "jogging", name: "Joggen", caloriesPerUnit: 70, unit: "km" },
+  { id: "swimming", name: "Schwimmen", caloriesPerUnit: 300, unit: "60min" },
+];
 
 export function loadProfile(): UserProfile | null {
   try {
@@ -58,11 +86,47 @@ export function setActivityForDate(
   return [...activities, activity];
 }
 
+// Activity Types CRUD
+export function loadActivityTypes(): ActivityType[] {
+  try {
+    const data = localStorage.getItem(ACTIVITY_TYPES_KEY);
+    if (data) return JSON.parse(data);
+  } catch {}
+  // Initialize with defaults
+  saveActivityTypes(DEFAULT_ACTIVITY_TYPES);
+  return [...DEFAULT_ACTIVITY_TYPES];
+}
+
+export function saveActivityTypes(types: ActivityType[]): void {
+  localStorage.setItem(ACTIVITY_TYPES_KEY, JSON.stringify(types));
+}
+
+// Booked Activities CRUD
+export function loadBookedActivities(): BookedActivity[] {
+  try {
+    const data = localStorage.getItem(BOOKED_ACTIVITIES_KEY);
+    return data ? JSON.parse(data) : [];
+  } catch {
+    return [];
+  }
+}
+
+export function saveBookedActivities(activities: BookedActivity[]): void {
+  localStorage.setItem(BOOKED_ACTIVITIES_KEY, JSON.stringify(activities));
+}
+
+export function getBookedActivitiesForDate(activities: BookedActivity[], date: string): BookedActivity[] {
+  return activities.filter((a) => a.date === date);
+}
+
+export function calculateBookedActivityBonus(activities: BookedActivity[], date: string): number {
+  return activities
+    .filter((a) => a.date === date)
+    .reduce((sum, a) => sum + a.calories, 0);
+}
+
 /**
  * BMR using Mifflin-St Jeor equation + NEAT factor (1.2)
- * NEAT = Non-Exercise Activity Thermogenesis
- * Male:   (10 × weight + 6.25 × height − 5 × age + 5) × 1.2
- * Female: (10 × weight + 6.25 × height − 5 × age − 161) × 1.2
  */
 export function calculateBMR(profile: UserProfile): number {
   const currentYear = new Date().getFullYear();
@@ -73,9 +137,7 @@ export function calculateBMR(profile: UserProfile): number {
 }
 
 /**
- * Activity bonus calories:
- * Low intensity (spazieren): ~0.03 kcal per step
- * High intensity (powerwalking): ~0.06 kcal per step
+ * Legacy - kept for backward compat with WeeklyOverview
  */
 export function calculateActivityBonus(activity: DailyActivity): number {
   const caloriesPerStep = activity.intensity === "high" ? 0.06 : 0.03;
@@ -84,4 +146,8 @@ export function calculateActivityBonus(activity: DailyActivity): number {
 
 export function calculateTDEE(profile: UserProfile, activity: DailyActivity): number {
   return calculateBMR(profile) + calculateActivityBonus(activity);
+}
+
+export function calculateTDEEWithBooked(profile: UserProfile, bookedBonus: number): number {
+  return calculateBMR(profile) + bookedBonus;
 }
