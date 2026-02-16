@@ -47,12 +47,11 @@ export function exportEntriesToCsv(entries: NutritionEntry[]): void {
 
 /** Export food database */
 export function exportFoodDatabaseCsv(): void {
-  const header = "Lebensmittel;Einheit;Basis;kcal;PRO;FAT;KH;FIB";
+  const header = "Lebensmittel;Einheit;kcal;PRO;FAT;KH;FIB";
   const rows = foodDatabase.map((f) =>
     [
       `"${f.name.replace(/"/g, '""')}"`,
       f.baseUnit,
-      f.baseAmount,
       f.calories,
       f.protein,
       f.fat,
@@ -104,19 +103,22 @@ export function parseFoodDatabaseCsv(text: string): FoodItem[] {
 
   for (const line of lines) {
     const cols = line.split(";").map((c) => c.trim().replace(/^"|"$/g, ""));
-    if (cols.length < 8) continue;
+    if (cols.length < 7) continue;
     const name = cols[0];
     if (!name || name.toLowerCase().includes("lebensmittel")) continue;
 
+    const baseUnit = cols[1] || "100g";
+    const baseAmount = baseUnit.includes("Stk") ? 1 : 100;
+
     items.push({
       name,
-      baseUnit: cols[1] || "100g",
-      baseAmount: parseFloat(cols[2]) || 100,
-      calories: parseFloat(cols[3]) || 0,
-      protein: parseFloat(cols[4]) || 0,
-      fat: parseFloat(cols[5]) || 0,
-      carbs: parseFloat(cols[6]) || 0,
-      fiber: parseFloat(cols[7]) || 0,
+      baseUnit,
+      baseAmount,
+      calories: parseFloat(cols[2]) || 0,
+      protein: parseFloat(cols[3]) || 0,
+      fat: parseFloat(cols[4]) || 0,
+      carbs: parseFloat(cols[5]) || 0,
+      fiber: parseFloat(cols[6]) || 0,
     });
   }
 

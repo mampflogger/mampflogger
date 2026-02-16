@@ -9,7 +9,9 @@ export interface FoodItem {
   fiber: number;
 }
 
-export const foodDatabase: FoodItem[] = [
+const FOOD_DB_KEY = "foodlog-food-database";
+
+const DEFAULT_FOODS: FoodItem[] = [
   { name: "Avocado", baseUnit: "100g", baseAmount: 100, calories: 160, protein: 2, fat: 15, carbs: 3, fiber: 18 },
   { name: "Backkakao", baseUnit: "100g", baseAmount: 100, calories: 360, protein: 20, fat: 20, carbs: 28, fiber: 33 },
   { name: "Banane", baseUnit: "100g", baseAmount: 100, calories: 89, protein: 1, fat: 0, carbs: 20, fiber: 2 },
@@ -65,6 +67,35 @@ export const foodDatabase: FoodItem[] = [
   { name: "Kiwi", baseUnit: "100g", baseAmount: 100, calories: 52, protein: 1, fat: 0, carbs: 10, fiber: 3 },
   { name: "Matjesfilet", baseUnit: "100g", baseAmount: 100, calories: 263, protein: 14, fat: 22, carbs: 0, fiber: 0 },
 ];
+
+function loadFoodDatabase(): FoodItem[] {
+  try {
+    const data = localStorage.getItem(FOOD_DB_KEY);
+    if (data) return JSON.parse(data);
+  } catch {}
+  return [...DEFAULT_FOODS];
+}
+
+function saveFoodDatabase(items: FoodItem[]): void {
+  localStorage.setItem(FOOD_DB_KEY, JSON.stringify(items));
+}
+
+export const foodDatabase: FoodItem[] = loadFoodDatabase();
+
+export function addFoodItem(item: FoodItem): void {
+  if (!foodDatabase.find((f) => f.name.toLowerCase() === item.name.toLowerCase())) {
+    foodDatabase.push(item);
+    saveFoodDatabase(foodDatabase);
+  }
+}
+
+export function removeFoodItem(name: string): void {
+  const index = foodDatabase.findIndex((f) => f.name === name);
+  if (index >= 0) {
+    foodDatabase.splice(index, 1);
+    saveFoodDatabase(foodDatabase);
+  }
+}
 
 export function searchFood(query: string): FoodItem[] {
   if (!query.trim()) return [];
