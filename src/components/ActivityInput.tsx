@@ -154,7 +154,7 @@ const ActivityInput = ({
               <SelectContent>
                 {activityTypes.map((type) => (
                   <SelectItem key={type.id} value={type.id} className="text-xs">
-                    {type.name} ({type.caloriesPerUnit} kcal/{type.unit})
+                    {type.name}
                   </SelectItem>
                 ))}
               </SelectContent>

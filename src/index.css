@@ -54,6 +54,51 @@
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
+  /* Yellow theme */
+  .theme-yellow {
+    --primary: 45 80% 50%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 45 30% 93%;
+    --secondary-foreground: 45 30% 15%;
+    --accent: 45 35% 90%;
+    --accent-foreground: 45 55% 30%;
+    --ring: 45 80% 50%;
+    --background: 45 20% 97%;
+    --border: 45 15% 88%;
+    --input: 45 15% 88%;
+    --muted: 45 15% 94%;
+  }
+
+  /* Blue theme */
+  .theme-blue {
+    --primary: 210 70% 50%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 210 30% 93%;
+    --secondary-foreground: 210 30% 15%;
+    --accent: 210 35% 90%;
+    --accent-foreground: 210 55% 30%;
+    --ring: 210 70% 50%;
+    --background: 210 20% 97%;
+    --border: 210 15% 88%;
+    --input: 210 15% 88%;
+    --muted: 210 15% 94%;
+  }
+
+  /* Pink theme */
+  .theme-pink {
+    --primary: 330 60% 55%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 330 30% 93%;
+    --secondary-foreground: 330 30% 15%;
+    --accent: 330 35% 90%;
+    --accent-foreground: 330 55% 30%;
+    --ring: 330 60% 55%;
+    --background: 330 20% 97%;
+    --border: 330 15% 88%;
+    --input: 330 15% 88%;
+    --muted: 330 15% 94%;
+  }
+
   .dark {
     --background: 160 20% 6%;
     --foreground: 140 15% 95%;
@@ -91,6 +136,52 @@
     --sidebar-accent-foreground: 240 4.8% 95.9%;
     --sidebar-border: 240 3.7% 15.9%;
     --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  /* Dark theme overrides for color themes */
+  .dark.theme-yellow {
+    --primary: 45 80% 55%;
+    --primary-foreground: 0 0% 10%;
+    --secondary: 45 20% 14%;
+    --accent: 45 30% 18%;
+    --accent-foreground: 45 55% 70%;
+    --ring: 45 80% 55%;
+    --background: 45 10% 6%;
+    --border: 45 15% 18%;
+    --input: 45 15% 18%;
+    --muted: 45 15% 15%;
+    --card: 45 10% 9%;
+    --popover: 45 10% 9%;
+  }
+
+  .dark.theme-blue {
+    --primary: 210 70% 55%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 210 20% 14%;
+    --accent: 210 30% 18%;
+    --accent-foreground: 210 55% 70%;
+    --ring: 210 70% 55%;
+    --background: 210 10% 6%;
+    --border: 210 15% 18%;
+    --input: 210 15% 18%;
+    --muted: 210 15% 15%;
+    --card: 210 10% 9%;
+    --popover: 210 10% 9%;
+  }
+
+  .dark.theme-pink {
+    --primary: 330 60% 60%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 330 20% 14%;
+    --accent: 330 30% 18%;
+    --accent-foreground: 330 55% 70%;
+    --ring: 330 60% 60%;
+    --background: 330 10% 6%;
+    --border: 330 15% 18%;
+    --input: 330 15% 18%;
+    --muted: 330 15% 15%;
+    --card: 330 10% 9%;
+    --popover: 330 10% 9%;
   }
 }
 

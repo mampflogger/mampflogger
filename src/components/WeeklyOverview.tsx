@@ -15,6 +15,7 @@ import {
   Tooltip,
   ResponsiveContainer,
   Cell,
+  ReferenceLine,
 } from "recharts";
 import { TrendingDown, TrendingUp } from "lucide-react";
 
@@ -36,6 +37,13 @@ interface DayData {
   isToday: boolean;
 }
 
+interface DeficitDayData {
+  label: string;
+  date: string;
+  deficit: number;
+  isToday: boolean;
+}
+
 const WEEKDAY_SHORT = ["So", "Mo", "Di", "Mi", "Do", "Fr", "Sa"];
 
 const MACRO_COLORS = {
@@ -54,14 +62,12 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [] 
   const weekData = useMemo(() => {
     const today = new Date(selectedDate + "T00:00:00");
     const days: DayData[] = [];
-
     for (let i = 6; i >= 0; i--) {
       const d = new Date(today);
       d.setDate(d.getDate() - i);
       const dateStr = formatDate(d);
       const dayEntries = entries.filter((e) => e.date === dateStr);
       const summary = calculateDailySummary(dayEntries);
-
       days.push({
         label: WEEKDAY_SHORT[d.getDay()],
         date: dateStr,
@@ -73,9 +79,30 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [] 
         isToday: i === 0,
       });
     }
-
     return days;
   }, [entries, selectedDate]);
+
+  const deficitData = useMemo(() => {
+    if (!profile) return null;
+    const today = new Date(selectedDate + "T00:00:00");
+    const bmr = calculateBMR(profile);
+    const days: DeficitDayData[] = [];
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date(today);
+      d.setDate(d.getDate() - i);
+      const dateStr = formatDate(d);
+      const dayEntries = entries.filter((e) => e.date === dateStr);
+      const summary = calculateDailySummary(dayEntries);
+      const bonus = calculateBookedActivityBonus(bookedActivities, dateStr);
+      days.push({
+        label: WEEKDAY_SHORT[d.getDay()],
+        date: dateStr,
+        deficit: (bmr + bonus) - summary.totalCalories,
+        isToday: i === 0,
+      });
+    }
+    return days;
+  }, [profile, entries, bookedActivities, selectedDate]);
 
   const weekTotals = useMemo(() => {
     const totals = weekData.reduce(
@@ -88,10 +115,8 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [] 
       }),
       { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 }
     );
-
     const avgCalories = Math.round(totals.calories / 7);
     const totalMacroWeight = totals.protein + totals.carbs + totals.fat + totals.fiber;
-
     return {
       avgCalories,
       totalCalories: totals.calories,
@@ -106,23 +131,11 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [] 
     };
   }, [weekData]);
 
-  // Rolling 7-day average deficit using booked activities
   const avgDeficit7 = useMemo(() => {
-    if (!profile) return null;
-    const today = new Date(selectedDate + "T00:00:00");
-    const bmr = calculateBMR(profile);
-    let totalDeficit = 0;
-    for (let i = 0; i < 7; i++) {
-      const d = new Date(today);
-      d.setDate(d.getDate() - i);
-      const dateStr = formatDate(d);
-      const dayEntries = entries.filter((e) => e.date === dateStr);
-      const daySummary = calculateDailySummary(dayEntries);
-      const bonus = calculateBookedActivityBonus(bookedActivities, dateStr);
-      totalDeficit += (bmr + bonus) - daySummary.totalCalories;
-    }
-    return Math.round(totalDeficit / 7);
-  }, [profile, entries, bookedActivities, selectedDate]);
+    if (!deficitData) return null;
+    const total = deficitData.reduce((sum, d) => sum + d.deficit, 0);
+    return Math.round(total / 7);
+  }, [deficitData]);
 
   const maxCalories = useMemo(
     () => Math.max(...weekData.map((d) => d.calories), 100),
@@ -134,7 +147,6 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [] 
     const data = payload[0].payload as DayData;
     const d = new Date(data.date + "T00:00:00");
     const dateLabel = d.toLocaleDateString("de-DE", { day: "numeric", month: "short" });
-
     return (
       <div className="rounded-lg border border-border bg-popover px-3 py-2 shadow-md text-xs">
         <p className="font-semibold text-popover-foreground">{dateLabel}</p>
@@ -143,6 +155,21 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [] 
         </p>
         <p className="text-muted-foreground">
           PRO {data.protein}g · FAT {data.fat}g · KH {data.carbs}g · FIB {data.fiber}g
+        </p>
+      </div>
+    );
+  };
+
+  const DeficitTooltip = ({ active, payload }: any) => {
+    if (!active || !payload?.length) return null;
+    const data = payload[0].payload as DeficitDayData;
+    const d = new Date(data.date + "T00:00:00");
+    const dateLabel = d.toLocaleDateString("de-DE", { day: "numeric", month: "short" });
+    return (
+      <div className="rounded-lg border border-border bg-popover px-3 py-2 shadow-md text-xs">
+        <p className="font-semibold text-popover-foreground">{dateLabel}</p>
+        <p className={data.deficit >= 0 ? "text-primary" : "text-destructive"}>
+          <span className="font-bold">{data.deficit >= 0 ? `-${data.deficit}` : `+${Math.abs(data.deficit)}`}</span> kcal
         </p>
       </div>
     );
@@ -157,13 +184,11 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [] 
           <p className="text-2xl font-bold text-foreground mt-0.5">{weekTotals.totalCalories.toLocaleString("de-DE")}</p>
           <p className="text-xs text-muted-foreground">kcal</p>
         </div>
-
         <div className="rounded-xl bg-accent/40 p-3 text-center">
           <p className="text-xs text-muted-foreground font-medium">Ø kcal / Tag</p>
           <p className="text-2xl font-bold text-foreground mt-0.5">{weekTotals.avgCalories}</p>
           <p className="text-xs text-muted-foreground">kcal</p>
         </div>
-
         {avgDeficit7 !== null && (
           <div className={`rounded-xl p-3 text-center ${avgDeficit7 > 0 ? "bg-primary/10" : "bg-destructive/10"}`}>
             <p className="text-xs text-muted-foreground font-medium">Ø Defizit 7 T.</p>
@@ -203,6 +228,31 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [] 
           </ResponsiveContainer>
         </div>
       </div>
+
+      {/* Deficit Bar Chart */}
+      {deficitData && (
+        <div>
+          <h3 className="text-xs font-semibold text-muted-foreground mb-3 uppercase tracking-wider">
+            Defizit pro Tag
+          </h3>
+          <div className="h-44">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={deficitData} margin={{ top: 4, right: 0, left: -20, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
+                <XAxis dataKey="label" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} />
+                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} />
+                <Tooltip content={<DeficitTooltip />} cursor={{ fill: "hsl(var(--accent) / 0.4)" }} />
+                <ReferenceLine y={0} stroke="hsl(var(--border))" />
+                <Bar dataKey="deficit" radius={[6, 6, 0, 0]} maxBarSize={36}>
+                  {deficitData.map((entry, index) => (
+                    <Cell key={index} fill={entry.deficit >= 0 ? "hsl(var(--primary))" : "hsl(var(--destructive))"} />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+      )}
 
       {/* Macro Distribution */}
       <div>

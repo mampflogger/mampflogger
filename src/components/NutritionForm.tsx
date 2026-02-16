@@ -2,7 +2,7 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { NutritionEntry, generateId } from "@/types/nutrition";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { FoodItem, searchFood } from "@/data/foodDatabase";
+import { FoodItem, searchFood, addFoodItem } from "@/data/foodDatabase";
 
 interface NutritionFormProps {
   onAdd: (entry: NutritionEntry) => void;
@@ -58,11 +58,11 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit }: Nutr
 
   const applyFoodValues = useCallback((item: FoodItem, qty: number) => {
     const factor = qty / item.baseAmount;
-    setCalories(String(Math.round(item.calories * factor * 100) / 100));
-    setProtein(String(Math.round(item.protein * factor * 100) / 100));
-    setCarbs(String(Math.round(item.carbs * factor * 100) / 100));
-    setFat(String(Math.round(item.fat * factor * 100) / 100));
-    setFiber(String(Math.round(item.fiber * factor * 100) / 100));
+    setCalories(String(Math.round(item.calories * factor)));
+    setProtein(String(Math.round(item.protein * factor)));
+    setCarbs(String(Math.round(item.carbs * factor)));
+    setFat(String(Math.round(item.fat * factor)));
+    setFiber(String(Math.round(item.fiber * factor)));
   }, []);
 
   const handleFoodChange = (value: string) => {
@@ -124,18 +124,46 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit }: Nutr
     e.preventDefault();
     if (!food.trim()) return;
 
+    const parsedAmount = parseFloat(amount) || 0;
+    const parsedCalories = Math.round(parseFloat(calories) || 0);
+    const parsedProtein = Math.round(parseFloat(protein) || 0);
+    const parsedFat = Math.round(parseFloat(fat) || 0);
+    const parsedCarbs = Math.round(parseFloat(carbs) || 0);
+    const parsedFiber = Math.round(parseFloat(fiber) || 0);
+
     const entry: NutritionEntry = {
       id: editingEntry?.id || generateId(),
       date: editingEntry?.date || selectedDate,
       time,
       food: food.trim(),
-      amount: parseFloat(amount) || 0,
-      calories: Math.round(parseFloat(calories) || 0),
-      protein: parseFloat(protein) || 0,
-      carbs: parseFloat(carbs) || 0,
-      fat: parseFloat(fat) || 0,
-      fiber: parseFloat(fiber) || 0,
+      amount: parsedAmount,
+      calories: parsedCalories,
+      protein: parsedProtein,
+      carbs: parsedCarbs,
+      fat: parsedFat,
+      fiber: parsedFiber,
     };
+
+    // Auto-add to food database if new
+    if (parsedAmount > 0 && parsedCalories > 0) {
+      const baseAmount = parsedAmount;
+      const baseUnit = baseAmount === 1 ? "1 Stk" : `${baseAmount}g`;
+      // Try to guess baseUnit from amount
+      const guessedBaseUnit = parsedAmount <= 10 ? "1 Stk" : "100g";
+      const guessedBaseAmount = guessedBaseUnit === "1 Stk" ? 1 : 100;
+      const factor = guessedBaseAmount / parsedAmount;
+
+      addFoodItem({
+        name: food.trim(),
+        baseUnit: guessedBaseUnit,
+        baseAmount: guessedBaseAmount,
+        calories: Math.round(parsedCalories * factor),
+        protein: Math.round(parsedProtein * factor),
+        fat: Math.round(parsedFat * factor),
+        carbs: Math.round(parsedCarbs * factor),
+        fiber: Math.round(parsedFiber * factor),
+      });
+    }
 
     onAdd(entry);
     resetForm();
@@ -163,7 +191,7 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit }: Nutr
 
   return (
     <form onSubmit={handleSubmit} className="animate-fade-in">
-      {/* Row 1: Time, Amount, Food (5 equal columns: time=1, amount=1, food=3) */}
+      {/* Row 1: Time, Food (3 cols), Amount (5 equal columns) */}
       <div className="grid grid-cols-5 gap-2 mb-2">
         <div>
           <Label htmlFor="time" className="text-[10px] font-medium text-muted-foreground mb-1 block">
@@ -176,21 +204,6 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit }: Nutr
             placeholder="08:00"
             value={time}
             onChange={(e) => setTime(e.target.value)}
-            className="h-9 bg-muted/50 text-xs px-2"
-          />
-        </div>
-        <div>
-          <Label htmlFor="amount" className="text-[10px] font-medium text-muted-foreground mb-1 block">
-            {selectedFood ? (selectedFood.baseUnit === "1 Stk" ? "Stk" : "g/ml") : "g/ml"}
-          </Label>
-          <Input
-            id="amount"
-            type="number"
-            inputMode="decimal"
-            step="any"
-            placeholder="0"
-            value={amount}
-            onChange={(e) => handleAmountChange(e.target.value)}
             className="h-9 bg-muted/50 text-xs px-2"
           />
         </div>
@@ -239,6 +252,21 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit }: Nutr
               ))}
             </ul>
           )}
+        </div>
+        <div>
+          <Label htmlFor="amount" className="text-[10px] font-medium text-muted-foreground mb-1 block">
+            {selectedFood ? (selectedFood.baseUnit === "1 Stk" ? "Stk" : "g/ml") : "g/ml"}
+          </Label>
+          <Input
+            id="amount"
+            type="number"
+            inputMode="decimal"
+            step="any"
+            placeholder="0"
+            value={amount}
+            onChange={(e) => handleAmountChange(e.target.value)}
+            className="h-9 bg-muted/50 text-xs px-2"
+          />
         </div>
       </div>
 

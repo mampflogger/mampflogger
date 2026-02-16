@@ -1,6 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
 import { NutritionEntry, formatDate, calculateDailySummary } from "@/types/nutrition";
-import { exportEntriesToCsv, exportFoodDatabaseCsv, exportCalorieBalanceCsv } from "@/lib/csvExport";
 import {
   UserProfile,
   BookedActivity,
@@ -9,26 +8,17 @@ import {
   loadBookedActivities,
   saveBookedActivities,
   calculateBookedActivityBonus,
-  calculateBMR,
 } from "@/types/profile";
 import { loadEntries, saveEntries } from "@/lib/storage";
 import NutritionForm from "@/components/NutritionForm";
 import NutritionTable from "@/components/NutritionTable";
 import MacroBar from "@/components/MacroBar";
 import WeeklyOverview from "@/components/WeeklyOverview";
-import ImportDialog from "@/components/ImportDialog";
-import DeleteRangeDialog from "@/components/DeleteRangeDialog";
-import ProfileDialog from "@/components/ProfileDialog";
 import ActivityInput from "@/components/ActivityInput";
 import DeficitDisplay from "@/components/DeficitDisplay";
-import { ChevronLeft, ChevronRight, Apple, BarChart3, List, Download, Moon, Sun } from "lucide-react";
+import SettingsDialog, { ColorTheme } from "@/components/SettingsDialog";
+import { ChevronLeft, ChevronRight, Apple, BarChart3, List } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 
 const Index = () => {
   const [entries, setEntries] = useState<NutritionEntry[]>([]);
@@ -43,11 +33,23 @@ const Index = () => {
     if (saved !== null) return saved === "true";
     return window.matchMedia("(prefers-color-scheme: dark)").matches;
   });
+  const [colorTheme, setColorTheme] = useState<ColorTheme>(() => {
+    return (localStorage.getItem("foodlog-color-theme") as ColorTheme) || "green";
+  });
 
   useEffect(() => {
     document.documentElement.classList.toggle("dark", darkMode);
     localStorage.setItem("foodlog-dark-mode", String(darkMode));
   }, [darkMode]);
+
+  useEffect(() => {
+    const el = document.documentElement;
+    el.classList.remove("theme-yellow", "theme-blue", "theme-pink");
+    if (colorTheme !== "green") {
+      el.classList.add(`theme-${colorTheme}`);
+    }
+    localStorage.setItem("foodlog-color-theme", colorTheme);
+  }, [colorTheme]);
 
   useEffect(() => {
     setEntries(loadEntries());
@@ -71,7 +73,6 @@ const Index = () => {
   );
 
   const handleAdd = (entry: NutritionEntry) => {
-    // Check if editing existing entry
     if (editingEntry) {
       const updated = entries.map((e) => (e.id === editingEntry.id ? entry : e));
       setEntries(updated);
@@ -92,7 +93,6 @@ const Index = () => {
 
   const handleEntryClick = (entry: NutritionEntry) => {
     setEditingEntry(entry);
-    // Navigate to the entry's date
     setSelectedDate(entry.date);
   };
 
@@ -169,68 +169,43 @@ const Index = () => {
               </div>
               <h1 className="text-lg font-bold tracking-tight">FoodLog</h1>
             </div>
-            <div className="flex items-center gap-1.5">
-              <div className="flex items-center gap-1 bg-muted rounded-lg p-0.5">
-                <button
-                  onClick={() => setActiveTab("log")}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition-colors ${
-                    activeTab === "log"
-                      ? "bg-background text-foreground shadow-sm"
-                      : "text-muted-foreground hover:text-foreground"
-                  }`}
-                >
-                  <List className="w-3.5 h-3.5" />
-                  Protokoll
-                </button>
-                <button
-                  onClick={() => setActiveTab("weekly")}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition-colors ${
-                    activeTab === "weekly"
-                      ? "bg-background text-foreground shadow-sm"
-                      : "text-muted-foreground hover:text-foreground"
-                  }`}
-                >
-                  <BarChart3 className="w-3.5 h-3.5" />
-                  Woche
-                </button>
-              </div>
-              <ProfileDialog profile={profile} onSave={handleSaveProfile} />
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8"
-                onClick={() => setDarkMode(!darkMode)}
-                title={darkMode ? "Light Mode" : "Dark Mode"}
+            <div className="flex items-center gap-1 bg-muted rounded-lg p-0.5">
+              <button
+                onClick={() => setActiveTab("log")}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition-colors ${
+                  activeTab === "log"
+                    ? "bg-background text-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
               >
-                {darkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-              </Button>
-              <DeleteRangeDialog onCount={countEntriesInRange} onDelete={deleteEntriesInRange} />
-              <ImportDialog onImport={handleImport} />
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8"
-                    title="Export"
-                    disabled={entries.length === 0}
-                  >
-                    <Download className="w-4 h-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem onClick={() => exportEntriesToCsv(entries)}>
-                    Ernährungsprotokoll
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => exportCalorieBalanceCsv(entries, bookedActivities)}>
-                    Kalorienbilanz
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => exportFoodDatabaseCsv()}>
-                    Lebensmittelliste
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+                <List className="w-3.5 h-3.5" />
+                Eingabe
+              </button>
+              <button
+                onClick={() => setActiveTab("weekly")}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition-colors ${
+                  activeTab === "weekly"
+                    ? "bg-background text-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                <BarChart3 className="w-3.5 h-3.5" />
+                Statistik
+              </button>
             </div>
+            <SettingsDialog
+              profile={profile}
+              onSaveProfile={handleSaveProfile}
+              darkMode={darkMode}
+              onToggleDarkMode={() => setDarkMode(!darkMode)}
+              colorTheme={colorTheme}
+              onChangeTheme={setColorTheme}
+              entries={entries}
+              bookedActivities={bookedActivities}
+              onImport={handleImport}
+              onCount={countEntriesInRange}
+              onDelete={deleteEntriesInRange}
+            />
           </div>
         </div>
       </header>
@@ -238,35 +213,20 @@ const Index = () => {
       <main className="max-w-lg mx-auto px-4 pb-8">
         {/* Date Navigation */}
         <div className="flex items-center justify-between py-3">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => navigateDay(-1)}
-            className="h-8 w-8"
-          >
+          <Button variant="ghost" size="icon" onClick={() => navigateDay(-1)} className="h-8 w-8">
             <ChevronLeft className="w-5 h-5" />
           </Button>
           <div className="text-center">
-            <p className="text-sm font-semibold">
-              {isToday ? "Heute" : displayDate}
-            </p>
-            {isToday && (
-              <p className="text-xs text-muted-foreground">{displayDate}</p>
-            )}
+            <p className="text-sm font-semibold">{isToday ? "Heute" : displayDate}</p>
+            {isToday && <p className="text-xs text-muted-foreground">{displayDate}</p>}
           </div>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => navigateDay(1)}
-            className="h-8 w-8"
-          >
+          <Button variant="ghost" size="icon" onClick={() => navigateDay(1)} className="h-8 w-8">
             <ChevronRight className="w-5 h-5" />
           </Button>
         </div>
 
         {activeTab === "log" ? (
           <>
-            {/* Form Card */}
             <div className="glass-card rounded-xl p-3 mb-4">
               <h2 className="text-[10px] font-semibold text-muted-foreground mb-2 uppercase tracking-wider">
                 {editingEntry ? "Eintrag bearbeiten" : "Neuer Eintrag"}
@@ -279,14 +239,12 @@ const Index = () => {
               />
             </div>
 
-            {/* Macro Bar */}
             {todayEntries.length > 0 && (
               <div className="glass-card rounded-xl p-3 mb-4">
                 <MacroBar summary={todaySummary} />
               </div>
             )}
 
-            {/* Table Card */}
             <div className="glass-card rounded-xl p-3 mb-4">
               <h2 className="text-[10px] font-semibold text-muted-foreground mb-2 uppercase tracking-wider">
                 Tagesübersicht
@@ -296,14 +254,9 @@ const Index = () => {
                   </span>
                 )}
               </h2>
-              <NutritionTable
-                entries={todayEntries}
-                onDelete={handleDelete}
-                onEntryClick={handleEntryClick}
-              />
+              <NutritionTable entries={todayEntries} onDelete={handleDelete} onEntryClick={handleEntryClick} />
             </div>
 
-            {/* Activity Input */}
             {profile && (
               <div className="glass-card rounded-xl p-3 mb-4">
                 <h2 className="text-[10px] font-semibold text-muted-foreground mb-2 uppercase tracking-wider">
@@ -322,28 +275,18 @@ const Index = () => {
               </div>
             )}
 
-            {/* Calorie Balance */}
             {profile && (
               <div className="glass-card rounded-xl p-3">
                 <h2 className="text-[10px] font-semibold text-muted-foreground mb-2 uppercase tracking-wider">
                   Kalorienbilanz
                 </h2>
-                <DeficitDisplay
-                  profile={profile}
-                  activityBonus={activityBonus}
-                  consumedCalories={todaySummary.totalCalories}
-                />
+                <DeficitDisplay profile={profile} activityBonus={activityBonus} consumedCalories={todaySummary.totalCalories} />
               </div>
             )}
           </>
         ) : (
           <div className="glass-card rounded-xl p-4">
-            <WeeklyOverview
-              entries={entries}
-              selectedDate={selectedDate}
-              profile={profile}
-              bookedActivities={bookedActivities}
-            />
+            <WeeklyOverview entries={entries} selectedDate={selectedDate} profile={profile} bookedActivities={bookedActivities} />
           </div>
         )}
       </main>

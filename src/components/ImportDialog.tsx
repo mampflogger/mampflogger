@@ -205,7 +205,7 @@ const ImportDialog = ({ onImport }: ImportDialogProps) => {
             )}
             {importType === "csv-food" && (
               <p className="font-mono text-[11px]">
-                Lebensmittel;Einheit;Basis;kcal;PRO;FAT;KH;FIB
+                Lebensmittel;Einheit;kcal;PRO;FAT;KH;FIB
               </p>
             )}
           </div>
@@ -216,7 +216,7 @@ const ImportDialog = ({ onImport }: ImportDialogProps) => {
                 ? "15.01.26\t20:00\tMilchkaffee\t600ml\t84\t4\t5 / 3\t6 / 6\t0"
                 : importType === "csv-entries"
                 ? "2026-01-15;20:00;Milchkaffee;600;84;4;5;6;0"
-                : "Haferflocken;100g;100;372;13;7;59;10"
+                : "Haferflocken;100g;372;13;7;59;10"
             }
             value={rawText}
             onChange={(e) => { setRawText(e.target.value); setPreview(null); setFoodPreview(null); }}
