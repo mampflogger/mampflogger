@@ -242,23 +242,17 @@ const SettingsDialog = ({
         setRawText(text);
         setPreview(null);
         setFoodPreview(null);
-        // Auto-parse: try entries FIRST, then food
-        const entryResult = parseImportText(text, "entries");
-        if (entryResult.entries.length > 0) {
-          setPreview(entryResult.entries);
-          toast.info(`"${file.name}" – ${entryResult.entries.length} Einträge erkannt`);
+        // Auto-parse without type hint – let auto-detection distinguish entries vs balance vs food
+        const result = parseImportText(text);
+        if (result.foodItems.length > 0) {
+          setFoodPreview(result.foodItems);
+          toast.info(`"${file.name}" – ${result.foodItems.length} Lebensmittel erkannt`);
           return;
         }
-        const balanceResult = parseImportText(text, "balance");
-        if (balanceResult.entries.length > 0) {
-          setPreview(balanceResult.entries);
-          toast.info(`"${file.name}" – ${balanceResult.entries.length} Bilanzen erkannt`);
-          return;
-        }
-        const foodResult = parseImportText(text, "food");
-        if (foodResult.foodItems.length > 0) {
-          setFoodPreview(foodResult.foodItems);
-          toast.info(`"${file.name}" – ${foodResult.foodItems.length} Lebensmittel erkannt`);
+        if (result.entries.length > 0) {
+          const typeLabel = result.detectedType === "balance" ? "Bilanzen" : "Einträge";
+          setPreview(result.entries);
+          toast.info(`"${file.name}" – ${result.entries.length} ${typeLabel} erkannt`);
           return;
         }
         setPreview([]);
