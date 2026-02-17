@@ -344,7 +344,7 @@ const Index = () => {
             {profile && (
               <div className="glass-card rounded-xl p-3 mb-4">
                 <h2 className="text-[10px] font-semibold text-muted-foreground mb-2 uppercase tracking-wider">
-                  Bewegung
+                  Activity
                 </h2>
                 <ActivityInput
                   bookedActivities={bookedActivities}
