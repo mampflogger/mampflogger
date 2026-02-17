@@ -19,6 +19,7 @@ import DeficitDisplay from "@/components/DeficitDisplay";
 import FluidDisplay from "@/components/FluidDisplay";
 import { foodDatabase } from "@/data/foodDatabase";
 import SettingsDialog, { ColorTheme } from "@/components/SettingsDialog";
+import ImportDialog from "@/components/ImportDialog";
 import { ChevronLeft, ChevronRight, Apple, BarChart3, List } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -254,22 +255,25 @@ const Index = () => {
                 Statistik
               </button>
             </div>
-            <SettingsDialog
-              profile={profile}
-              onSaveProfile={handleSaveProfile}
-              darkMode={darkMode}
-              onToggleDarkMode={() => setDarkMode(!darkMode)}
-              colorTheme={colorTheme}
-              onChangeTheme={setColorTheme}
-              entries={entries}
-              bookedActivities={bookedActivities}
-              onImport={handleImport}
-              onCount={countEntriesInRange}
-              onDelete={deleteEntriesInRange}
-              onDeleteAll={deleteAllEntries}
-              openToNewFood={openNewFood}
-              onOpenToNewFoodHandled={() => setOpenNewFood(false)}
-            />
+            <div className="flex items-center gap-1">
+              <ImportDialog onImport={handleImport} />
+              <SettingsDialog
+                profile={profile}
+                onSaveProfile={handleSaveProfile}
+                darkMode={darkMode}
+                onToggleDarkMode={() => setDarkMode(!darkMode)}
+                colorTheme={colorTheme}
+                onChangeTheme={setColorTheme}
+                entries={entries}
+                bookedActivities={bookedActivities}
+                onImport={handleImport}
+                onCount={countEntriesInRange}
+                onDelete={deleteEntriesInRange}
+                onDeleteAll={deleteAllEntries}
+                openToNewFood={openNewFood}
+                onOpenToNewFoodHandled={() => setOpenNewFood(false)}
+              />
+            </div>
           </div>
         </div>
       </header>
