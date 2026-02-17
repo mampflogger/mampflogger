@@ -636,19 +636,15 @@ const SettingsDialog = ({
 
         {/* Data Tab */}
         {tab === "data" && (
-          <div className="space-y-3">
+          <div className="space-y-2">
 
             {/* IMPORT Section */}
-            <div className="rounded-xl border border-border bg-accent/20 p-2.5 space-y-2">
-              <div className="flex items-center gap-2">
-                <div className="w-7 h-7 rounded-lg bg-primary/20 flex items-center justify-center">
-                  <Upload className="w-3.5 h-3.5 text-primary" />
-                </div>
-                <h3 className="text-xs font-bold uppercase tracking-wider text-foreground">Import</h3>
+            <div className="rounded-lg border border-border bg-accent/20 p-2 space-y-1.5">
+              <div className="flex items-center gap-1.5">
+                <Upload className="w-3.5 h-3.5 text-primary" />
+                <h3 className="text-[11px] font-bold uppercase tracking-wider text-foreground">Import</h3>
+                <span className="text-[9px] text-muted-foreground ml-auto">Auto-Erkennung</span>
               </div>
-              <p className="text-[10px] text-muted-foreground leading-relaxed">
-                Universeller Import – Datei auswählen, Format wird automatisch erkannt.
-              </p>
               <input
                 ref={fileInputRef}
                 type="file"
@@ -661,9 +657,9 @@ const SettingsDialog = ({
                   variant="default"
                   size="sm"
                   onClick={() => fileInputRef.current?.click()}
-                  className="w-full h-9 text-xs gap-1.5"
+                  className="w-full h-7 text-[11px] gap-1.5"
                 >
-                  <FileUp className="w-3.5 h-3.5" />
+                  <FileUp className="w-3 h-3" />
                   Datei auswählen (.csv, .tsv, .txt)
                 </Button>
               ) : (
@@ -712,50 +708,42 @@ const SettingsDialog = ({
             </div>
 
             {/* EXPORT Section */}
-            <div className="rounded-xl border border-border bg-accent/20 p-2.5 space-y-2">
-              <div className="flex items-center gap-2">
-                <div className="w-7 h-7 rounded-lg bg-primary/20 flex items-center justify-center">
-                  <Download className="w-3.5 h-3.5 text-primary" />
-                </div>
-                <h3 className="text-xs font-bold uppercase tracking-wider text-foreground">Export</h3>
+            <div className="rounded-lg border border-border bg-accent/20 p-2 space-y-1.5">
+              <div className="flex items-center gap-1.5">
+                <Download className="w-3.5 h-3.5 text-primary" />
+                <h3 className="text-[11px] font-bold uppercase tracking-wider text-foreground">Export</h3>
               </div>
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-4 gap-1.5">
                 {[
-                  { label: "Protokoll", icon: <FileSpreadsheet className="w-3.5 h-3.5" />, action: () => exportEntriesToCsv(entries), disabled: entries.length === 0, count: entries.length },
-                  { label: "Aktivitäten", icon: <BarChart3 className="w-3.5 h-3.5" />, action: () => exportActivitiesCsv(bookedActivities), disabled: bookedActivities.length === 0, count: bookedActivities.length },
-                  { label: "Lebensmittel", icon: <UtensilsCrossed className="w-3.5 h-3.5" />, action: () => exportFoodDatabaseCsv(), disabled: foodDatabase.length === 0, count: foodDatabase.length },
-                  { label: "Bilanz", icon: <Download className="w-3.5 h-3.5" />, action: () => exportCalorieBalanceCsv(entries, bookedActivities), disabled: entries.length === 0, count: new Set(entries.map(e => e.date)).size },
+                  { label: "Protokoll", icon: <FileSpreadsheet className="w-3 h-3" />, action: () => exportEntriesToCsv(entries), disabled: entries.length === 0, count: entries.length },
+                  { label: "Aktivitäten", icon: <BarChart3 className="w-3 h-3" />, action: () => exportActivitiesCsv(bookedActivities), disabled: bookedActivities.length === 0, count: bookedActivities.length },
+                  { label: "Lebensmittel", icon: <UtensilsCrossed className="w-3 h-3" />, action: () => exportFoodDatabaseCsv(), disabled: foodDatabase.length === 0, count: foodDatabase.length },
+                  { label: "Bilanz", icon: <Download className="w-3 h-3" />, action: () => exportCalorieBalanceCsv(entries, bookedActivities), disabled: entries.length === 0, count: new Set(entries.map(e => e.date)).size },
                 ].map((item) => (
                   <button
                     key={item.label}
                     onClick={item.action}
                     disabled={item.disabled}
-                    className="flex flex-col items-center gap-1 p-2 rounded-lg bg-background border border-border hover:border-primary/40 hover:bg-primary/5 transition-colors disabled:opacity-40 disabled:pointer-events-none"
+                    className="flex flex-col items-center gap-0.5 py-1.5 px-1 rounded-lg bg-background border border-border hover:border-primary/40 hover:bg-primary/5 transition-colors disabled:opacity-40 disabled:pointer-events-none"
                   >
-                    <div className="w-7 h-7 rounded-full bg-muted flex items-center justify-center">
-                      {item.icon}
-                    </div>
-                    <span className="text-[10px] font-semibold">{item.label}</span>
-                    {item.count !== undefined && (
-                      <span className="text-[9px] text-muted-foreground">{item.count}</span>
-                    )}
+                    {item.icon}
+                    <span className="text-[9px] font-semibold">{item.label}</span>
+                    <span className="text-[8px] text-muted-foreground">{item.count}</span>
                   </button>
                 ))}
               </div>
             </div>
 
             {/* DELETE Section */}
-            <div className="rounded-xl border border-border bg-accent/20 p-2.5 space-y-2">
-              <div className="flex items-center gap-2">
-                <div className="w-7 h-7 rounded-lg bg-primary/20 flex items-center justify-center">
-                  <Trash2 className="w-3.5 h-3.5 text-primary" />
-                </div>
-                <h3 className="text-xs font-bold uppercase tracking-wider text-foreground">Löschen</h3>
+            <div className="rounded-lg border border-border bg-accent/20 p-2 space-y-1.5">
+              <div className="flex items-center gap-1.5">
+                <Trash2 className="w-3.5 h-3.5 text-primary" />
+                <h3 className="text-[11px] font-bold uppercase tracking-wider text-foreground">Löschen</h3>
               </div>
 
               {/* Date range delete */}
-              <div className="rounded-lg bg-background border border-border p-2.5 space-y-2">
-                <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Zeitraum</p>
+              <div className="rounded-lg bg-background border border-border p-2 space-y-1.5">
+                <p className="text-[9px] font-semibold text-muted-foreground uppercase tracking-wider">Zeitraum</p>
                 <div className="grid grid-cols-2 gap-2">
                   <Input
                     type="text"
@@ -792,15 +780,15 @@ const SettingsDialog = ({
               </div>
 
               {/* Quick delete buttons */}
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-2 gap-1.5">
                 {!showDeleteAllConfirm ? (
                   <button
                     onClick={() => setShowDeleteAllConfirm(true)}
                     disabled={entries.length === 0}
-                    className="flex flex-col items-center gap-1 p-2.5 rounded-lg bg-background border border-border hover:border-destructive/40 transition-colors disabled:opacity-40 disabled:pointer-events-none"
+                    className="flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-lg bg-background border border-border hover:border-destructive/40 transition-colors disabled:opacity-40 disabled:pointer-events-none"
                   >
-                    <span className="text-[10px] font-semibold text-destructive">Alle Einträge</span>
-                    <span className="text-[9px] text-muted-foreground">{entries.length} Stk.</span>
+                    <span className="text-[9px] font-semibold text-destructive">Alle Einträge</span>
+                    <span className="text-[8px] text-muted-foreground">({entries.length})</span>
                   </button>
                 ) : (
                   <div className="col-span-2 rounded-lg border-2 border-destructive p-2.5 space-y-2">
@@ -822,10 +810,10 @@ const SettingsDialog = ({
                     <button
                       onClick={() => setShowDeleteFoodConfirm(true)}
                       disabled={foodDatabase.length === 0}
-                      className="flex flex-col items-center gap-1 p-2.5 rounded-lg bg-background border border-border hover:border-destructive/40 transition-colors disabled:opacity-40 disabled:pointer-events-none"
+                      className="flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-lg bg-background border border-border hover:border-destructive/40 transition-colors disabled:opacity-40 disabled:pointer-events-none"
                     >
-                      <span className="text-[10px] font-semibold text-destructive">Alle Lebensmittel</span>
-                      <span className="text-[9px] text-muted-foreground">{foodDatabase.length} Stk.</span>
+                      <span className="text-[9px] font-semibold text-destructive">Alle Lebensmittel</span>
+                      <span className="text-[8px] text-muted-foreground">({foodDatabase.length})</span>
                     </button>
                   ) : (
                     <div className="col-span-2 rounded-lg border-2 border-destructive p-2.5 space-y-2">
