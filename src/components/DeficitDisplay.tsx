@@ -14,10 +14,11 @@ const DeficitDisplay = ({ profile, activityBonus, consumedCalories, goalDeficit 
   const deficit = tdee - consumedCalories;
   const isDeficit = deficit > 0;
 
-  const percentage = goalDeficit && goalDeficit > 0 && isDeficit
-    ? Math.min(100, Math.round((deficit / goalDeficit) * 100))
-    : null;
-  const goalReached = goalDeficit ? deficit >= goalDeficit : false;
+  // Budget = how much you can eat while still hitting your deficit goal
+  const budget = goalDeficit && goalDeficit > 0 ? tdee - goalDeficit : tdee;
+  const budgetUsedPercent = budget > 0 ? Math.min(100, Math.round((consumedCalories / budget) * 100)) : 0;
+  const remaining = budget - consumedCalories;
+  const overBudget = remaining < 0;
 
   return (
     <div className="rounded-xl bg-accent/40 p-3 space-y-2">
@@ -60,18 +61,18 @@ const DeficitDisplay = ({ profile, activityBonus, consumedCalories, goalDeficit 
             <div
               className="h-full rounded-full transition-all duration-500"
               style={{
-                width: `${isDeficit ? (percentage ?? 0) : 0}%`,
-                backgroundColor: goalReached
-                  ? "hsl(var(--success))"
-                  : isDeficit
-                    ? "hsl(var(--primary))"
-                    : "hsl(var(--destructive))",
+                width: `${budgetUsedPercent}%`,
+                backgroundColor: overBudget
+                  ? "hsl(var(--destructive))"
+                  : budgetUsedPercent >= 90
+                    ? "hsl(var(--warning, 38 92% 50%))"
+                    : "hsl(var(--success))",
               }}
             />
           </div>
           <div className="flex items-center justify-between text-xs text-muted-foreground">
-            <span>{isDeficit ? `${percentage}%` : "0%"}</span>
-            <span>Ziel: {goalDeficit} kcal</span>
+            <span>{budgetUsedPercent}% verbraucht</span>
+            <span>{overBudget ? `${Math.abs(remaining)} kcal über Budget` : `${remaining} kcal übrig`}</span>
           </div>
         </>
       )}
