@@ -198,7 +198,7 @@ const SettingsDialog = ({
     const updated: FoodItem = {
       name: editFoodName.trim(),
       baseUnit: editFoodUnit || "100g",
-      baseAmount: editFoodUnit.includes("Stk") ? 1 : 100,
+      baseAmount: (editFoodUnit === "1 Stk" || editFoodUnit === "1 Tasse") ? 1 : 100,
       calories: parseFloat(editFoodCal) || 0,
       protein: parseFloat(editFoodPro) || 0,
       fat: parseFloat(editFoodFat) || 0,
@@ -426,7 +426,12 @@ const SettingsDialog = ({
                   </div>
                   <div>
                     <Label className="text-[10px] text-muted-foreground">Einheit</Label>
-                    <Input value={editFoodUnit} onChange={(e) => setEditFoodUnit(e.target.value)} className="h-9 text-xs" placeholder="100g" autoCorrect="off" spellCheck={false} />
+                    <select value={editFoodUnit} onChange={(e) => setEditFoodUnit(e.target.value)} className="h-9 w-full rounded-md border border-input bg-background px-2 text-xs">
+                      <option value="100g">100g</option>
+                      <option value="100ml">100ml</option>
+                      <option value="1 Stk">1 Stk</option>
+                      <option value="1 Tasse">1 Tasse</option>
+                    </select>
                   </div>
                 </div>
                 <div className="grid grid-cols-5 gap-2">
@@ -497,7 +502,7 @@ const SettingsDialog = ({
                         <span className="font-medium">{f.name}</span>
                         <span className="text-muted-foreground ml-2">{f.calories} kcal/{f.baseUnit}</span>
                         {f.defaultAmount && (
-                          <span className="text-muted-foreground ml-1">· {f.defaultAmount}{f.baseUnit.includes("Stk") ? " Stk" : "g"}</span>
+                          <span className="text-muted-foreground ml-1">· {f.defaultAmount}{f.baseUnit === "1 Stk" ? " Stk" : f.baseUnit === "1 Tasse" ? " Tasse" : "g"}</span>
                         )}
                       </div>
                       <button
