@@ -4,6 +4,8 @@ export interface UserProfile {
   heightCm: number;
   weightKg: number;
   gender: "male" | "female";
+  goalFluidMl?: number;
+  goalDeficit?: number;
 }
 
 export interface ActivityType {
