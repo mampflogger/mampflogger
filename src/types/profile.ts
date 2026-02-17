@@ -6,6 +6,7 @@ export interface UserProfile {
   gender: "male" | "female";
   goalFluidMl?: number;
   goalDeficit?: number;
+  goalActivityBonus?: number;
 }
 
 export interface ActivityType {
