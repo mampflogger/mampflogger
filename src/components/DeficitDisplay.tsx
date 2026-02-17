@@ -81,8 +81,11 @@ const DeficitDisplay = ({ profile, activityBonus, consumedCalories, goalDeficit 
             <span>{budgetUsedPercent}% deines Tagesbudgets sind verbraucht</span>
             <span style={{ color: "hsl(var(--success) / 0.7)" }}>Defizit Ziel</span>
           </div>
-          <div className="flex items-center justify-between text-xs text-muted-foreground">
-            <span>{overBudget ? `${Math.abs(remaining)} kcal über Budget` : `${remaining} kcal übrig`}</span>
+          <div className="text-xs text-muted-foreground">
+            {overBudget
+              ? <span>du hast <span className="font-bold">{Math.abs(remaining)} kcal</span> über Budget</span>
+              : <span>du hast noch <span className="font-bold">{remaining} kcal</span> übrig</span>
+            }
           </div>
         </>
       )}

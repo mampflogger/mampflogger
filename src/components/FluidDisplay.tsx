@@ -41,13 +41,12 @@ const FluidDisplay = ({ entries, foodDatabase, goalMl }: FluidDisplayProps) => {
                 width: `${percentage}%`,
                 backgroundColor: isReached
                   ? "hsl(var(--success))"
-                  : "hsl(var(--primary))",
+                  : "hsl(var(--warning, 38 92% 50%))",
               }}
             />
           </div>
-          <div className="flex items-center justify-between text-xs text-muted-foreground">
-            <span>{percentage}%</span>
-            <span>Ziel: {goalMl} ml</span>
+          <div className="text-xs text-muted-foreground">
+            <span>du hast schon <span className="font-bold">{percentage} %</span> deines Tagesziels geschafft</span>
           </div>
         </>
       )}
