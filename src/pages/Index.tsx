@@ -100,9 +100,13 @@ const Index = () => {
   };
 
   const handleImport = (newEntries: NutritionEntry[]) => {
-    // Deduplicate: only import entries for dates not already present
-    const existingDates = new Set(entries.map((e) => e.date));
-    const unique = newEntries.filter((e) => !existingDates.has(e.date));
+    // Deduplicate by composite key: date + time + food + amount
+    const existingKeys = new Set(
+      entries.map((e) => `${e.date}|${e.time}|${e.food}|${e.amount}`)
+    );
+    const unique = newEntries.filter(
+      (e) => !existingKeys.has(`${e.date}|${e.time}|${e.food}|${e.amount}`)
+    );
     if (unique.length === 0) {
       return;
     }
