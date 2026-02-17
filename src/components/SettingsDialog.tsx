@@ -198,7 +198,7 @@ const SettingsDialog = ({
     const updated: FoodItem = {
       name: editFoodName.trim(),
       baseUnit: editFoodUnit || "100g",
-      baseAmount: (editFoodUnit === "1 Stk" || editFoodUnit === "1 Tasse") ? 1 : 100,
+      baseAmount: editFoodUnit.startsWith("1 ") ? 1 : 100,
       calories: parseFloat(editFoodCal) || 0,
       protein: parseFloat(editFoodPro) || 0,
       fat: parseFloat(editFoodFat) || 0,
@@ -426,12 +426,15 @@ const SettingsDialog = ({
                   </div>
                   <div>
                     <Label className="text-[10px] text-muted-foreground">Einheit</Label>
-                    <select value={editFoodUnit} onChange={(e) => setEditFoodUnit(e.target.value)} className="h-9 w-full rounded-md border border-input bg-background px-2 text-xs">
-                      <option value="100g">100g</option>
-                      <option value="100ml">100ml</option>
-                      <option value="1 Stk">1 Stk</option>
-                      <option value="1 Tasse">1 Tasse</option>
-                    </select>
+                    <Input value={editFoodUnit} onChange={(e) => setEditFoodUnit(e.target.value)} placeholder="z.B. 100g, 1 Tasse" className="h-9 text-xs" list="unit-suggestions" />
+                    <datalist id="unit-suggestions">
+                      <option value="100g" />
+                      <option value="100ml" />
+                      <option value="1 Stk" />
+                      <option value="1 Tasse" />
+                      <option value="1 Scheibe" />
+                      <option value="1 Portion" />
+                    </datalist>
                   </div>
                 </div>
                 <div className="grid grid-cols-5 gap-2">
