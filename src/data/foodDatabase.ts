@@ -98,6 +98,13 @@ export function removeFoodItem(name: string): void {
   }
 }
 
+export function clearFoodDatabase(): number {
+  const count = foodDatabase.length;
+  foodDatabase.splice(0, foodDatabase.length);
+  saveFoodDatabase(foodDatabase);
+  return count;
+}
+
 export function updateFoodItem(originalName: string, updated: FoodItem): void {
   const index = foodDatabase.findIndex((f) => f.name === originalName);
   if (index >= 0) {

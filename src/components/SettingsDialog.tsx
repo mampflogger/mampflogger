@@ -17,7 +17,7 @@ import {
 } from "lucide-react";
 import { UserProfile, calculateBMR } from "@/types/profile";
 import { NutritionEntry } from "@/types/nutrition";
-import { foodDatabase, removeFoodItem, updateFoodItem, FoodItem } from "@/data/foodDatabase";
+import { foodDatabase, removeFoodItem, updateFoodItem, clearFoodDatabase, FoodItem } from "@/data/foodDatabase";
 import {
   exportEntriesToCsv, exportFoodDatabaseCsv, exportCalorieBalanceCsv,
 } from "@/lib/csvExport";
@@ -104,6 +104,7 @@ const SettingsDialog = ({
   const [deletePreview, setDeletePreview] = useState<number | null>(null);
   const [deleteConfirmed, setDeleteConfirmed] = useState(false);
   const [showDeleteAllConfirm, setShowDeleteAllConfirm] = useState(false);
+  const [showDeleteFoodConfirm, setShowDeleteFoodConfirm] = useState(false);
 
   // Food list state
   const [foodSearch, setFoodSearch] = useState("");
@@ -293,6 +294,13 @@ const SettingsDialog = ({
     const count = onDeleteAll();
     setShowDeleteAllConfirm(false);
     toast.success(`${count} Einträge gelöscht!`);
+    forceUpdate((n) => n + 1);
+  };
+
+  const handleDeleteAllFood = () => {
+    const count = clearFoodDatabase();
+    setShowDeleteFoodConfirm(false);
+    toast.success(`${count} Lebensmittel gelöscht!`);
     forceUpdate((n) => n + 1);
   };
 
@@ -661,78 +669,110 @@ const SettingsDialog = ({
             </div>
 
             {/* Delete */}
-            <div className="border-t border-border pt-4">
-              <Label className="text-xs font-medium text-destructive mb-2 block">Einträge löschen</Label>
-              <div className="grid grid-cols-2 gap-2 mb-2">
-                <div>
-                  <Label className="text-[10px] text-muted-foreground">Von (TT.MM.JJ)</Label>
-                  <Input
-                    type="text"
-                    inputMode="numeric"
-                    placeholder="01.01.26"
-                    value={fromDate}
-                    onChange={(e) => { setFromDate(formatDateInput(e.target.value)); setDeletePreview(null); setDeleteConfirmed(false); }}
-                    className="h-9 text-xs"
-                  />
+            <div className="border-t border-border pt-4 space-y-3">
+              <Label className="text-xs font-medium text-destructive mb-2 block">Löschen</Label>
+
+              {/* Delete by date range */}
+              <div className="rounded-lg border border-border p-3 space-y-2">
+                <p className="text-xs font-semibold text-foreground">Einträge nach Zeitraum</p>
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <Label className="text-[10px] text-muted-foreground">Von (TT.MM.JJ)</Label>
+                    <Input
+                      type="text"
+                      inputMode="numeric"
+                      placeholder="01.01.26"
+                      value={fromDate}
+                      onChange={(e) => { setFromDate(formatDateInput(e.target.value)); setDeletePreview(null); setDeleteConfirmed(false); }}
+                      className="h-9 text-xs"
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-[10px] text-muted-foreground">Bis (TT.MM.JJ)</Label>
+                    <Input
+                      type="text"
+                      inputMode="numeric"
+                      placeholder="31.12.26"
+                      value={toDate}
+                      onChange={(e) => { setToDate(formatDateInput(e.target.value)); setDeletePreview(null); setDeleteConfirmed(false); }}
+                      className="h-9 text-xs"
+                    />
+                  </div>
                 </div>
-                <div>
-                  <Label className="text-[10px] text-muted-foreground">Bis (TT.MM.JJ)</Label>
-                  <Input
-                    type="text"
-                    inputMode="numeric"
-                    placeholder="31.12.26"
-                    value={toDate}
-                    onChange={(e) => { setToDate(formatDateInput(e.target.value)); setDeletePreview(null); setDeleteConfirmed(false); }}
-                    className="h-9 text-xs"
-                  />
+                {deletePreview !== null && !deleteConfirmed && (
+                  <p className="text-sm text-destructive font-medium">{deletePreview} Einträge werden gelöscht.</p>
+                )}
+                {deleteConfirmed && (
+                  <p className="text-sm text-success font-medium">✓ Einträge gelöscht!</p>
+                )}
+                <div className="flex gap-2">
+                  {deletePreview === null ? (
+                    <Button variant="secondary" size="sm" onClick={handleDeletePreview} disabled={!fromDate || !toDate || fromDate.length < 6 || toDate.length < 6} className="flex-1">
+                      Vorschau
+                    </Button>
+                  ) : !deleteConfirmed ? (
+                    <Button variant="destructive" size="sm" onClick={handleDeleteConfirm} disabled={deletePreview === 0} className="flex-1">
+                      {deletePreview} Einträge löschen
+                    </Button>
+                  ) : null}
                 </div>
-              </div>
-              {deletePreview !== null && !deleteConfirmed && (
-                <p className="text-sm text-destructive font-medium mb-2">{deletePreview} Einträge werden gelöscht.</p>
-              )}
-              {deleteConfirmed && (
-                <p className="text-sm text-success font-medium mb-2">✓ Einträge gelöscht!</p>
-              )}
-              <div className="flex gap-2">
-                {deletePreview === null ? (
-                  <Button variant="secondary" onClick={handleDeletePreview} disabled={!fromDate || !toDate || fromDate.length < 6 || toDate.length < 6} className="flex-1">
-                    Vorschau
-                  </Button>
-                ) : !deleteConfirmed ? (
-                  <Button variant="destructive" onClick={handleDeleteConfirm} disabled={deletePreview === 0} className="flex-1">
-                    {deletePreview} Einträge löschen
-                  </Button>
-                ) : null}
               </div>
 
-              {/* Delete All */}
-              <div className="mt-3">
-                {!showDeleteAllConfirm ? (
-                  <Button
-                    variant="destructive"
-                    onClick={() => setShowDeleteAllConfirm(true)}
-                    disabled={entries.length === 0}
-                    className="w-full"
-                  >
-                    <Trash2 className="w-4 h-4 mr-2" />
-                    Alles löschen ({entries.length} Einträge)
-                  </Button>
-                ) : (
-                  <div className="rounded-lg border-2 border-destructive p-3 space-y-2">
-                    <p className="text-sm font-semibold text-destructive">
-                      Wirklich alle {entries.length} Einträge unwiderruflich löschen?
-                    </p>
-                    <div className="flex gap-2">
-                      <Button variant="destructive" onClick={handleDeleteAll} className="flex-1">
-                        Ja, alles löschen
-                      </Button>
-                      <Button variant="ghost" onClick={() => setShowDeleteAllConfirm(false)} className="flex-1">
-                        Abbrechen
-                      </Button>
-                    </div>
+              {/* Delete all entries */}
+              {!showDeleteAllConfirm ? (
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  onClick={() => setShowDeleteAllConfirm(true)}
+                  disabled={entries.length === 0}
+                  className="w-full"
+                >
+                  <Trash2 className="w-3.5 h-3.5 mr-1" />
+                  Alle Einträge löschen ({entries.length})
+                </Button>
+              ) : (
+                <div className="rounded-lg border-2 border-destructive p-3 space-y-2">
+                  <p className="text-sm font-semibold text-destructive">
+                    Wirklich alle {entries.length} Einträge unwiderruflich löschen?
+                  </p>
+                  <div className="flex gap-2">
+                    <Button variant="destructive" size="sm" onClick={handleDeleteAll} className="flex-1">
+                      Ja, löschen
+                    </Button>
+                    <Button variant="ghost" size="sm" onClick={() => setShowDeleteAllConfirm(false)} className="flex-1">
+                      Abbrechen
+                    </Button>
                   </div>
-                )}
-              </div>
+                </div>
+              )}
+
+              {/* Delete all food items */}
+              {!showDeleteFoodConfirm ? (
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  onClick={() => setShowDeleteFoodConfirm(true)}
+                  disabled={foodDatabase.length === 0}
+                  className="w-full"
+                >
+                  <Trash2 className="w-3.5 h-3.5 mr-1" />
+                  Alle Lebensmittel löschen ({foodDatabase.length})
+                </Button>
+              ) : (
+                <div className="rounded-lg border-2 border-destructive p-3 space-y-2">
+                  <p className="text-sm font-semibold text-destructive">
+                    Wirklich alle {foodDatabase.length} Lebensmittel unwiderruflich löschen?
+                  </p>
+                  <div className="flex gap-2">
+                    <Button variant="destructive" size="sm" onClick={handleDeleteAllFood} className="flex-1">
+                      Ja, löschen
+                    </Button>
+                    <Button variant="ghost" size="sm" onClick={() => setShowDeleteFoodConfirm(false)} className="flex-1">
+                      Abbrechen
+                    </Button>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         )}
