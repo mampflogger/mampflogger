@@ -217,7 +217,7 @@ const SettingsDialog = ({
     setEditFoodKh(String(food.carbs));
     setEditFoodFib(String(food.fiber));
     setEditFoodDefault(food.defaultAmount ? String(food.defaultAmount) : "");
-    setEditFoodLiquid((food as any).liquidMl ? String((food as any).liquidMl) : "");
+    setEditFoodLiquid(food.liquidMl ? String(food.liquidMl) : "");
   };
 
   const handleSaveFood = () => {
@@ -233,7 +233,7 @@ const SettingsDialog = ({
       fiber: parseFloat(editFoodFib) || 0,
       defaultAmount: editFoodDefault ? parseFloat(editFoodDefault) || undefined : undefined,
       liquidMl: editFoodLiquid ? parseFloat(editFoodLiquid) || undefined : undefined,
-    } as any;
+    };
     updateFoodItem(editingFood.name, updated);
     const isNew = !editingFood.name;
     setEditingFood(null);

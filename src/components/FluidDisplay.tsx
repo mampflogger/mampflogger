@@ -13,9 +13,9 @@ const FluidDisplay = ({ entries, foodDatabase, goalMl }: FluidDisplayProps) => {
     const food = foodDatabase.find(
       (f) => f.name.toLowerCase() === entry.food.toLowerCase()
     );
-    if (!food || !(food as any).liquidMl) return sum;
+    if (!food || !food.liquidMl) return sum;
     const factor = entry.amount / food.baseAmount;
-    return sum + Math.round((food as any).liquidMl * factor);
+    return sum + Math.round(food.liquidMl * factor);
   }, 0);
 
   const percentage = goalMl && goalMl > 0 ? Math.min(100, Math.round((totalMl / goalMl) * 100)) : null;

@@ -8,6 +8,7 @@ export interface FoodItem {
   carbs: number;
   fiber: number;
   defaultAmount?: number; // Standardmenge, z.B. 125g für eine Avocado
+  liquidMl?: number; // Flüssigkeit in ml pro baseAmount (z.B. 100 bei 100ml-Basis)
 }
 
 const FOOD_DB_KEY = "foodlog-food-database";
@@ -24,13 +25,13 @@ const DEFAULT_FOODS: FoodItem[] = [
   { name: "Fenchel", baseUnit: "100g", baseAmount: 100, calories: 31, protein: 1, fat: 0, carbs: 3, fiber: 3 },
   { name: "Feta", baseUnit: "100g", baseAmount: 100, calories: 264, protein: 17, fat: 21, carbs: 1, fiber: 0 },
   { name: "Gekochter Schinken", baseUnit: "100g", baseAmount: 100, calories: 107, protein: 19, fat: 3, carbs: 0, fiber: 0 },
-  { name: "Gemüsebrühe", baseUnit: "100ml", baseAmount: 100, calories: 4, protein: 0, fat: 0, carbs: 1, fiber: 0 },
+  { name: "Gemüsebrühe", baseUnit: "100ml", baseAmount: 100, calories: 4, protein: 0, fat: 0, carbs: 1, fiber: 0, liquidMl: 100 },
   { name: "Gemüsezwiebeln", baseUnit: "100g", baseAmount: 100, calories: 33, protein: 1, fat: 0, carbs: 6, fiber: 2 },
-  { name: "Granatapfelsaft", baseUnit: "100ml", baseAmount: 100, calories: 65, protein: 0, fat: 0, carbs: 15, fiber: 0 },
+  { name: "Granatapfelsaft", baseUnit: "100ml", baseAmount: 100, calories: 65, protein: 0, fat: 0, carbs: 15, fiber: 0, liquidMl: 100 },
   { name: "Griech. Joghurt (2%)", baseUnit: "100g", baseAmount: 100, calories: 58, protein: 8, fat: 1, carbs: 4, fiber: 0 },
   { name: "Heringsfilet (Nixe)", baseUnit: "100g", baseAmount: 100, calories: 196, protein: 13, fat: 15, carbs: 3, fiber: 0 },
   { name: "Honig", baseUnit: "100g", baseAmount: 100, calories: 300, protein: 0, fat: 0, carbs: 80, fiber: 0 },
-  { name: "Kaffee (schwarz)", baseUnit: "100ml", baseAmount: 100, calories: 2, protein: 0, fat: 0, carbs: 0, fiber: 0 },
+  { name: "Kaffee (schwarz)", baseUnit: "100ml", baseAmount: 100, calories: 2, protein: 0, fat: 0, carbs: 0, fiber: 0, liquidMl: 100 },
   { name: "Kakaopulver (rein)", baseUnit: "100g", baseAmount: 100, calories: 350, protein: 20, fat: 11, carbs: 9, fiber: 33 },
   { name: "Kartoffeln", baseUnit: "100g", baseAmount: 100, calories: 77, protein: 2, fat: 0, carbs: 17, fiber: 2 },
   { name: "Kasseler Lachs", baseUnit: "100g", baseAmount: 100, calories: 105, protein: 21, fat: 2, carbs: 1, fiber: 0 },
@@ -38,7 +39,7 @@ const DEFAULT_FOODS: FoodItem[] = [
   { name: "Kohlrabi", baseUnit: "100g", baseAmount: 100, calories: 27, protein: 2, fat: 0, carbs: 4, fiber: 2 },
   { name: "Kürbiskerne", baseUnit: "100g", baseAmount: 100, calories: 570, protein: 30, fat: 50, carbs: 10, fiber: 11 },
   { name: "Lauchzwiebel", baseUnit: "100g", baseAmount: 100, calories: 32, protein: 2, fat: 0, carbs: 4, fiber: 3 },
-  { name: "Milch (3,8%)", baseUnit: "100ml", baseAmount: 100, calories: 64, protein: 3, fat: 4, carbs: 5, fiber: 0 },
+  { name: "Milch (3,8%)", baseUnit: "100ml", baseAmount: 100, calories: 64, protein: 3, fat: 4, carbs: 5, fiber: 0, liquidMl: 100 },
   { name: "Mini Harzer", baseUnit: "100g", baseAmount: 100, calories: 121, protein: 29, fat: 1, carbs: 0, fiber: 0 },
   { name: "Möhren", baseUnit: "100g", baseAmount: 100, calories: 41, protein: 1, fat: 0, carbs: 5, fiber: 3 },
   { name: "Norwegischer Lachs", baseUnit: "100g", baseAmount: 100, calories: 202, protein: 20, fat: 13, carbs: 0, fiber: 0 },
@@ -62,7 +63,7 @@ const DEFAULT_FOODS: FoodItem[] = [
   { name: "Weiße Bohnen (Lidl)", baseUnit: "100g", baseAmount: 100, calories: 102, protein: 7, fat: 0, carbs: 13, fiber: 17 },
   { name: "Weintrauben rot", baseUnit: "100g", baseAmount: 100, calories: 70, protein: 1, fat: 0, carbs: 16, fiber: 2 },
   { name: "Ziegenkäse", baseUnit: "100g", baseAmount: 100, calories: 286, protein: 20, fat: 23, carbs: 1, fiber: 0 },
-  { name: "Zitronensaft", baseUnit: "100ml", baseAmount: 100, calories: 30, protein: 0, fat: 0, carbs: 3, fiber: 0 },
+  { name: "Zitronensaft", baseUnit: "100ml", baseAmount: 100, calories: 30, protein: 0, fat: 0, carbs: 3, fiber: 0, liquidMl: 100 },
   { name: "Zucchini", baseUnit: "100g", baseAmount: 100, calories: 17, protein: 1, fat: 0, carbs: 2, fiber: 1 },
   { name: "Zwiebeln", baseUnit: "100g", baseAmount: 100, calories: 28, protein: 1, fat: 0, carbs: 6, fiber: 2 },
   { name: "Kiwi", baseUnit: "100g", baseAmount: 100, calories: 52, protein: 1, fat: 0, carbs: 10, fiber: 3 },
