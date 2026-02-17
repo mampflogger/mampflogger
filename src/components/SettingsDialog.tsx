@@ -790,19 +790,19 @@ const SettingsDialog = ({
                   </Button>
                 ) : !deleteConfirmed && !showDeleteRangeConfirm ? (
                   <div className="flex gap-2">
-                    <Button variant="destructive" size="sm" onClick={() => setShowDeleteRangeConfirm(true)} disabled={deletePreview === 0} className="flex-1 h-8 text-xs">
+                    <Button variant="outline" size="sm" onClick={() => setShowDeleteRangeConfirm(true)} disabled={deletePreview === 0} className="flex-1 h-8 text-xs text-destructive border-destructive/30 hover:bg-destructive/10">
                       {deletePreview} Einträge löschen
                     </Button>
-                    <Button variant="secondary" size="sm" autoFocus onClick={() => { setDeletePreview(null); setFromDate(""); setToDate(""); }} className="flex-1 h-8 text-xs">
+                    <Button variant="secondary" size="sm" autoFocus onClick={() => { setDeletePreview(null); setFromDate(""); setToDate(""); }} className="flex-1 h-8 text-xs ring-2 ring-primary">
                       Abbruch
                     </Button>
                   </div>
                 ) : !deleteConfirmed && showDeleteRangeConfirm ? (
                   <div className="flex gap-2">
-                    <Button variant="destructive" size="sm" onClick={() => { handleDeleteConfirm(); setShowDeleteRangeConfirm(false); }} className="flex-1 h-8 text-xs">
+                    <Button variant="outline" size="sm" onClick={() => { handleDeleteConfirm(); setShowDeleteRangeConfirm(false); }} className="flex-1 h-8 text-xs text-destructive border-destructive/30 hover:bg-destructive/10">
                       Löschen
                     </Button>
-                    <Button variant="secondary" size="sm" autoFocus onClick={() => setShowDeleteRangeConfirm(false)} className="flex-1 h-8 text-xs">
+                    <Button variant="secondary" size="sm" autoFocus onClick={() => setShowDeleteRangeConfirm(false)} className="flex-1 h-8 text-xs ring-2 ring-primary">
                       Abbruch
                     </Button>
                   </div>
@@ -826,10 +826,10 @@ const SettingsDialog = ({
                       Wirklich alle {entries.length} Einträge löschen?
                     </p>
                     <div className="flex gap-2">
-                      <Button variant="destructive" size="sm" onClick={handleDeleteAll} className="flex-1 h-8 text-xs">
+                      <Button variant="outline" size="sm" onClick={handleDeleteAll} className="flex-1 h-8 text-xs text-destructive border-destructive/30 hover:bg-destructive/10">
                         Löschen
                       </Button>
-                      <Button variant="secondary" size="sm" autoFocus onClick={() => setShowDeleteAllConfirm(false)} className="flex-1 h-8 text-xs">
+                      <Button variant="secondary" size="sm" autoFocus onClick={() => setShowDeleteAllConfirm(false)} className="flex-1 h-8 text-xs ring-2 ring-primary">
                         Abbruch
                       </Button>
                     </div>
@@ -851,10 +851,10 @@ const SettingsDialog = ({
                         Wirklich alle {foodDatabase.length} Lebensmittel löschen?
                       </p>
                       <div className="flex gap-2">
-                        <Button variant="destructive" size="sm" onClick={handleDeleteAllFood} className="flex-1 h-8 text-xs">
+                        <Button variant="outline" size="sm" onClick={handleDeleteAllFood} className="flex-1 h-8 text-xs text-destructive border-destructive/30 hover:bg-destructive/10">
                           Löschen
                         </Button>
-                        <Button variant="secondary" size="sm" autoFocus onClick={() => setShowDeleteFoodConfirm(false)} className="flex-1 h-8 text-xs">
+                        <Button variant="secondary" size="sm" autoFocus onClick={() => setShowDeleteFoodConfirm(false)} className="flex-1 h-8 text-xs ring-2 ring-primary">
                           Abbruch
                         </Button>
                       </div>
