@@ -57,21 +57,31 @@ const DeficitDisplay = ({ profile, activityBonus, consumedCalories, goalDeficit 
       </div>
       {goalDeficit && goalDeficit > 0 && (
         <>
-          <div className="h-2 rounded-full bg-muted overflow-hidden">
+          <div className="relative h-2 rounded-full bg-muted overflow-hidden">
+            {/* Deficit goal reserved at the end */}
             <div
-              className="h-full rounded-full transition-all duration-500"
+              className="absolute right-0 top-0 h-full rounded-r-full"
+              style={{
+                width: `${Math.min(100, Math.round((goalDeficit / tdee) * 100))}%`,
+                backgroundColor: "hsl(var(--success) / 0.25)",
+              }}
+            />
+            {/* Consumed portion */}
+            <div
+              className="relative h-full rounded-full transition-all duration-500"
               style={{
                 width: `${budgetUsedPercent}%`,
                 backgroundColor: overBudget
                   ? "hsl(var(--destructive))"
-                  : budgetUsedPercent >= 90
-                    ? "hsl(var(--warning, 38 92% 50%))"
-                    : "hsl(var(--success))",
+                  : "hsl(var(--warning, 38 92% 50%))",
               }}
             />
           </div>
           <div className="flex items-center justify-between text-xs text-muted-foreground">
-            <span>{budgetUsedPercent}% verbraucht</span>
+            <span>{budgetUsedPercent}% deines Tagesbudgets sind verbraucht</span>
+            <span style={{ color: "hsl(var(--success) / 0.7)" }}>Defizit Ziel</span>
+          </div>
+          <div className="flex items-center justify-between text-xs text-muted-foreground">
             <span>{overBudget ? `${Math.abs(remaining)} kcal über Budget` : `${remaining} kcal übrig`}</span>
           </div>
         </>
