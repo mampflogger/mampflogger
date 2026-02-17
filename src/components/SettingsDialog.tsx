@@ -110,6 +110,7 @@ const SettingsDialog = ({
   const [deleteConfirmed, setDeleteConfirmed] = useState(false);
   const [showDeleteAllConfirm, setShowDeleteAllConfirm] = useState(false);
   const [showDeleteFoodConfirm, setShowDeleteFoodConfirm] = useState(false);
+  const [showDeleteRangeConfirm, setShowDeleteRangeConfirm] = useState(false);
 
   // Food list state
   const [foodSearch, setFoodSearch] = useState("");
@@ -787,10 +788,19 @@ const SettingsDialog = ({
                   <Button ref={deletePreviewBtnRef} variant="secondary" size="sm" onClick={handleDeletePreview} disabled={!fromDate || !toDate || fromDate.length < 6 || toDate.length < 6} className="w-full h-8 text-xs">
                     Vorschau
                   </Button>
-                ) : !deleteConfirmed ? (
-                  <Button variant="destructive" size="sm" onClick={handleDeleteConfirm} disabled={deletePreview === 0} className="w-full h-8 text-xs">
+                ) : !deleteConfirmed && !showDeleteRangeConfirm ? (
+                  <Button variant="destructive" size="sm" onClick={() => setShowDeleteRangeConfirm(true)} disabled={deletePreview === 0} className="w-full h-8 text-xs">
                     {deletePreview} Einträge löschen
                   </Button>
+                ) : !deleteConfirmed && showDeleteRangeConfirm ? (
+                  <div className="flex gap-2">
+                    <Button variant="destructive" size="sm" onClick={() => { handleDeleteConfirm(); setShowDeleteRangeConfirm(false); }} className="flex-1 h-8 text-xs">
+                      Ja, löschen
+                    </Button>
+                    <Button variant="ghost" size="sm" onClick={() => setShowDeleteRangeConfirm(false)} className="flex-1 h-8 text-xs">
+                      Abbrechen
+                    </Button>
+                  </div>
                 ) : null}
               </div>
 
