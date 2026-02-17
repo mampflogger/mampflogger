@@ -251,7 +251,29 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [] 
             <BarChart data={weekData} margin={{ top: 4, right: 0, left: -20, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
               <XAxis dataKey="label" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} />
-              <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} domain={[0, Math.ceil(maxCalories * 1.15)]} />
+              <YAxis
+                axisLine={false}
+                tickLine={false}
+                tick={(props: any) => {
+                  const { x, y, payload } = props;
+                  const isBmrTick = bmr && Math.abs(payload.value - bmr) < 1;
+                  return (
+                    <text
+                      x={x}
+                      y={y}
+                      dy={4}
+                      textAnchor="end"
+                      fontSize={isBmrTick ? 10 : 10}
+                      fontWeight={isBmrTick ? 600 : 400}
+                      fill={isBmrTick ? "hsl(var(--destructive))" : "hsl(var(--muted-foreground))"}
+                    >
+                      {payload.value}
+                    </text>
+                  );
+                }}
+                domain={[0, Math.ceil(maxCalories * 1.15)]}
+                ticks={bmr ? [0, ...[Math.round(maxCalories * 0.5), Math.round(maxCalories)].filter(v => Math.abs(v - bmr) > maxCalories * 0.08), bmr].sort((a, b) => a - b) : undefined}
+              />
               <Tooltip content={<CaloriesTooltip />} cursor={{ fill: "hsl(var(--accent) / 0.4)" }} />
               {bmr && (
                 <ReferenceLine
@@ -259,14 +281,6 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [] 
                   stroke="hsl(var(--destructive))"
                   strokeDasharray="4 3"
                   strokeWidth={1.5}
-                  label={{
-                    value: `${bmr}`,
-                    position: "right",
-                    fill: "hsl(var(--destructive))",
-                    fontSize: 9,
-                    fontWeight: 400,
-                    opacity: 0.7,
-                  }}
                 />
               )}
               <Bar dataKey="calories" radius={[6, 6, 0, 0]} maxBarSize={36}>
