@@ -249,7 +249,7 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit }: Nutr
           {showSuggestions && suggestions.length > 0 && (
             <ul
               ref={listRef}
-              className="absolute z-50 top-full left-0 right-0 mt-1 max-h-52 overflow-y-auto rounded-lg border border-border bg-popover shadow-lg"
+              className="absolute z-[100] top-full left-0 right-0 mt-1 max-h-52 overflow-y-auto rounded-lg border border-border bg-popover shadow-lg"
             >
               {suggestions.map((item, index) => (
                 <li

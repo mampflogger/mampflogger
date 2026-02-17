@@ -59,6 +59,8 @@ const COLORS = {
 };
 
 const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [] }: WeeklyOverviewProps) => {
+  const bmr = profile ? calculateBMR(profile) : null;
+
   const weekData = useMemo(() => {
     const today = new Date(selectedDate + "T00:00:00");
     const days: DayData[] = [];
@@ -234,7 +236,7 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [] 
                 {Math.abs(avgDeficit7)}
               </p>
             </div>
-            <p className="text-xs text-muted-foreground">Woche</p>
+            <p className="text-xs text-muted-foreground">kcal</p>
           </div>
         )}
       </div>
@@ -251,6 +253,9 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [] 
               <XAxis dataKey="label" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} />
               <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} domain={[0, Math.ceil(maxCalories * 1.15)]} />
               <Tooltip content={<CaloriesTooltip />} cursor={{ fill: "hsl(var(--accent) / 0.4)" }} />
+              {bmr && (
+                <ReferenceLine y={bmr} stroke="hsl(var(--destructive))" strokeDasharray="4 3" strokeWidth={1.5} />
+              )}
               <Bar dataKey="calories" radius={[6, 6, 0, 0]} maxBarSize={36}>
                 {weekData.map((entry, index) => (
                   <Cell key={index} fill={entry.isToday ? COLORS.calories : COLORS.caloriesMuted} />
