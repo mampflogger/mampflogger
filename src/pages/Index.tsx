@@ -126,6 +126,12 @@ const Index = () => {
     saveBookedActivities(updated);
   };
 
+  const handleImportActivities = (newActivities: BookedActivity[]) => {
+    const updated = [...bookedActivities, ...newActivities];
+    setBookedActivities(updated);
+    saveBookedActivities(updated);
+  };
+
   const handleDeleteBookedActivity = (id: string) => {
     const updated = bookedActivities.filter((a) => a.id !== id);
     setBookedActivities(updated);
@@ -265,6 +271,7 @@ const Index = () => {
                 entries={entries}
                 bookedActivities={bookedActivities}
                 onImport={handleImport}
+                onImportActivities={handleImportActivities}
                 onCount={countEntriesInRange}
                 onDelete={deleteEntriesInRange}
                 onDeleteAll={deleteAllEntries}

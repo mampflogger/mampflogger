@@ -1,8 +1,9 @@
 import { NutritionEntry, generateId } from "@/types/nutrition";
-import { parseEntriesCsv, parseFoodDatabaseCsv, parseCalorieBalanceCsv } from "@/lib/csvExport";
+import { parseEntriesCsv, parseFoodDatabaseCsv, parseCalorieBalanceCsv, parseActivitiesCsv } from "@/lib/csvExport";
 import { FoodItem } from "@/data/foodDatabase";
+import { BookedActivity } from "@/types/profile";
 
-export type DetectedType = "entries" | "food" | "balance";
+export type DetectedType = "entries" | "food" | "balance" | "activities";
 type Delimiter = "tab" | "semi" | "comma" | "fixed";
 
 /** Parse a value that may contain "/" separators (e.g. "5 / 3") */
@@ -208,6 +209,7 @@ function parseFoodItems(text: string, delim: Delimiter): FoodItem[] {
 export interface ParseResult {
   entries: NutritionEntry[];
   foodItems: FoodItem[];
+  activities: BookedActivity[];
   detectedType: DetectedType;
 }
 
@@ -216,23 +218,43 @@ export interface ParseResult {
  * Optionally pass a hint for expected type.
  */
 export function parseImportText(text: string, typeHint?: DetectedType): ParseResult {
-  if (!text.trim()) return { entries: [], foodItems: [], detectedType: "entries" };
+  const empty: ParseResult = { entries: [], foodItems: [], activities: [], detectedType: "entries" };
+  if (!text.trim()) return empty;
 
   const delim = detectDelimiter(text);
   const lines = text.trim().split("\n");
 
+  // Check for activities format first (5 cols: Datum;Aktivität;Wert;Einheit;kcal)
+  if (delim === "semi") {
+    const acts = parseActivitiesCsv(text);
+    if (acts.length > 0) {
+      // Verify it's actually activities (header or data pattern)
+      const firstDataLine = lines.find(l => {
+        const lower = l.toLowerCase().trim();
+        return lower && !lower.includes("datum") && !lower.includes("aktivit");
+      });
+      if (firstDataLine) {
+        const cols = firstDataLine.split(";").map(c => c.trim().replace(/^"|"$/g, ""));
+        // Activities have exactly 5 cols and col[3] is a unit like "Schritte", "km", "min"
+        if (cols.length === 5 && /[a-zA-ZäöüÄÖÜß]/.test(cols[3])) {
+          return { entries: [], foodItems: [], activities: acts, detectedType: "activities" };
+        }
+      }
+    }
+  }
+
   // If type hint given, try that first
   if (typeHint === "food") {
     const foodItems = parseFoodItems(text, delim);
-    if (foodItems.length > 0) return { entries: [], foodItems, detectedType: "food" };
+    if (foodItems.length > 0) return { ...empty, foodItems, detectedType: "food" };
   }
   if (typeHint === "balance") {
     const entries = parseAllEntries(text, delim);
-    if (entries.length > 0) return { entries, foodItems: [], detectedType: "balance" };
+    if (entries.length > 0) return { ...empty, entries, detectedType: "balance" };
   }
   if (typeHint === "entries") {
     const entries = parseAllEntries(text, delim);
-    if (entries.length > 0) return { entries, foodItems: [], detectedType: "entries" };
+    if (entries.length > 0) return { ...empty, entries, detectedType: "entries" };
   }
 
   // Auto-detect: analyze first data lines
@@ -258,14 +280,19 @@ export function parseImportText(text: string, typeHint?: DetectedType): ParseRes
 
   if (foodNameCount > dateCount && foodNameCount > 0) {
     const foodItems = parseFoodItems(text, delim);
-    if (foodItems.length > 0) return { entries: [], foodItems, detectedType: "food" };
+    if (foodItems.length > 0) return { ...empty, foodItems, detectedType: "food" };
+  }
+
+  // Check if it looks like a balance file (6 cols, no time column)
+  const isBalanceFile = firstCols.every(cols => cols.length >= 6 && cols.length <= 8 && !/^\d{1,2}:\d{2}/.test(cols[1]));
+  if (isBalanceFile && dateCount > 0) {
+    return { ...empty, detectedType: "balance" };
   }
 
   const entries = parseAllEntries(text, delim);
   if (entries.length > 0) {
-    const isBalance = entries.every((e) => e.food === "Tagesbilanz (Import)" || e.time === "00:00");
-    return { entries, foodItems: [], detectedType: isBalance ? "balance" : "entries" };
+    return { ...empty, entries, detectedType: "entries" };
   }
 
-  return { entries: [], foodItems: [], detectedType: "entries" };
+  return empty;
 }

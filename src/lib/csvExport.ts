@@ -205,3 +205,48 @@ export function parseCalorieBalanceCsv(text: string): NutritionEntry[] {
 
   return entries;
 }
+
+/** Export booked activities to CSV */
+export function exportActivitiesCsv(activities: BookedActivity[]): void {
+  const sorted = [...activities].sort((a, b) => a.date.localeCompare(b.date));
+  const header = "Datum;Aktivität;Wert;Einheit;kcal";
+  const rows = sorted.map((a) =>
+    [
+      formatDateDE(a.date),
+      `"${a.activityName.replace(/"/g, '""')}"`,
+      a.value,
+      a.unit,
+      Math.round(a.calories),
+    ].join(";")
+  );
+  const csv = [header, ...rows].join("\n");
+  downloadCsv(csv, `foodlog-aktivitaeten-${new Date().toISOString().slice(0, 10)}.csv`);
+}
+
+/** Parse booked activities from CSV */
+export function parseActivitiesCsv(text: string): BookedActivity[] {
+  const lines = text.trim().split("\n");
+  const activities: BookedActivity[] = [];
+
+  for (const line of lines) {
+    const cols = line.split(";").map((c) => c.trim().replace(/^"|"$/g, ""));
+    if (cols.length < 5) continue;
+    const datum = cols[0];
+    if (!datum || datum.toLowerCase().includes("datum")) continue;
+    const date = datum.includes("-") ? datum : parseDateDE(datum);
+    const activityName = cols[1];
+    if (!activityName) continue;
+
+    activities.push({
+      id: generateId(),
+      date,
+      activityTypeId: activityName.toLowerCase().replace(/\s+/g, "_"),
+      activityName,
+      value: parseFloat(cols[2]) || 0,
+      unit: cols[3] || "",
+      calories: Math.round(parseFloat(cols[4]) || 0),
+    });
+  }
+
+  return activities;
+}
