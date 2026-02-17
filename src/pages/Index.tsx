@@ -276,36 +276,38 @@ const Index = () => {
 
       <main className="max-w-lg mx-auto px-4 pb-8">
         {/* Date Navigation */}
-        <div className="flex items-center justify-between py-3">
-          <Button
-            variant="ghost"
-            size="icon"
-            onMouseDown={() => startNavigate(-1)}
-            onMouseUp={stopNavigate}
-            onMouseLeave={stopNavigate}
-            onTouchStart={(e) => { e.preventDefault(); startNavigate(-1); }}
-            onTouchEnd={stopNavigate}
-            className="h-8 w-8"
-          >
-            <ChevronLeft className="w-5 h-5" />
-          </Button>
-          <div className="text-center">
-            <p className="text-sm font-semibold">{isToday ? "Heute" : displayDate}</p>
-            {isToday && <p className="text-xs text-muted-foreground">{displayDate}</p>}
+        <div className="glass-card rounded-xl p-3 my-3">
+          <div className="flex items-center justify-between">
+            <Button
+              variant="ghost"
+              size="icon"
+              onMouseDown={() => startNavigate(-1)}
+              onMouseUp={stopNavigate}
+              onMouseLeave={stopNavigate}
+              onTouchStart={(e) => { e.preventDefault(); startNavigate(-1); }}
+              onTouchEnd={stopNavigate}
+              className="h-8 w-8"
+            >
+              <ChevronLeft className="w-5 h-5" />
+            </Button>
+            <div className="text-center">
+              <p className="text-sm font-semibold">{isToday ? "Heute" : displayDate}</p>
+              {isToday && <p className="text-xs text-muted-foreground">{displayDate}</p>}
+            </div>
+            <Button
+              variant="ghost"
+              size="icon"
+              onMouseDown={() => !isToday && startNavigate(1)}
+              onMouseUp={stopNavigate}
+              onMouseLeave={stopNavigate}
+              onTouchStart={(e) => { e.preventDefault(); !isToday && startNavigate(1); }}
+              onTouchEnd={stopNavigate}
+              disabled={isToday}
+              className="h-8 w-8"
+            >
+              <ChevronRight className="w-5 h-5" />
+            </Button>
           </div>
-          <Button
-            variant="ghost"
-            size="icon"
-            onMouseDown={() => !isToday && startNavigate(1)}
-            onMouseUp={stopNavigate}
-            onMouseLeave={stopNavigate}
-            onTouchStart={(e) => { e.preventDefault(); !isToday && startNavigate(1); }}
-            onTouchEnd={stopNavigate}
-            disabled={isToday}
-            className="h-8 w-8"
-          >
-            <ChevronRight className="w-5 h-5" />
-          </Button>
         </div>
 
         {activeTab === "log" ? (
