@@ -5,13 +5,19 @@ interface DeficitDisplayProps {
   profile: UserProfile;
   activityBonus: number;
   consumedCalories: number;
+  goalDeficit?: number;
 }
 
-const DeficitDisplay = ({ profile, activityBonus, consumedCalories }: DeficitDisplayProps) => {
+const DeficitDisplay = ({ profile, activityBonus, consumedCalories, goalDeficit }: DeficitDisplayProps) => {
   const bmr = calculateBMR(profile);
   const tdee = bmr + activityBonus;
   const deficit = tdee - consumedCalories;
   const isDeficit = deficit > 0;
+
+  const percentage = goalDeficit && goalDeficit > 0 && isDeficit
+    ? Math.min(100, Math.round((deficit / goalDeficit) * 100))
+    : null;
+  const goalReached = goalDeficit ? deficit >= goalDeficit : false;
 
   return (
     <div className="rounded-xl bg-accent/40 p-3 space-y-2">
@@ -48,6 +54,27 @@ const DeficitDisplay = ({ profile, activityBonus, consumedCalories }: DeficitDis
           {isDeficit ? `-${deficit}` : `+${Math.abs(deficit)}`} kcal
         </span>
       </div>
+      {goalDeficit && goalDeficit > 0 && (
+        <>
+          <div className="h-2 rounded-full bg-muted overflow-hidden">
+            <div
+              className="h-full rounded-full transition-all duration-500"
+              style={{
+                width: `${isDeficit ? (percentage ?? 0) : 0}%`,
+                backgroundColor: goalReached
+                  ? "hsl(var(--success))"
+                  : isDeficit
+                    ? "hsl(var(--primary))"
+                    : "hsl(var(--destructive))",
+              }}
+            />
+          </div>
+          <div className="flex items-center justify-between text-xs text-muted-foreground">
+            <span>{isDeficit ? `${percentage}%` : "0%"}</span>
+            <span>Ziel: {goalDeficit} kcal</span>
+          </div>
+        </>
+      )}
     </div>
   );
 };
