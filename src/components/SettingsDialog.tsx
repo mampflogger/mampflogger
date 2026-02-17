@@ -794,11 +794,11 @@ const SettingsDialog = ({
                   </Button>
                 ) : !deleteConfirmed && showDeleteRangeConfirm ? (
                   <div className="flex gap-2">
+                    <Button variant="ghost" size="sm" autoFocus onClick={() => setShowDeleteRangeConfirm(false)} className="flex-1 h-8 text-xs">
+                      Abbrechen
+                    </Button>
                     <Button variant="destructive" size="sm" onClick={() => { handleDeleteConfirm(); setShowDeleteRangeConfirm(false); }} className="flex-1 h-8 text-xs">
                       Ja, löschen
-                    </Button>
-                    <Button variant="ghost" size="sm" onClick={() => setShowDeleteRangeConfirm(false)} className="flex-1 h-8 text-xs">
-                      Abbrechen
                     </Button>
                   </div>
                 ) : null}
@@ -821,11 +821,11 @@ const SettingsDialog = ({
                       Wirklich alle {entries.length} Einträge löschen?
                     </p>
                     <div className="flex gap-2">
+                      <Button variant="ghost" size="sm" autoFocus onClick={() => setShowDeleteAllConfirm(false)} className="flex-1 h-8 text-xs">
+                        Abbrechen
+                      </Button>
                       <Button variant="destructive" size="sm" onClick={handleDeleteAll} className="flex-1 h-8 text-xs">
                         Ja, löschen
-                      </Button>
-                      <Button variant="ghost" size="sm" onClick={() => setShowDeleteAllConfirm(false)} className="flex-1 h-8 text-xs">
-                        Abbrechen
                       </Button>
                     </div>
                   </div>
@@ -846,11 +846,11 @@ const SettingsDialog = ({
                         Wirklich alle {foodDatabase.length} Lebensmittel löschen?
                       </p>
                       <div className="flex gap-2">
+                        <Button variant="ghost" size="sm" autoFocus onClick={() => setShowDeleteFoodConfirm(false)} className="flex-1 h-8 text-xs">
+                          Abbrechen
+                        </Button>
                         <Button variant="destructive" size="sm" onClick={handleDeleteAllFood} className="flex-1 h-8 text-xs">
                           Ja, löschen
-                        </Button>
-                        <Button variant="ghost" size="sm" onClick={() => setShowDeleteFoodConfirm(false)} className="flex-1 h-8 text-xs">
-                          Abbrechen
                         </Button>
                       </div>
                     </div>
