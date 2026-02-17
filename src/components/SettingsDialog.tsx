@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -10,10 +10,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import {
   Settings, Sun, Moon, Trash2, Upload, Download, UserCircle, Save, Check,
-  AlertCircle, FileSpreadsheet, UtensilsCrossed, Palette, BarChart3,
+  AlertCircle, FileSpreadsheet, UtensilsCrossed, Palette, BarChart3, FileUp,
 } from "lucide-react";
 import { UserProfile, calculateBMR } from "@/types/profile";
 import { NutritionEntry } from "@/types/nutrition";
@@ -97,6 +96,7 @@ const SettingsDialog = ({
   const [rawText, setRawText] = useState("");
   const [preview, setPreview] = useState<NutritionEntry[] | null>(null);
   const [foodPreview, setFoodPreview] = useState<FoodItem[] | null>(null);
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   // Delete state
   const [fromDate, setFromDate] = useState("");
@@ -231,29 +231,42 @@ const SettingsDialog = ({
     toast.success(isNew ? "Lebensmittel hinzugefügt!" : "Lebensmittel aktualisiert!");
   };
 
-  // Import handlers
-  const handleParse = () => {
-    setFoodPreview(null);
-    setPreview(null);
-    if (!importType) return;
-    // Auto-detect: try food first, then entries
-    const foodResult = parseImportText(rawText, "food");
-    if (foodResult.foodItems.length > 0) {
-      setFoodPreview(foodResult.foodItems);
-      return;
-    }
-    const entryResult = parseImportText(rawText, "entries");
-    if (entryResult.entries.length > 0) {
-      setPreview(entryResult.entries);
-      return;
-    }
-    // Try balance
-    const balanceResult = parseImportText(rawText, "balance");
-    if (balanceResult.entries.length > 0) {
-      setPreview(balanceResult.entries);
-      return;
-    }
-    setPreview([]);
+  // Import handlers - file upload
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const text = event.target?.result as string;
+      if (text) {
+        setRawText(text);
+        setPreview(null);
+        setFoodPreview(null);
+        // Auto-parse
+        const foodResult = parseImportText(text, "food");
+        if (foodResult.foodItems.length > 0) {
+          setFoodPreview(foodResult.foodItems);
+          toast.info(`Datei "${file.name}" geladen – ${foodResult.foodItems.length} Lebensmittel erkannt`);
+          return;
+        }
+        const entryResult = parseImportText(text, "entries");
+        if (entryResult.entries.length > 0) {
+          setPreview(entryResult.entries);
+          toast.info(`Datei "${file.name}" geladen – ${entryResult.entries.length} Einträge erkannt`);
+          return;
+        }
+        const balanceResult = parseImportText(text, "balance");
+        if (balanceResult.entries.length > 0) {
+          setPreview(balanceResult.entries);
+          toast.info(`Datei "${file.name}" geladen – ${balanceResult.entries.length} Bilanzen erkannt`);
+          return;
+        }
+        setPreview([]);
+        toast.error(`Keine Daten in "${file.name}" erkannt`);
+      }
+    };
+    reader.readAsText(file);
+    if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
   const handleImportConfirm = () => {
@@ -599,60 +612,48 @@ const SettingsDialog = ({
                 <h3 className="text-xs font-bold uppercase tracking-wider text-foreground">Import</h3>
               </div>
               <p className="text-[10px] text-muted-foreground leading-relaxed">
-                Universeller Import – füge Einträge, Bilanzen oder Lebensmittel per Datei oder Copy-Paste hinzu. Das Format wird automatisch erkannt.
+                Universeller Import – Datei auswählen, Format wird automatisch erkannt.
               </p>
-              {!importType ? (
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".csv,.tsv,.txt,.tab"
+                onChange={handleFileUpload}
+                className="hidden"
+              />
+              {!hasImportResults ? (
                 <Button
                   variant="default"
                   size="sm"
-                  onClick={() => setImportType("csv-entries")}
+                  onClick={() => fileInputRef.current?.click()}
                   className="w-full h-9 text-xs gap-1.5"
                 >
-                  <Upload className="w-3.5 h-3.5" />
-                  Daten importieren
+                  <FileUp className="w-3.5 h-3.5" />
+                  Datei auswählen (.csv, .tsv, .txt)
                 </Button>
               ) : (
-                <div className="space-y-2">
-                  <Textarea
-                    placeholder="CSV/TSV hier einfügen – Format wird automatisch erkannt..."
-                    value={rawText}
-                    onChange={(e) => { setRawText(e.target.value); setPreview(null); setFoodPreview(null); }}
-                    className="min-h-[80px] font-mono text-xs bg-background"
-                    rows={4}
-                    autoCorrect="off"
-                    spellCheck={false}
-                  />
+                <div className="rounded-lg bg-background border border-border p-2.5 space-y-2">
+                  <div className="flex items-center gap-2 text-xs font-semibold text-foreground">
+                    <div className="w-5 h-5 rounded-full bg-primary/20 flex items-center justify-center">
+                      <Check className="w-3 h-3 text-primary" />
+                    </div>
+                    {importResultCount} {foodPreview && foodPreview.length > 0 ? "Lebensmittel" : "Einträge"} erkannt
+                  </div>
                   <div className="flex gap-2">
-                    <Button variant="secondary" size="sm" className="flex-1 h-8 text-xs" onClick={handleParse} disabled={!rawText.trim()}>
-                      Vorschau
+                    <Button className="flex-1 h-8 text-xs" onClick={handleImportConfirm}>
+                      <Check className="w-3.5 h-3.5 mr-1" />
+                      Importieren
                     </Button>
                     <Button variant="ghost" size="sm" className="h-8 text-xs" onClick={resetImport}>
                       Abbrechen
                     </Button>
                   </div>
-                  {(preview !== null || foodPreview !== null) && (
-                    <div className="rounded-lg bg-background border border-border p-2.5 space-y-2">
-                      {hasImportResults ? (
-                        <>
-                          <div className="flex items-center gap-2 text-xs font-semibold text-foreground">
-                            <div className="w-5 h-5 rounded-full bg-primary/20 flex items-center justify-center">
-                              <Check className="w-3 h-3 text-primary" />
-                            </div>
-                            {importResultCount} {foodPreview && foodPreview.length > 0 ? "Lebensmittel" : "Einträge"} erkannt
-                          </div>
-                          <Button className="w-full h-8 text-xs" onClick={handleImportConfirm}>
-                            <Check className="w-3.5 h-3.5 mr-1" />
-                            Importieren
-                          </Button>
-                        </>
-                      ) : (
-                        <div className="flex items-center gap-2 text-xs text-destructive">
-                          <AlertCircle className="w-3.5 h-3.5" />
-                          Keine Daten erkannt.
-                        </div>
-                      )}
-                    </div>
-                  )}
+                </div>
+              )}
+              {preview !== null && preview.length === 0 && !foodPreview && (
+                <div className="flex items-center gap-2 text-xs text-destructive">
+                  <AlertCircle className="w-3.5 h-3.5" />
+                  Keine Daten erkannt.
                 </div>
               )}
             </div>
