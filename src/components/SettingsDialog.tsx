@@ -100,6 +100,8 @@ const SettingsDialog = ({
   const [activityPreview, setActivityPreview] = useState<BookedActivity[] | null>(null);
   const [balanceHint, setBalanceHint] = useState(false);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
+  const deleteToRef = React.useRef<HTMLInputElement>(null);
+  const deletePreviewBtnRef = React.useRef<HTMLButtonElement>(null);
 
   // Delete state
   const [fromDate, setFromDate] = useState("");
@@ -750,15 +752,28 @@ const SettingsDialog = ({
                     inputMode="numeric"
                     placeholder="Von TT.MM.JJ"
                     value={fromDate}
-                    onChange={(e) => { setFromDate(formatDateInput(e.target.value)); setDeletePreview(null); setDeleteConfirmed(false); }}
+                    onChange={(e) => {
+                      const v = formatDateInput(e.target.value);
+                      setFromDate(v);
+                      setDeletePreview(null);
+                      setDeleteConfirmed(false);
+                      if (v.length >= 8) deleteToRef.current?.focus();
+                    }}
                     className="h-8 text-xs"
                   />
                   <Input
+                    ref={deleteToRef}
                     type="text"
                     inputMode="numeric"
                     placeholder="Bis TT.MM.JJ"
                     value={toDate}
-                    onChange={(e) => { setToDate(formatDateInput(e.target.value)); setDeletePreview(null); setDeleteConfirmed(false); }}
+                    onChange={(e) => {
+                      const v = formatDateInput(e.target.value);
+                      setToDate(v);
+                      setDeletePreview(null);
+                      setDeleteConfirmed(false);
+                      if (v.length >= 8) deletePreviewBtnRef.current?.focus();
+                    }}
                     className="h-8 text-xs"
                   />
                 </div>
@@ -769,7 +784,7 @@ const SettingsDialog = ({
                   <p className="text-xs text-primary font-medium">✓ Gelöscht!</p>
                 )}
                 {deletePreview === null ? (
-                  <Button variant="secondary" size="sm" onClick={handleDeletePreview} disabled={!fromDate || !toDate || fromDate.length < 6 || toDate.length < 6} className="w-full h-8 text-xs">
+                  <Button ref={deletePreviewBtnRef} variant="secondary" size="sm" onClick={handleDeletePreview} disabled={!fromDate || !toDate || fromDate.length < 6 || toDate.length < 6} className="w-full h-8 text-xs">
                     Vorschau
                   </Button>
                 ) : !deleteConfirmed ? (
