@@ -349,17 +349,17 @@ const SettingsDialog = ({
 
         {/* Profile Tab */}
         {tab === "profile" && (
-          <div className="space-y-4">
+          <div className="space-y-2.5">
             <div>
-              <Label className="text-xs font-medium text-muted-foreground mb-1.5 block">Name</Label>
-              <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Dein Name" className="h-11 bg-muted/50" autoCorrect="off" spellCheck={false} />
+              <Label className="text-xs font-medium text-muted-foreground mb-1 block">Name</Label>
+              <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Dein Name" className="h-9 bg-muted/50" autoCorrect="off" spellCheck={false} />
             </div>
             <div>
-              <Label className="text-xs font-medium text-muted-foreground mb-1.5 block">Geschlecht</Label>
+              <Label className="text-xs font-medium text-muted-foreground mb-1 block">Geschlecht</Label>
               <div className="flex gap-2">
                 {(["male", "female"] as const).map((g) => (
                   <button key={g} type="button" onClick={() => setGender(g)}
-                    className={`flex-1 py-2.5 rounded-lg text-sm font-semibold transition-colors ${
+                    className={`flex-1 py-1.5 rounded-lg text-sm font-semibold transition-colors ${
                       gender === g ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:text-foreground"
                     }`}
                   >
@@ -368,48 +368,47 @@ const SettingsDialog = ({
                 ))}
               </div>
             </div>
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-3 gap-2">
               <div>
-                <Label className="text-xs font-medium text-muted-foreground mb-1.5 block">Geburtsjahr</Label>
-                <Input type="number" inputMode="numeric" value={birthYear} onChange={(e) => setBirthYear(e.target.value)} placeholder="1990" className="h-11 bg-muted/50" />
+                <Label className="text-xs font-medium text-muted-foreground mb-1 block">Geburtsjahr</Label>
+                <Input type="number" inputMode="numeric" value={birthYear} onChange={(e) => setBirthYear(e.target.value)} placeholder="1990" className="h-9 bg-muted/50" />
               </div>
               <div>
-                <Label className="text-xs font-medium text-muted-foreground mb-1.5 block">Größe (cm)</Label>
-                <Input type="number" inputMode="numeric" value={heightCm} onChange={(e) => setHeightCm(e.target.value)} placeholder="180" className="h-11 bg-muted/50" />
+                <Label className="text-xs font-medium text-muted-foreground mb-1 block">Größe (cm)</Label>
+                <Input type="number" inputMode="numeric" value={heightCm} onChange={(e) => setHeightCm(e.target.value)} placeholder="180" className="h-9 bg-muted/50" />
               </div>
               <div>
-                <Label className="text-xs font-medium text-muted-foreground mb-1.5 block">Gewicht (kg)</Label>
-                <Input type="number" inputMode="decimal" step="0.1" value={weightKg} onChange={(e) => setWeightKg(e.target.value)} placeholder="80.0" className="h-11 bg-muted/50" />
+                <Label className="text-xs font-medium text-muted-foreground mb-1 block">Gewicht (kg)</Label>
+                <Input type="number" inputMode="decimal" step="0.1" value={weightKg} onChange={(e) => setWeightKg(e.target.value)} placeholder="80.0" className="h-9 bg-muted/50" />
               </div>
             </div>
             {bmrPreview && (
-              <div className="rounded-xl bg-accent/40 p-3 text-center">
-                <p className="text-xs text-muted-foreground font-medium">Grundumsatz (BMR)</p>
-                <p className="text-2xl font-bold text-foreground mt-0.5">{bmrPreview}</p>
-                <p className="text-xs text-muted-foreground">kcal / Tag</p>
+              <div className="rounded-lg bg-accent/40 p-2 flex items-center justify-between">
+                <span className="text-xs text-muted-foreground font-medium">Grundumsatz (BMR)</span>
+                <span className="text-lg font-bold text-foreground">{bmrPreview} <span className="text-xs font-normal text-muted-foreground">kcal/Tag</span></span>
               </div>
             )}
 
             {/* Your Goals */}
-            <div className="border-t border-border pt-4">
-              <Label className="text-xs font-semibold text-muted-foreground mb-3 block uppercase tracking-wider">YOUR DAILY GOALS</Label>
-              <div className="grid grid-cols-3 gap-3">
+            <div className="border-t border-border pt-2.5">
+              <Label className="text-xs font-semibold text-muted-foreground mb-2 block uppercase tracking-wider">YOUR DAILY GOALS</Label>
+              <div className="grid grid-cols-3 gap-2">
                 <div>
-                  <Label className="text-xs font-medium text-muted-foreground mb-1.5 block">Flüssigkeit ml</Label>
-                  <Input type="number" inputMode="numeric" value={goalFluidMl} onChange={(e) => setGoalFluidMl(e.target.value)} placeholder="z.B. 2500" className="h-11 bg-muted/50" />
+                  <Label className="text-xs font-medium text-muted-foreground mb-1 block">Flüssigkeit ml</Label>
+                  <Input type="number" inputMode="numeric" value={goalFluidMl} onChange={(e) => setGoalFluidMl(e.target.value)} placeholder="2500" className="h-9 bg-muted/50" />
                 </div>
                 <div>
-                  <Label className="text-xs font-medium text-muted-foreground mb-1.5 block">Defizit kcal</Label>
-                  <Input type="number" inputMode="numeric" value={goalDeficit} onChange={(e) => setGoalDeficit(e.target.value)} placeholder="z.B. 500" className="h-11 bg-muted/50" />
+                  <Label className="text-xs font-medium text-muted-foreground mb-1 block">Defizit kcal</Label>
+                  <Input type="number" inputMode="numeric" value={goalDeficit} onChange={(e) => setGoalDeficit(e.target.value)} placeholder="500" className="h-9 bg-muted/50" />
                 </div>
                 <div>
-                  <Label className="text-xs font-medium text-muted-foreground mb-1.5 block">Activity kcal</Label>
-                  <Input type="number" inputMode="numeric" value={goalActivityBonus} onChange={(e) => setGoalActivityBonus(e.target.value)} placeholder="z.B. 300" className="h-11 bg-muted/50" />
+                  <Label className="text-xs font-medium text-muted-foreground mb-1 block">Activity kcal</Label>
+                  <Input type="number" inputMode="numeric" value={goalActivityBonus} onChange={(e) => setGoalActivityBonus(e.target.value)} placeholder="300" className="h-9 bg-muted/50" />
                 </div>
               </div>
             </div>
 
-            <Button onClick={handleSaveProfile} disabled={!currentProfile} className="w-full h-11 gap-2">
+            <Button onClick={handleSaveProfile} disabled={!currentProfile} className="w-full h-9 gap-2">
               <Save className="w-4 h-4" />
               Profil speichern
             </Button>
