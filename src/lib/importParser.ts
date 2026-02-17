@@ -132,13 +132,14 @@ function parseAllEntries(text: string, delim: Delimiter): NutritionEntry[] {
   }
 
   const lines = text.trim().split("\n");
-  const entries: NutritionEntry[] = [];
+  const detailedEntries: NutritionEntry[] = [];
+  const balanceEntries: NutritionEntry[] = [];
 
   for (const line of lines) {
     const cols = splitLine(line, delim);
     if (cols.length < 6) continue;
     const first = cols[0].toLowerCase();
-    if (first.includes("datum") || first.includes("date") || first === "" || first.includes("tag") || first.includes("lebensmittel")) continue;
+    if (first.includes("datum") || first.includes("date") || first === "" || first.includes("tag") || first.includes("lebensmittel") || first.includes("summe")) continue;
     const date = parseDate(cols[0]);
     if (!date) continue;
 
@@ -148,7 +149,7 @@ function parseAllEntries(text: string, delim: Delimiter): NutritionEntry[] {
       if (!food) continue;
       const amountMatch = cols[3].match(/(\d+(?:[.,]\d+)?)/);
       const amount = amountMatch ? parseFloat(amountMatch[1].replace(",", ".")) : 0;
-      entries.push({
+      detailedEntries.push({
         id: generateId() + Math.random().toString(36).slice(2, 5),
         date, time, food, amount,
         calories: Math.round(parseVal(cols[4])),
@@ -158,7 +159,7 @@ function parseAllEntries(text: string, delim: Delimiter): NutritionEntry[] {
         fiber: parseVal(cols[8]),
       });
     } else if (cols.length >= 6) {
-      entries.push({
+      balanceEntries.push({
         id: generateId(),
         date, time: "00:00", food: "Tagesbilanz (Import)", amount: 0,
         calories: Math.round(parseLocalNum(cols[1])),
@@ -169,7 +170,10 @@ function parseAllEntries(text: string, delim: Delimiter): NutritionEntry[] {
       });
     }
   }
-  return entries;
+
+  // If we found detailed entries, ignore balance/summary rows (they're just totals)
+  if (detailedEntries.length > 0) return detailedEntries;
+  return balanceEntries;
 }
 
 /** Universal food database parser */
