@@ -392,18 +392,18 @@ const SettingsDialog = ({
 
             {/* Your Goals */}
             <div className="border-t border-border pt-4">
-              <Label className="text-xs font-semibold text-muted-foreground mb-3 block uppercase tracking-wider">Your Goals</Label>
+              <Label className="text-xs font-semibold text-muted-foreground mb-3 block uppercase tracking-wider">YOUR DAILY GOALS</Label>
               <div className="grid grid-cols-3 gap-3">
                 <div>
-                  <Label className="text-xs font-medium text-muted-foreground mb-1.5 block">Flüssigkeit (ml/Tag)</Label>
+                  <Label className="text-xs font-medium text-muted-foreground mb-1.5 block">Flüssigkeit ml</Label>
                   <Input type="number" inputMode="numeric" value={goalFluidMl} onChange={(e) => setGoalFluidMl(e.target.value)} placeholder="z.B. 2500" className="h-11 bg-muted/50" />
                 </div>
                 <div>
-                  <Label className="text-xs font-medium text-muted-foreground mb-1.5 block">Kalorien Defizit</Label>
+                  <Label className="text-xs font-medium text-muted-foreground mb-1.5 block">Defizit kcal</Label>
                   <Input type="number" inputMode="numeric" value={goalDeficit} onChange={(e) => setGoalDeficit(e.target.value)} placeholder="z.B. 500" className="h-11 bg-muted/50" />
                 </div>
                 <div>
-                  <Label className="text-xs font-medium text-muted-foreground mb-1.5 block">Activity (kcal)</Label>
+                  <Label className="text-xs font-medium text-muted-foreground mb-1.5 block">Activity kcal</Label>
                   <Input type="number" inputMode="numeric" value={goalActivityBonus} onChange={(e) => setGoalActivityBonus(e.target.value)} placeholder="z.B. 300" className="h-11 bg-muted/50" />
                 </div>
               </div>
