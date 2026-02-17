@@ -205,6 +205,23 @@
     font-size: 16px !important; /* Prevents zoom on iOS */
   }
 
+  /* Hide number input spinners */
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  input[type="number"] {
+    -moz-appearance: textfield;
+  }
+
+  /* Subtle placeholders */
+  ::placeholder {
+    font-style: italic !important;
+    opacity: 0.4 !important;
+    font-size: 0.85em !important;
+  }
+
   /* Hide native time input clock icon */
   input[type="time"]::-webkit-calendar-picker-indicator {
     display: none;

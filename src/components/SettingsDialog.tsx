@@ -110,6 +110,7 @@ const SettingsDialog = ({
   const [editFoodKh, setEditFoodKh] = useState("");
   const [editFoodFib, setEditFoodFib] = useState("");
   const [editFoodDefault, setEditFoodDefault] = useState("");
+  const [editFoodLiquid, setEditFoodLiquid] = useState("");
   const [, forceUpdate] = useState(0);
 
   const handleOpen = (isOpen: boolean) => {
@@ -154,6 +155,7 @@ const SettingsDialog = ({
     setEditFoodKh(String(food.carbs));
     setEditFoodFib(String(food.fiber));
     setEditFoodDefault(food.defaultAmount ? String(food.defaultAmount) : "");
+    setEditFoodLiquid((food as any).liquidMl ? String((food as any).liquidMl) : "");
   };
 
   const handleSaveFood = () => {
@@ -168,7 +170,8 @@ const SettingsDialog = ({
       carbs: parseFloat(editFoodKh) || 0,
       fiber: parseFloat(editFoodFib) || 0,
       defaultAmount: editFoodDefault ? parseFloat(editFoodDefault) || undefined : undefined,
-    };
+      liquidMl: editFoodLiquid ? parseFloat(editFoodLiquid) || undefined : undefined,
+    } as any;
     updateFoodItem(editingFood.name, updated);
     setEditingFood(null);
     forceUpdate((n) => n + 1);
@@ -380,9 +383,9 @@ const SettingsDialog = ({
             {editingFood ? (
               <div className="space-y-3 p-3 rounded-lg border border-border bg-muted/30">
                 <p className="text-xs font-semibold text-muted-foreground uppercase">Lebensmittel bearbeiten</p>
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-[1fr_80px] gap-2">
                   <div>
-                    <Label className="text-[10px] text-muted-foreground">Name</Label>
+                    <Label className="text-[10px] text-muted-foreground">Lebensmittel</Label>
                     <Input value={editFoodName} onChange={(e) => setEditFoodName(e.target.value)} className="h-9 text-xs" autoCorrect="off" spellCheck={false} />
                   </div>
                   <div>
@@ -412,9 +415,15 @@ const SettingsDialog = ({
                     <Input type="number" inputMode="decimal" value={editFoodFib} onChange={(e) => setEditFoodFib(e.target.value)} className="h-9 text-xs" />
                   </div>
                 </div>
-                <div>
-                  <Label className="text-[10px] text-muted-foreground">Standard (Vorbelegung in g/ml/Stk)</Label>
-                  <Input type="number" inputMode="decimal" value={editFoodDefault} onChange={(e) => setEditFoodDefault(e.target.value)} placeholder="z.B. 125" className="h-9 text-xs" />
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <Label className="text-[10px] text-muted-foreground">Standardwert</Label>
+                    <Input type="number" inputMode="decimal" value={editFoodDefault} onChange={(e) => setEditFoodDefault(e.target.value)} placeholder="z.B. 125" className="h-9 text-xs" />
+                  </div>
+                  <div>
+                    <Label className="text-[10px] text-muted-foreground">Flüssigkeit in ml</Label>
+                    <Input type="number" inputMode="decimal" value={editFoodLiquid} onChange={(e) => setEditFoodLiquid(e.target.value)} placeholder="z.B. 250" className="h-9 text-xs" />
+                  </div>
                 </div>
                 <div className="flex gap-2">
                   <Button onClick={handleSaveFood} className="flex-1 h-9 text-xs">
@@ -446,7 +455,7 @@ const SettingsDialog = ({
                         <span className="font-medium">{f.name}</span>
                         <span className="text-muted-foreground ml-2">{f.calories} kcal/{f.baseUnit}</span>
                         {f.defaultAmount && (
-                          <span className="text-muted-foreground ml-1">· Std: {f.defaultAmount}</span>
+                          <span className="text-muted-foreground ml-1">· {f.defaultAmount}{f.baseUnit.includes("Stk") ? " Stk" : "g"}</span>
                         )}
                       </div>
                       <button
