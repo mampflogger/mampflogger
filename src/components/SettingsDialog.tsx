@@ -20,8 +20,8 @@ import { NutritionEntry } from "@/types/nutrition";
 import { foodDatabase, removeFoodItem, updateFoodItem, FoodItem } from "@/data/foodDatabase";
 import {
   exportEntriesToCsv, exportFoodDatabaseCsv, exportCalorieBalanceCsv,
-  parseEntriesCsv, parseFoodDatabaseCsv, parseCalorieBalanceCsv,
 } from "@/lib/csvExport";
+import { parseImportText } from "@/lib/importParser";
 import { BookedActivity } from "@/types/profile";
 import { toast } from "sonner";
 
@@ -235,12 +235,11 @@ const SettingsDialog = ({
     setFoodPreview(null);
     setPreview(null);
     if (!importType) return;
-    if (importType === "csv-food") {
-      setFoodPreview(parseFoodDatabaseCsv(rawText));
-    } else if (importType === "csv-balance") {
-      setPreview(parseCalorieBalanceCsv(rawText));
+    const result = parseImportText(rawText, importType === "csv-food" ? "food" : importType === "csv-balance" ? "balance" : "entries");
+    if (result.foodItems.length > 0) {
+      setFoodPreview(result.foodItems);
     } else {
-      setPreview(parseEntriesCsv(rawText));
+      setPreview(result.entries);
     }
   };
 
