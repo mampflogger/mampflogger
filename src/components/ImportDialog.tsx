@@ -118,66 +118,67 @@ const ImportDialog = ({ onImport }: ImportDialogProps) => {
           <Upload className="w-4 h-4" />
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-[95vw] sm:max-w-lg max-h-[85vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <FileSpreadsheet className="w-5 h-5 text-primary" />
+      <DialogContent className="w-[calc(100vw-2rem)] sm:max-w-lg max-h-[80vh] flex flex-col p-4 sm:p-6 gap-3">
+        <DialogHeader className="space-y-1">
+          <DialogTitle className="flex items-center gap-2 text-base">
+            <FileSpreadsheet className="w-4 h-4 text-primary" />
             Daten importieren
           </DialogTitle>
-          <DialogDescription>
-            Daten einfügen – Format wird automatisch erkannt (CSV, Tab, Festbreite).
+          <DialogDescription className="text-xs">
+            CSV, Tab oder Festbreite – Format wird automatisch erkannt.
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-3">
-          {/* Format hint */}
-          <div className="rounded-lg bg-accent/40 p-3 text-xs text-muted-foreground space-y-1">
-            <p className="font-semibold text-foreground">Unterstützte Formate</p>
-            <p>Protokoll, Kalorienbilanz oder Lebensmittelliste – Semikolon, Tab oder Festbreite.</p>
-          </div>
+        <div className="flex-1 min-h-0 overflow-y-auto space-y-2.5">
+          {/* Only show input section when no results yet */}
+          {!hasResults && (
+            <>
+              <div className="rounded-md bg-accent/40 p-2 text-xs text-muted-foreground">
+                <span className="font-semibold text-foreground">Formate: </span>
+                Protokoll, Bilanz oder Lebensmittelliste.
+              </div>
 
-          {/* File upload */}
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept=".csv,.tsv,.txt,.tab"
-            onChange={handleFileUpload}
-            className="hidden"
-          />
-          <Button
-            type="button"
-            variant="outline"
-            className="w-full"
-            onClick={() => fileInputRef.current?.click()}
-          >
-            <FileUp className="w-4 h-4 mr-2" />
-            Datei auswählen (.csv, .tsv, .txt)
-          </Button>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".csv,.tsv,.txt,.tab"
+                onChange={handleFileUpload}
+                className="hidden"
+              />
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full h-9 text-sm"
+                onClick={() => fileInputRef.current?.click()}
+              >
+                <FileUp className="w-4 h-4 mr-2" />
+                Datei auswählen (.csv, .tsv, .txt)
+              </Button>
 
-          <div className="relative">
-            <div className="absolute inset-x-0 top-0 flex items-center justify-center -translate-y-1/2">
-              <span className="bg-background px-2 text-xs text-muted-foreground">oder einfügen</span>
-            </div>
-          </div>
+              <div className="flex items-center justify-center">
+                <span className="text-xs text-muted-foreground">oder einfügen</span>
+              </div>
 
-          <Textarea
-            placeholder={"Daten hier einfügen (CSV, Tab-getrennt oder Festbreite)…"}
-            value={rawText}
-            onChange={(e) => { setRawText(e.target.value); setPreview(null); setFoodPreview(null); }}
-            className="min-h-[80px] font-mono text-xs"
-            rows={4}
-          />
+              <Textarea
+                placeholder={"Daten hier einfügen…"}
+                value={rawText}
+                onChange={(e) => { setRawText(e.target.value); setPreview(null); setFoodPreview(null); }}
+                className="min-h-[60px] max-h-[120px] font-mono text-xs overflow-x-auto whitespace-pre"
+                rows={3}
+              />
 
-          <Button type="button" variant="secondary" className="w-full" onClick={handleParse} disabled={!rawText.trim()}>
-            Vorschau anzeigen
-          </Button>
+              <Button type="button" variant="secondary" className="w-full h-9 text-sm" onClick={handleParse} disabled={!rawText.trim()}>
+                Vorschau anzeigen
+              </Button>
+            </>
+          )}
 
           {(preview !== null || foodPreview !== null) && (
-            <div className="rounded-lg border border-border p-3 space-y-2">
+            <div className="rounded-lg border border-border p-2.5 space-y-1.5">
               {hasResults ? (
                 <>
                   <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
-                    <Check className="w-4 h-4 text-primary" />
+                    <Check className="w-4 h-4 text-primary shrink-0" />
                     {resultCount} {typeLabel} erkannt
                   </div>
                   {dateRange && (
@@ -186,38 +187,34 @@ const ImportDialog = ({ onImport }: ImportDialogProps) => {
                     </p>
                   )}
                   {preview && (
-                    <div className="mt-1 max-h-28 overflow-y-auto space-y-1">
-                      {preview.slice(0, 10).map((e, i) => (
-                        <div key={i} className="flex items-center justify-between text-xs py-1 border-b border-border/50 last:border-0">
-                          <div className="flex items-center gap-2 truncate">
-                            <span className="text-muted-foreground font-mono">{e.date.slice(5)} {e.time}</span>
+                    <div className="max-h-32 overflow-y-auto space-y-0.5">
+                      {preview.slice(0, 5).map((e, i) => (
+                        <div key={i} className="flex items-center justify-between text-xs py-0.5 border-b border-border/50 last:border-0">
+                          <div className="flex items-center gap-1.5 truncate min-w-0">
+                            <span className="text-muted-foreground font-mono shrink-0">{e.date.slice(5)} {e.time}</span>
                             <span className="font-medium truncate">{e.food}</span>
                           </div>
-                          <span className="text-muted-foreground whitespace-nowrap ml-2">{e.calories} kcal</span>
+                          <span className="text-muted-foreground whitespace-nowrap ml-1 shrink-0">{e.calories} kcal</span>
                         </div>
                       ))}
-                      {preview.length > 10 && (
-                        <p className="text-xs text-muted-foreground text-center pt-1">… und {preview.length - 10} weitere</p>
+                      {preview.length > 5 && (
+                        <p className="text-xs text-muted-foreground text-center pt-0.5">… und {preview.length - 5} weitere</p>
                       )}
                     </div>
                   )}
                   {foodPreview && (
-                    <div className="mt-1 max-h-28 overflow-y-auto space-y-1">
-                      {foodPreview.slice(0, 10).map((f, i) => (
-                        <div key={i} className="flex items-center justify-between text-xs py-1 border-b border-border/50 last:border-0">
+                    <div className="max-h-32 overflow-y-auto space-y-0.5">
+                      {foodPreview.slice(0, 5).map((f, i) => (
+                        <div key={i} className="flex items-center justify-between text-xs py-0.5 border-b border-border/50 last:border-0">
                           <span className="font-medium truncate">{f.name}</span>
-                          <span className="text-muted-foreground whitespace-nowrap ml-2">{f.calories} kcal/{f.baseUnit}</span>
+                          <span className="text-muted-foreground whitespace-nowrap ml-1 shrink-0">{f.calories} kcal/{f.baseUnit}</span>
                         </div>
                       ))}
-                      {foodPreview.length > 10 && (
-                        <p className="text-xs text-muted-foreground text-center pt-1">… und {foodPreview.length - 10} weitere</p>
+                      {foodPreview.length > 5 && (
+                        <p className="text-xs text-muted-foreground text-center pt-0.5">… und {foodPreview.length - 5} weitere</p>
                       )}
                     </div>
                   )}
-                  <Button type="button" className="w-full mt-2" onClick={handleImport}>
-                    <Check className="w-4 h-4 mr-2" />
-                    {resultCount} {typeLabel} importieren
-                  </Button>
                 </>
               ) : (
                 <div className="flex items-center gap-2 text-sm text-destructive">
@@ -228,6 +225,14 @@ const ImportDialog = ({ onImport }: ImportDialogProps) => {
             </div>
           )}
         </div>
+
+        {/* Sticky import button always visible */}
+        {hasResults && (
+          <Button type="button" className="w-full h-10 shrink-0" onClick={handleImport}>
+            <Check className="w-4 h-4 mr-2" />
+            {resultCount} {typeLabel} importieren
+          </Button>
+        )}
       </DialogContent>
     </Dialog>
   );
