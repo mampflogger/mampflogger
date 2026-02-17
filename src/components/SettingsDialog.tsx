@@ -793,17 +793,17 @@ const SettingsDialog = ({
                     <Button variant="destructive" size="sm" onClick={() => setShowDeleteRangeConfirm(true)} disabled={deletePreview === 0} className="flex-1 h-8 text-xs">
                       {deletePreview} Einträge löschen
                     </Button>
-                    <Button variant="ghost" size="sm" onClick={() => { setDeletePreview(null); setFromDate(""); setToDate(""); }} className="h-8 text-xs px-3">
-                      Abbrechen
+                    <Button variant="secondary" size="sm" autoFocus onClick={() => { setDeletePreview(null); setFromDate(""); setToDate(""); }} className="flex-1 h-8 text-xs">
+                      Abbruch
                     </Button>
                   </div>
                 ) : !deleteConfirmed && showDeleteRangeConfirm ? (
                   <div className="flex gap-2">
                     <Button variant="destructive" size="sm" onClick={() => { handleDeleteConfirm(); setShowDeleteRangeConfirm(false); }} className="flex-1 h-8 text-xs">
-                      Ja, wirklich löschen
+                      Löschen
                     </Button>
-                    <Button variant="secondary" size="sm" onClick={() => setShowDeleteRangeConfirm(false)} className="flex-1 h-8 text-xs">
-                      Nein
+                    <Button variant="secondary" size="sm" autoFocus onClick={() => setShowDeleteRangeConfirm(false)} className="flex-1 h-8 text-xs">
+                      Abbruch
                     </Button>
                   </div>
                 ) : null}
@@ -827,10 +827,10 @@ const SettingsDialog = ({
                     </p>
                     <div className="flex gap-2">
                       <Button variant="destructive" size="sm" onClick={handleDeleteAll} className="flex-1 h-8 text-xs">
-                        Ja, wirklich löschen
+                        Löschen
                       </Button>
-                      <Button variant="secondary" size="sm" onClick={() => setShowDeleteAllConfirm(false)} className="flex-1 h-8 text-xs">
-                        Nein
+                      <Button variant="secondary" size="sm" autoFocus onClick={() => setShowDeleteAllConfirm(false)} className="flex-1 h-8 text-xs">
+                        Abbruch
                       </Button>
                     </div>
                   </div>
@@ -852,10 +852,10 @@ const SettingsDialog = ({
                       </p>
                       <div className="flex gap-2">
                         <Button variant="destructive" size="sm" onClick={handleDeleteAllFood} className="flex-1 h-8 text-xs">
-                          Ja, wirklich löschen
+                          Löschen
                         </Button>
-                        <Button variant="secondary" size="sm" onClick={() => setShowDeleteFoodConfirm(false)} className="flex-1 h-8 text-xs">
-                          Nein
+                        <Button variant="secondary" size="sm" autoFocus onClick={() => setShowDeleteFoodConfirm(false)} className="flex-1 h-8 text-xs">
+                          Abbruch
                         </Button>
                       </div>
                     </div>
