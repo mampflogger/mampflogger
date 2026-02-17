@@ -49,6 +49,7 @@ interface SettingsDialogProps {
   onCount: (from: string, to: string) => number;
   onDelete: (from: string, to: string) => number;
   onDeleteAll: () => number;
+  onDeleteAllActivities: () => number;
   openToNewFood?: boolean;
   onOpenToNewFoodHandled?: () => void;
 }
@@ -77,7 +78,7 @@ function parseDateInputToISO(text: string): string {
 const SettingsDialog = ({
   profile, onSaveProfile, darkMode, onToggleDarkMode,
   colorTheme, onChangeTheme, entries, bookedActivities,
-  onImport, onImportActivities, onCount, onDelete, onDeleteAll, openToNewFood, onOpenToNewFoodHandled,
+  onImport, onImportActivities, onCount, onDelete, onDeleteAll, onDeleteAllActivities, openToNewFood, onOpenToNewFoodHandled,
 }: SettingsDialogProps) => {
   const [open, setOpen] = useState(false);
   const [tab, setTab] = useState<SettingsTab>("profile");
@@ -111,6 +112,7 @@ const SettingsDialog = ({
   const [showDeleteAllConfirm, setShowDeleteAllConfirm] = useState(false);
   const [showDeleteFoodConfirm, setShowDeleteFoodConfirm] = useState(false);
   const [showDeleteRangeConfirm, setShowDeleteRangeConfirm] = useState(false);
+  const [showDeleteActivitiesConfirm, setShowDeleteActivitiesConfirm] = useState(false);
 
   // Food list state
   const [foodSearch, setFoodSearch] = useState("");
@@ -810,18 +812,36 @@ const SettingsDialog = ({
               </div>
 
               {/* Quick delete buttons */}
-              <div className="grid grid-cols-2 gap-1.5">
-                {!showDeleteAllConfirm ? (
-                  <button
-                    onClick={() => setShowDeleteAllConfirm(true)}
-                    disabled={entries.length === 0}
-                    className="flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-lg bg-background border border-border hover:border-destructive/40 transition-colors disabled:opacity-40 disabled:pointer-events-none"
-                  >
-                    <span className="text-[9px] font-semibold text-destructive">Alle Einträge</span>
-                    <span className="text-[8px] text-muted-foreground">({entries.length})</span>
-                  </button>
-                ) : (
-                  <div className="col-span-2 rounded-lg border-2 border-destructive p-2.5 space-y-2">
+              <div className="grid grid-cols-3 gap-1.5">
+                {!showDeleteAllConfirm && !showDeleteFoodConfirm && !showDeleteActivitiesConfirm ? (
+                  <>
+                    <button
+                      onClick={() => setShowDeleteAllConfirm(true)}
+                      disabled={entries.length === 0}
+                      className="flex items-center justify-center gap-1 py-1.5 px-1 rounded-lg bg-background border border-border hover:border-destructive/40 transition-colors disabled:opacity-40 disabled:pointer-events-none"
+                    >
+                      <span className="text-[9px] font-semibold text-destructive">Einträge</span>
+                      <span className="text-[8px] text-muted-foreground">({entries.length})</span>
+                    </button>
+                    <button
+                      onClick={() => setShowDeleteActivitiesConfirm(true)}
+                      disabled={bookedActivities.length === 0}
+                      className="flex items-center justify-center gap-1 py-1.5 px-1 rounded-lg bg-background border border-border hover:border-destructive/40 transition-colors disabled:opacity-40 disabled:pointer-events-none"
+                    >
+                      <span className="text-[9px] font-semibold text-destructive">Aktivitäten</span>
+                      <span className="text-[8px] text-muted-foreground">({bookedActivities.length})</span>
+                    </button>
+                    <button
+                      onClick={() => setShowDeleteFoodConfirm(true)}
+                      disabled={foodDatabase.length === 0}
+                      className="flex items-center justify-center gap-1 py-1.5 px-1 rounded-lg bg-background border border-border hover:border-destructive/40 transition-colors disabled:opacity-40 disabled:pointer-events-none"
+                    >
+                      <span className="text-[9px] font-semibold text-destructive">Lebensmittel</span>
+                      <span className="text-[8px] text-muted-foreground">({foodDatabase.length})</span>
+                    </button>
+                  </>
+                ) : showDeleteAllConfirm ? (
+                  <div className="col-span-3 rounded-lg border-2 border-destructive p-2.5 space-y-2">
                     <p className="text-xs font-semibold text-destructive">
                       Wirklich alle {entries.length} Einträge löschen?
                     </p>
@@ -834,33 +854,35 @@ const SettingsDialog = ({
                       </Button>
                     </div>
                   </div>
-                )}
-                {!showDeleteAllConfirm && (
-                  !showDeleteFoodConfirm ? (
-                    <button
-                      onClick={() => setShowDeleteFoodConfirm(true)}
-                      disabled={foodDatabase.length === 0}
-                      className="flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-lg bg-background border border-border hover:border-destructive/40 transition-colors disabled:opacity-40 disabled:pointer-events-none"
-                    >
-                      <span className="text-[9px] font-semibold text-destructive">Alle Lebensmittel</span>
-                      <span className="text-[8px] text-muted-foreground">({foodDatabase.length})</span>
-                    </button>
-                  ) : (
-                    <div className="col-span-2 rounded-lg border-2 border-destructive p-2.5 space-y-2">
-                      <p className="text-xs font-semibold text-destructive">
-                        Wirklich alle {foodDatabase.length} Lebensmittel löschen?
-                      </p>
-                      <div className="flex gap-2">
-                        <Button variant="outline" size="sm" onClick={handleDeleteAllFood} className="flex-1 h-8 text-xs text-destructive border-destructive/30 hover:bg-destructive/10">
-                          Löschen
-                        </Button>
-                        <Button variant="secondary" size="sm" autoFocus onClick={() => setShowDeleteFoodConfirm(false)} className="flex-1 h-8 text-xs ring-2 ring-primary">
-                          Abbruch
-                        </Button>
-                      </div>
+                ) : showDeleteActivitiesConfirm ? (
+                  <div className="col-span-3 rounded-lg border-2 border-destructive p-2.5 space-y-2">
+                    <p className="text-xs font-semibold text-destructive">
+                      Wirklich alle {bookedActivities.length} Aktivitäten löschen?
+                    </p>
+                    <div className="flex gap-2">
+                      <Button variant="outline" size="sm" onClick={() => { const count = onDeleteAllActivities(); setShowDeleteActivitiesConfirm(false); toast.success(`${count} Aktivitäten gelöscht!`); }} className="flex-1 h-8 text-xs text-destructive border-destructive/30 hover:bg-destructive/10">
+                        Löschen
+                      </Button>
+                      <Button variant="secondary" size="sm" autoFocus onClick={() => setShowDeleteActivitiesConfirm(false)} className="flex-1 h-8 text-xs ring-2 ring-primary">
+                        Abbruch
+                      </Button>
                     </div>
-                  )
-                )}
+                  </div>
+                ) : showDeleteFoodConfirm ? (
+                  <div className="col-span-3 rounded-lg border-2 border-destructive p-2.5 space-y-2">
+                    <p className="text-xs font-semibold text-destructive">
+                      Wirklich alle {foodDatabase.length} Lebensmittel löschen?
+                    </p>
+                    <div className="flex gap-2">
+                      <Button variant="outline" size="sm" onClick={handleDeleteAllFood} className="flex-1 h-8 text-xs text-destructive border-destructive/30 hover:bg-destructive/10">
+                        Löschen
+                      </Button>
+                      <Button variant="secondary" size="sm" autoFocus onClick={() => setShowDeleteFoodConfirm(false)} className="flex-1 h-8 text-xs ring-2 ring-primary">
+                        Abbruch
+                      </Button>
+                    </div>
+                  </div>
+                ) : null}
               </div>
             </div>
 

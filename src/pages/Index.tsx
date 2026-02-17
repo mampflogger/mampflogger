@@ -168,6 +168,13 @@ const Index = () => {
     return count;
   };
 
+  const deleteAllActivities = (): number => {
+    const count = bookedActivities.length;
+    setBookedActivities([]);
+    saveBookedActivities([]);
+    return count;
+  };
+
   // Day navigation with future block
   const navigateDay = useCallback((offset: number) => {
     setSelectedDate((prev) => {
@@ -275,6 +282,7 @@ const Index = () => {
                 onCount={countEntriesInRange}
                 onDelete={deleteEntriesInRange}
                 onDeleteAll={deleteAllEntries}
+                onDeleteAllActivities={deleteAllActivities}
                 openToNewFood={openNewFood}
                 onOpenToNewFoodHandled={() => setOpenNewFood(false)}
               />
