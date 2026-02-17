@@ -9,9 +9,10 @@ interface NutritionFormProps {
   selectedDate: string;
   editingEntry?: NutritionEntry | null;
   onCancelEdit?: () => void;
+  onNewFood?: () => void;
 }
 
-const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit }: NutritionFormProps) => {
+const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewFood }: NutritionFormProps) => {
   const now = new Date();
   const currentTime = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
 
@@ -72,7 +73,7 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit }: Nutr
     setSelectedFood(null);
     const results = searchFood(value);
     setSuggestions(results);
-    setShowSuggestions(results.length > 0);
+    setShowSuggestions(value.trim().length > 0);
     setHighlightIndex(-1);
   };
 
@@ -254,11 +255,25 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit }: Nutr
             spellCheck={false}
             required
           />
-          {showSuggestions && suggestions.length > 0 && (
+          {showSuggestions && (
             <ul
               ref={listRef}
               className="absolute z-[100] top-full left-0 right-0 mt-1 max-h-52 overflow-y-auto rounded-lg border border-border bg-popover shadow-lg"
             >
+              {onNewFood && (
+                <li
+                  className={`flex items-center px-3 py-2 text-xs cursor-pointer transition-colors font-semibold text-primary hover:bg-muted/60 ${
+                    highlightIndex === -2 ? "bg-accent text-accent-foreground" : ""
+                  }`}
+                  onMouseDown={(e) => {
+                    e.preventDefault();
+                    setShowSuggestions(false);
+                    onNewFood();
+                  }}
+                >
+                  + New Food
+                </li>
+              )}
               {suggestions.map((item, index) => (
                 <li
                   key={item.name}
