@@ -13,7 +13,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import {
   Settings, Sun, Moon, Trash2, Upload, Download, UserCircle, Save, Check,
-  AlertCircle, FileSpreadsheet, UtensilsCrossed, Palette,
+  AlertCircle, FileSpreadsheet, UtensilsCrossed, Palette, BarChart3,
 } from "lucide-react";
 import { UserProfile, calculateBMR } from "@/types/profile";
 import { NutritionEntry } from "@/types/nutrition";
@@ -236,12 +236,24 @@ const SettingsDialog = ({
     setFoodPreview(null);
     setPreview(null);
     if (!importType) return;
-    const result = parseImportText(rawText, importType === "csv-food" ? "food" : importType === "csv-balance" ? "balance" : "entries");
-    if (result.foodItems.length > 0) {
-      setFoodPreview(result.foodItems);
-    } else {
-      setPreview(result.entries);
+    // Auto-detect: try food first, then entries
+    const foodResult = parseImportText(rawText, "food");
+    if (foodResult.foodItems.length > 0) {
+      setFoodPreview(foodResult.foodItems);
+      return;
     }
+    const entryResult = parseImportText(rawText, "entries");
+    if (entryResult.entries.length > 0) {
+      setPreview(entryResult.entries);
+      return;
+    }
+    // Try balance
+    const balanceResult = parseImportText(rawText, "balance");
+    if (balanceResult.entries.length > 0) {
+      setPreview(balanceResult.entries);
+      return;
+    }
+    setPreview([]);
   };
 
   const handleImportConfirm = () => {
@@ -576,90 +588,67 @@ const SettingsDialog = ({
 
         {/* Data Tab */}
         {tab === "data" && (
-          <div className="space-y-4">
-            {/* Export */}
-            <div>
-              <Label className="text-xs font-medium text-muted-foreground mb-2 block">Export</Label>
-              <div className="grid grid-cols-3 gap-2">
-                <Button variant="secondary" size="sm" onClick={() => exportEntriesToCsv(entries)} disabled={entries.length === 0} className="text-xs">
-                  <Download className="w-3.5 h-3.5 mr-1" /> Protokoll
-                </Button>
-                <Button variant="secondary" size="sm" onClick={() => exportCalorieBalanceCsv(entries, bookedActivities)} disabled={entries.length === 0} className="text-xs">
-                  <Download className="w-3.5 h-3.5 mr-1" /> Bilanz
-                </Button>
-                <Button variant="secondary" size="sm" onClick={() => exportFoodDatabaseCsv()} className="text-xs">
-                  <Download className="w-3.5 h-3.5 mr-1" /> Lebensmittel
-                </Button>
-              </div>
-            </div>
+          <div className="space-y-3">
 
-            {/* Import */}
-            <div>
-              <Label className="text-xs font-medium text-muted-foreground mb-2 block">Import</Label>
-              <div className="grid grid-cols-3 gap-2 mb-2">
-                <Button
-                  variant={importType === "csv-entries" ? "default" : "secondary"}
-                  size="sm"
-                  onClick={() => { setImportType(importType === "csv-entries" ? null : "csv-entries"); setRawText(""); setPreview(null); setFoodPreview(null); }}
-                  className="text-xs"
-                >
-                  <Upload className="w-3.5 h-3.5 mr-1" /> Protokoll
-                </Button>
-                <Button
-                  variant={importType === "csv-balance" ? "default" : "secondary"}
-                  size="sm"
-                  onClick={() => { setImportType(importType === "csv-balance" ? null : "csv-balance"); setRawText(""); setPreview(null); setFoodPreview(null); }}
-                  className="text-xs"
-                >
-                  <Upload className="w-3.5 h-3.5 mr-1" /> Bilanz
-                </Button>
-                <Button
-                  variant={importType === "csv-food" ? "default" : "secondary"}
-                  size="sm"
-                  onClick={() => { setImportType(importType === "csv-food" ? null : "csv-food"); setRawText(""); setPreview(null); setFoodPreview(null); }}
-                  className="text-xs"
-                >
-                  <Upload className="w-3.5 h-3.5 mr-1" /> Lebensmittel
-                </Button>
+            {/* IMPORT Section */}
+            <div className="rounded-xl border border-border bg-accent/20 p-3 space-y-2.5">
+              <div className="flex items-center gap-2">
+                <div className="w-7 h-7 rounded-lg bg-primary/20 flex items-center justify-center">
+                  <Upload className="w-3.5 h-3.5 text-primary" />
+                </div>
+                <h3 className="text-xs font-bold uppercase tracking-wider text-foreground">Import</h3>
               </div>
-              {importType && (
+              <p className="text-[10px] text-muted-foreground leading-relaxed">
+                Universeller Import – füge Einträge, Bilanzen oder Lebensmittel per Datei oder Copy-Paste hinzu. Das Format wird automatisch erkannt.
+              </p>
+              {!importType ? (
+                <Button
+                  variant="default"
+                  size="sm"
+                  onClick={() => setImportType("csv-entries")}
+                  className="w-full h-9 text-xs gap-1.5"
+                >
+                  <Upload className="w-3.5 h-3.5" />
+                  Daten importieren
+                </Button>
+              ) : (
                 <div className="space-y-2">
-                  <div className="rounded-lg bg-accent/40 p-2 text-xs text-muted-foreground">
-                    <p className="font-mono text-[10px]">
-                      {importType === "csv-entries" && "Datum;Zeit;Lebensmittel;Menge;kcal;PRO;FAT;KH;FIB"}
-                      {importType === "csv-balance" && "Datum;kcal;PRO;FAT;KH;FIB;Bonus;Defizit"}
-                      {importType === "csv-food" && "Lebensmittel;Einheit;kcal;PRO;FAT;KH;FIB;Standard"}
-                    </p>
-                  </div>
                   <Textarea
-                    placeholder="Daten hier einfügen..."
+                    placeholder="CSV/TSV hier einfügen – Format wird automatisch erkannt..."
                     value={rawText}
                     onChange={(e) => { setRawText(e.target.value); setPreview(null); setFoodPreview(null); }}
-                    className="min-h-[100px] font-mono text-xs"
-                    rows={5}
+                    className="min-h-[80px] font-mono text-xs bg-background"
+                    rows={4}
                     autoCorrect="off"
                     spellCheck={false}
                   />
-                  <Button variant="secondary" className="w-full" onClick={handleParse} disabled={!rawText.trim()}>
-                    Vorschau
-                  </Button>
+                  <div className="flex gap-2">
+                    <Button variant="secondary" size="sm" className="flex-1 h-8 text-xs" onClick={handleParse} disabled={!rawText.trim()}>
+                      Vorschau
+                    </Button>
+                    <Button variant="ghost" size="sm" className="h-8 text-xs" onClick={resetImport}>
+                      Abbrechen
+                    </Button>
+                  </div>
                   {(preview !== null || foodPreview !== null) && (
-                    <div className="rounded-lg border border-border p-3 space-y-2">
+                    <div className="rounded-lg bg-background border border-border p-2.5 space-y-2">
                       {hasImportResults ? (
                         <>
-                          <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
-                            <Check className="w-4 h-4 text-success" />
-                            {importResultCount} {importType === "csv-food" ? "Lebensmittel" : "Einträge"} erkannt
+                          <div className="flex items-center gap-2 text-xs font-semibold text-foreground">
+                            <div className="w-5 h-5 rounded-full bg-primary/20 flex items-center justify-center">
+                              <Check className="w-3 h-3 text-primary" />
+                            </div>
+                            {importResultCount} {foodPreview && foodPreview.length > 0 ? "Lebensmittel" : "Einträge"} erkannt
                           </div>
-                          <Button className="w-full" onClick={handleImportConfirm}>
-                            <Check className="w-4 h-4 mr-2" />
+                          <Button className="w-full h-8 text-xs" onClick={handleImportConfirm}>
+                            <Check className="w-3.5 h-3.5 mr-1" />
                             Importieren
                           </Button>
                         </>
                       ) : (
-                        <div className="flex items-center gap-2 text-sm text-destructive">
-                          <AlertCircle className="w-4 h-4" />
-                          Keine Einträge erkannt.
+                        <div className="flex items-center gap-2 text-xs text-destructive">
+                          <AlertCircle className="w-3.5 h-3.5" />
+                          Keine Daten erkannt.
                         </div>
                       )}
                     </div>
@@ -668,112 +657,140 @@ const SettingsDialog = ({
               )}
             </div>
 
-            {/* Delete */}
-            <div className="border-t border-border pt-4 space-y-3">
-              <Label className="text-xs font-medium text-destructive mb-2 block">Löschen</Label>
+            {/* EXPORT Section */}
+            <div className="rounded-xl border border-border bg-accent/20 p-3 space-y-2.5">
+              <div className="flex items-center gap-2">
+                <div className="w-7 h-7 rounded-lg bg-primary/20 flex items-center justify-center">
+                  <Download className="w-3.5 h-3.5 text-primary" />
+                </div>
+                <h3 className="text-xs font-bold uppercase tracking-wider text-foreground">Export</h3>
+              </div>
+              <div className="grid grid-cols-3 gap-2">
+                {[
+                  { label: "Protokoll", icon: <FileSpreadsheet className="w-3.5 h-3.5" />, action: () => exportEntriesToCsv(entries), disabled: entries.length === 0, count: entries.length },
+                  { label: "Bilanz", icon: <BarChart3 className="w-3.5 h-3.5" />, action: () => exportCalorieBalanceCsv(entries, bookedActivities), disabled: entries.length === 0 },
+                  { label: "Lebensmittel", icon: <UtensilsCrossed className="w-3.5 h-3.5" />, action: () => exportFoodDatabaseCsv(), disabled: foodDatabase.length === 0, count: foodDatabase.length },
+                ].map((item) => (
+                  <button
+                    key={item.label}
+                    onClick={item.action}
+                    disabled={item.disabled}
+                    className="flex flex-col items-center gap-1.5 p-2.5 rounded-lg bg-background border border-border hover:border-primary/40 hover:bg-primary/5 transition-colors disabled:opacity-40 disabled:pointer-events-none"
+                  >
+                    <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center">
+                      {item.icon}
+                    </div>
+                    <span className="text-[10px] font-semibold">{item.label}</span>
+                    {item.count !== undefined && (
+                      <span className="text-[9px] text-muted-foreground">{item.count}</span>
+                    )}
+                  </button>
+                ))}
+              </div>
+            </div>
 
-              {/* Delete by date range */}
-              <div className="rounded-lg border border-border p-3 space-y-2">
-                <p className="text-xs font-semibold text-foreground">Einträge nach Zeitraum</p>
-                <div className="grid grid-cols-2 gap-2">
-                  <div>
-                    <Label className="text-[10px] text-muted-foreground">Von (TT.MM.JJ)</Label>
-                    <Input
-                      type="text"
-                      inputMode="numeric"
-                      placeholder="01.01.26"
-                      value={fromDate}
-                      onChange={(e) => { setFromDate(formatDateInput(e.target.value)); setDeletePreview(null); setDeleteConfirmed(false); }}
-                      className="h-9 text-xs"
-                    />
-                  </div>
-                  <div>
-                    <Label className="text-[10px] text-muted-foreground">Bis (TT.MM.JJ)</Label>
-                    <Input
-                      type="text"
-                      inputMode="numeric"
-                      placeholder="31.12.26"
-                      value={toDate}
-                      onChange={(e) => { setToDate(formatDateInput(e.target.value)); setDeletePreview(null); setDeleteConfirmed(false); }}
-                      className="h-9 text-xs"
-                    />
-                  </div>
+            {/* DELETE Section */}
+            <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-3 space-y-2.5">
+              <div className="flex items-center gap-2">
+                <div className="w-7 h-7 rounded-lg bg-destructive/15 flex items-center justify-center">
+                  <Trash2 className="w-3.5 h-3.5 text-destructive" />
                 </div>
-                {deletePreview !== null && !deleteConfirmed && (
-                  <p className="text-sm text-destructive font-medium">{deletePreview} Einträge werden gelöscht.</p>
-                )}
-                {deleteConfirmed && (
-                  <p className="text-sm text-success font-medium">✓ Einträge gelöscht!</p>
-                )}
-                <div className="flex gap-2">
-                  {deletePreview === null ? (
-                    <Button variant="secondary" size="sm" onClick={handleDeletePreview} disabled={!fromDate || !toDate || fromDate.length < 6 || toDate.length < 6} className="flex-1">
-                      Vorschau
-                    </Button>
-                  ) : !deleteConfirmed ? (
-                    <Button variant="destructive" size="sm" onClick={handleDeleteConfirm} disabled={deletePreview === 0} className="flex-1">
-                      {deletePreview} Einträge löschen
-                    </Button>
-                  ) : null}
-                </div>
+                <h3 className="text-xs font-bold uppercase tracking-wider text-destructive">Löschen</h3>
               </div>
 
-              {/* Delete all entries */}
-              {!showDeleteAllConfirm ? (
-                <Button
-                  variant="destructive"
-                  size="sm"
-                  onClick={() => setShowDeleteAllConfirm(true)}
-                  disabled={entries.length === 0}
-                  className="w-full"
-                >
-                  <Trash2 className="w-3.5 h-3.5 mr-1" />
-                  Alle Einträge löschen ({entries.length})
-                </Button>
-              ) : (
-                <div className="rounded-lg border-2 border-destructive p-3 space-y-2">
-                  <p className="text-sm font-semibold text-destructive">
-                    Wirklich alle {entries.length} Einträge unwiderruflich löschen?
-                  </p>
-                  <div className="flex gap-2">
-                    <Button variant="destructive" size="sm" onClick={handleDeleteAll} className="flex-1">
-                      Ja, löschen
-                    </Button>
-                    <Button variant="ghost" size="sm" onClick={() => setShowDeleteAllConfirm(false)} className="flex-1">
-                      Abbrechen
-                    </Button>
-                  </div>
+              {/* Date range delete */}
+              <div className="rounded-lg bg-background border border-border p-2.5 space-y-2">
+                <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Zeitraum</p>
+                <div className="grid grid-cols-2 gap-2">
+                  <Input
+                    type="text"
+                    inputMode="numeric"
+                    placeholder="Von TT.MM.JJ"
+                    value={fromDate}
+                    onChange={(e) => { setFromDate(formatDateInput(e.target.value)); setDeletePreview(null); setDeleteConfirmed(false); }}
+                    className="h-8 text-xs"
+                  />
+                  <Input
+                    type="text"
+                    inputMode="numeric"
+                    placeholder="Bis TT.MM.JJ"
+                    value={toDate}
+                    onChange={(e) => { setToDate(formatDateInput(e.target.value)); setDeletePreview(null); setDeleteConfirmed(false); }}
+                    className="h-8 text-xs"
+                  />
                 </div>
-              )}
+                {deletePreview !== null && !deleteConfirmed && (
+                  <p className="text-xs text-destructive font-medium">{deletePreview} Einträge werden gelöscht.</p>
+                )}
+                {deleteConfirmed && (
+                  <p className="text-xs text-primary font-medium">✓ Gelöscht!</p>
+                )}
+                {deletePreview === null ? (
+                  <Button variant="secondary" size="sm" onClick={handleDeletePreview} disabled={!fromDate || !toDate || fromDate.length < 6 || toDate.length < 6} className="w-full h-8 text-xs">
+                    Vorschau
+                  </Button>
+                ) : !deleteConfirmed ? (
+                  <Button variant="destructive" size="sm" onClick={handleDeleteConfirm} disabled={deletePreview === 0} className="w-full h-8 text-xs">
+                    {deletePreview} Einträge löschen
+                  </Button>
+                ) : null}
+              </div>
 
-              {/* Delete all food items */}
-              {!showDeleteFoodConfirm ? (
-                <Button
-                  variant="destructive"
-                  size="sm"
-                  onClick={() => setShowDeleteFoodConfirm(true)}
-                  disabled={foodDatabase.length === 0}
-                  className="w-full"
-                >
-                  <Trash2 className="w-3.5 h-3.5 mr-1" />
-                  Alle Lebensmittel löschen ({foodDatabase.length})
-                </Button>
-              ) : (
-                <div className="rounded-lg border-2 border-destructive p-3 space-y-2">
-                  <p className="text-sm font-semibold text-destructive">
-                    Wirklich alle {foodDatabase.length} Lebensmittel unwiderruflich löschen?
-                  </p>
-                  <div className="flex gap-2">
-                    <Button variant="destructive" size="sm" onClick={handleDeleteAllFood} className="flex-1">
-                      Ja, löschen
-                    </Button>
-                    <Button variant="ghost" size="sm" onClick={() => setShowDeleteFoodConfirm(false)} className="flex-1">
-                      Abbrechen
-                    </Button>
+              {/* Quick delete buttons */}
+              <div className="grid grid-cols-2 gap-2">
+                {!showDeleteAllConfirm ? (
+                  <button
+                    onClick={() => setShowDeleteAllConfirm(true)}
+                    disabled={entries.length === 0}
+                    className="flex flex-col items-center gap-1 p-2.5 rounded-lg bg-background border border-border hover:border-destructive/40 transition-colors disabled:opacity-40 disabled:pointer-events-none"
+                  >
+                    <span className="text-[10px] font-semibold text-destructive">Alle Einträge</span>
+                    <span className="text-[9px] text-muted-foreground">{entries.length} Stk.</span>
+                  </button>
+                ) : (
+                  <div className="col-span-2 rounded-lg border-2 border-destructive p-2.5 space-y-2">
+                    <p className="text-xs font-semibold text-destructive">
+                      Wirklich alle {entries.length} Einträge löschen?
+                    </p>
+                    <div className="flex gap-2">
+                      <Button variant="destructive" size="sm" onClick={handleDeleteAll} className="flex-1 h-8 text-xs">
+                        Ja, löschen
+                      </Button>
+                      <Button variant="ghost" size="sm" onClick={() => setShowDeleteAllConfirm(false)} className="flex-1 h-8 text-xs">
+                        Abbrechen
+                      </Button>
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
+                {!showDeleteAllConfirm && (
+                  !showDeleteFoodConfirm ? (
+                    <button
+                      onClick={() => setShowDeleteFoodConfirm(true)}
+                      disabled={foodDatabase.length === 0}
+                      className="flex flex-col items-center gap-1 p-2.5 rounded-lg bg-background border border-border hover:border-destructive/40 transition-colors disabled:opacity-40 disabled:pointer-events-none"
+                    >
+                      <span className="text-[10px] font-semibold text-destructive">Alle Lebensmittel</span>
+                      <span className="text-[9px] text-muted-foreground">{foodDatabase.length} Stk.</span>
+                    </button>
+                  ) : (
+                    <div className="col-span-2 rounded-lg border-2 border-destructive p-2.5 space-y-2">
+                      <p className="text-xs font-semibold text-destructive">
+                        Wirklich alle {foodDatabase.length} Lebensmittel löschen?
+                      </p>
+                      <div className="flex gap-2">
+                        <Button variant="destructive" size="sm" onClick={handleDeleteAllFood} className="flex-1 h-8 text-xs">
+                          Ja, löschen
+                        </Button>
+                        <Button variant="ghost" size="sm" onClick={() => setShowDeleteFoodConfirm(false)} className="flex-1 h-8 text-xs">
+                          Abbrechen
+                        </Button>
+                      </div>
+                    </div>
+                  )
+                )}
+              </div>
             </div>
+
           </div>
         )}
       </DialogContent>
