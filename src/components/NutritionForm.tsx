@@ -45,7 +45,10 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
       setCarbs(String(editingEntry.carbs));
       setFat(String(editingEntry.fat));
       setFiber(String(editingEntry.fiber));
-      setSelectedFood(null);
+      // Try to find the food in the database so amount changes recalculate macros
+      const results = searchFood(editingEntry.food);
+      const match = results.find((f) => f.name.toLowerCase() === editingEntry.food.toLowerCase());
+      setSelectedFood(match || null);
     }
   }, [editingEntry]);
 
