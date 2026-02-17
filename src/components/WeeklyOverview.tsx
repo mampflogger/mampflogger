@@ -224,13 +224,13 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [] 
           <p className="text-xs text-muted-foreground">kcal</p>
         </div>
         {avgDeficit7 !== null && (
-          <div className={`rounded-xl p-3 text-center`} style={{ backgroundColor: avgDeficit7 > 0 ? "hsl(var(--success) / 0.1)" : "hsl(var(--destructive) / 0.1)" }}>
+          <div className="rounded-xl bg-accent/40 p-3 text-center">
             <p className="text-xs text-muted-foreground font-medium">Ø Defizit</p>
             <div className="flex items-center justify-center gap-1 mt-0.5">
               {avgDeficit7 > 0 ? (
                 <TrendingDown className="w-4 h-4" style={{ color: "hsl(var(--success))" }} />
               ) : (
-                <TrendingUp className="w-4 h-4 text-destructive" />
+                <TrendingUp className="w-4 h-4" style={{ color: "hsl(var(--destructive))" }} />
               )}
               <p className="text-2xl font-bold" style={{ color: avgDeficit7 > 0 ? "hsl(var(--success))" : "hsl(var(--destructive))" }}>
                 {Math.abs(avgDeficit7)}
@@ -254,7 +254,20 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [] 
               <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} domain={[0, Math.ceil(maxCalories * 1.15)]} />
               <Tooltip content={<CaloriesTooltip />} cursor={{ fill: "hsl(var(--accent) / 0.4)" }} />
               {bmr && (
-                <ReferenceLine y={bmr} stroke="hsl(var(--destructive))" strokeDasharray="4 3" strokeWidth={1.5} />
+                <ReferenceLine
+                  y={bmr}
+                  stroke="hsl(var(--destructive))"
+                  strokeDasharray="4 3"
+                  strokeWidth={1.5}
+                  label={{
+                    value: `${bmr}`,
+                    position: "right",
+                    fill: "hsl(var(--destructive))",
+                    fontSize: 9,
+                    fontWeight: 400,
+                    opacity: 0.7,
+                  }}
+                />
               )}
               <Bar dataKey="calories" radius={[6, 6, 0, 0]} maxBarSize={36}>
                 {weekData.map((entry, index) => (
