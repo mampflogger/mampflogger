@@ -18,7 +18,7 @@ import { UserProfile, calculateBMR } from "@/types/profile";
 import { NutritionEntry } from "@/types/nutrition";
 import { foodDatabase, removeFoodItem, updateFoodItem, clearFoodDatabase, FoodItem } from "@/data/foodDatabase";
 import {
-  exportEntriesToCsv, exportFoodDatabaseCsv, exportCalorieBalanceCsv,
+  exportEntriesToCsv, exportFoodDatabaseCsv, exportCalorieBalanceCsv, exportActivitiesCsv,
 } from "@/lib/csvExport";
 import { parseImportText } from "@/lib/importParser";
 import { BookedActivity } from "@/types/profile";
@@ -45,6 +45,7 @@ interface SettingsDialogProps {
   entries: NutritionEntry[];
   bookedActivities: BookedActivity[];
   onImport: (entries: NutritionEntry[]) => void;
+  onImportActivities: (activities: BookedActivity[]) => void;
   onCount: (from: string, to: string) => number;
   onDelete: (from: string, to: string) => number;
   onDeleteAll: () => number;
@@ -76,7 +77,7 @@ function parseDateInputToISO(text: string): string {
 const SettingsDialog = ({
   profile, onSaveProfile, darkMode, onToggleDarkMode,
   colorTheme, onChangeTheme, entries, bookedActivities,
-  onImport, onCount, onDelete, onDeleteAll, openToNewFood, onOpenToNewFoodHandled,
+  onImport, onImportActivities, onCount, onDelete, onDeleteAll, openToNewFood, onOpenToNewFoodHandled,
 }: SettingsDialogProps) => {
   const [open, setOpen] = useState(false);
   const [tab, setTab] = useState<SettingsTab>("profile");
@@ -96,6 +97,8 @@ const SettingsDialog = ({
   const [rawText, setRawText] = useState("");
   const [preview, setPreview] = useState<NutritionEntry[] | null>(null);
   const [foodPreview, setFoodPreview] = useState<FoodItem[] | null>(null);
+  const [activityPreview, setActivityPreview] = useState<BookedActivity[] | null>(null);
+  const [balanceHint, setBalanceHint] = useState(false);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   // Delete state
@@ -171,6 +174,8 @@ const SettingsDialog = ({
       setRawText("");
       setPreview(null);
       setFoodPreview(null);
+      setActivityPreview(null);
+      setBalanceHint(false);
     }
   };
 
@@ -242,15 +247,26 @@ const SettingsDialog = ({
         setRawText(text);
         setPreview(null);
         setFoodPreview(null);
-        // Auto-parse without type hint – let auto-detection distinguish entries vs balance vs food
+        setActivityPreview(null);
+        setBalanceHint(false);
         const result = parseImportText(text);
+        if (result.detectedType === "balance") {
+          setBalanceHint(true);
+          toast.info(`"${file.name}" – Bilanzdaten erkannt. Diese werden automatisch aus dem Protokoll berechnet und müssen nicht importiert werden.`);
+          return;
+        }
+        if (result.activities.length > 0) {
+          setActivityPreview(result.activities);
+          toast.info(`"${file.name}" – ${result.activities.length} Aktivitäten erkannt`);
+          return;
+        }
         if (result.foodItems.length > 0) {
           setFoodPreview(result.foodItems);
           toast.info(`"${file.name}" – ${result.foodItems.length} Lebensmittel erkannt`);
           return;
         }
         if (result.entries.length > 0) {
-          const typeLabel = result.detectedType === "balance" ? "Bilanzen" : "Einträge";
+          const typeLabel = "Einträge";
           setPreview(result.entries);
           toast.info(`"${file.name}" – ${result.entries.length} ${typeLabel} erkannt`);
           return;
@@ -264,6 +280,18 @@ const SettingsDialog = ({
   };
 
   const handleImportConfirm = () => {
+    if (activityPreview && activityPreview.length > 0) {
+      const existingKeys = new Set(
+        bookedActivities.map((a) => `${a.date}|${a.activityName}|${a.value}`)
+      );
+      const unique = activityPreview.filter(
+        (a) => !existingKeys.has(`${a.date}|${a.activityName}|${a.value}`)
+      );
+      onImportActivities(unique);
+      toast.success(`${unique.length} neue Aktivitäten importiert${activityPreview.length - unique.length > 0 ? ` (${activityPreview.length - unique.length} Duplikate übersprungen)` : ""}`);
+      resetImport();
+      return;
+    }
     if (foodPreview && foodPreview.length > 0) {
       let added = 0;
       foodPreview.forEach((item) => {
@@ -277,10 +305,8 @@ const SettingsDialog = ({
       return;
     }
     if (!preview || preview.length === 0) return;
-    // Dedup happens in onImport (Index.tsx) – count before/after
     const beforeCount = entries.length;
     onImport(preview);
-    // Small delay to let state update for accurate count
     setTimeout(() => {
       const newCount = preview.length;
       const existingKeys = new Set(
@@ -297,6 +323,8 @@ const SettingsDialog = ({
     setRawText("");
     setPreview(null);
     setFoodPreview(null);
+    setActivityPreview(null);
+    setBalanceHint(false);
     setImportType(null);
   };
 
@@ -345,8 +373,8 @@ const SettingsDialog = ({
     ? foodDatabase.filter((f) => f.name.toLowerCase().includes(foodSearch.toLowerCase()))
     : [...foodDatabase].sort((a, b) => a.name.localeCompare(b.name));
 
-  const hasImportResults = (preview && preview.length > 0) || (foodPreview && foodPreview.length > 0);
-  const importResultCount = preview?.length || foodPreview?.length || 0;
+  const hasImportResults = (preview && preview.length > 0) || (foodPreview && foodPreview.length > 0) || (activityPreview && activityPreview.length > 0);
+  const importResultCount = preview?.length || foodPreview?.length || activityPreview?.length || 0;
 
   const tabs: { id: SettingsTab; label: string; icon: React.ReactNode }[] = [
     { id: "profile", label: "Profil", icon: <UserCircle className="w-3.5 h-3.5" /> },
@@ -644,7 +672,7 @@ const SettingsDialog = ({
                     <div className="w-5 h-5 rounded-full bg-primary/20 flex items-center justify-center">
                       <Check className="w-3 h-3 text-primary" />
                     </div>
-                    {importResultCount} {foodPreview && foodPreview.length > 0 ? "Lebensmittel" : "Einträge"} erkannt
+                    {importResultCount} {activityPreview && activityPreview.length > 0 ? "Aktivitäten" : foodPreview && foodPreview.length > 0 ? "Lebensmittel" : "Einträge"} erkannt
                   </div>
                   {preview && preview.length > 0 && (() => {
                     const existingKeys = new Set(
@@ -669,10 +697,16 @@ const SettingsDialog = ({
                   </div>
                 </div>
               )}
-              {preview !== null && preview.length === 0 && !foodPreview && (
+              {preview !== null && preview.length === 0 && !foodPreview && !activityPreview && !balanceHint && (
                 <div className="flex items-center gap-2 text-xs text-destructive">
                   <AlertCircle className="w-3.5 h-3.5" />
                   Keine Daten erkannt.
+                </div>
+              )}
+              {balanceHint && (
+                <div className="flex items-start gap-2 text-xs text-muted-foreground bg-background border border-border rounded-lg p-2.5">
+                  <AlertCircle className="w-3.5 h-3.5 text-primary shrink-0 mt-0.5" />
+                  <span>Bilanzdaten werden automatisch aus dem Protokoll berechnet und müssen nicht importiert werden.</span>
                 </div>
               )}
             </div>
@@ -685,11 +719,12 @@ const SettingsDialog = ({
                 </div>
                 <h3 className="text-xs font-bold uppercase tracking-wider text-foreground">Export</h3>
               </div>
-              <div className="grid grid-cols-3 gap-2">
+              <div className="grid grid-cols-2 gap-2">
                 {[
                   { label: "Protokoll", icon: <FileSpreadsheet className="w-3.5 h-3.5" />, action: () => exportEntriesToCsv(entries), disabled: entries.length === 0, count: entries.length },
-                  { label: "Bilanz", icon: <BarChart3 className="w-3.5 h-3.5" />, action: () => exportCalorieBalanceCsv(entries, bookedActivities), disabled: entries.length === 0, count: new Set(entries.map(e => e.date)).size },
+                  { label: "Aktivitäten", icon: <BarChart3 className="w-3.5 h-3.5" />, action: () => exportActivitiesCsv(bookedActivities), disabled: bookedActivities.length === 0, count: bookedActivities.length },
                   { label: "Lebensmittel", icon: <UtensilsCrossed className="w-3.5 h-3.5" />, action: () => exportFoodDatabaseCsv(), disabled: foodDatabase.length === 0, count: foodDatabase.length },
+                  { label: "Bilanz", icon: <Download className="w-3.5 h-3.5" />, action: () => exportCalorieBalanceCsv(entries, bookedActivities), disabled: entries.length === 0, count: new Set(entries.map(e => e.date)).size },
                 ].map((item) => (
                   <button
                     key={item.label}
