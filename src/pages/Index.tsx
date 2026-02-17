@@ -19,7 +19,6 @@ import DeficitDisplay from "@/components/DeficitDisplay";
 import FluidDisplay from "@/components/FluidDisplay";
 import { foodDatabase } from "@/data/foodDatabase";
 import SettingsDialog, { ColorTheme } from "@/components/SettingsDialog";
-import ImportDialog from "@/components/ImportDialog";
 import { ChevronLeft, ChevronRight, Apple, BarChart3, List } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -256,7 +255,6 @@ const Index = () => {
               </button>
             </div>
             <div className="flex items-center gap-1">
-              <ImportDialog onImport={handleImport} />
               <SettingsDialog
                 profile={profile}
                 onSaveProfile={handleSaveProfile}
