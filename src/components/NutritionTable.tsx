@@ -41,7 +41,7 @@ const NutritionTable = ({ entries, onDelete, onEntryClick }: NutritionTableProps
               <th className="text-right py-1 px-0.5 font-semibold" style={{ color: MACRO_COLORS.fat }}>F</th>
               <th className="text-right py-1 px-0.5 font-semibold" style={{ color: MACRO_COLORS.kh }}>K</th>
               <th className="text-right py-1 px-0.5 font-semibold" style={{ color: MACRO_COLORS.fib }}>B</th>
-              <th className="w-7"></th>
+              <th className="w-5 pl-1.5"></th>
             </tr>
           </thead>
           <tbody>
@@ -59,7 +59,7 @@ const NutritionTable = ({ entries, onDelete, onEntryClick }: NutritionTableProps
                 <td className="py-1 px-0.5 text-right">{Math.round(entry.fat)}</td>
                 <td className="py-1 px-0.5 text-right">{Math.round(entry.carbs)}</td>
                 <td className="py-1 px-0.5 text-right">{Math.round(entry.fiber)}</td>
-                <td className="py-1 px-0">
+                <td className="py-1 pl-1.5 pr-0">
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
