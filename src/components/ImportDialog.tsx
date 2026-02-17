@@ -28,43 +28,104 @@ function parseVal(val: string): number {
   return parseFloat(cleaned) || 0;
 }
 
+/** Parse a localized number (handles both comma and dot decimals) */
+function parseLocalNum(val: string): number {
+  if (!val) return 0;
+  let s = val.trim().replace(/[^\d.,-]/g, "");
+  // If both . and , exist, the last one is the decimal separator
+  const lastComma = s.lastIndexOf(",");
+  const lastDot = s.lastIndexOf(".");
+  if (lastComma > lastDot) {
+    s = s.replace(/\./g, "").replace(",", ".");
+  } else {
+    s = s.replace(/,/g, "");
+  }
+  return parseFloat(s) || 0;
+}
+
 /** Try to split a line into columns using the best delimiter */
-function splitLine(line: string): string[] {
+function splitLine(line: string, forceDelim?: "tab" | "semi" | "comma" | "fixed"): string[] {
+  if (forceDelim) return splitWithDelimiter(line, forceDelim);
+
   // Try tab first
   const tabCols = line.split("\t");
-  if (tabCols.length >= 6) return tabCols.map((c) => c.trim());
+  if (tabCols.length >= 3) return tabCols.map((c) => c.trim().replace(/^"|"$/g, ""));
 
   // Try semicolon
   const semiCols = line.split(";");
-  if (semiCols.length >= 6) return semiCols.map((c) => c.trim().replace(/^"|"$/g, ""));
+  if (semiCols.length >= 3) return semiCols.map((c) => c.trim().replace(/^"|"$/g, ""));
 
-  // Try comma (but careful with decimal commas)
-  const commaCols = line.split(",");
-  if (commaCols.length >= 6) return commaCols.map((c) => c.trim().replace(/^"|"$/g, ""));
+  // Try comma (with quote handling)
+  const commaCols = splitWithDelimiter(line, "comma");
+  if (commaCols.length >= 3) return commaCols;
 
   // Fixed width: try splitting by 2+ spaces
   const fwCols = line.split(/\s{2,}/).map((c) => c.trim());
-  if (fwCols.length >= 6) return fwCols;
+  if (fwCols.length >= 3) return fwCols;
 
   return tabCols.map((c) => c.trim());
 }
 
 /** Detect the dominant delimiter for the whole text */
 function detectDelimiter(text: string): "tab" | "semi" | "comma" | "fixed" {
-  const lines = text.trim().split("\n").slice(0, 5);
+  const lines = text.trim().split("\n").slice(0, 10);
   let tabScore = 0, semiScore = 0, commaScore = 0, fixedScore = 0;
 
   for (const line of lines) {
-    if (line.split("\t").length >= 6) tabScore++;
-    if (line.split(";").length >= 6) semiScore++;
-    if (line.split(",").length >= 6) commaScore++;
-    if (line.split(/\s{2,}/).length >= 6) fixedScore++;
+    const tabCount = line.split("\t").length;
+    const semiCount = line.split(";").length;
+    // For comma: ignore commas inside quoted fields
+    const unquoted = line.replace(/"[^"]*"/g, "");
+    const commaCount = unquoted.split(",").length;
+    const fixedCount = line.split(/\s{2,}/).length;
+
+    if (tabCount >= 3) tabScore += tabCount;
+    if (semiCount >= 3) semiScore += semiCount;
+    if (commaCount >= 3) commaScore += commaCount;
+    if (fixedCount >= 3) fixedScore += fixedCount;
   }
 
-  if (tabScore >= semiScore && tabScore >= commaScore && tabScore >= fixedScore) return "tab";
-  if (semiScore >= commaScore && semiScore >= fixedScore) return "semi";
-  if (commaScore >= fixedScore) return "comma";
+  // Prefer tab > semi > comma > fixed (tab is most unambiguous)
+  if (tabScore >= semiScore && tabScore >= commaScore && tabScore >= fixedScore && tabScore > 0) return "tab";
+  if (semiScore >= commaScore && semiScore >= fixedScore && semiScore > 0) return "semi";
+  if (commaScore >= fixedScore && commaScore > 0) return "comma";
   return "fixed";
+}
+
+/** Split a line using a specific delimiter */
+function splitWithDelimiter(line: string, delim: "tab" | "semi" | "comma" | "fixed"): string[] {
+  switch (delim) {
+    case "tab":
+      return line.split("\t").map((c) => c.trim().replace(/^"|"$/g, ""));
+    case "semi":
+      return line.split(";").map((c) => c.trim().replace(/^"|"$/g, ""));
+    case "comma": {
+      // Handle quoted fields with commas inside
+      const cols: string[] = [];
+      let current = "";
+      let inQuotes = false;
+      for (let i = 0; i < line.length; i++) {
+        const ch = line[i];
+        if (ch === '"') {
+          if (inQuotes && i + 1 < line.length && line[i + 1] === '"') {
+            current += '"';
+            i++;
+          } else {
+            inQuotes = !inQuotes;
+          }
+        } else if (ch === "," && !inQuotes) {
+          cols.push(current.trim());
+          current = "";
+        } else {
+          current += ch;
+        }
+      }
+      cols.push(current.trim().replace(/^"|"$/g, ""));
+      return cols;
+    }
+    case "fixed":
+      return line.split(/\s{2,}/).map((c) => c.trim());
+  }
 }
 
 /** Check if a string looks like a date */
@@ -102,37 +163,44 @@ function autoDetectAndParse(text: string): {
   const lines = text.trim().split("\n");
   if (lines.length === 0) return { entries: [], foodItems: [], detectedType: "entries" };
 
+  // Detect delimiter once for the whole text
+  const delim = detectDelimiter(text);
+
   // Skip header lines
   const dataLines = lines.filter((line) => {
     const lower = line.toLowerCase();
-    return !lower.includes("lebensmittel") && !lower.includes("datum") && !lower.includes("date") && line.trim() !== "";
+    if (line.trim() === "") return false;
+    // Only skip if line contains multiple header keywords
+    const headerWords = ["lebensmittel", "datum", "date", "food", "zeit", "time"];
+    const matchCount = headerWords.filter((w) => lower.includes(w)).length;
+    if (matchCount >= 2) return false;
+    // Also skip if it looks like a full header row (contains "kcal" AND another keyword)
+    if (lower.includes("kcal") && (lower.includes("pro") || lower.includes("fat") || lower.includes("kh"))) return false;
+    return true;
   });
 
   if (dataLines.length === 0) {
-    // Maybe all lines are headers, try without filter
-    // but still skip obvious headers
+    // fallback: use all non-empty lines
   }
 
   // Analyze first few data lines to detect type
-  const sampleLines = (dataLines.length > 0 ? dataLines : lines).slice(0, 5);
-  const firstCols = sampleLines.map((l) => splitLine(l));
+  const sampleLines = (dataLines.length > 0 ? dataLines : lines.filter(l => l.trim())).slice(0, 5);
+  const firstCols = sampleLines.map((l) => splitLine(l, delim));
 
   // Heuristic: if first column of data lines looks like food names → food database
   // If first column looks like dates → entries or balance
   let dateCount = 0;
   let foodNameCount = 0;
-  let hasTimeColumn = 0;
 
   for (const cols of firstCols) {
     if (cols.length < 3) continue;
     if (looksLikeDate(cols[0])) dateCount++;
     if (looksLikeFoodName(cols[0])) foodNameCount++;
-    if (cols.length >= 3 && /^\d{1,2}:\d{2}/.test(cols[1])) hasTimeColumn++;
   }
 
   // Food database: first col = name, ~7 cols, no dates
   if (foodNameCount > dateCount && foodNameCount > 0) {
-    const foodItems = parseFoodItems(text);
+    const foodItems = parseFoodItems(text, delim);
     if (foodItems.length > 0) {
       return { entries: [], foodItems, detectedType: "food" };
     }
@@ -140,7 +208,7 @@ function autoDetectAndParse(text: string): {
 
   // Entries with time column (9 cols: date, time, food, amount, kcal, pro, fat, kh, fib)
   // Balance without time (6 cols: date, kcal, pro, fat, kh, fib)
-  const entries = parseAllEntries(text);
+  const entries = parseAllEntries(text, delim);
   if (entries.length > 0) {
     // Check if these look like balance entries (no time, no food name)
     const isBalance = entries.every((e) => e.food === "Tagesbilanz (Import)" || e.time === "00:00");
@@ -150,26 +218,28 @@ function autoDetectAndParse(text: string): {
   return { entries: [], foodItems: [], detectedType: "entries" };
 }
 
-/** Universal entry parser - tries all delimiters and column layouts */
-function parseAllEntries(text: string): NutritionEntry[] {
-  // Try CSV parser first (semicolon)
-  const csvEntries = parseEntriesCsv(text);
-  if (csvEntries.length > 0) return csvEntries;
+/** Universal entry parser - uses detected delimiter */
+function parseAllEntries(text: string, delim?: "tab" | "semi" | "comma" | "fixed"): NutritionEntry[] {
+  const effectiveDelim = delim || detectDelimiter(text);
 
-  // Try balance CSV
-  const balanceEntries = parseCalorieBalanceCsv(text);
-  if (balanceEntries.length > 0) return balanceEntries;
+  // Try the dedicated semicolon CSV parsers first if delimiter is semicolon
+  if (effectiveDelim === "semi") {
+    const csvEntries = parseEntriesCsv(text);
+    if (csvEntries.length > 0) return csvEntries;
+    const balanceEntries = parseCalorieBalanceCsv(text);
+    if (balanceEntries.length > 0) return balanceEntries;
+  }
 
-  // Try TSV / fixed-width / any delimiter
+  // Universal parsing with detected delimiter
   const lines = text.trim().split("\n");
   const entries: NutritionEntry[] = [];
 
   for (const line of lines) {
-    const cols = splitLine(line);
+    const cols = splitLine(line, effectiveDelim);
     if (cols.length < 6) continue;
 
     const first = cols[0].toLowerCase();
-    if (first.includes("datum") || first.includes("date") || first === "" || first.includes("tag")) continue;
+    if (first.includes("datum") || first.includes("date") || first === "" || first.includes("tag") || first.includes("lebensmittel")) continue;
 
     // Try: date in first column
     const date = parseDate(cols[0]);
@@ -204,11 +274,11 @@ function parseAllEntries(text: string): NutritionEntry[] {
         time: "00:00",
         food: "Tagesbilanz (Import)",
         amount: 0,
-        calories: Math.round(parseFloat(cols[1]) || 0),
-        protein: Math.round(parseFloat(cols[2]) || 0),
-        fat: Math.round(parseFloat(cols[3]) || 0),
-        carbs: Math.round(parseFloat(cols[4]) || 0),
-        fiber: Math.round(parseFloat(cols[5]) || 0),
+        calories: Math.round(parseLocalNum(cols[1])),
+        protein: Math.round(parseLocalNum(cols[2])),
+        fat: Math.round(parseLocalNum(cols[3])),
+        carbs: Math.round(parseLocalNum(cols[4])),
+        fiber: Math.round(parseLocalNum(cols[5])),
       });
     }
   }
@@ -217,17 +287,21 @@ function parseAllEntries(text: string): NutritionEntry[] {
 }
 
 /** Universal food database parser */
-function parseFoodItems(text: string): FoodItem[] {
-  // Try the existing CSV parser first
-  const csvItems = parseFoodDatabaseCsv(text);
-  if (csvItems.length > 0) return csvItems;
+function parseFoodItems(text: string, delim?: "tab" | "semi" | "comma" | "fixed"): FoodItem[] {
+  const effectiveDelim = delim || detectDelimiter(text);
 
-  // Try other delimiters
+  // Try the existing CSV parser first if semicolon
+  if (effectiveDelim === "semi") {
+    const csvItems = parseFoodDatabaseCsv(text);
+    if (csvItems.length > 0) return csvItems;
+  }
+
+  // Try with detected delimiter
   const lines = text.trim().split("\n");
   const items: FoodItem[] = [];
 
   for (const line of lines) {
-    const cols = splitLine(line);
+    const cols = splitLine(line, effectiveDelim);
     if (cols.length < 7) continue;
     const name = cols[0];
     if (!name || name.toLowerCase().includes("lebensmittel")) continue;
@@ -240,11 +314,11 @@ function parseFoodItems(text: string): FoodItem[] {
       name,
       baseUnit,
       baseAmount,
-      calories: parseFloat(cols[2]) || 0,
-      protein: parseFloat(cols[3]) || 0,
-      fat: parseFloat(cols[4]) || 0,
-      carbs: parseFloat(cols[5]) || 0,
-      fiber: parseFloat(cols[6]) || 0,
+      calories: parseLocalNum(cols[2]),
+      protein: parseLocalNum(cols[3]),
+      fat: parseLocalNum(cols[4]),
+      carbs: parseLocalNum(cols[5]),
+      fiber: parseLocalNum(cols[6]),
     });
   }
 
