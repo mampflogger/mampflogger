@@ -35,12 +35,12 @@ const NutritionTable = ({ entries, onDelete, onEntryClick }: NutritionTableProps
             <tr className="border-b border-border">
               <th className="text-left py-1 pr-1 font-semibold text-muted-foreground">Zeit</th>
               <th className="text-left py-1 pr-1 font-semibold text-muted-foreground">Lebensmittel</th>
-              <th className="text-right py-1 px-0.5 font-semibold text-muted-foreground">g</th>
-              <th className="text-right py-1 px-0.5 font-semibold text-muted-foreground">kcal</th>
-              <th className="text-right py-1 px-0.5 font-semibold" style={{ color: MACRO_COLORS.pro }}>P</th>
-              <th className="text-right py-1 px-0.5 font-semibold" style={{ color: MACRO_COLORS.fat }}>F</th>
-              <th className="text-right py-1 px-0.5 font-semibold" style={{ color: MACRO_COLORS.kh }}>K</th>
-              <th className="text-right py-1 px-0.5 font-semibold" style={{ color: MACRO_COLORS.fib }}>B</th>
+              <th className="text-right py-1 px-0 font-semibold text-muted-foreground">g/ml</th>
+              <th className="text-right py-1 px-0 font-semibold text-muted-foreground">kcal</th>
+              <th className="text-right py-1 px-0 font-semibold" style={{ color: MACRO_COLORS.pro }}>P</th>
+              <th className="text-right py-1 px-0 font-semibold" style={{ color: MACRO_COLORS.fat }}>F</th>
+              <th className="text-right py-1 px-0 font-semibold" style={{ color: MACRO_COLORS.kh }}>K</th>
+              <th className="text-right py-1 px-0 font-semibold" style={{ color: MACRO_COLORS.fib }}>B</th>
               <th className="w-5"></th>
             </tr>
           </thead>
@@ -51,14 +51,14 @@ const NutritionTable = ({ entries, onDelete, onEntryClick }: NutritionTableProps
                 className="border-b border-border/50 hover:bg-muted/30 transition-colors cursor-pointer"
                 onClick={() => onEntryClick?.(entry)}
               >
-                <td className="py-1 pr-1 text-muted-foreground font-mono whitespace-nowrap">{entry.time}</td>
-                <td className="py-1 pr-1 font-medium max-w-[80px] truncate">{entry.food}</td>
-                <td className="py-1 px-0.5 text-right text-muted-foreground">{entry.amount}</td>
-                <td className="py-1 px-0.5 text-right font-semibold">{Math.round(entry.calories)}</td>
-                <td className="py-1 px-0.5 text-right">{Math.round(entry.protein)}</td>
-                <td className="py-1 px-0.5 text-right">{Math.round(entry.fat)}</td>
-                <td className="py-1 px-0.5 text-right">{Math.round(entry.carbs)}</td>
-                <td className="py-1 px-0.5 text-right">{Math.round(entry.fiber)}</td>
+                <td className="py-1 pr-0.5 text-muted-foreground font-mono whitespace-nowrap">{entry.time}</td>
+                <td className="py-1 pr-0.5 font-medium max-w-[80px] truncate">{entry.food}</td>
+                <td className="py-1 px-0 text-right text-muted-foreground">{entry.amount}</td>
+                <td className="py-1 px-0 text-right font-semibold">{Math.round(entry.calories)}</td>
+                <td className="py-1 px-0 text-right">{Math.round(entry.protein)}</td>
+                <td className="py-1 px-0 text-right">{Math.round(entry.fat)}</td>
+                <td className="py-1 px-0 text-right">{Math.round(entry.carbs)}</td>
+                <td className="py-1 px-0 text-right">{Math.round(entry.fiber)}</td>
                 <td className="py-1 px-0">
                   <button
                     onClick={(e) => {
@@ -76,20 +76,20 @@ const NutritionTable = ({ entries, onDelete, onEntryClick }: NutritionTableProps
           </tbody>
           <tfoot>
             <tr className="border-t-2 border-primary/20 bg-accent/30">
-              <td className="py-1 px-0.5 font-bold" colSpan={3}>Summe</td>
-              <td className="py-1 px-0.5 text-right font-bold">{summary.totalCalories}</td>
-              <td className="py-1 px-0.5 text-right font-bold">{summary.totalProtein}</td>
-              <td className="py-1 px-0.5 text-right font-bold">{summary.totalFat}</td>
-              <td className="py-1 px-0.5 text-right font-bold">{summary.totalCarbs}</td>
-              <td className="py-1 px-0.5 text-right font-bold">{summary.totalFiber}</td>
+              <td className="py-1 px-0 font-bold" colSpan={3}>Summe</td>
+              <td className="py-1 px-0 text-right font-bold">{summary.totalCalories}</td>
+              <td className="py-1 px-0 text-right font-bold">{summary.totalProtein}</td>
+              <td className="py-1 px-0 text-right font-bold">{summary.totalFat}</td>
+              <td className="py-1 px-0 text-right font-bold">{summary.totalCarbs}</td>
+              <td className="py-1 px-0 text-right font-bold">{summary.totalFiber}</td>
               <td></td>
             </tr>
             <tr className="bg-accent/20">
-              <td className="py-1 px-0.5 text-muted-foreground font-medium" colSpan={4}>Makro %</td>
-              <td className="py-1 px-0.5 text-right font-semibold" style={{ color: MACRO_COLORS.pro }}>{summary.proteinPercent}%</td>
-              <td className="py-1 px-0.5 text-right font-semibold" style={{ color: MACRO_COLORS.fat }}>{summary.fatPercent}%</td>
-              <td className="py-1 px-0.5 text-right font-semibold" style={{ color: MACRO_COLORS.kh }}>{summary.carbsPercent}%</td>
-              <td className="py-1 px-0.5 text-right font-semibold" style={{ color: MACRO_COLORS.fib }}>{summary.fiberPercent}%</td>
+              <td className="py-1 px-0 text-muted-foreground font-medium" colSpan={4}>Makro %</td>
+              <td className="py-1 px-0 text-right font-semibold" style={{ color: MACRO_COLORS.pro }}>{summary.proteinPercent}</td>
+              <td className="py-1 px-0 text-right font-semibold" style={{ color: MACRO_COLORS.fat }}>{summary.fatPercent}</td>
+              <td className="py-1 px-0 text-right font-semibold" style={{ color: MACRO_COLORS.kh }}>{summary.carbsPercent}</td>
+              <td className="py-1 px-0 text-right font-semibold" style={{ color: MACRO_COLORS.fib }}>{summary.fiberPercent}</td>
               <td></td>
             </tr>
           </tfoot>

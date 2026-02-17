@@ -39,12 +39,12 @@ const DeficitDisplay = ({ profile, activityBonus, consumedCalories }: DeficitDis
         <span>Kalorienaufnahme</span>
         <span className="font-semibold text-foreground">{consumedCalories} kcal</span>
       </div>
-      <div className={`flex items-center justify-between pt-2 border-t border-border ${isDeficit ? "text-success" : "text-destructive"}`}>
-        <span className="flex items-center gap-1 text-xs font-medium">
-          {isDeficit ? <TrendingDown className="w-3.5 h-3.5" /> : <TrendingUp className="w-3.5 h-3.5" />}
+      <div className="flex items-center justify-between pt-2 border-t border-border">
+        <span className="flex items-center gap-1 text-xs font-medium text-foreground">
+          {isDeficit ? <TrendingDown className="w-3.5 h-3.5" style={{ color: "hsl(var(--success))" }} /> : <TrendingUp className="w-3.5 h-3.5" style={{ color: "hsl(var(--destructive))" }} />}
           {isDeficit ? "Defizit" : "Überschuss"}
         </span>
-        <span className="text-lg font-bold">
+        <span className="text-lg font-bold" style={{ color: isDeficit ? "hsl(var(--success))" : "hsl(var(--destructive))" }}>
           {isDeficit ? `-${deficit}` : `+${Math.abs(deficit)}`} kcal
         </span>
       </div>

@@ -82,9 +82,17 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit }: Nutr
     setSuggestions([]);
     setShowSuggestions(false);
     setHighlightIndex(-1);
-    const defaultAmount = item.defaultAmount || item.baseAmount;
-    setAmount(String(defaultAmount));
-    applyFoodValues(item, defaultAmount);
+    if (item.defaultAmount) {
+      setAmount(String(item.defaultAmount));
+      applyFoodValues(item, item.defaultAmount);
+    } else {
+      setAmount("");
+      setCalories("");
+      setProtein("");
+      setCarbs("");
+      setFat("");
+      setFiber("");
+    }
     // Auto-focus to amount field
     setTimeout(() => amountInputRef.current?.focus(), 0);
   };

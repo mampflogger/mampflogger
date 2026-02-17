@@ -47,7 +47,19 @@ const ActivityInput = ({
   onCancelEdit,
   activityBonus,
 }: ActivityInputProps) => {
-  const [activityTypes, setActivityTypes] = useState<ActivityType[]>(loadActivityTypes);
+  const [activityTypes, setActivityTypes] = useState<ActivityType[]>(() => {
+    const types = loadActivityTypes();
+    // Sort by last used (stored order)
+    const lastUsedId = localStorage.getItem("foodlog-last-activity-type");
+    if (lastUsedId) {
+      const idx = types.findIndex((t) => t.id === lastUsedId);
+      if (idx > 0) {
+        const [item] = types.splice(idx, 1);
+        types.unshift(item);
+      }
+    }
+    return types;
+  });
   const [selectedTypeId, setSelectedTypeId] = useState<string>(
     editingActivity?.activityTypeId || activityTypes[0]?.id || ""
   );
@@ -68,6 +80,11 @@ const ActivityInput = ({
     if (isNaN(numValue) || numValue <= 0) return;
 
     const calories = Math.round(type.caloriesPerUnit * numValue);
+
+    // Move last used type to top
+    localStorage.setItem("foodlog-last-activity-type", type.id);
+    const reordered = [type, ...activityTypes.filter((t) => t.id !== type.id)];
+    setActivityTypes(reordered);
 
     if (isEditing && editingActivity) {
       onEditActivity({
@@ -91,7 +108,7 @@ const ActivityInput = ({
     }
 
     setValue("");
-    setSelectedTypeId(activityTypes[0]?.id || "");
+    setSelectedTypeId(reordered[0]?.id || "");
     if (isEditing) onCancelEdit();
   };
 
