@@ -1,4 +1,4 @@
-import { NutritionEntry, calculateDailySummary, formatDate } from "@/types/nutrition";
+import { NutritionEntry, calculateDailySummary, formatDate, generateId } from "@/types/nutrition";
 import { FoodItem, foodDatabase } from "@/data/foodDatabase";
 import {
   UserProfile,
@@ -19,6 +19,24 @@ function downloadCsv(csv: string, filename: string) {
   URL.revokeObjectURL(url);
 }
 
+/** Convert ISO date "2026-01-15" to "15.01.26" */
+export function formatDateDE(isoDate: string): string {
+  const [y, m, d] = isoDate.split("-");
+  return `${d}.${m}.${y.slice(2)}`;
+}
+
+/** Convert "15.01.26" to "2026-01-15" */
+export function parseDateDE(deDate: string): string {
+  const parts = deDate.split(".");
+  if (parts.length < 3) return deDate;
+  const d = parts[0].padStart(2, "0");
+  const m = parts[1].padStart(2, "0");
+  let y = parseInt(parts[2]);
+  if (isNaN(y)) return deDate;
+  if (y < 100) y += 2000;
+  return `${y}-${m}-${d}`;
+}
+
 /** Export raw nutrition entries */
 export function exportEntriesToCsv(entries: NutritionEntry[]): void {
   const sorted = [...entries].sort((a, b) => {
@@ -29,7 +47,7 @@ export function exportEntriesToCsv(entries: NutritionEntry[]): void {
   const header = "Datum;Zeit;Lebensmittel;Menge;kcal;PRO;FAT;KH;FIB";
   const rows = sorted.map((e) =>
     [
-      e.date,
+      formatDateDE(e.date),
       e.time,
       `"${e.food.replace(/"/g, '""')}"`,
       e.amount,
@@ -47,7 +65,7 @@ export function exportEntriesToCsv(entries: NutritionEntry[]): void {
 
 /** Export food database */
 export function exportFoodDatabaseCsv(): void {
-  const header = "Lebensmittel;Einheit;kcal;PRO;FAT;KH;FIB";
+  const header = "Lebensmittel;Einheit;kcal;PRO;FAT;KH;FIB;Standard";
   const rows = foodDatabase.map((f) =>
     [
       `"${f.name.replace(/"/g, '""')}"`,
@@ -57,6 +75,7 @@ export function exportFoodDatabaseCsv(): void {
       f.fat,
       f.carbs,
       f.fiber,
+      f.defaultAmount || "",
     ].join(";")
   );
 
@@ -75,8 +94,8 @@ export function exportCalorieBalanceCsv(entries: NutritionEntry[], bookedActivit
   const rows = dates.map((date) => {
     const dayEntries = entries.filter((e) => e.date === date);
     const summary = calculateDailySummary(dayEntries);
-    const base = [
-      date,
+    const base: (string | number)[] = [
+      formatDateDE(date),
       summary.totalCalories,
       summary.totalProtein,
       summary.totalFat,
@@ -109,6 +128,7 @@ export function parseFoodDatabaseCsv(text: string): FoodItem[] {
 
     const baseUnit = cols[1] || "100g";
     const baseAmount = baseUnit.includes("Stk") ? 1 : 100;
+    const defaultAmountRaw = cols[7] ? parseFloat(cols[7]) : undefined;
 
     items.push({
       name,
@@ -119,13 +139,14 @@ export function parseFoodDatabaseCsv(text: string): FoodItem[] {
       fat: parseFloat(cols[4]) || 0,
       carbs: parseFloat(cols[5]) || 0,
       fiber: parseFloat(cols[6]) || 0,
+      defaultAmount: defaultAmountRaw && !isNaN(defaultAmountRaw) ? defaultAmountRaw : undefined,
     });
   }
 
   return items;
 }
 
-/** Parse nutrition entries from CSV (semicolon-separated) */
+/** Parse nutrition entries from CSV (semicolon-separated, dates DD.MM.YY or YYYY-MM-DD) */
 export function parseEntriesCsv(text: string): NutritionEntry[] {
   const lines = text.trim().split("\n");
   const entries: NutritionEntry[] = [];
@@ -136,17 +157,49 @@ export function parseEntriesCsv(text: string): NutritionEntry[] {
     const datum = cols[0];
     if (!datum || datum.toLowerCase().includes("datum")) continue;
 
+    const date = datum.includes("-") ? datum : parseDateDE(datum);
+
     entries.push({
-      id: Date.now().toString(36) + Math.random().toString(36).slice(2, 7),
-      date: datum,
+      id: generateId(),
+      date,
       time: cols[1] || "00:00",
       food: cols[2] || "",
       amount: parseFloat(cols[3]) || 0,
       calories: Math.round(parseFloat(cols[4]) || 0),
-      protein: parseFloat(cols[5]) || 0,
-      fat: parseFloat(cols[6]) || 0,
-      carbs: parseFloat(cols[7]) || 0,
-      fiber: parseFloat(cols[8]) || 0,
+      protein: Math.round(parseFloat(cols[5]) || 0),
+      fat: Math.round(parseFloat(cols[6]) || 0),
+      carbs: Math.round(parseFloat(cols[7]) || 0),
+      fiber: Math.round(parseFloat(cols[8]) || 0),
+    });
+  }
+
+  return entries;
+}
+
+/** Parse calorie balance CSV (Bilanz import) */
+export function parseCalorieBalanceCsv(text: string): NutritionEntry[] {
+  const lines = text.trim().split("\n");
+  const entries: NutritionEntry[] = [];
+
+  for (const line of lines) {
+    const cols = line.split(";").map((c) => c.trim().replace(/^"|"$/g, ""));
+    if (cols.length < 6) continue;
+    const datum = cols[0];
+    if (!datum || datum.toLowerCase().includes("datum")) continue;
+
+    const date = datum.includes("-") ? datum : parseDateDE(datum);
+
+    entries.push({
+      id: generateId(),
+      date,
+      time: "00:00",
+      food: "Tagesbilanz (Import)",
+      amount: 0,
+      calories: Math.round(parseFloat(cols[1]) || 0),
+      protein: Math.round(parseFloat(cols[2]) || 0),
+      fat: Math.round(parseFloat(cols[3]) || 0),
+      carbs: Math.round(parseFloat(cols[4]) || 0),
+      fiber: Math.round(parseFloat(cols[5]) || 0),
     });
   }
 

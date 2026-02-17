@@ -11,13 +11,18 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Settings, Sun, Moon, Trash2, Upload, Download, UserCircle, Save, Check, AlertCircle, FileSpreadsheet, UtensilsCrossed, Palette } from "lucide-react";
+import {
+  Settings, Sun, Moon, Trash2, Upload, Download, UserCircle, Save, Check,
+  AlertCircle, FileSpreadsheet, UtensilsCrossed, Palette,
+} from "lucide-react";
 import { UserProfile, calculateBMR } from "@/types/profile";
 import { NutritionEntry } from "@/types/nutrition";
-import { foodDatabase, removeFoodItem } from "@/data/foodDatabase";
-import { exportEntriesToCsv, exportFoodDatabaseCsv, exportCalorieBalanceCsv, parseEntriesCsv, parseFoodDatabaseCsv } from "@/lib/csvExport";
+import { foodDatabase, removeFoodItem, updateFoodItem, FoodItem } from "@/data/foodDatabase";
+import {
+  exportEntriesToCsv, exportFoodDatabaseCsv, exportCalorieBalanceCsv,
+  parseEntriesCsv, parseFoodDatabaseCsv, parseCalorieBalanceCsv,
+} from "@/lib/csvExport";
 import { BookedActivity } from "@/types/profile";
-import { FoodItem } from "@/data/foodDatabase";
 import { toast } from "sonner";
 
 type SettingsTab = "profile" | "design" | "food" | "data";
@@ -45,54 +50,25 @@ interface SettingsDialogProps {
   onDelete: (from: string, to: string) => number;
 }
 
-// Import logic (moved from ImportDialog)
-type ImportType = "tsv" | "csv-entries" | "csv-food";
+type ImportType = "csv-entries" | "csv-balance" | "csv-food";
 
-function parseImportData(text: string): NutritionEntry[] {
-  const lines = text.trim().split("\n");
-  const entries: NutritionEntry[] = [];
-  for (const line of lines) {
-    const cols = line.split("\t");
-    if (cols.length < 7) continue;
-    const first = cols[0].trim().toLowerCase();
-    if (first.includes("datum") || first.includes("date") || first === "" || first.includes("tag")) continue;
-    const dateStr = cols[0]?.trim() || "";
-    const timeStr = cols[1]?.trim() || "";
-    const food = cols[2]?.trim() || "";
-    const amountStr = cols[3]?.trim() || "";
-    const calStr = cols[4]?.trim() || "";
-    const protStr = cols[5]?.trim() || "";
-    const fatStr = cols[6]?.trim() || "";
-    const carbStr = cols[7]?.trim() || "";
-    const fiberStr = cols[8]?.trim() || "";
-    const dateParts = dateStr.split(".");
-    if (dateParts.length < 3) continue;
-    const day = dateParts[0].padStart(2, "0");
-    const month = dateParts[1].padStart(2, "0");
-    let year = parseInt(dateParts[2]);
-    if (isNaN(year)) continue;
-    if (year < 100) year += 2000;
-    const date = `${year}-${month}-${day}`;
-    const time = timeStr.includes(":") ? timeStr.slice(0, 5) : "00:00";
-    const amountMatch = amountStr.match(/(\d+(?:[.,]\d+)?)/);
-    const amount = amountMatch ? parseFloat(amountMatch[1].replace(",", ".")) : 0;
-    const parseVal = (val: string): number => {
-      if (!val) return 0;
-      const cleaned = val.split("/")[0].trim().replace(",", ".");
-      return parseFloat(cleaned) || 0;
-    };
-    if (!food) continue;
-    entries.push({
-      id: Date.now().toString(36) + Math.random().toString(36).slice(2, 7),
-      date, time, food, amount,
-      calories: Math.round(parseVal(calStr)),
-      protein: Math.round(parseVal(protStr)),
-      carbs: Math.round(parseVal(carbStr)),
-      fat: Math.round(parseVal(fatStr)),
-      fiber: Math.round(parseVal(fiberStr)),
-    });
-  }
-  return entries;
+// Date auto-format helpers
+function formatDateInput(raw: string): string {
+  const digits = raw.replace(/\D/g, "").slice(0, 6);
+  if (digits.length <= 2) return digits;
+  if (digits.length <= 4) return digits.slice(0, 2) + "." + digits.slice(2);
+  return digits.slice(0, 2) + "." + digits.slice(2, 4) + "." + digits.slice(4);
+}
+
+function parseDateInputToISO(text: string): string {
+  const parts = text.split(".");
+  if (parts.length < 3 || parts[2].length < 2) return "";
+  const d = parts[0].padStart(2, "0");
+  const m = parts[1].padStart(2, "0");
+  let y = parseInt(parts[2]);
+  if (isNaN(y)) return "";
+  if (y < 100) y += 2000;
+  return `${y}-${m}-${d}`;
 }
 
 const SettingsDialog = ({
@@ -111,7 +87,7 @@ const SettingsDialog = ({
   const [gender, setGender] = useState<"male" | "female">("male");
 
   // Import state
-  const [importType, setImportType] = useState<ImportType>("tsv");
+  const [importType, setImportType] = useState<ImportType | null>(null);
   const [rawText, setRawText] = useState("");
   const [preview, setPreview] = useState<NutritionEntry[] | null>(null);
   const [foodPreview, setFoodPreview] = useState<FoodItem[] | null>(null);
@@ -121,9 +97,19 @@ const SettingsDialog = ({
   const [toDate, setToDate] = useState("");
   const [deletePreview, setDeletePreview] = useState<number | null>(null);
   const [deleteConfirmed, setDeleteConfirmed] = useState(false);
+  const [showDeleteAllConfirm, setShowDeleteAllConfirm] = useState(false);
 
   // Food list state
   const [foodSearch, setFoodSearch] = useState("");
+  const [editingFood, setEditingFood] = useState<FoodItem | null>(null);
+  const [editFoodName, setEditFoodName] = useState("");
+  const [editFoodUnit, setEditFoodUnit] = useState("");
+  const [editFoodCal, setEditFoodCal] = useState("");
+  const [editFoodPro, setEditFoodPro] = useState("");
+  const [editFoodFat, setEditFoodFat] = useState("");
+  const [editFoodKh, setEditFoodKh] = useState("");
+  const [editFoodFib, setEditFoodFib] = useState("");
+  const [editFoodDefault, setEditFoodDefault] = useState("");
   const [, forceUpdate] = useState(0);
 
   const handleOpen = (isOpen: boolean) => {
@@ -134,6 +120,13 @@ const SettingsDialog = ({
       setHeightCm(String(profile.heightCm));
       setWeightKg(String(profile.weightKg));
       setGender(profile.gender);
+    }
+    if (!isOpen) {
+      setEditingFood(null);
+      setImportType(null);
+      setRawText("");
+      setPreview(null);
+      setFoodPreview(null);
     }
   };
 
@@ -150,16 +143,49 @@ const SettingsDialog = ({
     toast.success("Profil gespeichert!");
   };
 
+  // Food editing
+  const handleEditFood = (food: FoodItem) => {
+    setEditingFood(food);
+    setEditFoodName(food.name);
+    setEditFoodUnit(food.baseUnit);
+    setEditFoodCal(String(food.calories));
+    setEditFoodPro(String(food.protein));
+    setEditFoodFat(String(food.fat));
+    setEditFoodKh(String(food.carbs));
+    setEditFoodFib(String(food.fiber));
+    setEditFoodDefault(food.defaultAmount ? String(food.defaultAmount) : "");
+  };
+
+  const handleSaveFood = () => {
+    if (!editingFood || !editFoodName.trim()) return;
+    const updated: FoodItem = {
+      name: editFoodName.trim(),
+      baseUnit: editFoodUnit || "100g",
+      baseAmount: editFoodUnit.includes("Stk") ? 1 : 100,
+      calories: parseFloat(editFoodCal) || 0,
+      protein: parseFloat(editFoodPro) || 0,
+      fat: parseFloat(editFoodFat) || 0,
+      carbs: parseFloat(editFoodKh) || 0,
+      fiber: parseFloat(editFoodFib) || 0,
+      defaultAmount: editFoodDefault ? parseFloat(editFoodDefault) || undefined : undefined,
+    };
+    updateFoodItem(editingFood.name, updated);
+    setEditingFood(null);
+    forceUpdate((n) => n + 1);
+    toast.success("Lebensmittel aktualisiert!");
+  };
+
   // Import handlers
   const handleParse = () => {
     setFoodPreview(null);
     setPreview(null);
+    if (!importType) return;
     if (importType === "csv-food") {
       setFoodPreview(parseFoodDatabaseCsv(rawText));
-    } else if (importType === "csv-entries") {
-      setPreview(parseEntriesCsv(rawText));
+    } else if (importType === "csv-balance") {
+      setPreview(parseCalorieBalanceCsv(rawText));
     } else {
-      setPreview(parseImportData(rawText));
+      setPreview(parseEntriesCsv(rawText));
     }
   };
 
@@ -171,37 +197,59 @@ const SettingsDialog = ({
         }
       });
       toast.success(`${foodPreview.length} Lebensmittel importiert!`);
-      setRawText(""); setPreview(null); setFoodPreview(null);
+      resetImport();
       return;
     }
     if (!preview || preview.length === 0) return;
     onImport(preview);
     toast.success(`${preview.length} Einträge importiert!`);
-    setRawText(""); setPreview(null); setFoodPreview(null);
+    resetImport();
+  };
+
+  const resetImport = () => {
+    setRawText("");
+    setPreview(null);
+    setFoodPreview(null);
+    setImportType(null);
   };
 
   const handleDeletePreview = () => {
-    if (!fromDate || !toDate) return;
-    setDeletePreview(onCount(fromDate, toDate));
+    const from = parseDateInputToISO(fromDate);
+    const to = parseDateInputToISO(toDate);
+    if (!from || !to) return;
+    setDeletePreview(onCount(from, to));
   };
 
   const handleDeleteConfirm = () => {
-    if (!fromDate || !toDate) return;
-    onDelete(fromDate, toDate);
+    const from = parseDateInputToISO(fromDate);
+    const to = parseDateInputToISO(toDate);
+    if (!from || !to) return;
+    onDelete(from, to);
     setDeleteConfirmed(true);
+    toast.success("Einträge gelöscht!");
     setTimeout(() => {
-      setFromDate(""); setToDate(""); setDeletePreview(null); setDeleteConfirmed(false);
+      setFromDate("");
+      setToDate("");
+      setDeletePreview(null);
+      setDeleteConfirmed(false);
     }, 1200);
+  };
+
+  const handleDeleteAll = () => {
+    const count = onDelete("0000-01-01", "9999-12-31");
+    setShowDeleteAllConfirm(false);
+    toast.success(`${count} Einträge gelöscht!`);
+    forceUpdate((n) => n + 1);
+  };
+
+  const handleRemoveFood = (foodName: string) => {
+    removeFoodItem(foodName);
+    forceUpdate((n) => n + 1);
   };
 
   const filteredFoods = foodSearch
     ? foodDatabase.filter((f) => f.name.toLowerCase().includes(foodSearch.toLowerCase()))
     : [...foodDatabase].sort((a, b) => a.name.localeCompare(b.name));
-
-  const handleRemoveFood = (name: string) => {
-    removeFoodItem(name);
-    forceUpdate((n) => n + 1);
-  };
 
   const hasImportResults = (preview && preview.length > 0) || (foodPreview && foodPreview.length > 0);
   const importResultCount = preview?.length || foodPreview?.length || 0;
@@ -249,7 +297,7 @@ const SettingsDialog = ({
           <div className="space-y-4">
             <div>
               <Label className="text-xs font-medium text-muted-foreground mb-1.5 block">Name</Label>
-              <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Dein Name" className="h-11 bg-muted/50" />
+              <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Dein Name" className="h-11 bg-muted/50" autoCorrect="off" spellCheck={false} />
             </div>
             <div>
               <Label className="text-xs font-medium text-muted-foreground mb-1.5 block">Geschlecht</Label>
@@ -329,26 +377,90 @@ const SettingsDialog = ({
         {/* Food List Tab */}
         {tab === "food" && (
           <div className="space-y-3">
-            <Input
-              placeholder="Lebensmittel suchen..."
-              value={foodSearch}
-              onChange={(e) => setFoodSearch(e.target.value)}
-              className="h-9 text-xs"
-            />
-            <div className="max-h-60 overflow-y-auto space-y-0.5">
-              {filteredFoods.map((f) => (
-                <div key={f.name} className="flex items-center justify-between text-xs py-1.5 px-2 rounded hover:bg-muted/30">
-                  <div className="truncate">
-                    <span className="font-medium">{f.name}</span>
-                    <span className="text-muted-foreground ml-2">{f.calories} kcal/{f.baseUnit}</span>
+            {editingFood ? (
+              <div className="space-y-3 p-3 rounded-lg border border-border bg-muted/30">
+                <p className="text-xs font-semibold text-muted-foreground uppercase">Lebensmittel bearbeiten</p>
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <Label className="text-[10px] text-muted-foreground">Name</Label>
+                    <Input value={editFoodName} onChange={(e) => setEditFoodName(e.target.value)} className="h-9 text-xs" autoCorrect="off" spellCheck={false} />
                   </div>
-                  <button onClick={() => handleRemoveFood(f.name)} className="p-0.5 rounded text-muted-foreground hover:text-destructive shrink-0">
-                    <Trash2 className="w-3 h-3" />
-                  </button>
+                  <div>
+                    <Label className="text-[10px] text-muted-foreground">Einheit</Label>
+                    <Input value={editFoodUnit} onChange={(e) => setEditFoodUnit(e.target.value)} className="h-9 text-xs" placeholder="100g" autoCorrect="off" spellCheck={false} />
+                  </div>
                 </div>
-              ))}
-            </div>
-            <p className="text-[10px] text-muted-foreground">{foodDatabase.length} Lebensmittel in der Datenbank</p>
+                <div className="grid grid-cols-5 gap-2">
+                  <div>
+                    <Label className="text-[10px] text-muted-foreground">kcal</Label>
+                    <Input type="number" inputMode="decimal" value={editFoodCal} onChange={(e) => setEditFoodCal(e.target.value)} className="h-9 text-xs" />
+                  </div>
+                  <div>
+                    <Label className="text-[10px] text-muted-foreground">PRO</Label>
+                    <Input type="number" inputMode="decimal" value={editFoodPro} onChange={(e) => setEditFoodPro(e.target.value)} className="h-9 text-xs" />
+                  </div>
+                  <div>
+                    <Label className="text-[10px] text-muted-foreground">FAT</Label>
+                    <Input type="number" inputMode="decimal" value={editFoodFat} onChange={(e) => setEditFoodFat(e.target.value)} className="h-9 text-xs" />
+                  </div>
+                  <div>
+                    <Label className="text-[10px] text-muted-foreground">KH</Label>
+                    <Input type="number" inputMode="decimal" value={editFoodKh} onChange={(e) => setEditFoodKh(e.target.value)} className="h-9 text-xs" />
+                  </div>
+                  <div>
+                    <Label className="text-[10px] text-muted-foreground">FIB</Label>
+                    <Input type="number" inputMode="decimal" value={editFoodFib} onChange={(e) => setEditFoodFib(e.target.value)} className="h-9 text-xs" />
+                  </div>
+                </div>
+                <div>
+                  <Label className="text-[10px] text-muted-foreground">Standard (Vorbelegung in g/ml/Stk)</Label>
+                  <Input type="number" inputMode="decimal" value={editFoodDefault} onChange={(e) => setEditFoodDefault(e.target.value)} placeholder="z.B. 125" className="h-9 text-xs" />
+                </div>
+                <div className="flex gap-2">
+                  <Button onClick={handleSaveFood} className="flex-1 h-9 text-xs">
+                    <Save className="w-3.5 h-3.5 mr-1" /> Speichern
+                  </Button>
+                  <Button variant="ghost" onClick={() => setEditingFood(null)} className="h-9 text-xs">
+                    Abbrechen
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <>
+                <Input
+                  placeholder="Lebensmittel suchen..."
+                  value={foodSearch}
+                  onChange={(e) => setFoodSearch(e.target.value)}
+                  className="h-9 text-xs"
+                  autoCorrect="off"
+                  spellCheck={false}
+                />
+                <div className="max-h-60 overflow-y-auto space-y-0.5">
+                  {filteredFoods.map((f) => (
+                    <div
+                      key={f.name}
+                      className="flex items-center justify-between text-xs py-1.5 px-2 rounded hover:bg-muted/30 cursor-pointer"
+                      onClick={() => handleEditFood(f)}
+                    >
+                      <div className="truncate">
+                        <span className="font-medium">{f.name}</span>
+                        <span className="text-muted-foreground ml-2">{f.calories} kcal/{f.baseUnit}</span>
+                        {f.defaultAmount && (
+                          <span className="text-muted-foreground ml-1">· Std: {f.defaultAmount}</span>
+                        )}
+                      </div>
+                      <button
+                        onClick={(e) => { e.stopPropagation(); handleRemoveFood(f.name); }}
+                        className="p-0.5 rounded text-muted-foreground hover:text-destructive shrink-0"
+                      >
+                        <Trash2 className="w-3 h-3" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+                <p className="text-[10px] text-muted-foreground">{foodDatabase.length} Lebensmittel in der Datenbank</p>
+              </>
+            )}
           </div>
         )}
 
@@ -374,55 +486,72 @@ const SettingsDialog = ({
             {/* Import */}
             <div>
               <Label className="text-xs font-medium text-muted-foreground mb-2 block">Import</Label>
-              <div className="flex gap-1 bg-muted rounded-lg p-0.5 mb-2">
-                {([
-                  { id: "tsv" as ImportType, label: "TSV" },
-                  { id: "csv-entries" as ImportType, label: "Protokoll" },
-                  { id: "csv-food" as ImportType, label: "Lebensmittel" },
-                ]).map((t) => (
-                  <button key={t.id} onClick={() => { setImportType(t.id); setPreview(null); setFoodPreview(null); }}
-                    className={`flex-1 px-2 py-1 rounded-md text-xs font-semibold transition-colors ${
-                      importType === t.id ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
-                    }`}
-                  >
-                    {t.label}
-                  </button>
-                ))}
+              <div className="grid grid-cols-3 gap-2 mb-2">
+                <Button
+                  variant={importType === "csv-entries" ? "default" : "secondary"}
+                  size="sm"
+                  onClick={() => { setImportType(importType === "csv-entries" ? null : "csv-entries"); setRawText(""); setPreview(null); setFoodPreview(null); }}
+                  className="text-xs"
+                >
+                  <Upload className="w-3.5 h-3.5 mr-1" /> Protokoll
+                </Button>
+                <Button
+                  variant={importType === "csv-balance" ? "default" : "secondary"}
+                  size="sm"
+                  onClick={() => { setImportType(importType === "csv-balance" ? null : "csv-balance"); setRawText(""); setPreview(null); setFoodPreview(null); }}
+                  className="text-xs"
+                >
+                  <Upload className="w-3.5 h-3.5 mr-1" /> Bilanz
+                </Button>
+                <Button
+                  variant={importType === "csv-food" ? "default" : "secondary"}
+                  size="sm"
+                  onClick={() => { setImportType(importType === "csv-food" ? null : "csv-food"); setRawText(""); setPreview(null); setFoodPreview(null); }}
+                  className="text-xs"
+                >
+                  <Upload className="w-3.5 h-3.5 mr-1" /> Lebensmittel
+                </Button>
               </div>
-              <div className="rounded-lg bg-accent/40 p-2 text-xs text-muted-foreground mb-2">
-                <p className="font-mono text-[10px]">
-                  {importType === "tsv" && "Datum → Uhrzeit → Lebensmittel → Menge → kcal → PRO → FAT → KH → FIB"}
-                  {importType === "csv-entries" && "Datum;Zeit;Lebensmittel;Menge;kcal;PRO;FAT;KH;FIB"}
-                  {importType === "csv-food" && "Lebensmittel;Einheit;kcal;PRO;FAT;KH;FIB"}
-                </p>
-              </div>
-              <Textarea
-                placeholder="Daten hier einfügen..."
-                value={rawText}
-                onChange={(e) => { setRawText(e.target.value); setPreview(null); setFoodPreview(null); }}
-                className="min-h-[100px] font-mono text-xs mb-2"
-                rows={5}
-              />
-              <Button variant="secondary" className="w-full mb-2" onClick={handleParse} disabled={!rawText.trim()}>
-                Vorschau
-              </Button>
-              {(preview !== null || foodPreview !== null) && (
-                <div className="rounded-lg border border-border p-3 space-y-2">
-                  {hasImportResults ? (
-                    <>
-                      <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
-                        <Check className="w-4 h-4 text-primary" />
-                        {importResultCount} {importType === "csv-food" ? "Lebensmittel" : "Einträge"} erkannt
-                      </div>
-                      <Button className="w-full" onClick={handleImportConfirm}>
-                        <Check className="w-4 h-4 mr-2" />
-                        Importieren
-                      </Button>
-                    </>
-                  ) : (
-                    <div className="flex items-center gap-2 text-sm text-destructive">
-                      <AlertCircle className="w-4 h-4" />
-                      Keine Einträge erkannt.
+              {importType && (
+                <div className="space-y-2">
+                  <div className="rounded-lg bg-accent/40 p-2 text-xs text-muted-foreground">
+                    <p className="font-mono text-[10px]">
+                      {importType === "csv-entries" && "Datum;Zeit;Lebensmittel;Menge;kcal;PRO;FAT;KH;FIB"}
+                      {importType === "csv-balance" && "Datum;kcal;PRO;FAT;KH;FIB;Bonus;Defizit"}
+                      {importType === "csv-food" && "Lebensmittel;Einheit;kcal;PRO;FAT;KH;FIB;Standard"}
+                    </p>
+                  </div>
+                  <Textarea
+                    placeholder="Daten hier einfügen..."
+                    value={rawText}
+                    onChange={(e) => { setRawText(e.target.value); setPreview(null); setFoodPreview(null); }}
+                    className="min-h-[100px] font-mono text-xs"
+                    rows={5}
+                    autoCorrect="off"
+                    spellCheck={false}
+                  />
+                  <Button variant="secondary" className="w-full" onClick={handleParse} disabled={!rawText.trim()}>
+                    Vorschau
+                  </Button>
+                  {(preview !== null || foodPreview !== null) && (
+                    <div className="rounded-lg border border-border p-3 space-y-2">
+                      {hasImportResults ? (
+                        <>
+                          <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                            <Check className="w-4 h-4 text-success" />
+                            {importResultCount} {importType === "csv-food" ? "Lebensmittel" : "Einträge"} erkannt
+                          </div>
+                          <Button className="w-full" onClick={handleImportConfirm}>
+                            <Check className="w-4 h-4 mr-2" />
+                            Importieren
+                          </Button>
+                        </>
+                      ) : (
+                        <div className="flex items-center gap-2 text-sm text-destructive">
+                          <AlertCircle className="w-4 h-4" />
+                          Keine Einträge erkannt.
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
@@ -434,29 +563,74 @@ const SettingsDialog = ({
               <Label className="text-xs font-medium text-destructive mb-2 block">Einträge löschen</Label>
               <div className="grid grid-cols-2 gap-2 mb-2">
                 <div>
-                  <Label className="text-[10px] text-muted-foreground">Von</Label>
-                  <Input type="date" value={fromDate} onChange={(e) => { setFromDate(e.target.value); setDeletePreview(null); setDeleteConfirmed(false); }} className="h-9 text-xs" />
+                  <Label className="text-[10px] text-muted-foreground">Von (TT.MM.JJ)</Label>
+                  <Input
+                    type="text"
+                    inputMode="numeric"
+                    placeholder="01.01.26"
+                    value={fromDate}
+                    onChange={(e) => { setFromDate(formatDateInput(e.target.value)); setDeletePreview(null); setDeleteConfirmed(false); }}
+                    className="h-9 text-xs"
+                  />
                 </div>
                 <div>
-                  <Label className="text-[10px] text-muted-foreground">Bis</Label>
-                  <Input type="date" value={toDate} onChange={(e) => { setToDate(e.target.value); setDeletePreview(null); setDeleteConfirmed(false); }} className="h-9 text-xs" />
+                  <Label className="text-[10px] text-muted-foreground">Bis (TT.MM.JJ)</Label>
+                  <Input
+                    type="text"
+                    inputMode="numeric"
+                    placeholder="31.12.26"
+                    value={toDate}
+                    onChange={(e) => { setToDate(formatDateInput(e.target.value)); setDeletePreview(null); setDeleteConfirmed(false); }}
+                    className="h-9 text-xs"
+                  />
                 </div>
               </div>
               {deletePreview !== null && !deleteConfirmed && (
                 <p className="text-sm text-destructive font-medium mb-2">{deletePreview} Einträge werden gelöscht.</p>
               )}
               {deleteConfirmed && (
-                <p className="text-sm text-primary font-medium mb-2">✓ Einträge gelöscht!</p>
+                <p className="text-sm text-success font-medium mb-2">✓ Einträge gelöscht!</p>
               )}
-              {deletePreview === null ? (
-                <Button variant="secondary" onClick={handleDeletePreview} disabled={!fromDate || !toDate} className="w-full">
-                  Vorschau
-                </Button>
-              ) : !deleteConfirmed ? (
-                <Button variant="destructive" onClick={handleDeleteConfirm} disabled={deletePreview === 0} className="w-full">
-                  {deletePreview} Einträge löschen
-                </Button>
-              ) : null}
+              <div className="flex gap-2">
+                {deletePreview === null ? (
+                  <Button variant="secondary" onClick={handleDeletePreview} disabled={!fromDate || !toDate || fromDate.length < 6 || toDate.length < 6} className="flex-1">
+                    Vorschau
+                  </Button>
+                ) : !deleteConfirmed ? (
+                  <Button variant="destructive" onClick={handleDeleteConfirm} disabled={deletePreview === 0} className="flex-1">
+                    {deletePreview} Einträge löschen
+                  </Button>
+                ) : null}
+              </div>
+
+              {/* Delete All */}
+              <div className="mt-3">
+                {!showDeleteAllConfirm ? (
+                  <Button
+                    variant="destructive"
+                    onClick={() => setShowDeleteAllConfirm(true)}
+                    disabled={entries.length === 0}
+                    className="w-full"
+                  >
+                    <Trash2 className="w-4 h-4 mr-2" />
+                    Alles löschen ({entries.length} Einträge)
+                  </Button>
+                ) : (
+                  <div className="rounded-lg border-2 border-destructive p-3 space-y-2">
+                    <p className="text-sm font-semibold text-destructive">
+                      Wirklich alle {entries.length} Einträge unwiderruflich löschen?
+                    </p>
+                    <div className="flex gap-2">
+                      <Button variant="destructive" onClick={handleDeleteAll} className="flex-1">
+                        Ja, alles löschen
+                      </Button>
+                      <Button variant="ghost" onClick={() => setShowDeleteAllConfirm(false)} className="flex-1">
+                        Abbrechen
+                      </Button>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         )}

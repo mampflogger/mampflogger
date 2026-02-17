@@ -6,7 +6,7 @@
 
 @layer base {
   :root {
-    --background: 140 20% 97%;
+    --background: 140 25% 96%;
     --foreground: 160 30% 10%;
 
     --card: 0 0% 100%;
@@ -18,13 +18,13 @@
     --primary: 152 55% 42%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 145 30% 93%;
+    --secondary: 145 35% 90%;
     --secondary-foreground: 160 30% 15%;
 
-    --muted: 140 15% 94%;
+    --muted: 140 20% 92%;
     --muted-foreground: 160 10% 45%;
 
-    --accent: 145 35% 90%;
+    --accent: 145 45% 86%;
     --accent-foreground: 152 55% 30%;
 
     --destructive: 0 72% 55%;
@@ -58,45 +58,45 @@
   .theme-yellow {
     --primary: 45 80% 50%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 45 30% 93%;
+    --secondary: 45 35% 90%;
     --secondary-foreground: 45 30% 15%;
-    --accent: 45 35% 90%;
+    --accent: 45 45% 86%;
     --accent-foreground: 45 55% 30%;
     --ring: 45 80% 50%;
-    --background: 45 20% 97%;
-    --border: 45 15% 88%;
-    --input: 45 15% 88%;
-    --muted: 45 15% 94%;
+    --background: 45 25% 96%;
+    --border: 45 20% 86%;
+    --input: 45 20% 86%;
+    --muted: 45 20% 92%;
   }
 
   /* Blue theme */
   .theme-blue {
     --primary: 210 70% 50%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 210 30% 93%;
+    --secondary: 210 35% 90%;
     --secondary-foreground: 210 30% 15%;
-    --accent: 210 35% 90%;
+    --accent: 210 45% 86%;
     --accent-foreground: 210 55% 30%;
     --ring: 210 70% 50%;
-    --background: 210 20% 97%;
-    --border: 210 15% 88%;
-    --input: 210 15% 88%;
-    --muted: 210 15% 94%;
+    --background: 210 25% 96%;
+    --border: 210 20% 86%;
+    --input: 210 20% 86%;
+    --muted: 210 20% 92%;
   }
 
   /* Pink theme */
   .theme-pink {
     --primary: 330 60% 55%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 330 30% 93%;
+    --secondary: 330 35% 90%;
     --secondary-foreground: 330 30% 15%;
-    --accent: 330 35% 90%;
+    --accent: 330 45% 86%;
     --accent-foreground: 330 55% 30%;
     --ring: 330 60% 55%;
-    --background: 330 20% 97%;
-    --border: 330 15% 88%;
-    --input: 330 15% 88%;
-    --muted: 330 15% 94%;
+    --background: 330 25% 96%;
+    --border: 330 20% 86%;
+    --input: 330 20% 86%;
+    --muted: 330 20% 92%;
   }
 
   .dark {
@@ -127,6 +127,9 @@
     --border: 160 15% 18%;
     --input: 160 15% 18%;
     --ring: 152 55% 45%;
+
+    --success: 152 60% 50%;
+    --success-foreground: 0 0% 100%;
 
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;

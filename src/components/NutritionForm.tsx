@@ -80,7 +80,7 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit }: Nutr
     setSuggestions([]);
     setShowSuggestions(false);
     setHighlightIndex(-1);
-    const defaultAmount = item.baseAmount;
+    const defaultAmount = item.defaultAmount || item.baseAmount;
     setAmount(String(defaultAmount));
     applyFoodValues(item, defaultAmount);
   };
@@ -92,6 +92,16 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit }: Nutr
       if (!isNaN(qty) && qty > 0) {
         applyFoodValues(selectedFood, qty);
       }
+    }
+  };
+
+  // Time auto-format: "2240" → "22:40"
+  const handleTimeChange = (raw: string) => {
+    const digits = raw.replace(/\D/g, "").slice(0, 4);
+    if (digits.length <= 2) {
+      setTime(digits);
+    } else {
+      setTime(digits.slice(0, 2) + ":" + digits.slice(2));
     }
   };
 
@@ -146,9 +156,6 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit }: Nutr
 
     // Auto-add to food database if new
     if (parsedAmount > 0 && parsedCalories > 0) {
-      const baseAmount = parsedAmount;
-      const baseUnit = baseAmount === 1 ? "1 Stk" : `${baseAmount}g`;
-      // Try to guess baseUnit from amount
       const guessedBaseUnit = parsedAmount <= 10 ? "1 Stk" : "100g";
       const guessedBaseAmount = guessedBaseUnit === "1 Stk" ? 1 : 100;
       const factor = guessedBaseAmount / parsedAmount;
@@ -200,11 +207,13 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit }: Nutr
           <Input
             id="time"
             type="text"
-            pattern="[0-9]{2}:[0-9]{2}"
+            inputMode="numeric"
             placeholder="08:00"
             value={time}
-            onChange={(e) => setTime(e.target.value)}
+            onChange={(e) => handleTimeChange(e.target.value)}
             className="h-9 bg-muted/50 text-xs px-2"
+            autoCorrect="off"
+            spellCheck={false}
           />
         </div>
         <div ref={wrapperRef} className="relative col-span-3">
@@ -223,6 +232,8 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit }: Nutr
             onKeyDown={handleKeyDown}
             className="h-9 bg-muted/50 text-xs px-2"
             autoComplete="off"
+            autoCorrect="off"
+            spellCheck={false}
             required
           />
           {showSuggestions && suggestions.length > 0 && (
