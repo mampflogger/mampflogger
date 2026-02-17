@@ -299,7 +299,7 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
         </div>
         <div>
           <Label htmlFor="amount" className="text-[10px] font-medium text-muted-foreground mb-1 block">
-            {selectedFood ? (selectedFood.baseUnit === "1 Stk" ? "pc" : "g/ml") : "g/ml"}
+            {selectedFood ? (selectedFood.baseUnit === "1 Stk" ? "Stk" : selectedFood.baseUnit === "1 Tasse" ? "Tasse" : "g/ml") : "g/ml"}
           </Label>
           <Input
             id="amount"
