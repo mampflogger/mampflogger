@@ -78,7 +78,7 @@ const DeficitDisplay = ({ profile, activityBonus, consumedCalories, goalDeficit 
             />
           </div>
           <div className="flex items-center justify-between text-xs text-muted-foreground">
-            <span><span className="font-bold">{budgetUsedPercent}%</span> Deines Tagesbudgets sind verbraucht.</span>
+            <span><span className="font-bold">{budgetUsedPercent}%</span> deines Tagesbudgets sind verbraucht.</span>
             <span style={{ color: "hsl(var(--success) / 0.7)" }}>Defizit Ziel</span>
           </div>
           <div className="text-xs text-muted-foreground">
