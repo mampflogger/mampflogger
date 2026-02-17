@@ -307,7 +307,7 @@ const ActivityInput = ({
           <div className="text-xs text-muted-foreground">
             {activityBonus === 0
               ? <span>Leg los – verdiene dir deinen Activity Bonus!</span>
-              : <span>Du hast schon <span className="font-bold">{Math.min(100, Math.round((activityBonus / goalActivityBonus) * 100))} %</span> Deines Activity Ziels geschafft.</span>
+              : <span>Du hast schon <span className="font-bold">{Math.min(100, Math.round((activityBonus / goalActivityBonus) * 100))} %</span> deines Activity Ziels geschafft.</span>
             }
           </div>
         </>
