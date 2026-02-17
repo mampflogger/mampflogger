@@ -242,23 +242,23 @@ const SettingsDialog = ({
         setRawText(text);
         setPreview(null);
         setFoodPreview(null);
-        // Auto-parse
-        const foodResult = parseImportText(text, "food");
-        if (foodResult.foodItems.length > 0) {
-          setFoodPreview(foodResult.foodItems);
-          toast.info(`Datei "${file.name}" geladen – ${foodResult.foodItems.length} Lebensmittel erkannt`);
-          return;
-        }
+        // Auto-parse: try entries FIRST, then food
         const entryResult = parseImportText(text, "entries");
         if (entryResult.entries.length > 0) {
           setPreview(entryResult.entries);
-          toast.info(`Datei "${file.name}" geladen – ${entryResult.entries.length} Einträge erkannt`);
+          toast.info(`"${file.name}" – ${entryResult.entries.length} Einträge erkannt`);
           return;
         }
         const balanceResult = parseImportText(text, "balance");
         if (balanceResult.entries.length > 0) {
           setPreview(balanceResult.entries);
-          toast.info(`Datei "${file.name}" geladen – ${balanceResult.entries.length} Bilanzen erkannt`);
+          toast.info(`"${file.name}" – ${balanceResult.entries.length} Bilanzen erkannt`);
+          return;
+        }
+        const foodResult = parseImportText(text, "food");
+        if (foodResult.foodItems.length > 0) {
+          setFoodPreview(foodResult.foodItems);
+          toast.info(`"${file.name}" – ${foodResult.foodItems.length} Lebensmittel erkannt`);
           return;
         }
         setPreview([]);
@@ -270,19 +270,32 @@ const SettingsDialog = ({
   };
 
   const handleImportConfirm = () => {
-    if (importType === "csv-food" && foodPreview && foodPreview.length > 0) {
+    if (foodPreview && foodPreview.length > 0) {
+      let added = 0;
       foodPreview.forEach((item) => {
         if (!foodDatabase.find((f) => f.name === item.name)) {
           foodDatabase.push(item);
+          added++;
         }
       });
-      toast.success(`${foodPreview.length} Lebensmittel importiert!`);
+      toast.success(`${added} neue Lebensmittel importiert (${foodPreview.length - added} bereits vorhanden)`);
       resetImport();
       return;
     }
     if (!preview || preview.length === 0) return;
+    // Dedup happens in onImport (Index.tsx) – count before/after
+    const beforeCount = entries.length;
     onImport(preview);
-    toast.success(`${preview.length} Einträge importiert!`);
+    // Small delay to let state update for accurate count
+    setTimeout(() => {
+      const newCount = preview.length;
+      const existingKeys = new Set(
+        entries.map((e) => `${e.date}|${e.time}|${e.food}|${e.amount}`)
+      );
+      const dupes = preview.filter((e) => existingKeys.has(`${e.date}|${e.time}|${e.food}|${e.amount}`)).length;
+      const added = newCount - dupes;
+      toast.success(`${added} neue Einträge importiert${dupes > 0 ? ` (${dupes} Duplikate übersprungen)` : ""}`);
+    }, 50);
     resetImport();
   };
 
@@ -639,6 +652,18 @@ const SettingsDialog = ({
                     </div>
                     {importResultCount} {foodPreview && foodPreview.length > 0 ? "Lebensmittel" : "Einträge"} erkannt
                   </div>
+                  {preview && preview.length > 0 && (() => {
+                    const existingKeys = new Set(
+                      entries.map((e) => `${e.date}|${e.time}|${e.food}|${e.amount}`)
+                    );
+                    const dupes = preview.filter((e) => existingKeys.has(`${e.date}|${e.time}|${e.food}|${e.amount}`)).length;
+                    const newCount = preview.length - dupes;
+                    return dupes > 0 ? (
+                      <p className="text-[10px] text-muted-foreground">
+                        {newCount} neu, {dupes} bereits vorhanden (werden übersprungen)
+                      </p>
+                    ) : null;
+                  })()}
                   <div className="flex gap-2">
                     <Button className="flex-1 h-8 text-xs" onClick={handleImportConfirm}>
                       <Check className="w-3.5 h-3.5 mr-1" />
