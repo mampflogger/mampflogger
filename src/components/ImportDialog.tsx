@@ -118,7 +118,7 @@ const ImportDialog = ({ onImport }: ImportDialogProps) => {
           <Upload className="w-4 h-4" />
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-[95vw] sm:max-w-lg max-h-[85vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <FileSpreadsheet className="w-5 h-5 text-primary" />
@@ -129,7 +129,7 @@ const ImportDialog = ({ onImport }: ImportDialogProps) => {
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-4">
+        <div className="space-y-3">
           {/* Format hint */}
           <div className="rounded-lg bg-accent/40 p-3 text-xs text-muted-foreground space-y-1">
             <p className="font-semibold text-foreground">Unterstützte Formate</p>
@@ -164,8 +164,8 @@ const ImportDialog = ({ onImport }: ImportDialogProps) => {
             placeholder={"Daten hier einfügen (CSV, Tab-getrennt oder Festbreite)…"}
             value={rawText}
             onChange={(e) => { setRawText(e.target.value); setPreview(null); setFoodPreview(null); }}
-            className="min-h-[120px] font-mono text-xs"
-            rows={6}
+            className="min-h-[80px] font-mono text-xs"
+            rows={4}
           />
 
           <Button type="button" variant="secondary" className="w-full" onClick={handleParse} disabled={!rawText.trim()}>
@@ -186,7 +186,7 @@ const ImportDialog = ({ onImport }: ImportDialogProps) => {
                     </p>
                   )}
                   {preview && (
-                    <div className="mt-2 max-h-40 overflow-y-auto space-y-1">
+                    <div className="mt-1 max-h-28 overflow-y-auto space-y-1">
                       {preview.slice(0, 10).map((e, i) => (
                         <div key={i} className="flex items-center justify-between text-xs py-1 border-b border-border/50 last:border-0">
                           <div className="flex items-center gap-2 truncate">
@@ -202,7 +202,7 @@ const ImportDialog = ({ onImport }: ImportDialogProps) => {
                     </div>
                   )}
                   {foodPreview && (
-                    <div className="mt-2 max-h-40 overflow-y-auto space-y-1">
+                    <div className="mt-1 max-h-28 overflow-y-auto space-y-1">
                       {foodPreview.slice(0, 10).map((f, i) => (
                         <div key={i} className="flex items-center justify-between text-xs py-1 border-b border-border/50 last:border-0">
                           <span className="font-medium truncate">{f.name}</span>
