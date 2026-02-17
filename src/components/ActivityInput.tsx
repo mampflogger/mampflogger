@@ -163,7 +163,7 @@ const ActivityInput = ({
         </div>
         <div className="flex-1 min-w-0">
           <Label className="text-[10px] font-medium text-muted-foreground mb-1 block">
-            Bewegungsart
+            Activity
           </Label>
           <Select value={selectedTypeId} onValueChange={setSelectedTypeId}>
             <SelectTrigger className="h-9 text-xs w-full">
@@ -194,7 +194,7 @@ const ActivityInput = ({
           </DialogTrigger>
               <DialogContent className="max-w-sm">
                 <DialogHeader>
-                  <DialogTitle>Neue Bewegungsart</DialogTitle>
+                  <DialogTitle>Neue Activity</DialogTitle>
                   <DialogDescription>
                     Definiere eine neue Sportart mit Kalorienverbrauch pro Einheit.
                   </DialogDescription>
@@ -286,7 +286,7 @@ const ActivityInput = ({
             </div>
           ))}
           <div className="flex items-center justify-between rounded-lg bg-accent/40 px-3 py-1.5 mt-1">
-            <span className="text-xs text-muted-foreground font-medium">Bewegungsbonus</span>
+            <span className="text-xs text-muted-foreground font-medium">Activity Bonus</span>
             <span className="text-sm font-bold text-foreground">+{activityBonus} kcal</span>
           </div>
           {goalActivityBonus && goalActivityBonus > 0 && (
@@ -303,7 +303,7 @@ const ActivityInput = ({
                 />
               </div>
               <div className="text-xs text-muted-foreground">
-                <span>du hast schon <span className="font-bold">{Math.min(100, Math.round((activityBonus / goalActivityBonus) * 100))} %</span> deines Bewegungsziels geschafft</span>
+                <span>du hast schon <span className="font-bold">{Math.min(100, Math.round((activityBonus / goalActivityBonus) * 100))} %</span> deines Activity Ziels geschafft</span>
               </div>
             </>
           )}

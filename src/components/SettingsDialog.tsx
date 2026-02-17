@@ -403,7 +403,7 @@ const SettingsDialog = ({
                   <Input type="number" inputMode="numeric" value={goalDeficit} onChange={(e) => setGoalDeficit(e.target.value)} placeholder="z.B. 500" className="h-11 bg-muted/50" />
                 </div>
                 <div>
-                  <Label className="text-xs font-medium text-muted-foreground mb-1.5 block">Bewegung (kcal)</Label>
+                  <Label className="text-xs font-medium text-muted-foreground mb-1.5 block">Activity (kcal)</Label>
                   <Input type="number" inputMode="numeric" value={goalActivityBonus} onChange={(e) => setGoalActivityBonus(e.target.value)} placeholder="z.B. 300" className="h-11 bg-muted/50" />
                 </div>
               </div>
