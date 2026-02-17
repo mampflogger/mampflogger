@@ -1,10 +1,10 @@
 import { DailySummary } from "@/types/nutrition";
 
 const MACRO_COLORS = {
-  pro: "hsl(var(--macro-pro) / 0.5)",
-  fat: "hsl(var(--macro-fat) / 0.5)",
-  kh: "hsl(var(--macro-kh) / 0.5)",
-  fib: "hsl(var(--macro-fib) / 0.5)",
+  pro: "hsl(var(--macro-pro) / 0.8)",
+  fat: "hsl(var(--macro-fat) / 0.8)",
+  kh: "hsl(var(--macro-kh) / 0.8)",
+  fib: "hsl(var(--macro-fib) / 0.8)",
 };
 
 interface MacroBarProps {
