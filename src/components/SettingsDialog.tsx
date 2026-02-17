@@ -426,15 +426,27 @@ const SettingsDialog = ({
                   </div>
                   <div>
                     <Label className="text-[10px] text-muted-foreground">Einheit</Label>
-                    <Input value={editFoodUnit} onChange={(e) => setEditFoodUnit(e.target.value)} placeholder="z.B. 100g, 1 Tasse" className="h-9 text-xs" list="unit-suggestions" />
-                    <datalist id="unit-suggestions">
-                      <option value="100g" />
-                      <option value="100ml" />
-                      <option value="1 Stk" />
-                      <option value="1 Tasse" />
-                      <option value="1 Scheibe" />
-                      <option value="1 Portion" />
-                    </datalist>
+                    {(() => {
+                      const presets = ["100g", "100ml", "1 Stk", "1 Tasse", "1 Scheibe", "1 Portion"];
+                      const isCustom = editFoodUnit && !presets.includes(editFoodUnit);
+                      return isCustom ? (
+                        <div className="flex gap-1">
+                          <Input value={editFoodUnit} onChange={(e) => setEditFoodUnit(e.target.value)} className="h-9 text-xs flex-1" autoFocus />
+                          <button type="button" onClick={() => setEditFoodUnit("100g")} className="h-9 px-2 text-xs text-muted-foreground hover:text-foreground">✕</button>
+                        </div>
+                      ) : (
+                        <select value={editFoodUnit} onChange={(e) => {
+                          if (e.target.value === "__custom__") {
+                            setEditFoodUnit("1 ");
+                          } else {
+                            setEditFoodUnit(e.target.value);
+                          }
+                        }} className="h-9 w-full rounded-md border border-input bg-background px-2 text-xs">
+                          {presets.map(u => <option key={u} value={u}>{u}</option>)}
+                          <option value="__custom__">Eigene…</option>
+                        </select>
+                      );
+                    })()}
                   </div>
                 </div>
                 <div className="grid grid-cols-5 gap-2">
