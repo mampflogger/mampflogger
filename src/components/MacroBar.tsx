@@ -17,6 +17,7 @@ const MacroBar = ({ summary }: MacroBarProps) => {
 
   return (
     <div>
+      <p className="text-[10px] text-muted-foreground mb-1">Anteil Makros in %</p>
       <div className="flex gap-0.5 h-2.5 rounded-full overflow-hidden bg-muted">
         {summary.proteinPercent > 0 && (
           <div
