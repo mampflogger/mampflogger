@@ -28,6 +28,7 @@ const Index = () => {
   const [bookedActivities, setBookedActivities] = useState<BookedActivity[]>([]);
   const [editingEntry, setEditingEntry] = useState<NutritionEntry | null>(null);
   const [editingActivity, setEditingActivity] = useState<BookedActivity | null>(null);
+  const [openNewFood, setOpenNewFood] = useState(false);
   const [darkMode, setDarkMode] = useState(() => {
     const saved = localStorage.getItem("foodlog-dark-mode");
     if (saved !== null) return saved === "true";
@@ -252,6 +253,8 @@ const Index = () => {
               onImport={handleImport}
               onCount={countEntriesInRange}
               onDelete={deleteEntriesInRange}
+              openToNewFood={openNewFood}
+              onOpenToNewFoodHandled={() => setOpenNewFood(false)}
             />
           </div>
         </div>
@@ -302,6 +305,7 @@ const Index = () => {
                 selectedDate={selectedDate}
                 editingEntry={editingEntry}
                 onCancelEdit={() => setEditingEntry(null)}
+                onNewFood={() => setOpenNewFood(true)}
               />
             </div>
 

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -48,6 +48,8 @@ interface SettingsDialogProps {
   onImport: (entries: NutritionEntry[]) => void;
   onCount: (from: string, to: string) => number;
   onDelete: (from: string, to: string) => number;
+  openToNewFood?: boolean;
+  onOpenToNewFoodHandled?: () => void;
 }
 
 type ImportType = "csv-entries" | "csv-balance" | "csv-food";
@@ -74,7 +76,7 @@ function parseDateInputToISO(text: string): string {
 const SettingsDialog = ({
   profile, onSaveProfile, darkMode, onToggleDarkMode,
   colorTheme, onChangeTheme, entries, bookedActivities,
-  onImport, onCount, onDelete,
+  onImport, onCount, onDelete, openToNewFood, onOpenToNewFoodHandled,
 }: SettingsDialogProps) => {
   const [open, setOpen] = useState(false);
   const [tab, setTab] = useState<SettingsTab>("profile");
@@ -112,6 +114,39 @@ const SettingsDialog = ({
   const [editFoodDefault, setEditFoodDefault] = useState("");
   const [editFoodLiquid, setEditFoodLiquid] = useState("");
   const [, forceUpdate] = useState(0);
+
+  // Handle external "New Food" trigger
+  useEffect(() => {
+    if (openToNewFood) {
+      setOpen(true);
+      setTab("food");
+      handleNewFood();
+      onOpenToNewFoodHandled?.();
+    }
+  }, [openToNewFood]);
+
+  const handleNewFood = () => {
+    const blank: FoodItem = {
+      name: "",
+      baseUnit: "100g",
+      baseAmount: 100,
+      calories: 0,
+      protein: 0,
+      fat: 0,
+      carbs: 0,
+      fiber: 0,
+    };
+    setEditingFood(blank);
+    setEditFoodName("");
+    setEditFoodUnit("100g");
+    setEditFoodCal("");
+    setEditFoodPro("");
+    setEditFoodFat("");
+    setEditFoodKh("");
+    setEditFoodFib("");
+    setEditFoodDefault("");
+    setEditFoodLiquid("");
+  };
 
   const handleOpen = (isOpen: boolean) => {
     setOpen(isOpen);
@@ -173,9 +208,10 @@ const SettingsDialog = ({
       liquidMl: editFoodLiquid ? parseFloat(editFoodLiquid) || undefined : undefined,
     } as any;
     updateFoodItem(editingFood.name, updated);
+    const isNew = !editingFood.name;
     setEditingFood(null);
     forceUpdate((n) => n + 1);
-    toast.success("Lebensmittel aktualisiert!");
+    toast.success(isNew ? "Lebensmittel hinzugefügt!" : "Lebensmittel aktualisiert!");
   };
 
   // Import handlers
@@ -382,7 +418,7 @@ const SettingsDialog = ({
           <div className="space-y-3">
             {editingFood ? (
               <div className="space-y-3 p-3 rounded-lg border border-border bg-muted/30">
-                <p className="text-xs font-semibold text-muted-foreground uppercase">Lebensmittel bearbeiten</p>
+                <p className="text-xs font-semibold text-muted-foreground uppercase">{editingFood.name ? "Lebensmittel bearbeiten" : "Neues Lebensmittel"}</p>
                 <div className="grid grid-cols-[1fr_80px] gap-2">
                   <div>
                     <Label className="text-[10px] text-muted-foreground">Lebensmittel</Label>
@@ -436,6 +472,12 @@ const SettingsDialog = ({
               </div>
             ) : (
               <>
+                <button
+                  onClick={handleNewFood}
+                  className="text-xs text-primary font-medium hover:underline"
+                >
+                  + New Food
+                </button>
                 <Input
                   placeholder="Lebensmittel suchen..."
                   value={foodSearch}
