@@ -171,9 +171,8 @@ function parseAllEntries(text: string, delim: Delimiter): NutritionEntry[] {
     }
   }
 
-  // If we found detailed entries, ignore balance/summary rows (they're just totals)
-  if (detailedEntries.length > 0) return detailedEntries;
-  return balanceEntries;
+  // Always return only detailed entries – balance/summary rows are never imported as individual items
+  return detailedEntries;
 }
 
 /** Universal food database parser */
