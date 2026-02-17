@@ -128,7 +128,7 @@ const ActivityInput = ({
     <div className="space-y-2">
       {/* Input row: value, type dropdown, add button */}
       <div className="flex gap-2 items-end">
-        <div className="w-20">
+        <div className="w-16">
           <Label className="text-[10px] font-medium text-muted-foreground mb-1 block">
             {selectedType?.unit || "Menge"}
           </Label>
@@ -142,29 +142,37 @@ const ActivityInput = ({
             className="h-9 bg-muted/50 text-xs px-2"
           />
         </div>
-        <div className="flex-1">
+        <div className="flex-1 min-w-0">
           <Label className="text-[10px] font-medium text-muted-foreground mb-1 block">
             Bewegungsart
           </Label>
-          <div className="flex gap-1">
-            <Select value={selectedTypeId} onValueChange={setSelectedTypeId}>
-              <SelectTrigger className="h-9 text-xs">
-                <SelectValue placeholder="Wählen..." />
-              </SelectTrigger>
-              <SelectContent>
-                {activityTypes.map((type) => (
-                  <SelectItem key={type.id} value={type.id} className="text-xs">
-                    {type.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Dialog open={showNewType} onOpenChange={setShowNewType}>
-              <DialogTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-9 w-9 shrink-0">
-                  <Plus className="w-4 h-4" />
-                </Button>
-              </DialogTrigger>
+          <Select value={selectedTypeId} onValueChange={setSelectedTypeId}>
+            <SelectTrigger className="h-9 text-xs w-full">
+              <SelectValue placeholder="Wählen..." />
+            </SelectTrigger>
+            <SelectContent>
+              {activityTypes.map((type) => (
+                <SelectItem key={type.id} value={type.id} className="text-xs">
+                  {type.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <button
+          onClick={handleSubmit}
+          className="h-9 px-3 rounded-md text-xs font-semibold bg-primary text-primary-foreground shrink-0"
+        >
+          {isEditing ? "Speichern" : "Buchen"}
+        </button>
+      </div>
+      <div className="mt-1">
+        <Dialog open={showNewType} onOpenChange={setShowNewType}>
+          <DialogTrigger asChild>
+            <button className="text-xs text-primary font-medium hover:underline">
+              + New Workout
+            </button>
+          </DialogTrigger>
               <DialogContent className="max-w-sm">
                 <DialogHeader>
                   <DialogTitle>Neue Bewegungsart</DialogTitle>
@@ -225,14 +233,6 @@ const ActivityInput = ({
               </DialogContent>
             </Dialog>
           </div>
-        </div>
-        <button
-          onClick={handleSubmit}
-          className="h-9 px-3 rounded-md text-xs font-semibold bg-primary text-primary-foreground shrink-0"
-        >
-          {isEditing ? "Speichern" : "Hinzufügen"}
-        </button>
-      </div>
 
       {isEditing && (
         <button onClick={onCancelEdit} className="text-xs text-muted-foreground underline">

@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback, createRef } from "react";
 import { NutritionEntry, generateId } from "@/types/nutrition";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -30,6 +30,8 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit }: Nutr
   const [highlightIndex, setHighlightIndex] = useState(-1);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLUListElement>(null);
+  const foodInputRef = useRef<HTMLInputElement>(null);
+  const amountInputRef = useRef<HTMLInputElement>(null);
 
   // Load editing entry into form
   useEffect(() => {
@@ -83,6 +85,8 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit }: Nutr
     const defaultAmount = item.defaultAmount || item.baseAmount;
     setAmount(String(defaultAmount));
     applyFoodValues(item, defaultAmount);
+    // Auto-focus to amount field
+    setTimeout(() => amountInputRef.current?.focus(), 0);
   };
 
   const handleAmountChange = (value: string) => {
@@ -101,7 +105,12 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit }: Nutr
     if (digits.length <= 2) {
       setTime(digits);
     } else {
-      setTime(digits.slice(0, 2) + ":" + digits.slice(2));
+      const formatted = digits.slice(0, 2) + ":" + digits.slice(2);
+      setTime(formatted);
+      // Auto-focus to food field when time is complete (4 digits)
+      if (digits.length === 4) {
+        setTimeout(() => foodInputRef.current?.focus(), 0);
+      }
     }
   };
 
@@ -222,6 +231,7 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit }: Nutr
           </Label>
           <Input
             id="food"
+            ref={foodInputRef}
             type="text"
             placeholder="z.B. Haferflocken"
             value={food}
@@ -266,10 +276,11 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit }: Nutr
         </div>
         <div>
           <Label htmlFor="amount" className="text-[10px] font-medium text-muted-foreground mb-1 block">
-            {selectedFood ? (selectedFood.baseUnit === "1 Stk" ? "Stk" : "g/ml") : "g/ml"}
+            {selectedFood ? (selectedFood.baseUnit === "1 Stk" ? "pc" : "g/ml") : "g/ml"}
           </Label>
           <Input
             id="amount"
+            ref={amountInputRef}
             type="number"
             inputMode="decimal"
             step="any"

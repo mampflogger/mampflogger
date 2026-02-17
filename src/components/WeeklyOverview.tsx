@@ -92,6 +92,16 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [] 
       d.setDate(d.getDate() - i);
       const dateStr = formatDate(d);
       const dayEntries = entries.filter((e) => e.date === dateStr);
+      // Only show deficit for days with entries
+      if (dayEntries.length === 0) {
+        days.push({
+          label: WEEKDAY_SHORT[d.getDay()],
+          date: dateStr,
+          deficit: 0,
+          isToday: i === 0,
+        });
+        continue;
+      }
       const summary = calculateDailySummary(dayEntries);
       const bonus = calculateBookedActivityBonus(bookedActivities, dateStr);
       days.push({
@@ -105,6 +115,8 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [] 
   }, [profile, entries, bookedActivities, selectedDate]);
 
   const weekTotals = useMemo(() => {
+    // Only count days with entries for average
+    const daysWithData = weekData.filter((d) => d.calories > 0);
     const totals = weekData.reduce(
       (acc, d) => ({
         calories: acc.calories + d.calories,
@@ -115,7 +127,7 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [] 
       }),
       { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 }
     );
-    const avgCalories = Math.round(totals.calories / 7);
+    const avgCalories = daysWithData.length > 0 ? Math.round(totals.calories / daysWithData.length) : 0;
     const totalMacroWeight = totals.protein + totals.carbs + totals.fat + totals.fiber;
     return {
       avgCalories,
@@ -200,18 +212,18 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [] 
       {/* Stats Row */}
       <div className={`grid gap-3 ${avgDeficit7 !== null ? "grid-cols-3" : "grid-cols-2"}`}>
         <div className="rounded-xl bg-accent/40 p-3 text-center">
-          <p className="text-xs text-muted-foreground font-medium">Gesamt 7 Tage</p>
+          <p className="text-xs text-muted-foreground font-medium">Woche</p>
           <p className="text-2xl font-bold text-foreground mt-0.5">{weekTotals.totalCalories.toLocaleString("de-DE")}</p>
           <p className="text-xs text-muted-foreground">kcal</p>
         </div>
         <div className="rounded-xl bg-accent/40 p-3 text-center">
-          <p className="text-xs text-muted-foreground font-medium">Ø kcal / Tag</p>
+          <p className="text-xs text-muted-foreground font-medium">Ø Tag</p>
           <p className="text-2xl font-bold text-foreground mt-0.5">{weekTotals.avgCalories}</p>
           <p className="text-xs text-muted-foreground">kcal</p>
         </div>
         {avgDeficit7 !== null && (
           <div className={`rounded-xl p-3 text-center`} style={{ backgroundColor: avgDeficit7 > 0 ? "hsl(var(--success) / 0.1)" : "hsl(var(--destructive) / 0.1)" }}>
-            <p className="text-xs text-muted-foreground font-medium">Ø Defizit 7 T.</p>
+            <p className="text-xs text-muted-foreground font-medium">Ø Defizit</p>
             <div className="flex items-center justify-center gap-1 mt-0.5">
               {avgDeficit7 > 0 ? (
                 <TrendingDown className="w-4 h-4" style={{ color: "hsl(var(--success))" }} />
@@ -222,7 +234,7 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [] 
                 {Math.abs(avgDeficit7)}
               </p>
             </div>
-            <p className="text-xs text-muted-foreground">kcal / Tag</p>
+            <p className="text-xs text-muted-foreground">Woche</p>
           </div>
         )}
       </div>

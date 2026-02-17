@@ -29,19 +29,19 @@ const NutritionTable = ({ entries, onDelete, onEntryClick }: NutritionTableProps
 
   return (
     <div className="animate-slide-up">
-      <div className="overflow-x-auto -mx-4 px-4">
-        <table className="w-full text-[11px] min-w-[440px]">
+      <div className="overflow-x-auto -mx-1 px-1">
+        <table className="w-full text-[10px] sm:text-[11px]">
           <thead>
             <tr className="border-b border-border">
-              <th className="text-left py-1 px-0.5 font-semibold text-muted-foreground">Zeit</th>
-              <th className="text-left py-1 px-0.5 font-semibold text-muted-foreground">Lebensmittel</th>
-              <th className="text-right py-1 px-0.5 font-semibold text-muted-foreground">g/ml</th>
+              <th className="text-left py-1 pr-1 font-semibold text-muted-foreground">Zeit</th>
+              <th className="text-left py-1 pr-1 font-semibold text-muted-foreground">Lebensmittel</th>
+              <th className="text-right py-1 px-0.5 font-semibold text-muted-foreground">g</th>
               <th className="text-right py-1 px-0.5 font-semibold text-muted-foreground">kcal</th>
-              <th className="text-right py-1 px-0.5 font-semibold" style={{ color: MACRO_COLORS.pro }}>PRO</th>
-              <th className="text-right py-1 px-0.5 font-semibold" style={{ color: MACRO_COLORS.fat }}>FAT</th>
-              <th className="text-right py-1 px-0.5 font-semibold" style={{ color: MACRO_COLORS.kh }}>KH</th>
-              <th className="text-right py-1 px-0.5 font-semibold" style={{ color: MACRO_COLORS.fib }}>FIB</th>
-              <th className="w-6"></th>
+              <th className="text-right py-1 px-0.5 font-semibold" style={{ color: MACRO_COLORS.pro }}>P</th>
+              <th className="text-right py-1 px-0.5 font-semibold" style={{ color: MACRO_COLORS.fat }}>F</th>
+              <th className="text-right py-1 px-0.5 font-semibold" style={{ color: MACRO_COLORS.kh }}>K</th>
+              <th className="text-right py-1 px-0.5 font-semibold" style={{ color: MACRO_COLORS.fib }}>B</th>
+              <th className="w-5"></th>
             </tr>
           </thead>
           <tbody>
@@ -51,8 +51,8 @@ const NutritionTable = ({ entries, onDelete, onEntryClick }: NutritionTableProps
                 className="border-b border-border/50 hover:bg-muted/30 transition-colors cursor-pointer"
                 onClick={() => onEntryClick?.(entry)}
               >
-                <td className="py-1 px-0.5 text-muted-foreground font-mono">{entry.time}</td>
-                <td className="py-1 px-0.5 font-medium max-w-[100px] truncate">{entry.food}</td>
+                <td className="py-1 pr-1 text-muted-foreground font-mono whitespace-nowrap">{entry.time}</td>
+                <td className="py-1 pr-1 font-medium max-w-[80px] truncate">{entry.food}</td>
                 <td className="py-1 px-0.5 text-right text-muted-foreground">{entry.amount}</td>
                 <td className="py-1 px-0.5 text-right font-semibold">{Math.round(entry.calories)}</td>
                 <td className="py-1 px-0.5 text-right">{Math.round(entry.protein)}</td>
