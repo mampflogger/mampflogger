@@ -22,13 +22,13 @@ const FluidDisplay = ({ entries, foodDatabase, goalMl }: FluidDisplayProps) => {
   const isReached = goalMl ? totalMl >= goalMl : false;
 
   return (
-    <div className="rounded-xl bg-accent/40 p-3 space-y-2">
-      <div className="flex items-center justify-between">
-        <span className="flex items-center gap-1 text-xs text-muted-foreground">
+    <div className="space-y-2">
+      <div className="flex items-center justify-between rounded-lg bg-accent/40 px-3 py-1.5">
+        <span className="flex items-center gap-1 text-xs text-muted-foreground font-medium">
           <Droplets className="w-3.5 h-3.5" />
           Flüssigkeitsaufnahme
         </span>
-        <span className="text-lg font-bold text-foreground">
+        <span className="text-sm font-bold text-foreground">
           {totalMl} ml
         </span>
       </div>
