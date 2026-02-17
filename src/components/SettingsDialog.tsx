@@ -501,9 +501,6 @@ const SettingsDialog = ({
                       <div className="truncate">
                         <span className="font-medium">{f.name}</span>
                         <span className="text-muted-foreground ml-2">{f.calories} kcal/{f.baseUnit}</span>
-                        {f.defaultAmount && (
-                          <span className="text-muted-foreground ml-1">· {f.defaultAmount}{f.baseUnit === "1 Stk" ? " Stk" : f.baseUnit === "1 Tasse" ? " Tasse" : "g"}</span>
-                        )}
                       </div>
                       <button
                         onClick={(e) => { e.stopPropagation(); handleRemoveFood(f.name); }}
