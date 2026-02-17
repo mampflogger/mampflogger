@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import { NutritionEntry, formatDate, calculateDailySummary } from "@/types/nutrition";
 import {
   UserProfile,
@@ -142,11 +142,52 @@ const Index = () => {
     return toDelete.length;
   };
 
-  const navigateDay = (offset: number) => {
-    const current = new Date(selectedDate + "T00:00:00");
-    current.setDate(current.getDate() + offset);
-    setSelectedDate(formatDate(current));
-  };
+  // Day navigation with future block
+  const navigateDay = useCallback((offset: number) => {
+    setSelectedDate((prev) => {
+      const current = new Date(prev + "T00:00:00");
+      current.setDate(current.getDate() + offset);
+      const next = formatDate(current);
+      const today = formatDate(new Date());
+      if (offset > 0 && next > today) return prev;
+      return next;
+    });
+  }, []);
+
+  // Long-press acceleration
+  const intervalRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const countRef = useRef(0);
+
+  const startNavigate = useCallback((offset: number) => {
+    navigateDay(offset);
+    countRef.current = 0;
+
+    const tick = () => {
+      navigateDay(offset);
+      countRef.current++;
+      let delay = 300;
+      if (countRef.current > 15) delay = 30;
+      else if (countRef.current > 8) delay = 80;
+      else if (countRef.current > 3) delay = 150;
+      intervalRef.current = setTimeout(tick, delay);
+    };
+
+    intervalRef.current = setTimeout(tick, 400);
+  }, [navigateDay]);
+
+  const stopNavigate = useCallback(() => {
+    if (intervalRef.current) {
+      clearTimeout(intervalRef.current);
+      intervalRef.current = null;
+    }
+    countRef.current = 0;
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (intervalRef.current) clearTimeout(intervalRef.current);
+    };
+  }, []);
 
   const isToday = selectedDate === formatDate(new Date());
 
@@ -213,14 +254,33 @@ const Index = () => {
       <main className="max-w-lg mx-auto px-4 pb-8">
         {/* Date Navigation */}
         <div className="flex items-center justify-between py-3">
-          <Button variant="ghost" size="icon" onClick={() => navigateDay(-1)} className="h-8 w-8">
+          <Button
+            variant="ghost"
+            size="icon"
+            onMouseDown={() => startNavigate(-1)}
+            onMouseUp={stopNavigate}
+            onMouseLeave={stopNavigate}
+            onTouchStart={(e) => { e.preventDefault(); startNavigate(-1); }}
+            onTouchEnd={stopNavigate}
+            className="h-8 w-8"
+          >
             <ChevronLeft className="w-5 h-5" />
           </Button>
           <div className="text-center">
             <p className="text-sm font-semibold">{isToday ? "Heute" : displayDate}</p>
             {isToday && <p className="text-xs text-muted-foreground">{displayDate}</p>}
           </div>
-          <Button variant="ghost" size="icon" onClick={() => navigateDay(1)} className="h-8 w-8">
+          <Button
+            variant="ghost"
+            size="icon"
+            onMouseDown={() => !isToday && startNavigate(1)}
+            onMouseUp={stopNavigate}
+            onMouseLeave={stopNavigate}
+            onTouchStart={(e) => { e.preventDefault(); !isToday && startNavigate(1); }}
+            onTouchEnd={stopNavigate}
+            disabled={isToday}
+            className="h-8 w-8"
+          >
             <ChevronRight className="w-5 h-5" />
           </Button>
         </div>

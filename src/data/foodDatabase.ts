@@ -7,12 +7,13 @@ export interface FoodItem {
   fat: number;
   carbs: number;
   fiber: number;
+  defaultAmount?: number; // Standardmenge, z.B. 125g für eine Avocado
 }
 
 const FOOD_DB_KEY = "foodlog-food-database";
 
 const DEFAULT_FOODS: FoodItem[] = [
-  { name: "Avocado", baseUnit: "100g", baseAmount: 100, calories: 160, protein: 2, fat: 15, carbs: 3, fiber: 18 },
+  { name: "Avocado", baseUnit: "100g", baseAmount: 100, calories: 160, protein: 2, fat: 15, carbs: 3, fiber: 18, defaultAmount: 125 },
   { name: "Backkakao", baseUnit: "100g", baseAmount: 100, calories: 360, protein: 20, fat: 20, carbs: 28, fiber: 33 },
   { name: "Banane", baseUnit: "100g", baseAmount: 100, calories: 89, protein: 1, fat: 0, carbs: 20, fiber: 2 },
   { name: "Brotchips (Knoblauch)", baseUnit: "100g", baseAmount: 100, calories: 461, protein: 9, fat: 16, carbs: 69, fiber: 4 },
@@ -95,6 +96,16 @@ export function removeFoodItem(name: string): void {
     foodDatabase.splice(index, 1);
     saveFoodDatabase(foodDatabase);
   }
+}
+
+export function updateFoodItem(originalName: string, updated: FoodItem): void {
+  const index = foodDatabase.findIndex((f) => f.name === originalName);
+  if (index >= 0) {
+    foodDatabase[index] = updated;
+  } else {
+    foodDatabase.push(updated);
+  }
+  saveFoodDatabase(foodDatabase);
 }
 
 export function searchFood(query: string): FoodItem[] {

@@ -131,11 +131,31 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [] 
     };
   }, [weekData]);
 
+  // Avg deficit: exclude current day and days without entries, last 7 past days with entries
   const avgDeficit7 = useMemo(() => {
-    if (!deficitData) return null;
-    const total = deficitData.reduce((sum, d) => sum + d.deficit, 0);
-    return Math.round(total / 7);
-  }, [deficitData]);
+    if (!profile) return null;
+    const bmr = calculateBMR(profile);
+    const todayStr = formatDate(new Date());
+
+    // Collect all past dates with entries (not today)
+    const allDates = [...new Set(entries.map((e) => e.date))]
+      .filter((d) => d < todayStr)
+      .sort()
+      .reverse()
+      .slice(0, 7); // last 7 days with entries
+
+    if (allDates.length === 0) return null;
+
+    let totalDeficit = 0;
+    for (const date of allDates) {
+      const dayEntries = entries.filter((e) => e.date === date);
+      const summary = calculateDailySummary(dayEntries);
+      const bonus = calculateBookedActivityBonus(bookedActivities, date);
+      totalDeficit += (bmr + bonus) - summary.totalCalories;
+    }
+
+    return Math.round(totalDeficit / allDates.length);
+  }, [profile, entries, bookedActivities]);
 
   const maxCalories = useMemo(
     () => Math.max(...weekData.map((d) => d.calories), 100),
@@ -168,7 +188,7 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [] 
     return (
       <div className="rounded-lg border border-border bg-popover px-3 py-2 shadow-md text-xs">
         <p className="font-semibold text-popover-foreground">{dateLabel}</p>
-        <p className={data.deficit >= 0 ? "text-primary" : "text-destructive"}>
+        <p style={{ color: data.deficit >= 0 ? "hsl(var(--success))" : "hsl(var(--destructive))" }}>
           <span className="font-bold">{data.deficit >= 0 ? `-${data.deficit}` : `+${Math.abs(data.deficit)}`}</span> kcal
         </p>
       </div>
@@ -190,15 +210,15 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [] 
           <p className="text-xs text-muted-foreground">kcal</p>
         </div>
         {avgDeficit7 !== null && (
-          <div className={`rounded-xl p-3 text-center ${avgDeficit7 > 0 ? "bg-primary/10" : "bg-destructive/10"}`}>
+          <div className={`rounded-xl p-3 text-center`} style={{ backgroundColor: avgDeficit7 > 0 ? "hsl(var(--success) / 0.1)" : "hsl(var(--destructive) / 0.1)" }}>
             <p className="text-xs text-muted-foreground font-medium">Ø Defizit 7 T.</p>
             <div className="flex items-center justify-center gap-1 mt-0.5">
               {avgDeficit7 > 0 ? (
-                <TrendingDown className="w-4 h-4 text-primary" />
+                <TrendingDown className="w-4 h-4" style={{ color: "hsl(var(--success))" }} />
               ) : (
                 <TrendingUp className="w-4 h-4 text-destructive" />
               )}
-              <p className={`text-2xl font-bold ${avgDeficit7 > 0 ? "text-primary" : "text-destructive"}`}>
+              <p className="text-2xl font-bold" style={{ color: avgDeficit7 > 0 ? "hsl(var(--success))" : "hsl(var(--destructive))" }}>
                 {Math.abs(avgDeficit7)}
               </p>
             </div>
@@ -245,7 +265,7 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [] 
                 <ReferenceLine y={0} stroke="hsl(var(--border))" />
                 <Bar dataKey="deficit" radius={[6, 6, 0, 0]} maxBarSize={36}>
                   {deficitData.map((entry, index) => (
-                    <Cell key={index} fill={entry.deficit >= 0 ? "hsl(var(--primary))" : "hsl(var(--destructive))"} />
+                    <Cell key={index} fill={entry.deficit >= 0 ? "hsl(var(--success))" : "hsl(var(--destructive))"} />
                   ))}
                 </Bar>
               </BarChart>
