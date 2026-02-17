@@ -78,10 +78,10 @@ const NutritionTable = ({ entries, onDelete, onEntryClick }: NutritionTableProps
             <tr className="border-t-2 border-primary/20 bg-accent/30">
               <td className="py-1 px-0.5 font-bold" colSpan={3}>Summe</td>
               <td className="py-1 px-0.5 text-right font-bold">{summary.totalCalories}</td>
-              <td className="py-1 px-0.5 text-right font-bold">{summary.totalProtein}</td>
-              <td className="py-1 px-0.5 text-right font-bold">{summary.totalFat}</td>
-              <td className="py-1 px-0.5 text-right font-bold">{summary.totalCarbs}</td>
-              <td className="py-1 px-0.5 text-right font-bold">{summary.totalFiber}</td>
+              <td className="py-1 px-0.5 text-right font-bold" style={{ color: MACRO_COLORS.pro }}>{summary.totalProtein}</td>
+              <td className="py-1 px-0.5 text-right font-bold" style={{ color: MACRO_COLORS.fat }}>{summary.totalFat}</td>
+              <td className="py-1 px-0.5 text-right font-bold" style={{ color: MACRO_COLORS.kh }}>{summary.totalCarbs}</td>
+              <td className="py-1 px-0.5 text-right font-bold" style={{ color: MACRO_COLORS.fib }}>{summary.totalFiber}</td>
               <td></td>
             </tr>
           </tfoot>
