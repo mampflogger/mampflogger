@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import {
   Dialog,
   DialogContent,
@@ -9,12 +9,11 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Upload, FileSpreadsheet, Check, AlertCircle } from "lucide-react";
+import { Upload, FileSpreadsheet, Check, AlertCircle, FileUp } from "lucide-react";
 import { NutritionEntry } from "@/types/nutrition";
 import { FoodItem, foodDatabase } from "@/data/foodDatabase";
 import { parseImportText, DetectedType } from "@/lib/importParser";
 import { toast } from "sonner";
-
 interface ImportDialogProps {
   onImport: (entries: NutritionEntry[]) => void;
 }
@@ -25,6 +24,35 @@ const ImportDialog = ({ onImport }: ImportDialogProps) => {
   const [preview, setPreview] = useState<NutritionEntry[] | null>(null);
   const [foodPreview, setFoodPreview] = useState<FoodItem[] | null>(null);
   const [detectedType, setDetectedType] = useState<DetectedType>("entries");
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const text = event.target?.result as string;
+      if (text) {
+        setRawText(text);
+        setPreview(null);
+        setFoodPreview(null);
+        // Auto-parse after loading
+        const result = parseImportText(text);
+        setDetectedType(result.detectedType);
+        if (result.foodItems.length > 0) {
+          setFoodPreview(result.foodItems);
+        } else if (result.entries.length > 0) {
+          setPreview(result.entries);
+        } else {
+          setPreview([]);
+        }
+        toast.info(`Datei "${file.name}" geladen`);
+      }
+    };
+    reader.readAsText(file);
+    // Reset so same file can be re-selected
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
 
   const handleParse = () => {
     setFoodPreview(null);
@@ -108,12 +136,36 @@ const ImportDialog = ({ onImport }: ImportDialogProps) => {
             <p>Protokoll, Kalorienbilanz oder Lebensmittelliste – Semikolon, Tab oder Festbreite.</p>
           </div>
 
+          {/* File upload */}
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".csv,.tsv,.txt,.tab"
+            onChange={handleFileUpload}
+            className="hidden"
+          />
+          <Button
+            type="button"
+            variant="outline"
+            className="w-full"
+            onClick={() => fileInputRef.current?.click()}
+          >
+            <FileUp className="w-4 h-4 mr-2" />
+            Datei auswählen (.csv, .tsv, .txt)
+          </Button>
+
+          <div className="relative">
+            <div className="absolute inset-x-0 top-0 flex items-center justify-center -translate-y-1/2">
+              <span className="bg-background px-2 text-xs text-muted-foreground">oder einfügen</span>
+            </div>
+          </div>
+
           <Textarea
             placeholder={"Daten hier einfügen (CSV, Tab-getrennt oder Festbreite)…"}
             value={rawText}
             onChange={(e) => { setRawText(e.target.value); setPreview(null); setFoodPreview(null); }}
-            className="min-h-[140px] font-mono text-xs"
-            rows={8}
+            className="min-h-[120px] font-mono text-xs"
+            rows={6}
           />
 
           <Button type="button" variant="secondary" className="w-full" onClick={handleParse} disabled={!rawText.trim()}>
