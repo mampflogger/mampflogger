@@ -355,6 +355,7 @@ const Index = () => {
                   editingActivity={editingActivity}
                   onCancelEdit={() => setEditingActivity(null)}
                   activityBonus={activityBonus}
+                  goalActivityBonus={profile.goalActivityBonus}
                 />
               </div>
             )}

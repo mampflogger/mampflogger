@@ -35,6 +35,7 @@ interface ActivityInputProps {
   editingActivity: BookedActivity | null;
   onCancelEdit: () => void;
   activityBonus: number;
+  goalActivityBonus?: number;
 }
 
 const ActivityInput = ({
@@ -46,6 +47,7 @@ const ActivityInput = ({
   editingActivity,
   onCancelEdit,
   activityBonus,
+  goalActivityBonus,
 }: ActivityInputProps) => {
   const [activityTypes, setActivityTypes] = useState<ActivityType[]>(() => {
     const types = loadActivityTypes();
@@ -287,6 +289,24 @@ const ActivityInput = ({
             <span className="text-xs text-muted-foreground font-medium">Bewegungsbonus</span>
             <span className="text-sm font-bold text-foreground">+{activityBonus} kcal</span>
           </div>
+          {goalActivityBonus && goalActivityBonus > 0 && (
+            <>
+              <div className="h-2 rounded-full bg-muted overflow-hidden mt-2">
+                <div
+                  className="h-full rounded-full transition-all duration-500"
+                  style={{
+                    width: `${Math.min(100, Math.round((activityBonus / goalActivityBonus) * 100))}%`,
+                    backgroundColor: activityBonus >= goalActivityBonus
+                      ? "hsl(var(--success))"
+                      : "hsl(var(--warning, 38 92% 50%))",
+                  }}
+                />
+              </div>
+              <div className="text-xs text-muted-foreground">
+                <span>du hast schon <span className="font-bold">{Math.min(100, Math.round((activityBonus / goalActivityBonus) * 100))} %</span> deines Bewegungsziels geschafft</span>
+              </div>
+            </>
+          )}
         </div>
       )}
     </div>
