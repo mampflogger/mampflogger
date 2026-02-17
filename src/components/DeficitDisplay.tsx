@@ -78,13 +78,13 @@ const DeficitDisplay = ({ profile, activityBonus, consumedCalories, goalDeficit 
             />
           </div>
           <div className="flex items-center justify-between text-xs text-muted-foreground">
-            <span><span className="font-bold">{budgetUsedPercent}%</span> Deines Tagesbudgets sind verbraucht</span>
+            <span><span className="font-bold">{budgetUsedPercent}%</span> Deines Tagesbudgets sind verbraucht.</span>
             <span style={{ color: "hsl(var(--success) / 0.7)" }}>Defizit Ziel</span>
           </div>
           <div className="text-xs text-muted-foreground">
             {overBudget
-              ? <span>Du hast <span className="font-bold">{Math.abs(remaining)} kcal</span> über Budget</span>
-              : <span>Du hast noch <span className="font-bold">{remaining} kcal</span> übrig</span>
+              ? <span>Du hast <span className="font-bold">{Math.abs(remaining)} kcal</span> über Budget.</span>
+              : <span>Du hast noch <span className="font-bold">{remaining} kcal</span> übrig.</span>
             }
           </div>
         </>

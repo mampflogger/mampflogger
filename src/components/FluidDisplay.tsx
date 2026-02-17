@@ -48,7 +48,7 @@ const FluidDisplay = ({ entries, foodDatabase, goalMl }: FluidDisplayProps) => {
           <div className="text-xs text-muted-foreground">
             {totalMl === 0
               ? <span>Trink was, dann kommst du deinem Ziel näher!</span>
-              : <span>Du hast schon <span className="font-bold">{percentage} %</span> deines Tagesziels geschafft</span>
+              : <span>Du hast schon <span className="font-bold">{percentage} %</span> Deines Tagesziels geschafft.</span>
             }
           </div>
         </>
