@@ -37,10 +37,10 @@ const NutritionTable = ({ entries, onDelete, onEntryClick }: NutritionTableProps
               <th className="text-left py-1 pr-1 font-semibold text-muted-foreground">Lebensmittel</th>
               <th className="text-right py-1 px-0.5 font-semibold text-muted-foreground">g/ml/St</th>
               <th className="text-right py-1 px-0.5 font-semibold text-muted-foreground">kcal</th>
-              <th className="text-right py-1 px-0.5 font-semibold" style={{ color: MACRO_COLORS.pro }}>P</th>
-              <th className="text-right py-1 px-0.5 font-semibold" style={{ color: MACRO_COLORS.fat }}>F</th>
-              <th className="text-right py-1 px-0.5 font-semibold" style={{ color: MACRO_COLORS.kh }}>K</th>
-              <th className="text-right py-1 px-0.5 font-semibold" style={{ color: MACRO_COLORS.fib }}>B</th>
+              <th className="text-right py-1 px-0.5 font-semibold" style={{ color: MACRO_COLORS.pro }}>PRO</th>
+              <th className="text-right py-1 px-0.5 font-semibold" style={{ color: MACRO_COLORS.fat }}>FAT</th>
+              <th className="text-right py-1 px-0.5 font-semibold" style={{ color: MACRO_COLORS.kh }}>KH</th>
+              <th className="text-right py-1 px-0.5 font-semibold" style={{ color: MACRO_COLORS.fib }}>FIB</th>
               <th className="w-5 pl-1.5"></th>
             </tr>
           </thead>
