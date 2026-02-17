@@ -126,6 +126,7 @@ const SettingsDialog = ({
   const [editFoodFib, setEditFoodFib] = useState("");
   const [editFoodDefault, setEditFoodDefault] = useState("");
   const [editFoodLiquid, setEditFoodLiquid] = useState("");
+  const [showUnitDropdown, setShowUnitDropdown] = useState(false);
   const [, forceUpdate] = useState(0);
 
   // Handle external "New Food" trigger
@@ -175,6 +176,7 @@ const SettingsDialog = ({
     }
     if (!isOpen) {
       setEditingFood(null);
+      setShowUnitDropdown(false);
       setImportType(null);
       setRawText("");
       setPreview(null);
@@ -535,28 +537,66 @@ const SettingsDialog = ({
                     <Label className="text-[10px] text-muted-foreground">Einheit</Label>
                     {(() => {
                       const defaultPresets = ["100g", "100ml", "1 Stk", "1 Tasse", "1 Scheibe", "1 Portion"];
-                      // Collect all unique units from database
                       const dbUnits = [...new Set(foodDatabase.map(f => f.baseUnit))];
-                      // Merge: defaults first, then any extra from DB, deduplicated
                       const allUnits = [...defaultPresets];
                       dbUnits.forEach(u => { if (!allUnits.includes(u)) allUnits.push(u); });
-                      const isCustom = editFoodUnit && !allUnits.includes(editFoodUnit);
-                      return isCustom ? (
+                      const isCustomInput = editFoodUnit && !allUnits.includes(editFoodUnit);
+                      return isCustomInput ? (
                         <div className="flex gap-1">
                           <Input value={editFoodUnit} onChange={(e) => setEditFoodUnit(e.target.value)} className="h-9 text-xs flex-1" autoFocus />
                           <button type="button" onClick={() => setEditFoodUnit("100g")} className="h-9 px-2 text-xs text-muted-foreground hover:text-foreground">✕</button>
                         </div>
                       ) : (
-                        <select value={editFoodUnit} onChange={(e) => {
-                          if (e.target.value === "__custom__") {
-                            setEditFoodUnit("1 ");
-                          } else {
-                            setEditFoodUnit(e.target.value);
-                          }
-                        }} className="h-9 w-full rounded-md border border-input bg-background px-2 text-xs">
-                          {allUnits.map(u => <option key={u} value={u}>{u}</option>)}
-                          <option value="__custom__">Eigene…</option>
-                        </select>
+                        <div className="relative">
+                          <button
+                            type="button"
+                            onClick={() => setShowUnitDropdown(prev => !prev)}
+                            className="h-9 w-full rounded-md border border-input bg-background px-2 text-xs text-left flex items-center justify-between"
+                          >
+                            <span>{editFoodUnit || "100g"}</span>
+                            <span className="text-muted-foreground text-[10px]">▾</span>
+                          </button>
+                          {showUnitDropdown && (
+                            <div className="absolute z-[200] top-full left-0 right-0 mt-1 rounded-md border border-border bg-popover shadow-lg max-h-48 overflow-y-auto">
+                              {allUnits.map(u => (
+                                <div key={u} className="flex items-center justify-between px-2 py-1.5 text-xs hover:bg-muted/60 cursor-pointer group">
+                                  <span
+                                    className="flex-1 truncate"
+                                    onClick={() => { setEditFoodUnit(u); setShowUnitDropdown(false); }}
+                                  >{u}</span>
+                                  {!defaultPresets.includes(u) && (
+                                    <button
+                                      type="button"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        foodDatabase.forEach(f => {
+                                          if (f.baseUnit === u) {
+                                            f.baseUnit = "100g";
+                                            f.baseAmount = 100;
+                                          }
+                                        });
+                                        localStorage.setItem("foodlog-food-database", JSON.stringify(foodDatabase));
+                                        if (editFoodUnit === u) setEditFoodUnit("100g");
+                                        forceUpdate(n => n + 1);
+                                        toast.success(`Einheit "${u}" entfernt`);
+                                      }}
+                                      className="p-0.5 rounded text-muted-foreground hover:text-destructive opacity-0 group-hover:opacity-100 transition-opacity shrink-0 ml-1"
+                                      title={`Einheit "${u}" löschen`}
+                                    >
+                                      <Trash2 className="w-3 h-3" />
+                                    </button>
+                                  )}
+                                </div>
+                              ))}
+                              <div
+                                className="px-2 py-1.5 text-xs text-primary font-medium hover:bg-muted/60 cursor-pointer border-t border-border"
+                                onClick={() => { setEditFoodUnit("1 "); setShowUnitDropdown(false); }}
+                              >
+                                Eigene…
+                              </div>
+                            </div>
+                          )}
+                        </div>
                       );
                     })()}
                   </div>
