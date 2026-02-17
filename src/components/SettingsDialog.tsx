@@ -534,8 +534,13 @@ const SettingsDialog = ({
                   <div>
                     <Label className="text-[10px] text-muted-foreground">Einheit</Label>
                     {(() => {
-                      const presets = ["100g", "100ml", "1 Stk", "1 Tasse", "1 Scheibe", "1 Portion"];
-                      const isCustom = editFoodUnit && !presets.includes(editFoodUnit);
+                      const defaultPresets = ["100g", "100ml", "1 Stk", "1 Tasse", "1 Scheibe", "1 Portion"];
+                      // Collect all unique units from database
+                      const dbUnits = [...new Set(foodDatabase.map(f => f.baseUnit))];
+                      // Merge: defaults first, then any extra from DB, deduplicated
+                      const allUnits = [...defaultPresets];
+                      dbUnits.forEach(u => { if (!allUnits.includes(u)) allUnits.push(u); });
+                      const isCustom = editFoodUnit && !allUnits.includes(editFoodUnit);
                       return isCustom ? (
                         <div className="flex gap-1">
                           <Input value={editFoodUnit} onChange={(e) => setEditFoodUnit(e.target.value)} className="h-9 text-xs flex-1" autoFocus />
@@ -549,7 +554,7 @@ const SettingsDialog = ({
                             setEditFoodUnit(e.target.value);
                           }
                         }} className="h-9 w-full rounded-md border border-input bg-background px-2 text-xs">
-                          {presets.map(u => <option key={u} value={u}>{u}</option>)}
+                          {allUnits.map(u => <option key={u} value={u}>{u}</option>)}
                           <option value="__custom__">Eigene…</option>
                         </select>
                       );
