@@ -21,44 +21,45 @@ const DeficitDisplay = ({ profile, activityBonus, consumedCalories, goalDeficit 
   const overBudget = remaining < 0;
 
   return (
-    <div className="rounded-xl bg-accent/40 p-3 space-y-2">
-      <div className="flex items-center justify-between text-xs text-muted-foreground">
-        <span className="flex items-center gap-1">
-          <Flame className="w-3.5 h-3.5" />
-          Grundumsatz (inkl. NEAT)
-        </span>
-        <span className="font-semibold text-foreground">{bmr} kcal</span>
-      </div>
-      {activityBonus > 0 && (
+    <div className="space-y-2">
+      <div className="rounded-lg bg-accent/40 px-3 py-1.5 space-y-1">
         <div className="flex items-center justify-between text-xs text-muted-foreground">
           <span className="flex items-center gap-1">
-            <Zap className="w-3.5 h-3.5" />
-            Activity Bonus
+            <Flame className="w-3.5 h-3.5" />
+            Grundumsatz (inkl. NEAT)
           </span>
-          <span className="font-semibold text-foreground">+{activityBonus} kcal</span>
+          <span className="font-semibold text-foreground">{bmr} kcal</span>
         </div>
-      )}
-      <div className="flex items-center justify-between text-xs text-muted-foreground border-t border-border pt-2">
-        <span>Kalorienbudget</span>
-        <span className="font-semibold text-foreground">{tdee} kcal</span>
-      </div>
-      <div className="flex items-center justify-between text-xs text-muted-foreground">
-        <span>Kalorienaufnahme</span>
-        <span className="font-semibold text-foreground">{consumedCalories} kcal</span>
-      </div>
-      <div className="flex items-center justify-between pt-2 border-t border-border">
-        <span className="flex items-center gap-1 text-xs font-medium" style={{ color: isDeficit ? "hsl(var(--success))" : "hsl(var(--destructive))" }}>
-          {isDeficit ? <TrendingDown className="w-3.5 h-3.5" /> : <TrendingUp className="w-3.5 h-3.5" />}
-          {isDeficit ? "Defizit" : "Überschuss"}
-        </span>
-        <span className="text-sm font-bold" style={{ color: isDeficit ? "hsl(var(--success))" : "hsl(var(--destructive))" }}>
-          {isDeficit ? `-${deficit}` : `+${Math.abs(deficit)}`} kcal
-        </span>
+        {activityBonus > 0 && (
+          <div className="flex items-center justify-between text-xs text-muted-foreground">
+            <span className="flex items-center gap-1">
+              <Zap className="w-3.5 h-3.5" />
+              Activity Bonus
+            </span>
+            <span className="font-semibold text-foreground">+{activityBonus} kcal</span>
+          </div>
+        )}
+        <div className="flex items-center justify-between text-xs text-muted-foreground border-t border-border pt-1">
+          <span>Kalorienbudget</span>
+          <span className="font-semibold text-foreground">{tdee} kcal</span>
+        </div>
+        <div className="flex items-center justify-between text-xs text-muted-foreground">
+          <span>Kalorienaufnahme</span>
+          <span className="font-semibold text-foreground">{consumedCalories} kcal</span>
+        </div>
+        <div className="flex items-center justify-between pt-1 border-t border-border">
+          <span className="flex items-center gap-1 text-xs font-medium" style={{ color: isDeficit ? "hsl(var(--success))" : "hsl(var(--destructive))" }}>
+            {isDeficit ? <TrendingDown className="w-3.5 h-3.5" /> : <TrendingUp className="w-3.5 h-3.5" />}
+            {isDeficit ? "Defizit" : "Überschuss"}
+          </span>
+          <span className="text-sm font-bold" style={{ color: isDeficit ? "hsl(var(--success))" : "hsl(var(--destructive))" }}>
+            {isDeficit ? `-${deficit}` : `+${Math.abs(deficit)}`} kcal
+          </span>
+        </div>
       </div>
       {goalDeficit && goalDeficit > 0 && (
         <>
           <div className="relative h-2 rounded-full bg-muted overflow-hidden">
-            {/* Deficit goal reserved at the end */}
             <div
               className="absolute right-0 top-0 h-full rounded-r-full"
               style={{
@@ -66,7 +67,6 @@ const DeficitDisplay = ({ profile, activityBonus, consumedCalories, goalDeficit 
                 backgroundColor: "hsl(var(--success) / 0.25)",
               }}
             />
-            {/* Consumed portion */}
             <div
               className="relative h-full rounded-full transition-all duration-500"
               style={{
