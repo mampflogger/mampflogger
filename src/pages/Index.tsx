@@ -155,6 +155,13 @@ const Index = () => {
     return toDelete.length;
   };
 
+  const deleteAllEntries = (): number => {
+    const count = entries.length;
+    setEntries([]);
+    saveEntries([]);
+    return count;
+  };
+
   // Day navigation with future block
   const navigateDay = useCallback((offset: number) => {
     setSelectedDate((prev) => {
@@ -259,6 +266,7 @@ const Index = () => {
               onImport={handleImport}
               onCount={countEntriesInRange}
               onDelete={deleteEntriesInRange}
+              onDeleteAll={deleteAllEntries}
               openToNewFood={openNewFood}
               onOpenToNewFoodHandled={() => setOpenNewFood(false)}
             />

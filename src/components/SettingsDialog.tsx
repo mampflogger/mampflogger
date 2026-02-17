@@ -48,6 +48,7 @@ interface SettingsDialogProps {
   onImport: (entries: NutritionEntry[]) => void;
   onCount: (from: string, to: string) => number;
   onDelete: (from: string, to: string) => number;
+  onDeleteAll: () => number;
   openToNewFood?: boolean;
   onOpenToNewFoodHandled?: () => void;
 }
@@ -76,7 +77,7 @@ function parseDateInputToISO(text: string): string {
 const SettingsDialog = ({
   profile, onSaveProfile, darkMode, onToggleDarkMode,
   colorTheme, onChangeTheme, entries, bookedActivities,
-  onImport, onCount, onDelete, openToNewFood, onOpenToNewFoodHandled,
+  onImport, onCount, onDelete, onDeleteAll, openToNewFood, onOpenToNewFoodHandled,
 }: SettingsDialogProps) => {
   const [open, setOpen] = useState(false);
   const [tab, setTab] = useState<SettingsTab>("profile");
@@ -287,7 +288,7 @@ const SettingsDialog = ({
   };
 
   const handleDeleteAll = () => {
-    const count = onDelete("0000-01-01", "9999-12-31");
+    const count = onDeleteAll();
     setShowDeleteAllConfirm(false);
     toast.success(`${count} Einträge gelöscht!`);
     forceUpdate((n) => n + 1);
