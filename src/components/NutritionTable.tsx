@@ -41,7 +41,7 @@ const NutritionTable = ({ entries, onDelete, onEntryClick }: NutritionTableProps
               <th className="text-right py-1 px-0.5 font-semibold" style={{ color: MACRO_COLORS.fat }}>F</th>
               <th className="text-right py-1 px-0.5 font-semibold" style={{ color: MACRO_COLORS.kh }}>K</th>
               <th className="text-right py-1 px-0.5 font-semibold" style={{ color: MACRO_COLORS.fib }}>B</th>
-              <th className="w-5"></th>
+              <th className="w-7"></th>
             </tr>
           </thead>
           <tbody>
