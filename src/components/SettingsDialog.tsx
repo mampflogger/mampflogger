@@ -362,14 +362,14 @@ const SettingsDialog = ({
           <Settings className="w-4 h-4" />
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle>Einstellungen</DialogTitle>
-          <DialogDescription>Profil, Design, Lebensmittel und Datenmanagement</DialogDescription>
+      <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto p-4 pt-5">
+        <DialogHeader className="pb-1">
+          <DialogTitle className="text-base">Einstellungen</DialogTitle>
+          <DialogDescription className="text-[11px]">Profil, Design, Lebensmittel und Datenmanagement</DialogDescription>
         </DialogHeader>
 
         {/* Tab bar */}
-        <div className="flex gap-1 bg-muted rounded-lg p-0.5 mb-4">
+        <div className="flex gap-1 bg-muted rounded-lg p-0.5 mb-3">
           {tabs.map((t) => (
             <button
               key={t.id}
@@ -388,17 +388,17 @@ const SettingsDialog = ({
 
         {/* Profile Tab */}
         {tab === "profile" && (
-          <div className="space-y-2.5">
+          <div className="space-y-2">
             <div>
-              <Label className="text-xs font-medium text-muted-foreground mb-1 block">Name</Label>
-              <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Dein Name" className="h-9 bg-muted/50" autoCorrect="off" spellCheck={false} />
+              <Label className="text-[10px] font-medium text-muted-foreground mb-0.5 block">Name</Label>
+              <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Dein Name" className="h-8 text-sm bg-muted/50" autoCorrect="off" spellCheck={false} />
             </div>
             <div>
-              <Label className="text-xs font-medium text-muted-foreground mb-1 block">Geschlecht</Label>
+              <Label className="text-[10px] font-medium text-muted-foreground mb-0.5 block">Geschlecht</Label>
               <div className="flex gap-2">
                 {(["male", "female"] as const).map((g) => (
                   <button key={g} type="button" onClick={() => setGender(g)}
-                    className={`flex-1 py-1.5 rounded-lg text-sm font-semibold transition-colors ${
+                    className={`flex-1 py-1 rounded-lg text-xs font-semibold transition-colors ${
                       gender === g ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:text-foreground"
                     }`}
                   >
@@ -409,45 +409,45 @@ const SettingsDialog = ({
             </div>
             <div className="grid grid-cols-3 gap-2">
               <div>
-                <Label className="text-xs font-medium text-muted-foreground mb-1 block">Geburtsjahr</Label>
-                <Input type="number" inputMode="numeric" value={birthYear} onChange={(e) => setBirthYear(e.target.value)} placeholder="1990" className="h-9 bg-muted/50" />
+                <Label className="text-[10px] font-medium text-muted-foreground mb-0.5 block">Geburtsjahr</Label>
+                <Input type="number" inputMode="numeric" value={birthYear} onChange={(e) => setBirthYear(e.target.value)} placeholder="1990" className="h-8 text-sm bg-muted/50" />
               </div>
               <div>
-                <Label className="text-xs font-medium text-muted-foreground mb-1 block">Größe (cm)</Label>
-                <Input type="number" inputMode="numeric" value={heightCm} onChange={(e) => setHeightCm(e.target.value)} placeholder="180" className="h-9 bg-muted/50" />
+                <Label className="text-[10px] font-medium text-muted-foreground mb-0.5 block">Größe (cm)</Label>
+                <Input type="number" inputMode="numeric" value={heightCm} onChange={(e) => setHeightCm(e.target.value)} placeholder="180" className="h-8 text-sm bg-muted/50" />
               </div>
               <div>
-                <Label className="text-xs font-medium text-muted-foreground mb-1 block">Gewicht (kg)</Label>
-                <Input type="number" inputMode="decimal" step="0.1" value={weightKg} onChange={(e) => setWeightKg(e.target.value)} placeholder="80.0" className="h-9 bg-muted/50" />
+                <Label className="text-[10px] font-medium text-muted-foreground mb-0.5 block">Gewicht (kg)</Label>
+                <Input type="number" inputMode="decimal" step="0.1" value={weightKg} onChange={(e) => setWeightKg(e.target.value)} placeholder="80.0" className="h-8 text-sm bg-muted/50" />
               </div>
             </div>
             {bmrPreview && (
-              <div className="rounded-lg bg-accent/40 p-2 flex items-center justify-between">
-                <span className="text-xs text-muted-foreground font-medium">Grundumsatz (BMR)</span>
-                <span className="text-lg font-bold text-foreground">{bmrPreview} <span className="text-xs font-normal text-muted-foreground">kcal/Tag</span></span>
+              <div className="rounded-lg bg-accent/40 px-2 py-1.5 flex items-center justify-between">
+                <span className="text-[10px] text-muted-foreground font-medium">Grundumsatz (BMR)</span>
+                <span className="text-base font-bold text-foreground">{bmrPreview} <span className="text-[10px] font-normal text-muted-foreground">kcal/Tag</span></span>
               </div>
             )}
 
             {/* Your Goals */}
-            <div className="border-t border-border pt-2.5">
-              <Label className="text-xs font-semibold text-muted-foreground mb-2 block uppercase tracking-wider">YOUR DAILY GOALS</Label>
+            <div className="border-t border-border pt-2">
+              <Label className="text-[10px] font-semibold text-muted-foreground mb-1.5 block uppercase tracking-wider">YOUR DAILY GOALS</Label>
               <div className="grid grid-cols-3 gap-2">
                 <div>
-                  <Label className="text-xs font-medium text-muted-foreground mb-1 block">Flüssigkeit ml</Label>
-                  <Input type="number" inputMode="numeric" value={goalFluidMl} onChange={(e) => setGoalFluidMl(e.target.value)} placeholder="2500" className="h-9 bg-muted/50" />
+                  <Label className="text-[10px] font-medium text-muted-foreground mb-0.5 block">Flüssigkeit ml</Label>
+                  <Input type="number" inputMode="numeric" value={goalFluidMl} onChange={(e) => setGoalFluidMl(e.target.value)} placeholder="2500" className="h-8 text-sm bg-muted/50" />
                 </div>
                 <div>
-                  <Label className="text-xs font-medium text-muted-foreground mb-1 block">Defizit kcal</Label>
-                  <Input type="number" inputMode="numeric" value={goalDeficit} onChange={(e) => setGoalDeficit(e.target.value)} placeholder="500" className="h-9 bg-muted/50" />
+                  <Label className="text-[10px] font-medium text-muted-foreground mb-0.5 block">Defizit kcal</Label>
+                  <Input type="number" inputMode="numeric" value={goalDeficit} onChange={(e) => setGoalDeficit(e.target.value)} placeholder="500" className="h-8 text-sm bg-muted/50" />
                 </div>
                 <div>
-                  <Label className="text-xs font-medium text-muted-foreground mb-1 block">Activity kcal</Label>
-                  <Input type="number" inputMode="numeric" value={goalActivityBonus} onChange={(e) => setGoalActivityBonus(e.target.value)} placeholder="300" className="h-9 bg-muted/50" />
+                  <Label className="text-[10px] font-medium text-muted-foreground mb-0.5 block">Activity kcal</Label>
+                  <Input type="number" inputMode="numeric" value={goalActivityBonus} onChange={(e) => setGoalActivityBonus(e.target.value)} placeholder="300" className="h-8 text-sm bg-muted/50" />
                 </div>
               </div>
             </div>
 
-            <Button onClick={handleSaveProfile} disabled={!currentProfile} className="w-full h-9 gap-2">
+            <Button onClick={handleSaveProfile} disabled={!currentProfile} className="w-full h-8 text-xs gap-2">
               <Save className="w-4 h-4" />
               Profil speichern
             </Button>
@@ -456,25 +456,25 @@ const SettingsDialog = ({
 
         {/* Design Tab */}
         {tab === "design" && (
-          <div className="space-y-4">
+          <div className="space-y-3">
             <div>
-              <Label className="text-xs font-medium text-muted-foreground mb-2 block">Modus</Label>
+              <Label className="text-[10px] font-medium text-muted-foreground mb-1 block">Modus</Label>
               <button
                 onClick={onToggleDarkMode}
-                className="flex items-center gap-3 w-full p-3 rounded-lg bg-muted/50 hover:bg-muted transition-colors"
+                className="flex items-center gap-3 w-full p-2.5 rounded-lg bg-muted/50 hover:bg-muted transition-colors"
               >
-                {darkMode ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
-                <span className="text-sm font-medium">{darkMode ? "Dark Mode" : "Light Mode"}</span>
+                {darkMode ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
+                <span className="text-xs font-medium">{darkMode ? "Dark Mode" : "Light Mode"}</span>
               </button>
             </div>
             <div>
-              <Label className="text-xs font-medium text-muted-foreground mb-2 block">Farbthema</Label>
+              <Label className="text-[10px] font-medium text-muted-foreground mb-1 block">Farbthema</Label>
               <div className="grid grid-cols-4 gap-2">
                 {(Object.keys(THEME_COLORS) as ColorTheme[]).map((key) => (
                   <button
                     key={key}
                     onClick={() => onChangeTheme(key)}
-                    className={`flex flex-col items-center gap-1.5 p-3 rounded-lg border-2 transition-colors ${
+                    className={`flex flex-col items-center gap-1 p-2.5 rounded-lg border-2 transition-colors ${
                       colorTheme === key ? "border-primary bg-accent/40" : "border-transparent bg-muted/50 hover:bg-muted"
                     }`}
                   >
@@ -611,7 +611,7 @@ const SettingsDialog = ({
           <div className="space-y-3">
 
             {/* IMPORT Section */}
-            <div className="rounded-xl border border-border bg-accent/20 p-3 space-y-2.5">
+            <div className="rounded-xl border border-border bg-accent/20 p-2.5 space-y-2">
               <div className="flex items-center gap-2">
                 <div className="w-7 h-7 rounded-lg bg-primary/20 flex items-center justify-center">
                   <Upload className="w-3.5 h-3.5 text-primary" />
@@ -678,7 +678,7 @@ const SettingsDialog = ({
             </div>
 
             {/* EXPORT Section */}
-            <div className="rounded-xl border border-border bg-accent/20 p-3 space-y-2.5">
+            <div className="rounded-xl border border-border bg-accent/20 p-2.5 space-y-2">
               <div className="flex items-center gap-2">
                 <div className="w-7 h-7 rounded-lg bg-primary/20 flex items-center justify-center">
                   <Download className="w-3.5 h-3.5 text-primary" />
@@ -695,9 +695,9 @@ const SettingsDialog = ({
                     key={item.label}
                     onClick={item.action}
                     disabled={item.disabled}
-                    className="flex flex-col items-center gap-1.5 p-2.5 rounded-lg bg-background border border-border hover:border-primary/40 hover:bg-primary/5 transition-colors disabled:opacity-40 disabled:pointer-events-none"
+                    className="flex flex-col items-center gap-1 p-2 rounded-lg bg-background border border-border hover:border-primary/40 hover:bg-primary/5 transition-colors disabled:opacity-40 disabled:pointer-events-none"
                   >
-                    <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center">
+                    <div className="w-7 h-7 rounded-full bg-muted flex items-center justify-center">
                       {item.icon}
                     </div>
                     <span className="text-[10px] font-semibold">{item.label}</span>
@@ -710,7 +710,7 @@ const SettingsDialog = ({
             </div>
 
             {/* DELETE Section */}
-            <div className="rounded-xl border border-border bg-accent/20 p-3 space-y-2.5">
+            <div className="rounded-xl border border-border bg-accent/20 p-2.5 space-y-2">
               <div className="flex items-center gap-2">
                 <div className="w-7 h-7 rounded-lg bg-primary/20 flex items-center justify-center">
                   <Trash2 className="w-3.5 h-3.5 text-primary" />
