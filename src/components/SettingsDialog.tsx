@@ -688,7 +688,7 @@ const SettingsDialog = ({
               <div className="grid grid-cols-3 gap-2">
                 {[
                   { label: "Protokoll", icon: <FileSpreadsheet className="w-3.5 h-3.5" />, action: () => exportEntriesToCsv(entries), disabled: entries.length === 0, count: entries.length },
-                  { label: "Bilanz", icon: <BarChart3 className="w-3.5 h-3.5" />, action: () => exportCalorieBalanceCsv(entries, bookedActivities), disabled: entries.length === 0 },
+                  { label: "Bilanz", icon: <BarChart3 className="w-3.5 h-3.5" />, action: () => exportCalorieBalanceCsv(entries, bookedActivities), disabled: entries.length === 0, count: new Set(entries.map(e => e.date)).size },
                   { label: "Lebensmittel", icon: <UtensilsCrossed className="w-3.5 h-3.5" />, action: () => exportFoodDatabaseCsv(), disabled: foodDatabase.length === 0, count: foodDatabase.length },
                 ].map((item) => (
                   <button
@@ -710,12 +710,12 @@ const SettingsDialog = ({
             </div>
 
             {/* DELETE Section */}
-            <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-3 space-y-2.5">
+            <div className="rounded-xl border border-border bg-accent/20 p-3 space-y-2.5">
               <div className="flex items-center gap-2">
-                <div className="w-7 h-7 rounded-lg bg-destructive/15 flex items-center justify-center">
-                  <Trash2 className="w-3.5 h-3.5 text-destructive" />
+                <div className="w-7 h-7 rounded-lg bg-primary/20 flex items-center justify-center">
+                  <Trash2 className="w-3.5 h-3.5 text-primary" />
                 </div>
-                <h3 className="text-xs font-bold uppercase tracking-wider text-destructive">Löschen</h3>
+                <h3 className="text-xs font-bold uppercase tracking-wider text-foreground">Löschen</h3>
               </div>
 
               {/* Date range delete */}
