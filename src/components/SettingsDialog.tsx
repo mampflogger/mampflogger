@@ -574,7 +574,7 @@ const SettingsDialog = ({
                   <Label className="text-[10px] text-muted-foreground">Lebensmittel</Label>
                   <Input value={editFoodName} onChange={(e) => setEditFoodName(e.target.value)} className="h-9 text-xs" autoCorrect="off" spellCheck={false} />
                 </div>
-                {/* Einheit als 2-Spalten-Grid */}
+                {/* Einheit als Dropdown */}
                 {(() => {
                   const defaultPresets = ["100g", "100ml", "1 Stk", "1 Tasse", "1 Scheibe", "1 Portion"];
                   const dbUnits = [...new Set(foodDatabase.map(f => f.baseUnit))];
@@ -582,62 +582,80 @@ const SettingsDialog = ({
                   dbUnits.forEach(u => { if (!allUnits.includes(u)) allUnits.push(u); });
                   const isCustomInput = editFoodUnit && !allUnits.includes(editFoodUnit);
                   return (
-                    <div>
+                    <div className="relative">
                       <Label className="text-[10px] text-muted-foreground">Einheit</Label>
                       {isCustomInput ? (
                         <div className="flex gap-1">
                           <Input value={editFoodUnit} onChange={(e) => setEditFoodUnit(e.target.value)} className="h-9 text-xs flex-1" autoFocus />
-                          <button type="button" onClick={() => setEditFoodUnit("100g")} className="h-9 px-2 text-xs text-muted-foreground hover:text-foreground">✕</button>
+                          <button type="button" onClick={() => { setEditFoodUnit("100g"); setShowUnitDropdown(false); }} className="h-9 px-2 text-xs text-muted-foreground hover:text-foreground">✕</button>
                         </div>
                       ) : (
-                        <div className="grid grid-cols-2 gap-1 mt-0.5">
-                          {allUnits.map(u => (
-                            <div
-                              key={u}
-                              className={`flex items-center justify-between rounded-md border px-2 py-1.5 text-xs cursor-pointer transition-colors ${
-                                editFoodUnit === u
-                                  ? "border-primary bg-primary/10 text-primary font-medium"
-                                  : "border-border bg-background hover:bg-muted/60"
-                              }`}
-                            >
-                              <span
-                                className="flex-1 truncate"
-                                onClick={() => setEditFoodUnit(u)}
-                              >{u}</span>
-                              {u !== "100g" ? (
-                                <button
-                                  type="button"
-                                  onPointerDown={(e) => {
-                                    e.stopPropagation();
-                                    e.preventDefault();
-                                    foodDatabase.forEach(f => {
-                                      if (f.baseUnit === u) {
-                                        f.baseUnit = "100g";
-                                        f.baseAmount = 100;
-                                      }
-                                    });
-                                    localStorage.setItem("mampflogger-food-database", JSON.stringify(foodDatabase));
-                                    if (editFoodUnit === u) setEditFoodUnit("100g");
-                                    forceUpdate(n => n + 1);
-                                    toast.success(`Einheit "${u}" entfernt`);
-                                  }}
-                                  className="p-0.5 rounded text-destructive shrink-0 ml-1"
-                                  title={`Einheit "${u}" löschen`}
-                                >
-                                  <Trash2 className="w-3 h-3" />
-                                </button>
-                              ) : (
-                                <span className="w-4 shrink-0 ml-1" />
-                              )}
-                            </div>
-                          ))}
-                          <div
-                            className="flex items-center rounded-md border border-dashed border-border px-2 py-1.5 text-xs text-muted-foreground hover:bg-muted/60 cursor-pointer"
-                            onClick={() => setEditFoodUnit("1 ")}
+                        <>
+                          <button
+                            type="button"
+                            className="w-full flex items-center justify-between h-9 px-3 text-xs rounded-md border border-input bg-background hover:bg-muted/60 transition-colors"
+                            onClick={() => setShowUnitDropdown(v => !v)}
                           >
-                            + Eigene…
-                          </div>
-                        </div>
+                            <span>{editFoodUnit || "Einheit wählen"}</span>
+                            <ChevronRight className={`w-3.5 h-3.5 text-muted-foreground transition-transform ${showUnitDropdown ? "rotate-90" : ""}`} />
+                          </button>
+                          {showUnitDropdown && (
+                            <div className="absolute left-0 right-0 z-[200] mt-1 rounded-md border border-border bg-popover shadow-lg overflow-hidden">
+                              {allUnits.map(u => (
+                                <div
+                                  key={u}
+                                  className={`flex items-center justify-between px-3 py-2 text-xs cursor-pointer transition-colors ${
+                                    editFoodUnit === u
+                                      ? "bg-primary/10 text-primary font-medium"
+                                      : "hover:bg-muted/60"
+                                  }`}
+                                >
+                                  <span
+                                    className="flex-1"
+                                    onPointerDown={(e) => {
+                                      e.preventDefault();
+                                      setEditFoodUnit(u);
+                                      setShowUnitDropdown(false);
+                                    }}
+                                  >{u}</span>
+                                  {u !== "100g" && (
+                                    <button
+                                      type="button"
+                                      onPointerDown={(e) => {
+                                        e.stopPropagation();
+                                        e.preventDefault();
+                                        foodDatabase.forEach(f => {
+                                          if (f.baseUnit === u) {
+                                            f.baseUnit = "100g";
+                                            f.baseAmount = 100;
+                                          }
+                                        });
+                                        localStorage.setItem("mampflogger-food-database", JSON.stringify(foodDatabase));
+                                        if (editFoodUnit === u) setEditFoodUnit("100g");
+                                        forceUpdate(n => n + 1);
+                                        toast.success(`Einheit "${u}" entfernt`);
+                                      }}
+                                      className="p-1 rounded text-destructive hover:bg-destructive/10 shrink-0 ml-2"
+                                      title={`Einheit "${u}" löschen`}
+                                    >
+                                      <Trash2 className="w-3 h-3" />
+                                    </button>
+                                  )}
+                                </div>
+                              ))}
+                              <div
+                                className="px-3 py-2 text-xs text-muted-foreground hover:bg-muted/60 cursor-pointer border-t border-border"
+                                onPointerDown={(e) => {
+                                  e.preventDefault();
+                                  setEditFoodUnit("1 ");
+                                  setShowUnitDropdown(false);
+                                }}
+                              >
+                                Eigene…
+                              </div>
+                            </div>
+                          )}
+                        </>
                       )}
                     </div>
                   );
