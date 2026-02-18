@@ -570,81 +570,78 @@ const SettingsDialog = ({
                     </div>
                   )}
                 </div>
-                <div className="grid grid-cols-[1fr_80px] gap-2">
-                  <div>
-                    <Label className="text-[10px] text-muted-foreground">Lebensmittel</Label>
-                    <Input value={editFoodName} onChange={(e) => setEditFoodName(e.target.value)} className="h-9 text-xs" autoCorrect="off" spellCheck={false} />
-                  </div>
-                  <div>
-                    <Label className="text-[10px] text-muted-foreground">Einheit</Label>
-                    {(() => {
-                      const defaultPresets = ["100g", "100ml", "1 Stk", "1 Tasse", "1 Scheibe", "1 Portion"];
-                      const dbUnits = [...new Set(foodDatabase.map(f => f.baseUnit))];
-                      const allUnits = [...defaultPresets];
-                      dbUnits.forEach(u => { if (!allUnits.includes(u)) allUnits.push(u); });
-                      const isCustomInput = editFoodUnit && !allUnits.includes(editFoodUnit);
-                      return isCustomInput ? (
+                <div>
+                  <Label className="text-[10px] text-muted-foreground">Lebensmittel</Label>
+                  <Input value={editFoodName} onChange={(e) => setEditFoodName(e.target.value)} className="h-9 text-xs" autoCorrect="off" spellCheck={false} />
+                </div>
+                {/* Einheit als 2-Spalten-Grid */}
+                {(() => {
+                  const defaultPresets = ["100g", "100ml", "1 Stk", "1 Tasse", "1 Scheibe", "1 Portion"];
+                  const dbUnits = [...new Set(foodDatabase.map(f => f.baseUnit))];
+                  const allUnits = [...defaultPresets];
+                  dbUnits.forEach(u => { if (!allUnits.includes(u)) allUnits.push(u); });
+                  const isCustomInput = editFoodUnit && !allUnits.includes(editFoodUnit);
+                  return (
+                    <div>
+                      <Label className="text-[10px] text-muted-foreground">Einheit</Label>
+                      {isCustomInput ? (
                         <div className="flex gap-1">
                           <Input value={editFoodUnit} onChange={(e) => setEditFoodUnit(e.target.value)} className="h-9 text-xs flex-1" autoFocus />
                           <button type="button" onClick={() => setEditFoodUnit("100g")} className="h-9 px-2 text-xs text-muted-foreground hover:text-foreground">✕</button>
                         </div>
                       ) : (
-                        <div className="relative">
-                          <button
-                            type="button"
-                            onClick={() => setShowUnitDropdown(prev => !prev)}
-                            className="h-9 w-full rounded-md border border-input bg-background px-2 text-xs text-left flex items-center justify-between"
-                          >
-                            <span>{editFoodUnit || "100g"}</span>
-                            <span className="text-muted-foreground text-[10px]">▾</span>
-                          </button>
-                          {showUnitDropdown && (
-                            <div className="absolute z-[200] top-full left-0 right-0 mt-1 rounded-md border border-border bg-popover shadow-lg max-h-48 overflow-y-auto">
-                              {allUnits.map(u => (
-                                <div key={u} className="flex items-center justify-between px-2 py-1.5 text-xs hover:bg-muted/60 cursor-pointer">
-                                  <span
-                                    className="flex-1 truncate"
-                                    onClick={() => { setEditFoodUnit(u); setShowUnitDropdown(false); }}
-                                  >{u}</span>
-                                  {u !== "100g" ? (
-                                    <button
-                                      type="button"
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        foodDatabase.forEach(f => {
-                                          if (f.baseUnit === u) {
-                                            f.baseUnit = "100g";
-                                            f.baseAmount = 100;
-                                          }
-                                        });
-                                        localStorage.setItem("mampflogger-food-database", JSON.stringify(foodDatabase));
-                                        if (editFoodUnit === u) setEditFoodUnit("100g");
-                                        forceUpdate(n => n + 1);
-                                        toast.success(`Einheit "${u}" entfernt`);
-                                      }}
-                                      className="p-1 rounded text-destructive hover:bg-destructive/10 shrink-0 ml-1"
-                                      title={`Einheit "${u}" löschen`}
-                                    >
-                                      <Trash2 className="w-3.5 h-3.5" />
-                                    </button>
-                                  ) : (
-                                    <span className="w-6 shrink-0 ml-1" />
-                                  )}
-                                </div>
-                              ))}
-                              <div
-                                className="px-2 py-1.5 text-xs text-muted-foreground hover:bg-muted/60 cursor-pointer border-t border-border"
-                                onClick={() => { setEditFoodUnit("1 "); setShowUnitDropdown(false); }}
-                              >
-                                Eigene…
-                              </div>
+                        <div className="grid grid-cols-2 gap-1 mt-0.5">
+                          {allUnits.map(u => (
+                            <div
+                              key={u}
+                              className={`flex items-center justify-between rounded-md border px-2 py-1.5 text-xs cursor-pointer transition-colors ${
+                                editFoodUnit === u
+                                  ? "border-primary bg-primary/10 text-primary font-medium"
+                                  : "border-border bg-background hover:bg-muted/60"
+                              }`}
+                            >
+                              <span
+                                className="flex-1 truncate"
+                                onClick={() => setEditFoodUnit(u)}
+                              >{u}</span>
+                              {u !== "100g" ? (
+                                <button
+                                  type="button"
+                                  onPointerDown={(e) => {
+                                    e.stopPropagation();
+                                    e.preventDefault();
+                                    foodDatabase.forEach(f => {
+                                      if (f.baseUnit === u) {
+                                        f.baseUnit = "100g";
+                                        f.baseAmount = 100;
+                                      }
+                                    });
+                                    localStorage.setItem("mampflogger-food-database", JSON.stringify(foodDatabase));
+                                    if (editFoodUnit === u) setEditFoodUnit("100g");
+                                    forceUpdate(n => n + 1);
+                                    toast.success(`Einheit "${u}" entfernt`);
+                                  }}
+                                  className="p-0.5 rounded text-destructive shrink-0 ml-1"
+                                  title={`Einheit "${u}" löschen`}
+                                >
+                                  <Trash2 className="w-3 h-3" />
+                                </button>
+                              ) : (
+                                <span className="w-4 shrink-0 ml-1" />
+                              )}
                             </div>
-                          )}
+                          ))}
+                          <div
+                            className="flex items-center rounded-md border border-dashed border-border px-2 py-1.5 text-xs text-muted-foreground hover:bg-muted/60 cursor-pointer"
+                            onClick={() => setEditFoodUnit("1 ")}
+                          >
+                            + Eigene…
+                          </div>
                         </div>
-                      );
-                    })()}
-                  </div>
-                </div>
+                      )}
+                    </div>
+                  );
+                })()}
                 <div className="grid grid-cols-5 gap-2">
                   <div>
                     <Label className="text-[10px] text-muted-foreground">kcal</Label>
