@@ -18,7 +18,7 @@ import WeeklyOverview from "@/components/WeeklyOverview";
 import ActivityInput from "@/components/ActivityInput";
 import DeficitDisplay from "@/components/DeficitDisplay";
 import FluidDisplay from "@/components/FluidDisplay";
-import { foodDatabase } from "@/data/foodDatabase";
+
 import SettingsDialog, { ColorTheme } from "@/components/SettingsDialog";
 import { ChevronLeft, ChevronRight, BarChart3, List } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -412,7 +412,7 @@ const Index = () => {
                 <h2 className="text-[10px] font-semibold text-muted-foreground mb-2 uppercase tracking-wider">
                   Flüssigkeit
                 </h2>
-                <FluidDisplay entries={todayEntries} foodDatabase={foodDatabase} goalMl={profile.goalFluidMl} />
+                <FluidDisplay entries={todayEntries} goalMl={profile.goalFluidMl} />
               </div>
             )}
           </>

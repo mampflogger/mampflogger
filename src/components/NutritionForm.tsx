@@ -162,6 +162,13 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
     const parsedCarbs = Math.round(parseFloat(carbs) || 0);
     const parsedFiber = Math.round(parseFloat(fiber) || 0);
 
+    // Flüssigkeit direkt berechnen wenn das Food einen liquidMl-Wert hat
+    let liquidMl: number | undefined = undefined;
+    if (selectedFood?.liquidMl && parsedAmount > 0) {
+      const factor = parsedAmount / selectedFood.baseAmount;
+      liquidMl = Math.round(selectedFood.liquidMl * factor);
+    }
+
     const entry: NutritionEntry = {
       id: editingEntry?.id || generateId(),
       date: editingEntry?.date || selectedDate,
@@ -173,6 +180,7 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
       carbs: parsedCarbs,
       fat: parsedFat,
       fiber: parsedFiber,
+      ...(liquidMl !== undefined ? { liquidMl } : {}),
     };
 
     // Auto-add to food database if new

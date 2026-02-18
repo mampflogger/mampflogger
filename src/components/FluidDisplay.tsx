@@ -1,21 +1,14 @@
 import { NutritionEntry } from "@/types/nutrition";
-import { FoodItem } from "@/data/foodDatabase";
 import { Droplets } from "lucide-react";
 
 interface FluidDisplayProps {
   entries: NutritionEntry[];
-  foodDatabase: FoodItem[];
   goalMl?: number;
 }
 
-const FluidDisplay = ({ entries, foodDatabase, goalMl }: FluidDisplayProps) => {
+const FluidDisplay = ({ entries, goalMl }: FluidDisplayProps) => {
   const totalMl = entries.reduce((sum, entry) => {
-    const food = foodDatabase.find(
-      (f) => f.name.toLowerCase() === entry.food.toLowerCase()
-    );
-    if (!food || !food.liquidMl) return sum;
-    const factor = entry.amount / food.baseAmount;
-    return sum + Math.round(food.liquidMl * factor);
+    return sum + (entry.liquidMl ?? 0);
   }, 0);
 
   const percentage = goalMl && goalMl > 0 ? Math.min(100, Math.round((totalMl / goalMl) * 100)) : null;

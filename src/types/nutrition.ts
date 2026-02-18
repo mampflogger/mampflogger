@@ -9,6 +9,7 @@ export interface NutritionEntry {
   carbs: number;
   fat: number;
   fiber: number;
+  liquidMl?: number; // Tatsächliche Flüssigkeitsmenge in ml für diesen Eintrag
 }
 
 export interface DailySummary {
