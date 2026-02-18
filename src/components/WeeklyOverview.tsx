@@ -215,7 +215,7 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [] 
       <div className={`grid gap-3 w-full ${avgDeficit7 !== null ? "grid-cols-3" : "grid-cols-2"}`}>
         <div className="rounded-xl bg-accent/40 p-3 text-center">
           <p className="text-xs text-muted-foreground font-medium">Woche</p>
-          <p className="text-xl font-bold text-foreground mt-0.5 tabular-nums tracking-tight leading-tight">{weekTotals.totalCalories.toLocaleString("de-DE")}</p>
+          <p className="text-xl font-bold text-foreground mt-0.5 tabular-nums tracking-tight leading-tight">{weekTotals.totalCalories}</p>
           <p className="text-xs text-muted-foreground">kcal</p>
         </div>
         <div className="rounded-xl bg-accent/40 p-3 text-center">
@@ -307,6 +307,14 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [] 
                 <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} />
                 <Tooltip content={<DeficitTooltip />} cursor={{ fill: "hsl(var(--accent) / 0.4)" }} />
                 <ReferenceLine y={0} stroke="hsl(var(--border))" />
+                {profile?.goalDeficit && profile.goalDeficit > 0 && (
+                  <ReferenceLine
+                    y={profile.goalDeficit}
+                    stroke="hsl(var(--success))"
+                    strokeDasharray="4 3"
+                    strokeWidth={1.5}
+                  />
+                )}
                 <Bar dataKey="deficit" radius={[6, 6, 0, 0]} maxBarSize={36}>
                   {deficitData.map((entry, index) => (
                     <Cell key={index} fill={entry.deficit >= 0 ? "hsl(var(--success))" : "hsl(var(--destructive))"} />
