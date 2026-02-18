@@ -13,6 +13,7 @@ import { Label } from "@/components/ui/label";
 import {
   Settings, Sun, Moon, Trash2, Upload, Download, UserCircle, Save, Check,
   AlertCircle, FileSpreadsheet, UtensilsCrossed, Palette, BarChart3, FileUp,
+  ChevronLeft, ChevronRight,
 } from "lucide-react";
 import { UserProfile, calculateBMR } from "@/types/profile";
 import { NutritionEntry } from "@/types/nutrition";
@@ -128,6 +129,7 @@ const SettingsDialog = ({
   const [editFoodLiquid, setEditFoodLiquid] = useState("");
   const [showUnitDropdown, setShowUnitDropdown] = useState(false);
   const [, forceUpdate] = useState(0);
+  const [foodNavIndex, setFoodNavIndex] = useState<number | null>(null);
 
   // Handle external "New Food" trigger
   useEffect(() => {
@@ -209,7 +211,7 @@ const SettingsDialog = ({
   };
 
   // Food editing
-  const handleEditFood = (food: FoodItem) => {
+  const handleEditFood = (food: FoodItem, index?: number) => {
     setEditingFood(food);
     setEditFoodName(food.name);
     setEditFoodUnit(food.baseUnit);
@@ -220,6 +222,14 @@ const SettingsDialog = ({
     setEditFoodFib(String(food.fiber));
     setEditFoodDefault(food.defaultAmount ? String(food.defaultAmount) : "");
     setEditFoodLiquid(food.liquidMl ? String(food.liquidMl) : "");
+    if (index !== undefined) setFoodNavIndex(index);
+  };
+
+  const handleNavFood = (dir: -1 | 1) => {
+    if (foodNavIndex === null) return;
+    const newIndex = foodNavIndex + dir;
+    if (newIndex < 0 || newIndex >= filteredFoods.length) return;
+    handleEditFood(filteredFoods[newIndex], newIndex);
   };
 
   const handleSaveFood = () => {
@@ -239,6 +249,7 @@ const SettingsDialog = ({
     updateFoodItem(editingFood.name, updated);
     const isNew = !editingFood.name;
     setEditingFood(null);
+    setFoodNavIndex(null);
     forceUpdate((n) => n + 1);
     toast.success(isNew ? "Lebensmittel hinzugefügt!" : "Lebensmittel aktualisiert!");
   };
@@ -529,7 +540,36 @@ const SettingsDialog = ({
           <div className="space-y-3">
             {editingFood ? (
               <div className="space-y-3 p-3 rounded-lg border border-border bg-muted/30">
-                <p className="text-xs font-semibold text-muted-foreground uppercase">{editingFood.name ? "Lebensmittel bearbeiten" : "Neues Lebensmittel"}</p>
+                <div className="flex items-center justify-between">
+                  <p className="text-xs font-semibold text-muted-foreground uppercase">
+                    {editingFood.name ? "Lebensmittel bearbeiten" : "Neues Lebensmittel"}
+                  </p>
+                  {foodNavIndex !== null && editingFood.name && (
+                    <div className="flex items-center gap-1">
+                      <button
+                        type="button"
+                        onClick={() => handleNavFood(-1)}
+                        disabled={foodNavIndex <= 0}
+                        className="h-6 w-6 flex items-center justify-center rounded-md border border-border bg-background hover:bg-muted disabled:opacity-30 transition-colors"
+                        title="Vorheriges Lebensmittel"
+                      >
+                        <ChevronLeft className="w-3.5 h-3.5" />
+                      </button>
+                      <span className="text-[10px] text-muted-foreground tabular-nums min-w-[36px] text-center">
+                        {foodNavIndex + 1}/{filteredFoods.length}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => handleNavFood(1)}
+                        disabled={foodNavIndex >= filteredFoods.length - 1}
+                        className="h-6 w-6 flex items-center justify-center rounded-md border border-border bg-background hover:bg-muted disabled:opacity-30 transition-colors"
+                        title="Nächstes Lebensmittel"
+                      >
+                        <ChevronRight className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  )}
+                </div>
                 <div className="grid grid-cols-[1fr_80px] gap-2">
                   <div>
                     <Label className="text-[10px] text-muted-foreground">Lebensmittel</Label>
@@ -639,7 +679,7 @@ const SettingsDialog = ({
                   <Button onClick={handleSaveFood} className="flex-1 h-9 text-xs">
                     <Save className="w-3.5 h-3.5 mr-1" /> Speichern
                   </Button>
-                  <Button variant="ghost" onClick={() => setEditingFood(null)} className="h-9 text-xs">
+                  <Button variant="ghost" onClick={() => { setEditingFood(null); setFoodNavIndex(null); }} className="h-9 text-xs">
                     Abbrechen
                   </Button>
                 </div>
@@ -661,11 +701,11 @@ const SettingsDialog = ({
                   spellCheck={false}
                 />
                 <div className="max-h-60 overflow-y-auto space-y-0.5">
-                  {filteredFoods.map((f) => (
+                  {filteredFoods.map((f, idx) => (
                     <div
                       key={f.name}
                       className="flex items-center justify-between text-xs py-1.5 px-2 rounded hover:bg-muted/30 cursor-pointer"
-                      onClick={() => handleEditFood(f)}
+                      onClick={() => handleEditFood(f, idx)}
                     >
                       <div className="truncate">
                         <span className="font-medium">{f.name}</span>
