@@ -212,7 +212,7 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [] 
   return (
     <div className="space-y-5 animate-fade-in">
       {/* Stats Row */}
-      <div className={`grid gap-3 ${avgDeficit7 !== null ? "grid-cols-3" : "grid-cols-2"}`}>
+      <div className={`grid gap-3 w-full ${avgDeficit7 !== null ? "grid-cols-3" : "grid-cols-2"}`}>
         <div className="rounded-xl bg-accent/40 p-3 text-center">
           <p className="text-xs text-muted-foreground font-medium">Woche</p>
           <p className="text-xl font-bold text-foreground mt-0.5 tabular-nums tracking-tight leading-tight">{weekTotals.totalCalories.toLocaleString("de-DE")}</p>
