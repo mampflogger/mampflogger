@@ -233,7 +233,7 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
             placeholder="08:00"
             value={time}
             onChange={(e) => handleTimeChange(e.target.value)}
-            className="h-9 bg-muted/50 text-xs px-1 min-w-0 text-center"
+            className="h-9 bg-muted/50 text-[10px] px-1 min-w-0 text-center font-mono"
             autoCorrect="off"
             spellCheck={false}
           />
