@@ -176,6 +176,34 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [] 
     [weekData]
   );
 
+  const calorieTicks = useMemo(() => {
+    const top = Math.ceil(Math.max(maxCalories, bmr ?? 0, 500) / 500) * 500;
+    const steps: number[] = [];
+    for (let v = 0; v <= top; v += 500) steps.push(v);
+    if (bmr) {
+      const filtered = steps.filter((v) => Math.abs(v - bmr) >= 100);
+      return [...filtered, bmr].sort((a, b) => a - b);
+    }
+    return steps;
+  }, [maxCalories, bmr]);
+
+  const deficitTicks = useMemo(() => {
+    if (!deficitData) return [];
+    const allVals = deficitData.map((d) => d.deficit);
+    const minVal = Math.min(...allVals, 0);
+    const maxVal = Math.max(...allVals, profile?.goalDeficit ?? 0, 300);
+    const bottom = Math.floor(minVal / 300) * 300;
+    const top = Math.ceil(maxVal / 300) * 300;
+    const steps: number[] = [];
+    for (let v = bottom; v <= top; v += 300) steps.push(v);
+    const goal = profile?.goalDeficit;
+    if (goal && goal > 0) {
+      const filtered = steps.filter((v) => Math.abs(v - goal) >= 100);
+      return [...filtered, goal].sort((a, b) => a - b);
+    }
+    return steps;
+  }, [deficitData, profile]);
+
   const CaloriesTooltip = ({ active, payload }: any) => {
     if (!active || !payload?.length) return null;
     const data = payload[0].payload as DayData;
@@ -249,19 +277,25 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [] 
         <div className="h-44">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={weekData} margin={{ top: 4, right: 0, left: -20, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
+              <CartesianGrid vertical={false} stroke="hsl(var(--border))" strokeWidth={0.5} />
               <XAxis dataKey="label" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} />
               <YAxis
                 axisLine={false}
                 tickLine={false}
-                tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }}
                 domain={[0, (dataMax: number) => Math.ceil(Math.max(dataMax, bmr ?? 0, 500) / 500) * 500]}
-                ticks={(() => {
-                  const top = Math.ceil(Math.max(maxCalories, bmr ?? 0, 500) / 500) * 500;
-                  const result = [];
-                  for (let v = 0; v <= top; v += 500) result.push(v);
-                  return result;
-                })()}
+                ticks={calorieTicks}
+                tick={(props: any) => {
+                  const { x, y, payload } = props;
+                  const isBmr = bmr !== null && payload.value === bmr;
+                  return (
+                    <text x={x} y={y} dy={4} textAnchor="end" fontSize={10}
+                      fontWeight={isBmr ? 600 : 400}
+                      fill={isBmr ? "hsl(var(--destructive))" : "hsl(var(--muted-foreground))"}
+                    >
+                      {payload.value}
+                    </text>
+                  );
+                }}
               />
               <Tooltip content={<CaloriesTooltip />} cursor={{ fill: "hsl(var(--accent) / 0.4)" }} />
               <Bar dataKey="calories" radius={[6, 6, 0, 0]} maxBarSize={36}>
@@ -275,7 +309,6 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [] 
                   stroke="hsl(var(--destructive))"
                   strokeDasharray="4 3"
                   strokeWidth={1.5}
-                  label={{ value: `${bmr}`, position: "insideTopRight", fontSize: 9, fill: "hsl(var(--destructive))", fontWeight: 600, dy: -4 }}
                 />
               )}
             </BarChart>
@@ -292,23 +325,25 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [] 
           <div className="h-44">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={deficitData} margin={{ top: 4, right: 0, left: -20, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
+                <CartesianGrid vertical={false} stroke="hsl(var(--border))" strokeWidth={0.5} />
                 <XAxis dataKey="label" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} />
                 <YAxis
                   axisLine={false}
                   tickLine={false}
-                  tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }}
                   domain={[(dataMin: number) => Math.floor(Math.min(dataMin, 0) / 300) * 300, (dataMax: number) => Math.ceil(Math.max(dataMax, profile?.goalDeficit ?? 0, 300) / 300) * 300]}
-                  ticks={(() => {
-                    const allVals = deficitData.map(d => d.deficit);
-                    const minVal = Math.min(...allVals, 0);
-                    const maxVal = Math.max(...allVals, profile?.goalDeficit ?? 0, 300);
-                    const bottom = Math.floor(minVal / 300) * 300;
-                    const top = Math.ceil(maxVal / 300) * 300;
-                    const result: number[] = [];
-                    for (let v = bottom; v <= top; v += 300) result.push(v);
-                    return result;
-                  })()}
+                  ticks={deficitTicks}
+                  tick={(props: any) => {
+                    const { x, y, payload } = props;
+                    const isGoal = profile?.goalDeficit && payload.value === profile.goalDeficit;
+                    return (
+                      <text x={x} y={y} dy={4} textAnchor="end" fontSize={10}
+                        fontWeight={isGoal ? 600 : 400}
+                        fill={isGoal ? "hsl(var(--destructive))" : "hsl(var(--muted-foreground))"}
+                      >
+                        {payload.value}
+                      </text>
+                    );
+                  }}
                 />
                 <Tooltip content={<DeficitTooltip />} cursor={{ fill: "hsl(var(--accent) / 0.4)" }} />
                 <Bar dataKey="deficit" radius={[6, 6, 0, 0]} maxBarSize={36}>
@@ -316,14 +351,13 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [] 
                     <Cell key={index} fill={entry.deficit >= 0 ? "hsl(var(--success))" : "hsl(var(--destructive))"} />
                   ))}
                 </Bar>
-                <ReferenceLine y={0} stroke="hsl(var(--border))" />
+                <ReferenceLine y={0} stroke="hsl(var(--border))" strokeWidth={0.5} />
                 {profile?.goalDeficit && profile.goalDeficit > 0 && (
                   <ReferenceLine
                     y={profile.goalDeficit}
                     stroke="hsl(var(--destructive))"
                     strokeDasharray="4 3"
                     strokeWidth={1.5}
-                    label={{ value: `${profile.goalDeficit}`, position: "insideTopRight", fontSize: 9, fill: "hsl(var(--destructive))", fontWeight: 600, dy: -4 }}
                   />
                 )}
               </BarChart>
