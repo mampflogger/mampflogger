@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Zap, Activity, BarChart3, Minimize2, Lock } from "lucide-react";
+import { Zap, Activity, BarChart3, Minimize2, Lock, Share, Plus, Smartphone } from "lucide-react";
 
 const features = [
   {
@@ -115,6 +115,68 @@ const Landing = () => {
               </div>
             </div>
           ))}
+        </div>
+      </section>
+
+      {/* PWA Install Guide */}
+      <section className="max-w-2xl mx-auto px-5 pb-10">
+        <div className="glass-card rounded-2xl p-6">
+          <div className="flex items-center gap-2 mb-1">
+            <Smartphone className="w-5 h-5 text-primary shrink-0" />
+            <p className="font-bold text-base">App aufs iPhone – in 3 Schritten</p>
+          </div>
+          <p className="text-muted-foreground text-xs mb-5 leading-relaxed">
+            Kein App Store. Kein Konto. Einfach die Seite im Browser öffnen und als App speichern.
+          </p>
+          <div className="grid gap-3">
+            {/* Step 1 */}
+            <div className="flex items-start gap-3">
+              <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
+                <span className="text-primary font-bold text-sm">1</span>
+              </div>
+              <div>
+                <p className="font-semibold text-sm">In Safari öffnen</p>
+                <p className="text-muted-foreground text-xs leading-relaxed">
+                  Öffne <span className="font-mono text-foreground text-[11px]">mampflogger.lovable.app</span> in Safari – nicht in Chrome oder Firefox.
+                </p>
+              </div>
+            </div>
+            {/* Step 2 */}
+            <div className="flex items-start gap-3">
+              <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
+                <span className="text-primary font-bold text-sm">2</span>
+              </div>
+              <div>
+                <p className="font-semibold text-sm flex items-center gap-1.5">
+                  Teilen-Button tippen
+                  <Share className="w-3.5 h-3.5 text-primary inline" />
+                </p>
+                <p className="text-muted-foreground text-xs leading-relaxed">
+                  Das Viereck mit dem Pfeil nach oben – unten in der Mitte der Safari-Leiste.
+                </p>
+              </div>
+            </div>
+            {/* Step 3 */}
+            <div className="flex items-start gap-3">
+              <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
+                <span className="text-primary font-bold text-sm">3</span>
+              </div>
+              <div>
+                <p className="font-semibold text-sm flex items-center gap-1.5">
+                  „Zum Home-Bildschirm"
+                  <Plus className="w-3.5 h-3.5 text-primary inline" />
+                </p>
+                <p className="text-muted-foreground text-xs leading-relaxed">
+                  Im Menü nach unten scrollen, auf „Zum Home-Bildschirm" tippen → „Hinzufügen". Fertig! 🎉
+                </p>
+              </div>
+            </div>
+          </div>
+          <div className="mt-4 pt-4 border-t border-border text-center">
+            <p className="text-[11px] text-muted-foreground">
+              Für Android: Chrome-Menü (⋮) → „App installieren"
+            </p>
+          </div>
         </div>
       </section>
 
