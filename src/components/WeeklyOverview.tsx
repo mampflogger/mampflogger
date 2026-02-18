@@ -215,24 +215,24 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [] 
       <div className={`grid gap-3 ${avgDeficit7 !== null ? "grid-cols-3" : "grid-cols-2"}`}>
         <div className="rounded-xl bg-accent/40 p-3 text-center">
           <p className="text-xs text-muted-foreground font-medium">Woche</p>
-          <p className="text-2xl font-bold text-foreground mt-0.5">{weekTotals.totalCalories.toLocaleString("de-DE")}</p>
+          <p className="text-xl font-bold text-foreground mt-0.5 tabular-nums tracking-tight leading-tight">{weekTotals.totalCalories.toLocaleString("de-DE")}</p>
           <p className="text-xs text-muted-foreground">kcal</p>
         </div>
         <div className="rounded-xl bg-accent/40 p-3 text-center">
           <p className="text-xs text-muted-foreground font-medium">Ø Tag</p>
-          <p className="text-2xl font-bold text-foreground mt-0.5">{weekTotals.avgCalories}</p>
+          <p className="text-xl font-bold text-foreground mt-0.5 tabular-nums tracking-tight leading-tight">{weekTotals.avgCalories}</p>
           <p className="text-xs text-muted-foreground">kcal</p>
         </div>
         {avgDeficit7 !== null && (
           <div className="rounded-xl bg-accent/40 p-3 text-center">
             <p className="text-xs text-muted-foreground font-medium">Ø Defizit</p>
-            <div className="flex items-center justify-center gap-1 mt-0.5">
+            <div className="flex items-center justify-center gap-0.5 mt-0.5">
               {avgDeficit7 > 0 ? (
-                <TrendingDown className="w-4 h-4" style={{ color: "hsl(var(--success))" }} />
+                <TrendingDown className="w-3.5 h-3.5 shrink-0" style={{ color: "hsl(var(--success))" }} />
               ) : (
-                <TrendingUp className="w-4 h-4" style={{ color: "hsl(var(--destructive))" }} />
+                <TrendingUp className="w-3.5 h-3.5 shrink-0" style={{ color: "hsl(var(--destructive))" }} />
               )}
-              <p className="text-2xl font-bold" style={{ color: avgDeficit7 > 0 ? "hsl(var(--success))" : "hsl(var(--destructive))" }}>
+              <p className="text-xl font-bold tabular-nums tracking-tight leading-tight" style={{ color: avgDeficit7 > 0 ? "hsl(var(--success))" : "hsl(var(--destructive))" }}>
                 {Math.abs(avgDeficit7)}
               </p>
             </div>

@@ -292,10 +292,7 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
                   }}
                   onMouseEnter={() => setHighlightIndex(index)}
                 >
-                  <span className="font-medium truncate">{item.name}</span>
-                  <span className="text-[10px] text-muted-foreground ml-2 whitespace-nowrap">
-                    {item.calories} kcal / {item.baseUnit}
-                  </span>
+                  <span className="font-medium">{item.name}</span>
                 </li>
               ))}
             </ul>
