@@ -52,7 +52,7 @@ const ActivityInput = ({
   const [activityTypes, setActivityTypes] = useState<ActivityType[]>(() => {
     const types = loadActivityTypes();
     // Sort by last used (stored order)
-    const lastUsedId = localStorage.getItem("foodlog-last-activity-type");
+    const lastUsedId = localStorage.getItem("mampflogger-last-activity-type");
     if (lastUsedId) {
       const idx = types.findIndex((t) => t.id === lastUsedId);
       if (idx > 0) {
@@ -84,7 +84,7 @@ const ActivityInput = ({
     const calories = Math.round(type.caloriesPerUnit * numValue);
 
     // Move last used type to top
-    localStorage.setItem("foodlog-last-activity-type", type.id);
+    localStorage.setItem("mampflogger-last-activity-type", type.id);
     const reordered = [type, ...activityTypes.filter((t) => t.id !== type.id)];
     setActivityTypes(reordered);
 

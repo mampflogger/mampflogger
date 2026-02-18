@@ -60,7 +60,7 @@ export function exportEntriesToCsv(entries: NutritionEntry[]): void {
   );
 
   const csv = [header, ...rows].join("\n");
-  downloadCsv(csv, `foodlog-protokoll-${new Date().toISOString().slice(0, 10)}.csv`);
+  downloadCsv(csv, `mampflogger-protokoll-${new Date().toISOString().slice(0, 10)}.csv`);
 }
 
 /** Export food database */
@@ -81,7 +81,7 @@ export function exportFoodDatabaseCsv(): void {
   );
 
   const csv = [header, ...rows].join("\n");
-  downloadCsv(csv, `foodlog-lebensmittel-${new Date().toISOString().slice(0, 10)}.csv`);
+  downloadCsv(csv, `mampflogger-lebensmittel-${new Date().toISOString().slice(0, 10)}.csv`);
 }
 
 /** Export daily calorie balance (Kalorienbilanz) */
@@ -113,7 +113,7 @@ export function exportCalorieBalanceCsv(entries: NutritionEntry[], bookedActivit
   });
 
   const csv = [header, ...rows].join("\n");
-  downloadCsv(csv, `foodlog-kalorienbilanz-${new Date().toISOString().slice(0, 10)}.csv`);
+  downloadCsv(csv, `mampflogger-kalorienbilanz-${new Date().toISOString().slice(0, 10)}.csv`);
 }
 
 /** Import food database from CSV */
@@ -223,7 +223,7 @@ export function exportActivitiesCsv(activities: BookedActivity[]): void {
     ].join(";")
   );
   const csv = [header, ...rows].join("\n");
-  downloadCsv(csv, `foodlog-aktivitaeten-${new Date().toISOString().slice(0, 10)}.csv`);
+  downloadCsv(csv, `mampflogger-aktivitaeten-${new Date().toISOString().slice(0, 10)}.csv`);
 }
 
 /** Parse booked activities from CSV */

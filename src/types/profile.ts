@@ -35,8 +35,8 @@ export interface DailyActivity {
 
 const PROFILE_KEY = "nutrition-log-profile";
 const ACTIVITY_KEY = "nutrition-log-activities";
-const ACTIVITY_TYPES_KEY = "foodlog-activity-types";
-const BOOKED_ACTIVITIES_KEY = "foodlog-booked-activities";
+const ACTIVITY_TYPES_KEY = "mampflogger-activity-types";
+const BOOKED_ACTIVITIES_KEY = "mampflogger-booked-activities";
 
 // Default activity types
 const DEFAULT_ACTIVITY_TYPES: ActivityType[] = [
