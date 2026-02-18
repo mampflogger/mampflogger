@@ -600,13 +600,19 @@ const SettingsDialog = ({
                           </button>
                           {showUnitDropdown && (
                             <div className="absolute z-[200] top-full left-0 right-0 mt-1 rounded-md border border-border bg-popover shadow-lg max-h-48 overflow-y-auto">
+                              <div
+                                className="flex items-center gap-1.5 px-2 py-1.5 text-xs text-primary font-semibold hover:bg-muted/60 cursor-pointer border-b border-border"
+                                onClick={() => { setEditFoodUnit("1 "); setShowUnitDropdown(false); }}
+                              >
+                                <span className="text-base leading-none">+</span> Eigene Einheit…
+                              </div>
                               {allUnits.map(u => (
-                                <div key={u} className="flex items-center justify-between px-2 py-1.5 text-xs hover:bg-muted/60 cursor-pointer group">
+                                <div key={u} className="flex items-center justify-between px-2 py-1.5 text-xs hover:bg-muted/60 cursor-pointer">
                                   <span
                                     className="flex-1 truncate"
                                     onClick={() => { setEditFoodUnit(u); setShowUnitDropdown(false); }}
                                   >{u}</span>
-                                  {!defaultPresets.includes(u) && (
+                                  {!defaultPresets.includes(u) ? (
                                     <button
                                       type="button"
                                       onClick={(e) => {
@@ -622,20 +628,16 @@ const SettingsDialog = ({
                                         forceUpdate(n => n + 1);
                                         toast.success(`Einheit "${u}" entfernt`);
                                       }}
-                                      className="p-0.5 rounded text-muted-foreground hover:text-destructive opacity-0 group-hover:opacity-100 transition-opacity shrink-0 ml-1"
+                                      className="p-1 rounded text-destructive hover:bg-destructive/10 shrink-0 ml-1"
                                       title={`Einheit "${u}" löschen`}
                                     >
-                                      <Trash2 className="w-3 h-3" />
+                                      <Trash2 className="w-3.5 h-3.5" />
                                     </button>
+                                  ) : (
+                                    <span className="w-6 shrink-0 ml-1" />
                                   )}
                                 </div>
                               ))}
-                              <div
-                                className="px-2 py-1.5 text-xs text-primary font-medium hover:bg-muted/60 cursor-pointer border-t border-border"
-                                onClick={() => { setEditFoodUnit("1 "); setShowUnitDropdown(false); }}
-                              >
-                                Eigene…
-                              </div>
                             </div>
                           )}
                         </div>
