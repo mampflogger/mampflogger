@@ -220,8 +220,8 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
 
   return (
     <form onSubmit={handleSubmit} className="animate-fade-in">
-      {/* Row 1: Time (col-span-1), Food (col-span-3), Amount (col-span-2) → 6 cols total */}
-      <div className="grid grid-cols-6 gap-2 mb-2">
+      {/* Row 1: Time (1), Food (3), Amount (1) → 5 cols total */}
+      <div className="grid grid-cols-5 gap-2 mb-2">
         <div className="col-span-1">
           <Label htmlFor="time" className="text-[10px] font-medium text-muted-foreground mb-1 block">
             Uhrzeit
@@ -298,7 +298,7 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
             </ul>
           )}
         </div>
-        <div className="col-span-2">
+        <div className="col-span-1">
           <Label htmlFor="amount" className="text-[10px] font-medium text-muted-foreground mb-1 block truncate">
             {selectedFood ? (selectedFood.baseUnit.startsWith("1 ") ? selectedFood.baseUnit.substring(2) : "g/ml") : "g/ml"}
           </Label>
