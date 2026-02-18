@@ -51,7 +51,7 @@ const NutritionTable = ({ entries, onDelete, onEntryClick }: NutritionTableProps
                 className="border-b border-border/50 hover:bg-muted/30 transition-colors cursor-pointer"
                 onClick={() => onEntryClick?.(entry)}
               >
-                <td className="py-1 pr-1 text-muted-foreground font-mono whitespace-nowrap">{entry.time}</td>
+                <td className="py-1 pr-1 text-muted-foreground whitespace-nowrap">{entry.time}</td>
                 <td className="py-1 pr-1 font-medium max-w-[80px] truncate">{entry.food}</td>
                 <td className="py-1 px-0.5 text-right text-muted-foreground">{entry.amount}</td>
                 <td className="py-1 px-0.5 text-right font-semibold">{Math.round(entry.calories)}</td>
