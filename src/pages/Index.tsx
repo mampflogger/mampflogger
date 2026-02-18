@@ -19,7 +19,7 @@ import DeficitDisplay from "@/components/DeficitDisplay";
 import FluidDisplay from "@/components/FluidDisplay";
 import { foodDatabase } from "@/data/foodDatabase";
 import SettingsDialog, { ColorTheme } from "@/components/SettingsDialog";
-import { ChevronLeft, ChevronRight, BarChart2, BarChart3, List } from "lucide-react";
+import { ChevronLeft, ChevronRight, BarChart3, List } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const Index = () => {
@@ -239,7 +239,12 @@ const Index = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-                <BarChart2 className="w-4.5 h-4.5 text-primary-foreground" />
+                <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <rect x="1"  y="10" width="3" height="7" rx="0.8" fill="currentColor" className="text-primary-foreground" />
+                  <rect x="5"  y="6"  width="3" height="11" rx="0.8" fill="currentColor" className="text-primary-foreground" />
+                  <rect x="9"  y="8"  width="3" height="9"  rx="0.8" fill="currentColor" className="text-primary-foreground" />
+                  <rect x="13" y="3"  width="3" height="14" rx="0.8" fill="currentColor" className="text-primary-foreground" />
+                </svg>
               </div>
               <h1 className="text-lg font-bold tracking-tight">MampfLogger</h1>
             </div>
