@@ -600,19 +600,13 @@ const SettingsDialog = ({
                           </button>
                           {showUnitDropdown && (
                             <div className="absolute z-[200] top-full left-0 right-0 mt-1 rounded-md border border-border bg-popover shadow-lg max-h-48 overflow-y-auto">
-                              <div
-                                className="flex items-center gap-1.5 px-2 py-1.5 text-xs text-primary font-semibold hover:bg-muted/60 cursor-pointer border-b border-border"
-                                onClick={() => { setEditFoodUnit("1 "); setShowUnitDropdown(false); }}
-                              >
-                                <span className="text-base leading-none">+</span> Eigene Einheit…
-                              </div>
                               {allUnits.map(u => (
                                 <div key={u} className="flex items-center justify-between px-2 py-1.5 text-xs hover:bg-muted/60 cursor-pointer">
                                   <span
                                     className="flex-1 truncate"
                                     onClick={() => { setEditFoodUnit(u); setShowUnitDropdown(false); }}
                                   >{u}</span>
-                                  {!defaultPresets.includes(u) ? (
+                                  {u !== "100g" ? (
                                     <button
                                       type="button"
                                       onClick={(e) => {
@@ -638,6 +632,12 @@ const SettingsDialog = ({
                                   )}
                                 </div>
                               ))}
+                              <div
+                                className="px-2 py-1.5 text-xs text-muted-foreground hover:bg-muted/60 cursor-pointer border-t border-border"
+                                onClick={() => { setEditFoodUnit("1 "); setShowUnitDropdown(false); }}
+                              >
+                                Eigene…
+                              </div>
                             </div>
                           )}
                         </div>
