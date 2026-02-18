@@ -126,6 +126,44 @@ export function reloadFoodDatabase(): void {
   } catch {}
 }
 
+// ---- Unit management (persistent) ----
+const UNIT_KEY = "mampflogger-units";
+
+const DEFAULT_UNITS = ["100g", "100ml", "1 Stk", "1 Tasse", "1 Scheibe", "1 Portion"];
+
+export function loadUnits(): string[] {
+  try {
+    const data = localStorage.getItem(UNIT_KEY);
+    if (data) return JSON.parse(data);
+  } catch {}
+  // First run: persist the defaults
+  saveUnits(DEFAULT_UNITS);
+  return [...DEFAULT_UNITS];
+}
+
+export function saveUnits(units: string[]): void {
+  localStorage.setItem(UNIT_KEY, JSON.stringify(units));
+}
+
+export function deleteUnit(unit: string): void {
+  if (unit === "100g") return; // protected
+  const units = loadUnits().filter(u => u !== unit);
+  saveUnits(units);
+  // Reset foods using this unit to 100g
+  foodDatabase.forEach(f => {
+    if (f.baseUnit === unit) { f.baseUnit = "100g"; f.baseAmount = 100; }
+  });
+  saveFoodDatabase(foodDatabase);
+}
+
+export function addUnit(unit: string): void {
+  const units = loadUnits();
+  if (!units.includes(unit)) {
+    units.push(unit);
+    saveUnits(units);
+  }
+}
+
 export function searchFood(query: string): FoodItem[] {
   if (!query.trim()) return [];
   const lower = query.toLowerCase();

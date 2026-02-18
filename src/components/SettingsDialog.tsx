@@ -17,7 +17,7 @@ import {
 } from "lucide-react";
 import { UserProfile, calculateBMR } from "@/types/profile";
 import { NutritionEntry } from "@/types/nutrition";
-import { foodDatabase, addFoodItem, removeFoodItem, updateFoodItem, clearFoodDatabase, reloadFoodDatabase, FoodItem } from "@/data/foodDatabase";
+import { foodDatabase, addFoodItem, removeFoodItem, updateFoodItem, clearFoodDatabase, reloadFoodDatabase, FoodItem, loadUnits, deleteUnit, addUnit } from "@/data/foodDatabase";
 import {
   exportEntriesToCsv, exportFoodDatabaseCsv, exportCalorieBalanceCsv, exportActivitiesCsv,
 } from "@/lib/csvExport";
@@ -572,10 +572,7 @@ const SettingsDialog = ({
                 </div>
                 {/* Zeile 1: Lebensmittel (3) + Einheit-Dropdown (2) */}
                 {(() => {
-                  const defaultPresets = ["100g", "100ml", "1 Stk", "1 Tasse", "1 Scheibe", "1 Portion"];
-                  const dbUnits = [...new Set(foodDatabase.map(f => f.baseUnit))];
-                  const allUnits = [...defaultPresets];
-                  dbUnits.forEach(u => { if (!allUnits.includes(u)) allUnits.push(u); });
+                  const allUnits = loadUnits();
                   const isCustomInput = editFoodUnit && !allUnits.includes(editFoodUnit);
                   return (
                     <div className="grid grid-cols-5 gap-2">
@@ -625,10 +622,7 @@ const SettingsDialog = ({
                                         onPointerDown={(e) => {
                                           e.stopPropagation();
                                           e.preventDefault();
-                                          foodDatabase.forEach(f => {
-                                            if (f.baseUnit === u) { f.baseUnit = "100g"; f.baseAmount = 100; }
-                                          });
-                                          localStorage.setItem("mampflogger-food-database", JSON.stringify(foodDatabase));
+                                          deleteUnit(u);
                                           if (editFoodUnit === u) setEditFoodUnit("100g");
                                           forceUpdate(n => n + 1);
                                           toast.success(`Einheit "${u}" entfernt`);
@@ -717,25 +711,46 @@ const SettingsDialog = ({
                   autoCorrect="off"
                   spellCheck={false}
                 />
-                <div className="max-h-60 overflow-y-auto space-y-0.5">
-                  {filteredFoods.map((f, idx) => (
-                    <div
-                      key={f.name}
-                      className="flex items-center justify-between text-xs py-1.5 px-2 rounded hover:bg-muted/30 cursor-pointer"
-                      onClick={() => handleEditFood(f, idx)}
-                    >
-                      <div className="truncate">
-                        <span className="font-medium">{f.name}</span>
-                        <span className="text-muted-foreground ml-2">{f.calories} kcal/{f.baseUnit}</span>
-                      </div>
-                      <button
-                        onClick={(e) => { e.stopPropagation(); handleRemoveFood(f.name); }}
-                        className="p-0.5 rounded text-muted-foreground hover:text-destructive shrink-0"
-                      >
-                        <Trash2 className="w-3 h-3" />
-                      </button>
-                    </div>
-                  ))}
+                <div className="max-h-60 overflow-y-auto overflow-x-auto -mx-1 px-1">
+                  <table className="w-full text-[10px]">
+                    <thead>
+                      <tr className="border-b border-border">
+                        <th className="text-left py-1 pr-1 font-semibold text-muted-foreground">Lebensmittel</th>
+                        <th className="text-right py-1 px-0.5 font-semibold text-muted-foreground">Einh.</th>
+                        <th className="text-right py-1 px-0.5 font-semibold text-muted-foreground">kcal</th>
+                        <th className="text-right py-1 px-0.5 font-semibold" style={{ color: "hsl(var(--macro-pro))" }}>PRO</th>
+                        <th className="text-right py-1 px-0.5 font-semibold" style={{ color: "hsl(var(--macro-fat))" }}>FAT</th>
+                        <th className="text-right py-1 px-0.5 font-semibold" style={{ color: "hsl(var(--macro-kh))" }}>KH</th>
+                        <th className="text-right py-1 px-0.5 font-semibold" style={{ color: "hsl(var(--macro-fib))" }}>FIB</th>
+                        <th className="w-5"></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {filteredFoods.map((f, idx) => (
+                        <tr
+                          key={f.name}
+                          className="border-b border-border/50 hover:bg-muted/30 cursor-pointer transition-colors"
+                          onClick={() => handleEditFood(f, idx)}
+                        >
+                          <td className="py-1 pr-1 font-medium max-w-[90px] truncate">{f.name}</td>
+                          <td className="py-1 px-0.5 text-right text-muted-foreground whitespace-nowrap">{f.baseUnit}</td>
+                          <td className="py-1 px-0.5 text-right font-semibold">{f.calories}</td>
+                          <td className="py-1 px-0.5 text-right">{f.protein}</td>
+                          <td className="py-1 px-0.5 text-right">{f.fat}</td>
+                          <td className="py-1 px-0.5 text-right">{f.carbs}</td>
+                          <td className="py-1 px-0.5 text-right">{f.fiber}</td>
+                          <td className="py-1 pl-1 pr-0">
+                            <button
+                              onClick={(e) => { e.stopPropagation(); handleRemoveFood(f.name); }}
+                              className="p-0.5 rounded text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+                            >
+                              <Trash2 className="w-3 h-3" />
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
                 <p className="text-[10px] text-muted-foreground">{foodDatabase.length} Lebensmittel in der Datenbank</p>
               </>
