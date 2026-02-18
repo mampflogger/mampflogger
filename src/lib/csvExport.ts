@@ -65,7 +65,7 @@ export function exportEntriesToCsv(entries: NutritionEntry[]): void {
 
 /** Export food database */
 export function exportFoodDatabaseCsv(): void {
-  const header = "Lebensmittel;Einheit;kcal;PRO;FAT;KH;FIB;Standard";
+  const header = "Lebensmittel;Einheit;kcal;PRO;FAT;KH;FIB;Standard;LiquidMl";
   const rows = foodDatabase.map((f) =>
     [
       `"${f.name.replace(/"/g, '""')}"`,
@@ -76,6 +76,7 @@ export function exportFoodDatabaseCsv(): void {
       f.carbs,
       f.fiber,
       f.defaultAmount || "",
+      f.liquidMl !== undefined ? f.liquidMl : "",
     ].join(";")
   );
 
@@ -129,6 +130,7 @@ export function parseFoodDatabaseCsv(text: string): FoodItem[] {
     const baseUnit = cols[1] || "100g";
     const baseAmount = baseUnit.includes("Stk") ? 1 : 100;
     const defaultAmountRaw = cols[7] ? parseFloat(cols[7]) : undefined;
+    const liquidMlRaw = cols[8] ? parseFloat(cols[8]) : undefined;
 
     items.push({
       name,
@@ -140,6 +142,7 @@ export function parseFoodDatabaseCsv(text: string): FoodItem[] {
       carbs: parseFloat(cols[5]) || 0,
       fiber: parseFloat(cols[6]) || 0,
       defaultAmount: defaultAmountRaw && !isNaN(defaultAmountRaw) ? defaultAmountRaw : undefined,
+      liquidMl: liquidMlRaw && !isNaN(liquidMlRaw) ? liquidMlRaw : undefined,
     });
   }
 

@@ -193,6 +193,7 @@ function parseFoodItems(text: string, delim: Delimiter): FoodItem[] {
     if (!name || name.toLowerCase().includes("lebensmittel")) continue;
     if (looksLikeDate(name)) continue;
     const baseUnit = cols[1] || "100g";
+    const liquidMlRaw = cols.length > 7 ? parseFloat(cols[7]) : NaN;
     items.push({
       name, baseUnit,
       baseAmount: baseUnit.startsWith("1 ") ? 1 : 100,
@@ -201,6 +202,7 @@ function parseFoodItems(text: string, delim: Delimiter): FoodItem[] {
       fat: parseLocalNum(cols[4]),
       carbs: parseLocalNum(cols[5]),
       fiber: parseLocalNum(cols[6]),
+      liquidMl: !isNaN(liquidMlRaw) && liquidMlRaw > 0 ? liquidMlRaw : undefined,
     });
   }
   return items;
