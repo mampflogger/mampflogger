@@ -11,7 +11,7 @@ export interface FoodItem {
   liquidMl?: number; // Flüssigkeit in ml pro baseAmount (z.B. 100 bei 100ml-Basis)
 }
 
-const FOOD_DB_KEY = "foodlog-food-database";
+const FOOD_DB_KEY = "mampflogger-food-database";
 
 const DEFAULT_FOODS: FoodItem[] = [
   { name: "Avocado", baseUnit: "100g", baseAmount: 100, calories: 160, protein: 2, fat: 15, carbs: 3, fiber: 18, defaultAmount: 125 },

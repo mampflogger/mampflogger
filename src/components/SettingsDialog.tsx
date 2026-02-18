@@ -617,7 +617,7 @@ const SettingsDialog = ({
                                             f.baseAmount = 100;
                                           }
                                         });
-                                        localStorage.setItem("foodlog-food-database", JSON.stringify(foodDatabase));
+                                        localStorage.setItem("mampflogger-food-database", JSON.stringify(foodDatabase));
                                         if (editFoodUnit === u) setEditFoodUnit("100g");
                                         forceUpdate(n => n + 1);
                                         toast.success(`Einheit "${u}" entfernt`);

@@ -32,17 +32,17 @@ const Index = () => {
   const [editingActivity, setEditingActivity] = useState<BookedActivity | null>(null);
   const [openNewFood, setOpenNewFood] = useState(false);
   const [darkMode, setDarkMode] = useState(() => {
-    const saved = localStorage.getItem("foodlog-dark-mode");
+    const saved = localStorage.getItem("mampflogger-dark-mode");
     if (saved !== null) return saved === "true";
     return false; // Default: Light Mode
   });
   const [colorTheme, setColorTheme] = useState<ColorTheme>(() => {
-    return (localStorage.getItem("foodlog-color-theme") as ColorTheme) || "yellow";
+    return (localStorage.getItem("mampflogger-color-theme") as ColorTheme) || "yellow";
   });
 
   useEffect(() => {
     document.documentElement.classList.toggle("dark", darkMode);
-    localStorage.setItem("foodlog-dark-mode", String(darkMode));
+    localStorage.setItem("mampflogger-dark-mode", String(darkMode));
   }, [darkMode]);
 
   useEffect(() => {
@@ -51,7 +51,7 @@ const Index = () => {
     if (colorTheme !== "green") {
       el.classList.add(`theme-${colorTheme}`);
     }
-    localStorage.setItem("foodlog-color-theme", colorTheme);
+    localStorage.setItem("mampflogger-color-theme", colorTheme);
   }, [colorTheme]);
 
   useEffect(() => {
