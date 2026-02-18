@@ -254,40 +254,30 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [] 
               <YAxis
                 axisLine={false}
                 tickLine={false}
-                tick={(props: any) => {
-                  const { x, y, payload } = props;
-                  const isBmrTick = bmr && Math.abs(payload.value - bmr) < 1;
-                  return (
-                    <text
-                      x={x}
-                      y={y}
-                      dy={4}
-                      textAnchor="end"
-                      fontSize={isBmrTick ? 10 : 10}
-                      fontWeight={isBmrTick ? 600 : 400}
-                      fill={isBmrTick ? "hsl(var(--destructive))" : "hsl(var(--muted-foreground))"}
-                    >
-                      {payload.value}
-                    </text>
-                  );
-                }}
-                domain={[0, Math.ceil(maxCalories * 1.15)]}
-                ticks={bmr ? [0, ...[Math.round(maxCalories * 0.5), Math.round(maxCalories)].filter(v => Math.abs(v - bmr) > maxCalories * 0.08), bmr].sort((a, b) => a - b) : undefined}
+                tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }}
+                domain={[0, (dataMax: number) => Math.ceil(Math.max(dataMax, bmr ?? 0, 500) / 500) * 500]}
+                ticks={(() => {
+                  const top = Math.ceil(Math.max(maxCalories, bmr ?? 0, 500) / 500) * 500;
+                  const result = [];
+                  for (let v = 0; v <= top; v += 500) result.push(v);
+                  return result;
+                })()}
               />
               <Tooltip content={<CaloriesTooltip />} cursor={{ fill: "hsl(var(--accent) / 0.4)" }} />
+              <Bar dataKey="calories" radius={[6, 6, 0, 0]} maxBarSize={36}>
+                {weekData.map((entry, index) => (
+                  <Cell key={index} fill={entry.isToday ? COLORS.calories : COLORS.caloriesMuted} />
+                ))}
+              </Bar>
               {bmr && (
                 <ReferenceLine
                   y={bmr}
                   stroke="hsl(var(--destructive))"
                   strokeDasharray="4 3"
                   strokeWidth={1.5}
+                  label={{ value: `${bmr}`, position: "insideTopRight", fontSize: 9, fill: "hsl(var(--destructive))", fontWeight: 600, dy: -4 }}
                 />
               )}
-              <Bar dataKey="calories" radius={[6, 6, 0, 0]} maxBarSize={36}>
-                {weekData.map((entry, index) => (
-                  <Cell key={index} fill={entry.isToday ? COLORS.calories : COLORS.caloriesMuted} />
-                ))}
-              </Bar>
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -304,22 +294,38 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [] 
               <BarChart data={deficitData} margin={{ top: 4, right: 0, left: -20, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
                 <XAxis dataKey="label" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} />
-                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} />
+                <YAxis
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }}
+                  domain={[(dataMin: number) => Math.floor(Math.min(dataMin, 0) / 300) * 300, (dataMax: number) => Math.ceil(Math.max(dataMax, profile?.goalDeficit ?? 0, 300) / 300) * 300]}
+                  ticks={(() => {
+                    const allVals = deficitData.map(d => d.deficit);
+                    const minVal = Math.min(...allVals, 0);
+                    const maxVal = Math.max(...allVals, profile?.goalDeficit ?? 0, 300);
+                    const bottom = Math.floor(minVal / 300) * 300;
+                    const top = Math.ceil(maxVal / 300) * 300;
+                    const result: number[] = [];
+                    for (let v = bottom; v <= top; v += 300) result.push(v);
+                    return result;
+                  })()}
+                />
                 <Tooltip content={<DeficitTooltip />} cursor={{ fill: "hsl(var(--accent) / 0.4)" }} />
-                <ReferenceLine y={0} stroke="hsl(var(--border))" />
-                {profile?.goalDeficit && profile.goalDeficit > 0 && (
-                  <ReferenceLine
-                    y={profile.goalDeficit}
-                    stroke="hsl(var(--success))"
-                    strokeDasharray="4 3"
-                    strokeWidth={1.5}
-                  />
-                )}
                 <Bar dataKey="deficit" radius={[6, 6, 0, 0]} maxBarSize={36}>
                   {deficitData.map((entry, index) => (
                     <Cell key={index} fill={entry.deficit >= 0 ? "hsl(var(--success))" : "hsl(var(--destructive))"} />
                   ))}
                 </Bar>
+                <ReferenceLine y={0} stroke="hsl(var(--border))" />
+                {profile?.goalDeficit && profile.goalDeficit > 0 && (
+                  <ReferenceLine
+                    y={profile.goalDeficit}
+                    stroke="hsl(var(--destructive))"
+                    strokeDasharray="4 3"
+                    strokeWidth={1.5}
+                    label={{ value: `${profile.goalDeficit}`, position: "insideTopRight", fontSize: 9, fill: "hsl(var(--destructive))", fontWeight: 600, dy: -4 }}
+                  />
+                )}
               </BarChart>
             </ResponsiveContainer>
           </div>
