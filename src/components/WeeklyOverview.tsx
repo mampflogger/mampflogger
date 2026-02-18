@@ -286,7 +286,7 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [] 
                 ticks={calorieTicks}
                 tick={(props: any) => {
                   const { x, y, payload } = props;
-                  const isBmr = bmr !== null && payload.value === bmr;
+                  const isBmr = bmr !== null && Number(payload.value) === bmr;
                   return (
                     <text x={x} y={y} dy={4} textAnchor="end" fontSize={10}
                       fontWeight={isBmr ? 600 : 400}
@@ -334,7 +334,7 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [] 
                   ticks={deficitTicks}
                   tick={(props: any) => {
                     const { x, y, payload } = props;
-                    const isGoal = profile?.goalDeficit && payload.value === profile.goalDeficit;
+                    const isGoal = profile?.goalDeficit && Number(payload.value) === profile.goalDeficit;
                     return (
                       <text x={x} y={y} dy={4} textAnchor="end" fontSize={10}
                         fontWeight={isGoal ? 600 : 400}
