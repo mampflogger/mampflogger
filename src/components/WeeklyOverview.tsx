@@ -303,8 +303,6 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [] 
                   <Cell key={index} fill={entry.isToday ? COLORS.calories : COLORS.caloriesMuted} />
                 ))}
               </Bar>
-              <ReferenceLine y={1000} stroke="hsl(var(--muted-foreground) / 0.3)" strokeWidth={1} />
-              <ReferenceLine y={2000} stroke="hsl(var(--muted-foreground) / 0.3)" strokeWidth={1} />
               {bmr && (
                 <ReferenceLine
                   y={bmr}
@@ -354,9 +352,6 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [] 
                   ))}
                 </Bar>
                 <ReferenceLine y={0} stroke="hsl(var(--border))" strokeWidth={0.5} />
-                <ReferenceLine y={300} stroke="hsl(var(--muted-foreground) / 0.3)" strokeWidth={1} />
-                <ReferenceLine y={600} stroke="hsl(var(--muted-foreground) / 0.3)" strokeWidth={1} />
-                <ReferenceLine y={1200} stroke="hsl(var(--muted-foreground) / 0.3)" strokeWidth={1} />
                 {profile?.goalDeficit && profile.goalDeficit > 0 && (
                   <ReferenceLine
                     y={profile.goalDeficit}
