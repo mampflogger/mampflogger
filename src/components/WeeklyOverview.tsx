@@ -177,7 +177,7 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [] 
   );
 
   const calorieTicks = useMemo(() => {
-    const top = Math.ceil(Math.max(maxCalories, bmr ?? 0, 500) / 500) * 500;
+    const top = Math.ceil(Math.max(maxCalories, bmr ?? 0, 2000) / 500) * 500;
     const steps: number[] = [];
     for (let v = 0; v <= top; v += 500) steps.push(v);
     if (bmr) {
@@ -191,7 +191,7 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [] 
     if (!deficitData) return [];
     const allVals = deficitData.map((d) => d.deficit);
     const minVal = Math.min(...allVals, 0);
-    const maxVal = Math.max(...allVals, profile?.goalDeficit ?? 0, 300);
+    const maxVal = Math.max(...allVals, profile?.goalDeficit ?? 0, 1200);
     const bottom = Math.floor(minVal / 300) * 300;
     const top = Math.ceil(maxVal / 300) * 300;
     const steps: number[] = [];
@@ -282,7 +282,7 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [] 
               <YAxis
                 axisLine={false}
                 tickLine={false}
-                domain={[0, (dataMax: number) => Math.ceil(Math.max(dataMax, bmr ?? 0, 500) / 500) * 500]}
+                domain={[0, (dataMax: number) => Math.ceil(Math.max(dataMax, bmr ?? 0, 2000) / 500) * 500]}
                 ticks={calorieTicks}
                 tick={(props: any) => {
                   const { x, y, payload } = props;
@@ -330,7 +330,7 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [] 
                 <YAxis
                   axisLine={false}
                   tickLine={false}
-                  domain={[(dataMin: number) => Math.floor(Math.min(dataMin, 0) / 300) * 300, (dataMax: number) => Math.ceil(Math.max(dataMax, profile?.goalDeficit ?? 0, 300) / 300) * 300]}
+                  domain={[(dataMin: number) => Math.floor(Math.min(dataMin, 0) / 300) * 300, (dataMax: number) => Math.ceil(Math.max(dataMax, profile?.goalDeficit ?? 0, 1200) / 300) * 300]}
                   ticks={deficitTicks}
                   tick={(props: any) => {
                     const { x, y, payload } = props;
