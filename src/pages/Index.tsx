@@ -19,7 +19,7 @@ import DeficitDisplay from "@/components/DeficitDisplay";
 import FluidDisplay from "@/components/FluidDisplay";
 import { foodDatabase } from "@/data/foodDatabase";
 import SettingsDialog, { ColorTheme } from "@/components/SettingsDialog";
-import { ChevronLeft, ChevronRight, Apple, BarChart3, List } from "lucide-react";
+import { ChevronLeft, ChevronRight, BarChart2, BarChart3, List } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const Index = () => {
@@ -239,9 +239,9 @@ const Index = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-                <Apple className="w-4.5 h-4.5 text-primary-foreground" />
+                <BarChart2 className="w-4.5 h-4.5 text-primary-foreground" />
               </div>
-              <h1 className="text-lg font-bold tracking-tight">FoodLog</h1>
+              <h1 className="text-lg font-bold tracking-tight">MampfLogger</h1>
             </div>
             <div className="flex items-center gap-1 bg-muted rounded-lg p-0.5">
               <button

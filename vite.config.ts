@@ -24,9 +24,9 @@ export default defineConfig(({ mode }) => ({
         cleanupOutdatedCaches: true,
       },
       manifest: {
-        name: "FoodLog – EatSmarter",
-        short_name: "FoodLog",
-        description: "Track your food and get control of your body and your goals.",
+          name: "MampfLogger",
+          short_name: "MampfLogger",
+          description: "MampfLogger – Tracke dein Essen und behalte die Kontrolle über deine Ziele.",
         theme_color: "#18181b",
         background_color: "#09090b",
         display: "standalone",
