@@ -30,10 +30,10 @@ type SettingsTab = "profile" | "design" | "food" | "data";
 export type ColorTheme = "green" | "yellow" | "blue" | "pink";
 
 const THEME_COLORS: Record<ColorTheme, { label: string; primary: string; swatch: string }> = {
-  green: { label: "Grün", primary: "hsl(152, 55%, 42%)", swatch: "#3a9d6a" },
   yellow: { label: "Gelb", primary: "hsl(45, 80%, 50%)", swatch: "#d4a017" },
   blue: { label: "Blau", primary: "hsl(210, 70%, 50%)", swatch: "#2680c2" },
   pink: { label: "Pink", primary: "hsl(330, 60%, 55%)", swatch: "#c74882" },
+  green: { label: "Grün", primary: "hsl(152, 55%, 42%)", swatch: "#3a9d6a" },
 };
 
 interface SettingsDialogProps {
