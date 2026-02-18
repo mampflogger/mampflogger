@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Zap, Activity, BarChart3, Minimize2, Lock, Share, Plus, Smartphone } from "lucide-react";
 
@@ -33,10 +34,20 @@ const features = [
 const Landing = () => {
   const navigate = useNavigate();
 
+  // Apply stored color theme (same logic as Index.tsx)
+  useEffect(() => {
+    const stored = localStorage.getItem("mampflogger-color-theme") || "yellow";
+    const el = document.documentElement;
+    el.classList.remove("theme-yellow", "theme-blue", "theme-pink");
+    if (stored !== "green") {
+      el.classList.add(`theme-${stored}`);
+    }
+  }, []);
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       {/* Header */}
-      <header className="sticky top-0 z-10 bg-background/80 backdrop-blur-lg border-b border-border">
+      <header className="sticky top-0 z-10 bg-background/80 backdrop-blur-lg border-b border-border" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
         <div className="max-w-2xl mx-auto px-5 py-3 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center shrink-0">
@@ -201,8 +212,9 @@ const Landing = () => {
 
       {/* Footer */}
       <footer className="border-t border-border">
-        <div className="max-w-2xl mx-auto px-5 py-4 text-center text-xs text-muted-foreground">
-          © {new Date().getFullYear()} MampfLogger · Keine Anmeldung · Keine Werbung · Keine Kosten
+        <div className="max-w-2xl mx-auto px-5 py-4 text-center text-xs text-muted-foreground flex flex-col items-center gap-0.5">
+          <span>Keine Anmeldung · Keine Werbung · Keine Kosten</span>
+          <span>© {new Date().getFullYear()} MampfLogger</span>
         </div>
       </footer>
     </div>
