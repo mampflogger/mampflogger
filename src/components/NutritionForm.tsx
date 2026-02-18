@@ -317,26 +317,26 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
       </div>
 
       {/* Row 2: Calories + Macros */}
-      <div className="grid grid-cols-5 gap-2 mb-2">
+      <div className="grid grid-cols-5 gap-1.5 mb-2">
         <div>
           <Label htmlFor="calories" className="text-[10px] font-medium text-muted-foreground mb-1 block">kcal</Label>
-          <Input id="calories" type="number" inputMode="decimal" step="any" placeholder="0" value={calories} onChange={(e) => setCalories(e.target.value)} className="h-9 bg-muted/50 text-xs px-2" />
+          <Input id="calories" type="number" inputMode="decimal" step="any" placeholder="0" value={calories} onChange={(e) => setCalories(e.target.value)} className="h-9 bg-muted/50 text-[10px] px-1 text-center tabular-nums" />
         </div>
         <div>
           <Label htmlFor="protein" className="text-[10px] font-medium text-muted-foreground mb-1 block">PRO</Label>
-          <Input id="protein" type="number" inputMode="decimal" step="any" placeholder="0" value={protein} onChange={(e) => setProtein(e.target.value)} className="h-9 bg-muted/50 text-xs px-2" />
+          <Input id="protein" type="number" inputMode="decimal" step="any" placeholder="0" value={protein} onChange={(e) => setProtein(e.target.value)} className="h-9 bg-muted/50 text-[10px] px-1 text-center tabular-nums" />
         </div>
         <div>
           <Label htmlFor="fat" className="text-[10px] font-medium text-muted-foreground mb-1 block">FAT</Label>
-          <Input id="fat" type="number" inputMode="decimal" step="any" placeholder="0" value={fat} onChange={(e) => setFat(e.target.value)} className="h-9 bg-muted/50 text-xs px-2" />
+          <Input id="fat" type="number" inputMode="decimal" step="any" placeholder="0" value={fat} onChange={(e) => setFat(e.target.value)} className="h-9 bg-muted/50 text-[10px] px-1 text-center tabular-nums" />
         </div>
         <div>
           <Label htmlFor="carbs" className="text-[10px] font-medium text-muted-foreground mb-1 block">KH</Label>
-          <Input id="carbs" type="number" inputMode="decimal" step="any" placeholder="0" value={carbs} onChange={(e) => setCarbs(e.target.value)} className="h-9 bg-muted/50 text-xs px-2" />
+          <Input id="carbs" type="number" inputMode="decimal" step="any" placeholder="0" value={carbs} onChange={(e) => setCarbs(e.target.value)} className="h-9 bg-muted/50 text-[10px] px-1 text-center tabular-nums" />
         </div>
         <div>
           <Label htmlFor="fiber" className="text-[10px] font-medium text-muted-foreground mb-1 block">FIB</Label>
-          <Input id="fiber" type="number" inputMode="decimal" step="any" placeholder="0" value={fiber} onChange={(e) => setFiber(e.target.value)} className="h-9 bg-muted/50 text-xs px-2" />
+          <Input id="fiber" type="number" inputMode="decimal" step="any" placeholder="0" value={fiber} onChange={(e) => setFiber(e.target.value)} className="h-9 bg-muted/50 text-[10px] px-1 text-center tabular-nums" />
         </div>
       </div>
 
