@@ -248,8 +248,8 @@ const SettingsDialog = ({
     };
     updateFoodItem(editingFood.name, updated);
     const isNew = !editingFood.name;
-    setEditingFood(null);
-    setFoodNavIndex(null);
+    // Stay in editor – update editingFood to reflect saved name
+    setEditingFood(updated);
     forceUpdate((n) => n + 1);
     toast.success(isNew ? "Lebensmittel hinzugefügt!" : "Lebensmittel aktualisiert!");
   };
