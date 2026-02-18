@@ -570,11 +570,7 @@ const SettingsDialog = ({
                     </div>
                   )}
                 </div>
-                <div>
-                  <Label className="text-[10px] text-muted-foreground">Lebensmittel</Label>
-                  <Input value={editFoodName} onChange={(e) => setEditFoodName(e.target.value)} className="h-9 text-xs" autoCorrect="off" spellCheck={false} />
-                </div>
-                {/* Makros + Einheit in einer Zeile: [kcal][PRO][FAT][Einheit-Dropdown (2 cols)] */}
+                {/* Zeile 1: Lebensmittel (3) + Einheit-Dropdown (2) */}
                 {(() => {
                   const defaultPresets = ["100g", "100ml", "1 Stk", "1 Tasse", "1 Scheibe", "1 Portion"];
                   const dbUnits = [...new Set(foodDatabase.map(f => f.baseUnit))];
@@ -583,20 +579,10 @@ const SettingsDialog = ({
                   const isCustomInput = editFoodUnit && !allUnits.includes(editFoodUnit);
                   return (
                     <div className="grid grid-cols-5 gap-2">
-                      {/* kcal */}
-                      <div>
-                        <Label className="text-[10px] text-muted-foreground">kcal</Label>
-                        <Input type="number" inputMode="decimal" value={editFoodCal} onChange={(e) => setEditFoodCal(e.target.value)} className="h-9 text-xs" />
-                      </div>
-                      {/* PRO */}
-                      <div>
-                        <Label className="text-[10px] text-muted-foreground">PRO</Label>
-                        <Input type="number" inputMode="decimal" value={editFoodPro} onChange={(e) => setEditFoodPro(e.target.value)} className="h-9 text-xs" />
-                      </div>
-                      {/* FAT */}
-                      <div>
-                        <Label className="text-[10px] text-muted-foreground">FAT</Label>
-                        <Input type="number" inputMode="decimal" value={editFoodFat} onChange={(e) => setEditFoodFat(e.target.value)} className="h-9 text-xs" />
+                      {/* Lebensmittel: col-span-3 */}
+                      <div className="col-span-3">
+                        <Label className="text-[10px] text-muted-foreground">Lebensmittel</Label>
+                        <Input value={editFoodName} onChange={(e) => setEditFoodName(e.target.value)} className="h-9 text-xs" autoCorrect="off" spellCheck={false} />
                       </div>
                       {/* Einheit-Dropdown: col-span-2 */}
                       <div className="col-span-2 relative">
@@ -622,9 +608,7 @@ const SettingsDialog = ({
                                   <div
                                     key={u}
                                     className={`flex items-center justify-between px-3 py-2 text-xs cursor-pointer transition-colors ${
-                                      editFoodUnit === u
-                                        ? "bg-primary/10 text-primary font-medium"
-                                        : "hover:bg-muted/60"
+                                      editFoodUnit === u ? "bg-primary/10 text-primary font-medium" : "hover:bg-muted/60"
                                     }`}
                                   >
                                     <span
@@ -642,10 +626,7 @@ const SettingsDialog = ({
                                           e.stopPropagation();
                                           e.preventDefault();
                                           foodDatabase.forEach(f => {
-                                            if (f.baseUnit === u) {
-                                              f.baseUnit = "100g";
-                                              f.baseAmount = 100;
-                                            }
+                                            if (f.baseUnit === u) { f.baseUnit = "100g"; f.baseAmount = 100; }
                                           });
                                           localStorage.setItem("mampflogger-food-database", JSON.stringify(foodDatabase));
                                           if (editFoodUnit === u) setEditFoodUnit("100g");
@@ -678,7 +659,20 @@ const SettingsDialog = ({
                     </div>
                   );
                 })()}
+                {/* Zeile 2: Makros */}
                 <div className="grid grid-cols-5 gap-2">
+                  <div>
+                    <Label className="text-[10px] text-muted-foreground">kcal</Label>
+                    <Input type="number" inputMode="decimal" value={editFoodCal} onChange={(e) => setEditFoodCal(e.target.value)} className="h-9 text-xs" />
+                  </div>
+                  <div>
+                    <Label className="text-[10px] text-muted-foreground">PRO</Label>
+                    <Input type="number" inputMode="decimal" value={editFoodPro} onChange={(e) => setEditFoodPro(e.target.value)} className="h-9 text-xs" />
+                  </div>
+                  <div>
+                    <Label className="text-[10px] text-muted-foreground">FAT</Label>
+                    <Input type="number" inputMode="decimal" value={editFoodFat} onChange={(e) => setEditFoodFat(e.target.value)} className="h-9 text-xs" />
+                  </div>
                   <div>
                     <Label className="text-[10px] text-muted-foreground">KH</Label>
                     <Input type="number" inputMode="decimal" value={editFoodKh} onChange={(e) => setEditFoodKh(e.target.value)} className="h-9 text-xs" />
