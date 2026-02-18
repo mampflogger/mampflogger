@@ -210,6 +210,7 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
     setSelectedFood(null);
     setSuggestions([]);
     setShowSuggestions(false);
+    setTimeout(() => foodInputRef.current?.focus(), 0);
   };
 
   const handleCancel = () => {
