@@ -603,7 +603,7 @@ const SettingsDialog = ({
                               <ChevronRight className={`w-3.5 h-3.5 text-muted-foreground transition-transform shrink-0 ml-1 ${showUnitDropdown ? "rotate-90" : ""}`} />
                             </button>
                             {showUnitDropdown && (
-                              <div className="absolute right-0 z-[200] mt-1 w-44 rounded-md border border-border bg-popover shadow-lg">
+                              <div className="absolute left-0 right-0 z-[200] mt-1 rounded-md border border-border bg-popover shadow-lg">
                                 {allUnits.map(u => (
                                   <div
                                     key={u}
