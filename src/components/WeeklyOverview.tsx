@@ -55,7 +55,7 @@ const MACRO_COLORS = {
 
 const COLORS = {
   calories: "hsl(var(--primary))",
-  caloriesMuted: "hsl(var(--primary) / 0.5)",
+  caloriesMuted: "hsl(var(--primary) / 0.85)",
 };
 
 const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [] }: WeeklyOverviewProps) => {
@@ -277,7 +277,6 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [] 
         <div className="h-44">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={weekData} margin={{ top: 4, right: 0, left: -20, bottom: 0 }}>
-              <CartesianGrid vertical={false} stroke="hsl(var(--muted-foreground) / 0.15)" strokeWidth={0.5} />
               <XAxis dataKey="label" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} />
               <YAxis
                 axisLine={false}
@@ -329,7 +328,6 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [] 
           <div className="h-44">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={deficitData} margin={{ top: 4, right: 0, left: -20, bottom: 0 }}>
-                <CartesianGrid vertical={false} stroke="hsl(var(--muted-foreground) / 0.15)" strokeWidth={0.5} />
                 <XAxis dataKey="label" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} />
                 <YAxis
                   axisLine={false}
