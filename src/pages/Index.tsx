@@ -34,10 +34,10 @@ const Index = () => {
   const [darkMode, setDarkMode] = useState(() => {
     const saved = localStorage.getItem("foodlog-dark-mode");
     if (saved !== null) return saved === "true";
-    return window.matchMedia("(prefers-color-scheme: dark)").matches;
+    return false; // Default: Light Mode
   });
   const [colorTheme, setColorTheme] = useState<ColorTheme>(() => {
-    return (localStorage.getItem("foodlog-color-theme") as ColorTheme) || "green";
+    return (localStorage.getItem("foodlog-color-theme") as ColorTheme) || "yellow";
   });
 
   useEffect(() => {
