@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import { UserProfile, calculateBMR } from "@/types/profile";
 import { NutritionEntry } from "@/types/nutrition";
-import { foodDatabase, removeFoodItem, updateFoodItem, clearFoodDatabase, FoodItem } from "@/data/foodDatabase";
+import { foodDatabase, addFoodItem, removeFoodItem, updateFoodItem, clearFoodDatabase, FoodItem } from "@/data/foodDatabase";
 import {
   exportEntriesToCsv, exportFoodDatabaseCsv, exportCalorieBalanceCsv, exportActivitiesCsv,
 } from "@/lib/csvExport";
@@ -302,11 +302,12 @@ const SettingsDialog = ({
     if (foodPreview && foodPreview.length > 0) {
       let added = 0;
       foodPreview.forEach((item) => {
-        if (!foodDatabase.find((f) => f.name === item.name)) {
-          foodDatabase.push(item);
+        if (!foodDatabase.find((f) => f.name.toLowerCase() === item.name.toLowerCase())) {
+          addFoodItem(item);
           added++;
         }
       });
+      forceUpdate((n) => n + 1);
       toast.success(`${added} neue Lebensmittel importiert (${foodPreview.length - added} bereits vorhanden)`);
       resetImport();
       return;
