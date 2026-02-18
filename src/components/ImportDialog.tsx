@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Upload, FileSpreadsheet, Check, AlertCircle, FileUp } from "lucide-react";
 import { NutritionEntry } from "@/types/nutrition";
-import { FoodItem, addFoodItem, foodDatabase } from "@/data/foodDatabase";
+import { FoodItem, addFoodItem, foodDatabase, reloadFoodDatabase } from "@/data/foodDatabase";
 import { parseImportText, DetectedType } from "@/lib/importParser";
 import { toast } from "sonner";
 interface ImportDialogProps {
@@ -82,6 +82,7 @@ const ImportDialog = ({ onImport }: ImportDialogProps) => {
           skipped++;
         }
       });
+      reloadFoodDatabase();
       const msg = skipped > 0
         ? `${added} Lebensmittel importiert, ${skipped} übersprungen (bereits vorhanden)`
         : `${added} Lebensmittel importiert!`;

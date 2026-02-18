@@ -116,6 +116,16 @@ export function updateFoodItem(originalName: string, updated: FoodItem): void {
   saveFoodDatabase(foodDatabase);
 }
 
+export function reloadFoodDatabase(): void {
+  try {
+    const data = localStorage.getItem(FOOD_DB_KEY);
+    if (data) {
+      const items: FoodItem[] = JSON.parse(data);
+      foodDatabase.splice(0, foodDatabase.length, ...items);
+    }
+  } catch {}
+}
+
 export function searchFood(query: string): FoodItem[] {
   if (!query.trim()) return [];
   const lower = query.toLowerCase();
