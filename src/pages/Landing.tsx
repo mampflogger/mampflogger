@@ -148,7 +148,7 @@ const Landing = () => {
               <div>
                 <p className="font-semibold text-sm">In Safari öffnen</p>
                 <p className="text-muted-foreground text-xs leading-relaxed">
-                  Öffne <span className="font-mono text-foreground text-[11px]">mampflogger.lovable.app</span> in Safari – nicht in Chrome oder Firefox.
+                  Öffne <span className="font-mono text-foreground text-[11px]">mampflogger.de</span> in Safari – nicht in Chrome oder Firefox.
                 </p>
               </div>
             </div>
