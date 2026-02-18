@@ -733,7 +733,7 @@ const SettingsDialog = ({
             {/* IMPORT Section */}
             <div className="rounded-lg border border-border bg-accent/20 p-2 space-y-1.5">
               <div className="flex items-center gap-1.5">
-                <Upload className="w-3.5 h-3.5 text-primary" />
+                <Download className="w-3.5 h-3.5 text-primary" />
                 <h3 className="text-[11px] font-bold uppercase tracking-wider text-foreground">Import</h3>
                 <span className="text-[9px] text-muted-foreground ml-auto">Auto-Erkennung</span>
               </div>
@@ -802,7 +802,7 @@ const SettingsDialog = ({
             {/* EXPORT Section */}
             <div className="rounded-lg border border-border bg-accent/20 p-2 space-y-1.5">
               <div className="flex items-center gap-1.5">
-                <Download className="w-3.5 h-3.5 text-primary" />
+                <Upload className="w-3.5 h-3.5 text-primary" />
                 <h3 className="text-[11px] font-bold uppercase tracking-wider text-foreground">Export</h3>
               </div>
               <div className="grid grid-cols-4 gap-1.5">
@@ -810,7 +810,7 @@ const SettingsDialog = ({
                   { label: "Protokoll", icon: <FileSpreadsheet className="w-3 h-3" />, action: () => exportEntriesToCsv(entries), disabled: entries.length === 0, count: entries.length },
                   { label: "Aktivitäten", icon: <BarChart3 className="w-3 h-3" />, action: () => exportActivitiesCsv(bookedActivities), disabled: bookedActivities.length === 0, count: bookedActivities.length },
                   { label: "Lebensmittel", icon: <UtensilsCrossed className="w-3 h-3" />, action: () => exportFoodDatabaseCsv(), disabled: foodDatabase.length === 0, count: foodDatabase.length },
-                  { label: "Bilanz", icon: <Download className="w-3 h-3" />, action: () => exportCalorieBalanceCsv(entries, bookedActivities), disabled: entries.length === 0, count: new Set(entries.map(e => e.date)).size },
+                  { label: "Bilanz", icon: <Upload className="w-3 h-3" />, action: () => exportCalorieBalanceCsv(entries, bookedActivities), disabled: entries.length === 0, count: new Set(entries.map(e => e.date)).size },
                 ].map((item) => (
                   <button
                     key={item.label}
