@@ -220,9 +220,9 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
 
   return (
     <form onSubmit={handleSubmit} className="animate-fade-in">
-      {/* Row 1: Time, Food (3 cols), Amount (5 equal columns) */}
-      <div className="grid grid-cols-5 gap-2 mb-2">
-        <div>
+      {/* Row 1: Time (col-span-1), Food (col-span-3), Amount (col-span-2) → 6 cols total */}
+      <div className="grid grid-cols-6 gap-2 mb-2">
+        <div className="col-span-1">
           <Label htmlFor="time" className="text-[10px] font-medium text-muted-foreground mb-1 block">
             Uhrzeit
           </Label>
@@ -233,13 +233,13 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
             placeholder="08:00"
             value={time}
             onChange={(e) => handleTimeChange(e.target.value)}
-            className="h-9 bg-muted/50 text-xs px-1.5 min-w-0 text-center"
+            className="h-9 bg-muted/50 text-xs px-1 min-w-0 text-center"
             autoCorrect="off"
             spellCheck={false}
           />
         </div>
         <div ref={wrapperRef} className="relative col-span-3">
-          <Label htmlFor="food" className="text-[10px] font-medium text-muted-foreground mb-1 block">
+          <Label htmlFor="food" className="text-[10px] font-medium text-muted-foreground mb-1 block truncate">
             Lebensmittel
           </Label>
           <Input
@@ -298,8 +298,8 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
             </ul>
           )}
         </div>
-        <div>
-          <Label htmlFor="amount" className="text-[10px] font-medium text-muted-foreground mb-1 block">
+        <div className="col-span-2">
+          <Label htmlFor="amount" className="text-[10px] font-medium text-muted-foreground mb-1 block truncate">
             {selectedFood ? (selectedFood.baseUnit.startsWith("1 ") ? selectedFood.baseUnit.substring(2) : "g/ml") : "g/ml"}
           </Label>
           <Input

@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo, useRef, useCallback } from "react";
+import { usePwaUpdate } from "@/hooks/usePwaUpdate";
 import { NutritionEntry, formatDate, calculateDailySummary } from "@/types/nutrition";
 import {
   UserProfile,
@@ -23,6 +24,7 @@ import { ChevronLeft, ChevronRight, BarChart3, List } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const Index = () => {
+  const { needsUpdate, applyUpdate } = usePwaUpdate();
   const [entries, setEntries] = useState<NutritionEntry[]>([]);
   const [selectedDate, setSelectedDate] = useState(formatDate(new Date()));
   const [activeTab, setActiveTab] = useState<"log" | "weekly">("log");
@@ -233,6 +235,18 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      {/* PWA Update Banner */}
+      {needsUpdate && (
+        <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 bg-primary text-primary-foreground text-sm font-semibold px-4 py-2.5 rounded-xl shadow-lg">
+          <span>🔄 Update verfügbar</span>
+          <button
+            onClick={applyUpdate}
+            className="underline underline-offset-2 hover:opacity-80"
+          >
+            Jetzt aktualisieren
+          </button>
+        </div>
+      )}
       {/* Header */}
       <header className="sticky top-0 z-10 bg-background/80 backdrop-blur-lg border-b border-border" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
         <div className="max-w-lg mx-auto px-4 py-3">
