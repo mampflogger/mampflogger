@@ -277,7 +277,7 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [] 
         <div className="h-44">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={weekData} margin={{ top: 4, right: 0, left: -20, bottom: 0 }}>
-              <CartesianGrid vertical={false} stroke="hsl(var(--border))" strokeWidth={0.5} />
+              <CartesianGrid vertical={false} stroke="hsl(var(--muted-foreground) / 0.15)" strokeWidth={0.5} />
               <XAxis dataKey="label" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} />
               <YAxis
                 axisLine={false}
@@ -297,6 +297,10 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [] 
                   );
                 }}
               />
+              <ReferenceLine y={500} stroke="hsl(var(--muted-foreground) / 0.25)" strokeWidth={0.5} />
+              <ReferenceLine y={1000} stroke="hsl(var(--muted-foreground) / 0.25)" strokeWidth={0.5} />
+              <ReferenceLine y={1500} stroke="hsl(var(--muted-foreground) / 0.25)" strokeWidth={0.5} />
+              <ReferenceLine y={2000} stroke="hsl(var(--muted-foreground) / 0.25)" strokeWidth={0.5} />
               <Tooltip content={<CaloriesTooltip />} cursor={{ fill: "hsl(var(--accent) / 0.4)" }} />
               <Bar dataKey="calories" radius={[6, 6, 0, 0]} maxBarSize={36}>
                 {weekData.map((entry, index) => (
@@ -325,7 +329,7 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [] 
           <div className="h-44">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={deficitData} margin={{ top: 4, right: 0, left: -20, bottom: 0 }}>
-                <CartesianGrid vertical={false} stroke="hsl(var(--border))" strokeWidth={0.5} />
+                <CartesianGrid vertical={false} stroke="hsl(var(--muted-foreground) / 0.15)" strokeWidth={0.5} />
                 <XAxis dataKey="label" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} />
                 <YAxis
                   axisLine={false}
@@ -345,6 +349,10 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [] 
                     );
                   }}
                 />
+                <ReferenceLine y={300} stroke="hsl(var(--muted-foreground) / 0.25)" strokeWidth={0.5} />
+                <ReferenceLine y={600} stroke="hsl(var(--muted-foreground) / 0.25)" strokeWidth={0.5} />
+                <ReferenceLine y={900} stroke="hsl(var(--muted-foreground) / 0.25)" strokeWidth={0.5} />
+                <ReferenceLine y={1200} stroke="hsl(var(--muted-foreground) / 0.25)" strokeWidth={0.5} />
                 <Tooltip content={<DeficitTooltip />} cursor={{ fill: "hsl(var(--accent) / 0.4)" }} />
                 <Bar dataKey="deficit" radius={[6, 6, 0, 0]} maxBarSize={36}>
                   {deficitData.map((entry, index) => (
