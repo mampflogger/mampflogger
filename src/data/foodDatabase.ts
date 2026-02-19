@@ -9,6 +9,8 @@ export interface FoodItem {
   fiber: number;
   defaultAmount?: number; // Standardmenge, z.B. 125g für eine Avocado
   liquidMl?: number; // Flüssigkeit in ml pro baseAmount (z.B. 100 bei 100ml-Basis)
+  isUserCreated?: boolean; // Vom User selbst angelegt (niemals durch Remote überschreiben)
+  isRemote?: boolean;      // Vom Remote-Server geladen
 }
 
 const FOOD_DB_KEY = "mampflogger-food-database";
@@ -78,7 +80,7 @@ function loadFoodDatabase(): FoodItem[] {
   return [...DEFAULT_FOODS];
 }
 
-function saveFoodDatabase(items: FoodItem[]): void {
+export function saveFoodDatabase(items: FoodItem[]): void {
   localStorage.setItem(FOOD_DB_KEY, JSON.stringify(items));
 }
 

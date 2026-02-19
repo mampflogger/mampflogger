@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import { usePwaUpdate } from "@/hooks/usePwaUpdate";
 import { NutritionEntry, formatDate, calculateDailySummary } from "@/types/nutrition";
+import { syncRemoteFoodDatabase, loadRemoteUrl } from "@/lib/remoteFoodSync";
 import {
   UserProfile,
   BookedActivity,
@@ -60,6 +61,16 @@ const Index = () => {
     setEntries(loadEntries());
     setProfile(loadProfile());
     setBookedActivities(loadBookedActivities());
+
+    // Remote Food Sync beim App-Start
+    const remoteUrl = loadRemoteUrl();
+    if (remoteUrl) {
+      syncRemoteFoodDatabase(remoteUrl).then(({ added }) => {
+        if (added > 0) {
+          console.info(`[App] ${added} neue Lebensmittel aus Remote-DB geladen`);
+        }
+      });
+    }
   }, []);
 
   const todayEntries = useMemo(
