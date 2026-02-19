@@ -14,11 +14,12 @@ const DeficitDisplay = ({ profile, activityBonus, consumedCalories, goalDeficit 
   const deficit = tdee - consumedCalories;
   const isDeficit = deficit > 0;
 
-  // Budget = how much you can eat while still hitting your deficit goal
-  const budget = goalDeficit && goalDeficit > 0 ? tdee - goalDeficit : tdee;
-  const budgetUsedPercent = budget > 0 ? Math.min(100, Math.round((consumedCalories / budget) * 100)) : 0;
-  const remaining = budget - consumedCalories;
-  const overBudget = remaining < 0;
+  // Bar: 100% = TDEE. Orange = consumed / TDEE. Green zone = goalDeficit / TDEE from the right.
+  const eatingBudget = goalDeficit && goalDeficit > 0 ? tdee - goalDeficit : tdee;
+  const consumedPercent = tdee > 0 ? Math.min(110, Math.round((consumedCalories / tdee) * 100)) : 0;
+  const deficitZonePercent = tdee > 0 ? Math.round((goalDeficit ?? 0) / tdee * 100) : 0;
+  const remainingBeforeDeficitZone = eatingBudget - consumedCalories;
+  const inDeficitZone = remainingBeforeDeficitZone < 0;
 
   return (
     <div className="space-y-2">
@@ -59,32 +60,37 @@ const DeficitDisplay = ({ profile, activityBonus, consumedCalories, goalDeficit 
       </div>
       {goalDeficit && goalDeficit > 0 && (
         <>
+          {/* Bar: total width = TDEE (100%). Green zone from right = Defizit-Ziel. Orange = consumed. */}
           <div className="relative h-2 rounded-full bg-muted overflow-hidden">
+            {/* Green deficit zone on the right */}
             <div
-              className="absolute right-0 top-0 h-full rounded-r-full"
+              className="absolute right-0 top-0 h-full"
               style={{
-                width: `${Math.min(100, Math.round((goalDeficit / tdee) * 100))}%`,
+                width: `${deficitZonePercent}%`,
                 backgroundColor: "hsl(var(--success) / 0.25)",
               }}
             />
+            {/* Orange consumed bar */}
             <div
-              className="relative h-full rounded-full transition-all duration-500"
+              className="absolute left-0 top-0 h-full rounded-full transition-all duration-500"
               style={{
-                width: `${budgetUsedPercent}%`,
-                backgroundColor: overBudget
-                  ? "hsl(var(--destructive))"
+                width: `${Math.min(100, consumedPercent)}%`,
+                backgroundColor: inDeficitZone
+                  ? "hsl(var(--warning, 38 92% 50%))"
                   : "hsl(var(--warning, 38 92% 50%))",
               }}
             />
           </div>
           <div className="flex items-center justify-between text-xs text-muted-foreground">
-            <span><span className="font-bold">{budgetUsedPercent}%</span> deines Tagesbudgets sind verbraucht.</span>
-            <span style={{ color: "hsl(var(--success) / 0.7)" }}>Defizit Ziel</span>
+            <span>
+              <span className="font-bold">{consumedPercent}%</span> des Tagesbudgets verbraucht.
+            </span>
+            <span style={{ color: "hsl(var(--success) / 0.7)" }}>Defizit-Zone</span>
           </div>
           <div className="text-xs text-muted-foreground">
-            {overBudget
-              ? <span>Du hast <span className="font-bold">{Math.abs(remaining)} kcal</span> über Budget.</span>
-              : <span>Du hast noch <span className="font-bold">{remaining} kcal</span> übrig.</span>
+            {inDeficitZone
+              ? <span>Du bist <span className="font-bold">{Math.abs(remainingBeforeDeficitZone)} kcal</span> in der Defizit-Zone.</span>
+              : <span>Noch <span className="font-bold">{remainingBeforeDeficitZone} kcal</span> bis zur Defizit-Zone.</span>
             }
           </div>
         </>
