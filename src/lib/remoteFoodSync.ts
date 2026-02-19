@@ -151,12 +151,17 @@ export function getRemoteSyncMeta(): SyncMeta | null {
  * Fallback: öffentliches GitHub-Repository
  */
 const REMOTE_URL_KEY = "mampflogger-remote-url";
-const DEFAULT_REMOTE_URL = "https://mampflogger.lovable.app/lebensmittelliste.json";
+// Relativer Pfad: funktioniert automatisch in Preview UND Produktion
+const DEFAULT_REMOTE_URL = "/lebensmittelliste.json";
 
 export function loadRemoteUrl(): string {
   const stored = localStorage.getItem(REMOTE_URL_KEY);
-  // Migrate: alte GitHub-Raw-URL durch neue App-URL ersetzen
-  if (!stored || stored.includes("raw.githubusercontent.com/mampflogger")) {
+  // Migrate: alte absolute URLs durch relativen Pfad ersetzen
+  if (
+    !stored ||
+    stored.includes("raw.githubusercontent.com/mampflogger") ||
+    stored.includes("mampflogger.lovable.app")
+  ) {
     localStorage.setItem(REMOTE_URL_KEY, DEFAULT_REMOTE_URL);
     return DEFAULT_REMOTE_URL;
   }
