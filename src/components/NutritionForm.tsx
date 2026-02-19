@@ -3,7 +3,7 @@ import { createPortal } from "react-dom";
 import { NutritionEntry, generateId } from "@/types/nutrition";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { FoodItem, searchFood, addFoodItem } from "@/data/foodDatabase";
+import { FoodItem, searchFood, addFoodItem, trackFoodUsage, getFoodUsageCount } from "@/data/foodDatabase";
 
 interface NutritionFormProps {
   onAdd: (entry: NutritionEntry) => void;
@@ -223,6 +223,7 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
       });
     }
 
+    trackFoodUsage(food.trim());
     onAdd(entry);
     resetForm();
   };
@@ -315,23 +316,30 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
                   + New Food
                 </li>
               )}
-              {suggestions.map((item, index) => (
-                <li
-                  key={item.name}
-                  className={`flex items-center justify-between px-3 py-2 text-xs cursor-pointer transition-colors ${
-                    index === highlightIndex
-                      ? "bg-accent text-accent-foreground"
-                      : "hover:bg-muted/60"
-                  }`}
-                  onMouseDown={(e) => {
-                    e.preventDefault();
-                    handleSelectFood(item);
-                  }}
-                  onMouseEnter={() => setHighlightIndex(index)}
-                >
-                  <span className="font-medium">{item.name}</span>
-                </li>
-              ))}
+              {suggestions.map((item, index) => {
+                const usageCount = getFoodUsageCount(item.name);
+                const isFavorite = usageCount >= 3;
+                return (
+                  <li
+                    key={item.name}
+                    className={`flex items-center justify-between px-3 py-2 text-xs cursor-pointer transition-colors ${
+                      index === highlightIndex
+                        ? "bg-accent text-accent-foreground"
+                        : "hover:bg-muted/60"
+                    }`}
+                    onMouseDown={(e) => {
+                      e.preventDefault();
+                      handleSelectFood(item);
+                    }}
+                    onMouseEnter={() => setHighlightIndex(index)}
+                  >
+                    <span className="font-medium">{item.name}</span>
+                    {isFavorite && (
+                      <span className="text-yellow-500 ml-2 shrink-0" title={`${usageCount}× gebucht`}>★</span>
+                    )}
+                  </li>
+                );
+              })}
             </ul>,
             document.body
           )}

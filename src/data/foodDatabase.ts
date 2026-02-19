@@ -315,10 +315,46 @@ export function addUnit(unit: string): void {
   }
 }
 
+// ---- Usage tracking ----
+const USAGE_KEY = "mampflogger-food-usage";
+
+export function loadFoodUsage(): Record<string, number> {
+  try {
+    const data = localStorage.getItem(USAGE_KEY);
+    return data ? JSON.parse(data) : {};
+  } catch {
+    return {};
+  }
+}
+
+export function trackFoodUsage(foodName: string): void {
+  const usage = loadFoodUsage();
+  const key = foodName.toLowerCase();
+  usage[key] = (usage[key] ?? 0) + 1;
+  localStorage.setItem(USAGE_KEY, JSON.stringify(usage));
+}
+
+export function getFoodUsageCount(foodName: string): number {
+  const usage = loadFoodUsage();
+  return usage[foodName.toLowerCase()] ?? 0;
+}
+
 export function searchFood(query: string): FoodItem[] {
   if (!query.trim()) return [];
   const lower = query.toLowerCase();
-  return foodDatabase
-    .filter((item) => item.name.toLowerCase().includes(lower))
-    .slice(0, 8);
+  const usage = loadFoodUsage();
+
+  const matches = foodDatabase.filter((item) =>
+    item.name.toLowerCase().includes(lower)
+  );
+
+  // Sort: items used before come first (desc), then alphabetically
+  matches.sort((a, b) => {
+    const ua = usage[a.name.toLowerCase()] ?? 0;
+    const ub = usage[b.name.toLowerCase()] ?? 0;
+    if (ub !== ua) return ub - ua;
+    return a.name.localeCompare(b.name, "de");
+  });
+
+  return matches.slice(0, 10);
 }
