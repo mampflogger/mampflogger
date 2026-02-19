@@ -1,4 +1,5 @@
-import { useState, useRef, useEffect, useCallback, createRef } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
+import { createPortal } from "react-dom";
 import { NutritionEntry, generateId } from "@/types/nutrition";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -29,6 +30,7 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [selectedFood, setSelectedFood] = useState<FoodItem | null>(null);
   const [highlightIndex, setHighlightIndex] = useState(-1);
+  const [dropdownRect, setDropdownRect] = useState<DOMRect | null>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLUListElement>(null);
   const foodInputRef = useRef<HTMLInputElement>(null);
@@ -54,13 +56,33 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
-      if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node)) {
+      if (
+        wrapperRef.current && !wrapperRef.current.contains(e.target as Node) &&
+        listRef.current && !listRef.current.contains(e.target as Node)
+      ) {
         setShowSuggestions(false);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  // Update dropdown position whenever it opens or window scrolls/resizes
+  useEffect(() => {
+    if (!showSuggestions) return;
+    const update = () => {
+      if (wrapperRef.current) {
+        setDropdownRect(wrapperRef.current.getBoundingClientRect());
+      }
+    };
+    update();
+    window.addEventListener("scroll", update, true);
+    window.addEventListener("resize", update);
+    return () => {
+      window.removeEventListener("scroll", update, true);
+      window.removeEventListener("resize", update);
+    };
+  }, [showSuggestions]);
 
   const applyFoodValues = useCallback((item: FoodItem, qty: number) => {
     const factor = qty / item.baseAmount;
@@ -246,7 +268,7 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
             spellCheck={false}
           />
         </div>
-        <div ref={wrapperRef} className="relative col-span-3" style={{ zIndex: showSuggestions ? 9999 : 'auto' }}>
+        <div ref={wrapperRef} className="relative col-span-3">
           <Label htmlFor="food" className="text-[10px] font-medium text-muted-foreground mb-1 block truncate">
             Lebensmittel
           </Label>
@@ -267,10 +289,17 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
             spellCheck={false}
             required
           />
-          {showSuggestions && (
+          {showSuggestions && dropdownRect && createPortal(
             <ul
               ref={listRef}
-              className="absolute z-[9999] top-full left-0 right-0 mt-1 max-h-52 overflow-y-auto rounded-lg border border-border bg-popover shadow-xl"
+              style={{
+                position: "fixed",
+                top: dropdownRect.bottom + 4,
+                left: dropdownRect.left,
+                width: dropdownRect.width,
+                zIndex: 99999,
+              }}
+              className="max-h-52 overflow-y-auto rounded-lg border border-border bg-popover shadow-xl"
             >
               {onNewFood && (
                 <li
@@ -303,7 +332,8 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
                   <span className="font-medium">{item.name}</span>
                 </li>
               ))}
-            </ul>
+            </ul>,
+            document.body
           )}
         </div>
         <div className="col-span-1">
