@@ -148,11 +148,13 @@ export function getRemoteSyncMeta(): SyncMeta | null {
 
 /**
  * Speichert/liest die Remote-URL aus localStorage.
+ * Fallback: öffentliches GitHub-Repository
  */
 const REMOTE_URL_KEY = "mampflogger-remote-url";
+const DEFAULT_REMOTE_URL = "https://raw.githubusercontent.com/mampflogger/mampflogger/main/lebensmittelliste.json";
 
 export function loadRemoteUrl(): string {
-  return localStorage.getItem(REMOTE_URL_KEY) ?? "";
+  return localStorage.getItem(REMOTE_URL_KEY) ?? DEFAULT_REMOTE_URL;
 }
 
 export function saveRemoteUrl(url: string): void {
