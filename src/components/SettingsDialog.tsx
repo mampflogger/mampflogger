@@ -13,7 +13,7 @@ import { Label } from "@/components/ui/label";
 import {
   Settings, Sun, Moon, Trash2, Upload, Download, UserCircle, Save, Check,
   AlertCircle, FileSpreadsheet, UtensilsCrossed, Palette, BarChart3, FileUp,
-  ChevronLeft, ChevronRight,
+  ChevronLeft, ChevronRight, RefreshCw, Link,
 } from "lucide-react";
 import { UserProfile, calculateBMR } from "@/types/profile";
 import { NutritionEntry } from "@/types/nutrition";
@@ -24,6 +24,8 @@ import {
 import { parseImportText } from "@/lib/importParser";
 import { BookedActivity } from "@/types/profile";
 import { toast } from "sonner";
+import { syncRemoteFoodDatabase, loadRemoteUrl, saveRemoteUrl, getRemoteSyncMeta } from "@/lib/remoteFoodSync";
+
 
 type SettingsTab = "profile" | "design" | "food" | "data";
 
@@ -130,6 +132,13 @@ const SettingsDialog = ({
   const [showUnitDropdown, setShowUnitDropdown] = useState(false);
   const [, forceUpdate] = useState(0);
   const [foodNavIndex, setFoodNavIndex] = useState<number | null>(null);
+
+  // Remote Sync state
+  const [remoteUrl, setRemoteUrl] = useState(() => loadRemoteUrl());
+  const [remoteUrlInput, setRemoteUrlInput] = useState(() => loadRemoteUrl());
+  const [syncStatus, setSyncStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [syncMsg, setSyncMsg] = useState("");
+
 
   // Handle external "New Food" trigger
   useEffect(() => {
@@ -532,8 +541,83 @@ const SettingsDialog = ({
                 ))}
               </div>
             </div>
+
+            {/* Remote Food Database Sync */}
+            <div className="border-t border-border pt-3 space-y-2">
+              <Label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1">
+                <Link className="w-3 h-3" />
+                Remote-Lebensmittelliste
+              </Label>
+              <p className="text-[10px] text-muted-foreground leading-relaxed">
+                URL zu einer JSON-Datei (z.B. GitHub raw). Beim App-Start werden nur <strong>neue</strong> Artikel geladen – deine eigenen Einträge werden nie überschrieben.
+              </p>
+              <div className="flex gap-2">
+                <Input
+                  value={remoteUrlInput}
+                  onChange={(e) => setRemoteUrlInput(e.target.value)}
+                  placeholder="https://raw.githubusercontent.com/..."
+                  className="h-8 text-xs bg-muted/50 flex-1"
+                  autoCorrect="off"
+                  autoCapitalize="off"
+                  spellCheck={false}
+                />
+              </div>
+              <div className="flex gap-2">
+                <Button
+                  size="sm"
+                  variant="secondary"
+                  className="h-8 text-xs flex-1"
+                  onClick={() => {
+                    const trimmed = remoteUrlInput.trim();
+                    saveRemoteUrl(trimmed);
+                    setRemoteUrl(trimmed);
+                    toast.success(trimmed ? "URL gespeichert!" : "URL entfernt.");
+                  }}
+                >
+                  <Save className="w-3.5 h-3.5 mr-1" />
+                  URL speichern
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="h-8 text-xs flex-1"
+                  disabled={!remoteUrl || syncStatus === "loading"}
+                  onClick={async () => {
+                    setSyncStatus("loading");
+                    setSyncMsg("");
+                    const result = await syncRemoteFoodDatabase(remoteUrl, true);
+                    reloadFoodDatabase();
+                    forceUpdate((n) => n + 1);
+                    if (result.error) {
+                      setSyncStatus("error");
+                      setSyncMsg(`Fehler: ${result.error}`);
+                    } else {
+                      setSyncStatus("success");
+                      setSyncMsg(`${result.added} neue Artikel geladen, ${result.skipped} übersprungen.`);
+                      if (result.added > 0) toast.success(`${result.added} neue Lebensmittel synchronisiert!`);
+                    }
+                    setTimeout(() => setSyncStatus("idle"), 4000);
+                  }}
+                >
+                  <RefreshCw className={`w-3.5 h-3.5 mr-1 ${syncStatus === "loading" ? "animate-spin" : ""}`} />
+                  Jetzt sync
+                </Button>
+              </div>
+              {syncMsg && (
+                <p className={`text-[10px] ${syncStatus === "error" ? "text-destructive" : "text-primary"}`}>
+                  {syncStatus === "success" ? "✓ " : "✗ "}{syncMsg}
+                </p>
+              )}
+              {(() => {
+                const meta = getRemoteSyncMeta();
+                if (!meta || !meta.lastFetched) return null;
+                const d = new Date(meta.lastFetched).toLocaleString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" });
+                return <p className="text-[9px] text-muted-foreground">Letzter Sync: {d} · Version: {meta.lastVersion}</p>;
+              })()}
+            </div>
           </div>
         )}
+
 
         {/* Food List Tab */}
         {tab === "food" && (
