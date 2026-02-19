@@ -306,10 +306,9 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [] 
                   );
                 }}
               />
-              <ReferenceLine y={500} stroke="hsl(var(--muted-foreground) / 0.25)" strokeWidth={0.5} />
-              <ReferenceLine y={1000} stroke="hsl(var(--muted-foreground) / 0.25)" strokeWidth={0.5} />
-              <ReferenceLine y={1500} stroke="hsl(var(--muted-foreground) / 0.25)" strokeWidth={0.5} />
-              <ReferenceLine y={2000} stroke="hsl(var(--muted-foreground) / 0.25)" strokeWidth={0.5} />
+              {calorieTicks.filter(v => !bmr || Math.abs(v - bmr) > 0.5).map((v) => (
+                <ReferenceLine key={v} y={v} stroke="hsl(var(--muted-foreground) / 0.25)" strokeWidth={0.5} />
+              ))}
               <Tooltip content={<CaloriesTooltip />} cursor={{ fill: "hsl(var(--accent) / 0.4)" }} />
               <Bar dataKey="calories" radius={[6, 6, 0, 0]} maxBarSize={36}>
                 {weekData.map((entry, index) => (
@@ -357,10 +356,9 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [] 
                     );
                   }}
                 />
-                <ReferenceLine y={300} stroke="hsl(var(--muted-foreground) / 0.25)" strokeWidth={0.5} />
-                <ReferenceLine y={600} stroke="hsl(var(--muted-foreground) / 0.25)" strokeWidth={0.5} />
-                <ReferenceLine y={900} stroke="hsl(var(--muted-foreground) / 0.25)" strokeWidth={0.5} />
-                <ReferenceLine y={1200} stroke="hsl(var(--muted-foreground) / 0.25)" strokeWidth={0.5} />
+                {deficitTicks.filter(v => !profile?.goalDeficit || Math.abs(v - profile.goalDeficit) > 0.5).map((v) => (
+                  <ReferenceLine key={v} y={v} stroke="hsl(var(--muted-foreground) / 0.25)" strokeWidth={0.5} />
+                ))}
                 <Tooltip content={<DeficitTooltip />} cursor={{ fill: "hsl(var(--accent) / 0.4)" }} />
                 <Bar dataKey="deficit" radius={[6, 6, 0, 0]} maxBarSize={36}>
                   {deficitData.map((entry, index) => (
