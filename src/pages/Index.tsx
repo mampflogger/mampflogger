@@ -252,14 +252,22 @@ const Index = () => {
     <div className="min-h-screen bg-background">
       {/* PWA Update Banner */}
       {needsUpdate && (
-        <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 bg-primary text-primary-foreground text-sm font-semibold px-4 py-2.5 rounded-xl shadow-lg">
-          <span>🔄 Update verfügbar</span>
-          <button
-            onClick={applyUpdate}
-            className="underline underline-offset-2 hover:opacity-80"
-          >
-            Jetzt aktualisieren
-          </button>
+        <div className="fixed inset-x-0 bottom-0 z-50 p-4 pb-[calc(1rem+env(safe-area-inset-bottom))]">
+          <div className="max-w-lg mx-auto bg-primary text-primary-foreground rounded-2xl shadow-2xl p-4 flex flex-col gap-3">
+            <div className="flex items-center gap-2 text-base font-bold">
+              <span className="text-xl">🔄</span>
+              <span>Neue Version verfügbar!</span>
+            </div>
+            <p className="text-sm opacity-90 leading-snug">
+              Eine Aktualisierung wurde heruntergeladen. Tippe auf den Button – die App lädt neu und ist sofort auf dem neuesten Stand.
+            </p>
+            <button
+              onClick={applyUpdate}
+              className="w-full bg-primary-foreground text-primary font-bold py-3 rounded-xl text-sm active:opacity-80"
+            >
+              ✓ Jetzt aktualisieren
+            </button>
+          </div>
         </div>
       )}
       {/* Header */}
