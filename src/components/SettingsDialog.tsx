@@ -21,6 +21,24 @@ import { foodDatabase, addFoodItem, removeFoodItem, updateFoodItem, clearFoodDat
 import {
   exportEntriesToCsv, exportFoodDatabaseCsv, exportCalorieBalanceCsv, exportActivitiesCsv,
 } from "@/lib/csvExport";
+
+function exportFoodDatabaseJson(): void {
+  const payload = {
+    version: new Date().toISOString().slice(0, 10),
+    items: foodDatabase.map(({ name, baseUnit, baseAmount, calories, protein, fat, carbs, fiber, defaultAmount, liquidMl }) => ({
+      name, baseUnit, baseAmount, calories, protein, fat, carbs, fiber,
+      ...(defaultAmount !== undefined ? { defaultAmount } : {}),
+      ...(liquidMl !== undefined ? { liquidMl } : {}),
+    })),
+  };
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = `lebensmittelliste.json`;
+  link.click();
+  URL.revokeObjectURL(url);
+}
 import { parseImportText } from "@/lib/importParser";
 import { BookedActivity } from "@/types/profile";
 import { toast } from "sonner";
@@ -940,7 +958,20 @@ const SettingsDialog = ({
                   </button>
                 ))}
               </div>
+              {/* JSON Export for GitHub Remote Sync */}
+              <button
+                onClick={() => { exportFoodDatabaseJson(); toast.success("lebensmittelliste.json heruntergeladen – lade sie in dein GitHub-Repo hoch!"); }}
+                disabled={foodDatabase.length === 0}
+                className="w-full flex items-center justify-between gap-2 py-2 px-3 rounded-lg bg-background border border-border hover:border-primary/40 hover:bg-primary/5 transition-colors disabled:opacity-40 disabled:pointer-events-none"
+              >
+                <div className="flex items-center gap-2">
+                  <Link className="w-3.5 h-3.5 text-primary" />
+                  <span className="text-[10px] font-semibold">Als JSON für GitHub exportieren</span>
+                </div>
+                <span className="text-[9px] text-muted-foreground font-mono">lebensmittelliste.json · {foodDatabase.length} Artikel</span>
+              </button>
             </div>
+
 
             {/* DELETE Section */}
             <div className="rounded-lg border border-border bg-accent/20 p-2 space-y-1.5">
