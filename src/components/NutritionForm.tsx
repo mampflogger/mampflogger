@@ -246,7 +246,7 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
             spellCheck={false}
           />
         </div>
-        <div ref={wrapperRef} className="relative col-span-3">
+        <div ref={wrapperRef} className="relative col-span-3" style={{ zIndex: showSuggestions ? 9999 : 'auto' }}>
           <Label htmlFor="food" className="text-[10px] font-medium text-muted-foreground mb-1 block truncate">
             Lebensmittel
           </Label>
@@ -270,7 +270,7 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
           {showSuggestions && (
             <ul
               ref={listRef}
-              className="absolute z-[100] top-full left-0 right-0 mt-1 max-h-52 overflow-y-auto rounded-lg border border-border bg-popover shadow-lg"
+              className="absolute z-[9999] top-full left-0 right-0 mt-1 max-h-52 overflow-y-auto rounded-lg border border-border bg-popover shadow-xl"
             >
               {onNewFood && (
                 <li
