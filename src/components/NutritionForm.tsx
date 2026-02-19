@@ -299,7 +299,7 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
                 width: dropdownRect.width,
                 zIndex: 99999,
               }}
-              className="max-h-52 overflow-y-auto rounded-lg border border-border bg-popover shadow-xl"
+              className="max-h-[70vh] overflow-y-auto rounded-lg border border-border bg-popover shadow-xl"
             >
               {onNewFood && (
                 <li
