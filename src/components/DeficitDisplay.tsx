@@ -19,8 +19,8 @@ const DeficitDisplay = ({ profile, activityBonus, consumedCalories, goalDeficit 
 
   // Bar reference = eatingBudget (= 100%). Deficit zone shown separately on the right.
   // consumedVsBudget: how much of the eating budget is used
-  const consumedVsBudgetPercent = eatingBudget > 0
-    ? Math.round((consumedCalories / eatingBudget) * 100)
+  const consumedVsBudgetPercent = tdee > 0
+    ? Math.round((consumedCalories / tdee) * 100)
     : 0;
 
   // Width of deficit zone relative to bar total (eatingBudget + goalDeficit = tdee)
@@ -131,7 +131,7 @@ const DeficitDisplay = ({ profile, activityBonus, consumedCalories, goalDeficit 
 
           <div className="flex items-center justify-between text-xs text-muted-foreground">
             <span>
-              <span className="font-bold">{consumedVsBudgetPercent}%</span> des Essbudgets verbraucht.
+              <span className="font-bold">{consumedVsBudgetPercent}%</span> des Kalorienbudgets verbraucht.
             </span>
             <span style={{ color: overBudget ? "hsl(var(--destructive) / 0.7)" : "hsl(var(--success) / 0.7)" }}>
               Defizit-Zone
