@@ -406,8 +406,10 @@ const SettingsDialog = ({
 
   const handleDeleteAllFood = () => {
     const count = clearFoodDatabase();
+    // Sync-Cache löschen, damit beim nächsten App-Start sofort neu geladen wird
+    localStorage.removeItem("mampflogger-remote-sync");
     setShowDeleteFoodConfirm(false);
-    toast.success(`${count} Lebensmittel gelöscht!`);
+    toast.success(`${count} Lebensmittel gelöscht – Remote-Sync wird beim nächsten Start neu ausgeführt.`);
     forceUpdate((n) => n + 1);
   };
 
