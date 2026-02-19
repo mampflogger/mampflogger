@@ -12,6 +12,7 @@ import {
   calculateBookedActivityBonus,
 } from "@/types/profile";
 import { loadEntries, saveEntries } from "@/lib/storage";
+import { reloadFoodDatabase } from "@/data/foodDatabase";
 import NutritionForm from "@/components/NutritionForm";
 import NutritionTable from "@/components/NutritionTable";
 import MacroBar from "@/components/MacroBar";
@@ -65,9 +66,12 @@ const Index = () => {
     // Remote Food Sync beim App-Start
     const remoteUrl = loadRemoteUrl();
     if (remoteUrl) {
-      syncRemoteFoodDatabase(remoteUrl).then(({ added }) => {
-        if (added > 0) {
+      syncRemoteFoodDatabase(remoteUrl).then(({ added, error }) => {
+        if (error) {
+          console.warn(`[App] Remote-Sync Fehler: ${error}`);
+        } else if (added > 0) {
           console.info(`[App] ${added} neue Lebensmittel aus Remote-DB geladen`);
+          reloadFoodDatabase();
         }
       });
     }
