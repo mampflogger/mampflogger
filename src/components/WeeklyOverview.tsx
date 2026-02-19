@@ -11,7 +11,6 @@ import {
   Bar,
   XAxis,
   YAxis,
-  CartesianGrid,
   Tooltip,
   ResponsiveContainer,
   Cell,
@@ -186,6 +185,17 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [] 
     }
     return steps;
   }, [maxCalories, bmr]);
+
+  const macroTicks = useMemo(() => {
+    const maxTotal = Math.max(
+      ...weekData.map((d) => d.protein + d.fat + d.carbs + d.fiber),
+      100
+    );
+    const top = Math.ceil(maxTotal / 100) * 100;
+    const steps: number[] = [];
+    for (let v = 100; v <= top; v += 100) steps.push(v);
+    return steps;
+  }, [weekData]);
 
   const deficitTicks = useMemo(() => {
     if (!deficitData) return [];
@@ -410,9 +420,16 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [] 
         <div className="h-40">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={weekData} margin={{ top: 4, right: 0, left: -20, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
               <XAxis dataKey="label" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} />
-              <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} />
+              <YAxis
+                axisLine={false}
+                tickLine={false}
+                ticks={macroTicks}
+                tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }}
+              />
+              {macroTicks.map((v) => (
+                <ReferenceLine key={v} y={v} stroke="hsl(var(--muted-foreground) / 0.25)" strokeWidth={0.5} />
+              ))}
               <Tooltip
                 content={({ active, payload }) => {
                   if (!active || !payload?.length) return null;
