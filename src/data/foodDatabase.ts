@@ -188,17 +188,43 @@ const DEFAULT_FOODS: FoodItem[] = [
 function loadFoodDatabase(): FoodItem[] {
   try {
     const raw = localStorage.getItem(FOOD_DB_KEY);
-    if (!raw) return [...DEFAULT_FOODS];
-    const stored: FoodItem[] = JSON.parse(raw);
-    // Merge: add DEFAULT_FOODS entries that are not yet in stored (by name, case-insensitive)
-    const storedNames = new Set(stored.map((f) => f.name.toLowerCase()));
-    const missing = DEFAULT_FOODS.filter((f) => !storedNames.has(f.name.toLowerCase()));
-    if (missing.length > 0) {
-      const merged = [...stored, ...missing];
-      localStorage.setItem(FOOD_DB_KEY, JSON.stringify(merged));
-      return merged;
+    if (!raw) {
+      localStorage.setItem(FOOD_DB_KEY, JSON.stringify(DEFAULT_FOODS));
+      return [...DEFAULT_FOODS];
     }
-    return stored;
+    const stored: FoodItem[] = JSON.parse(raw);
+
+    // Build a map of stored items by name (lowercase)
+    const storedMap = new Map(stored.map((f) => [f.name.toLowerCase(), f]));
+
+    // For each DEFAULT_FOOD:
+    // - if not in stored → add it
+    // - if in stored but NOT user-created → overwrite with updated DEFAULT values
+    //   (but keep isUserCreated, defaultAmount overrides if user set them)
+    let changed = false;
+    for (const def of DEFAULT_FOODS) {
+      const key = def.name.toLowerCase();
+      const existing = storedMap.get(key);
+      if (!existing) {
+        storedMap.set(key, { ...def });
+        changed = true;
+      } else if (!existing.isUserCreated) {
+        // Update macros from DEFAULT but preserve user-set defaultAmount
+        const updated: FoodItem = {
+          ...def,
+          ...(existing.defaultAmount !== undefined ? { defaultAmount: existing.defaultAmount } : {}),
+          isUserCreated: false,
+        };
+        storedMap.set(key, updated);
+        changed = true;
+      }
+    }
+
+    const merged = Array.from(storedMap.values());
+    if (changed) {
+      localStorage.setItem(FOOD_DB_KEY, JSON.stringify(merged));
+    }
+    return merged;
   } catch {}
   return [...DEFAULT_FOODS];
 }
