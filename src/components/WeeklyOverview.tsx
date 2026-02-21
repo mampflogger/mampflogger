@@ -339,7 +339,7 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [] 
         <h2 className="text-[10px] font-semibold text-muted-foreground mb-2 uppercase tracking-wider">
           Makro-Verteilung (7 Tage)
         </h2>
-        <div className="flex gap-1 h-4 rounded-full overflow-hidden bg-muted">
+        <div className="flex gap-1 h-4 rounded-full overflow-hidden bg-background">
           {weekTotals.proteinPercent > 0 && <div className="rounded-full transition-all duration-500" style={{ width: `${weekTotals.proteinPercent}%`, backgroundColor: MACRO_COLORS.pro }} />}
           {weekTotals.fatPercent > 0 && <div className="rounded-full transition-all duration-500" style={{ width: `${weekTotals.fatPercent}%`, backgroundColor: MACRO_COLORS.fat }} />}
           {weekTotals.carbsPercent > 0 && <div className="rounded-full transition-all duration-500" style={{ width: `${weekTotals.carbsPercent}%`, backgroundColor: MACRO_COLORS.kh }} />}
