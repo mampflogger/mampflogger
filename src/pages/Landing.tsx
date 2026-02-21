@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Zap, Activity, BarChart3, Minimize2, Lock, Share, Plus, Smartphone } from "lucide-react";
 import VisitorCounter from "@/components/VisitorCounter";
+import CommentSection from "@/components/CommentSection";
 
 const features = [
   {
@@ -210,6 +211,9 @@ const Landing = () => {
           </Button>
         </div>
       </section>
+
+      {/* Community Feedback */}
+      <CommentSection />
 
       {/* Footer */}
       <footer className="border-t border-border">
