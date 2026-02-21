@@ -468,7 +468,7 @@ const SettingsDialog = ({
         {tab === "profile" && (
           <div className="space-y-3">
             {/* Profile Card */}
-            <div className="rounded-xl bg-accent/20 p-3 space-y-2">
+            <div className="glass-card rounded-xl p-3 space-y-2">
               <div>
                 <Label className="text-[10px] font-medium text-muted-foreground mb-0.5 block">Name</Label>
                 <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Dein Name" className="h-8 text-sm bg-muted/50" autoCorrect="off" spellCheck={false} />
@@ -510,7 +510,7 @@ const SettingsDialog = ({
             </div>
 
             {/* Goals Card */}
-            <div className="rounded-xl bg-accent/20 p-3 space-y-2">
+            <div className="glass-card rounded-xl p-3 space-y-2">
               <Label className="text-[10px] font-semibold text-muted-foreground mb-1 block uppercase tracking-wider">YOUR GOALS</Label>
               <div className="grid grid-cols-2 gap-2">
                 <div>
