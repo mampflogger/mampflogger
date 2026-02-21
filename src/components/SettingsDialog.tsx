@@ -212,6 +212,26 @@ const SettingsDialog = ({
 
   const bmrPreview = currentProfile ? calculateBMR(currentProfile) : null;
 
+  const profileFieldOrder = [
+    "settings-name", "settings-birth", "settings-height", "settings-weight",
+    "settings-goalweight", "settings-fluid", "settings-deficit", "settings-activity",
+    "settings-save",
+  ];
+
+  const advanceProfileFocus = (currentId: string) => {
+    const idx = profileFieldOrder.indexOf(currentId);
+    if (idx < 0 || idx >= profileFieldOrder.length - 1) return;
+    const next = document.getElementById(profileFieldOrder[idx + 1]);
+    next?.focus();
+  };
+
+  const handleProfileKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, id: string) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      advanceProfileFocus(id);
+    }
+  };
+
   const handleSaveProfile = () => {
     if (!currentProfile) return;
     onSaveProfile(currentProfile);
@@ -466,7 +486,7 @@ const SettingsDialog = ({
             <div className="glass-card rounded-xl p-3 space-y-2">
               <div>
                 <Label className="text-[10px] font-medium text-muted-foreground mb-0.5 block">Name</Label>
-                <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Dein Name" className="h-8 text-sm bg-muted/50" autoCorrect="off" spellCheck={false} />
+                <Input id="settings-name" value={name} onChange={(e) => setName(e.target.value)} onKeyDown={(e) => handleProfileKeyDown(e, "settings-name")} placeholder="Dein Name" className="h-8 text-sm bg-muted/50" autoCorrect="off" spellCheck={false} />
               </div>
               <div>
                 <Label className="text-[10px] font-medium text-muted-foreground mb-0.5 block">Geschlecht</Label>
@@ -485,15 +505,15 @@ const SettingsDialog = ({
               <div className="grid grid-cols-3 gap-2">
                 <div>
                   <Label className="text-[10px] font-medium text-muted-foreground mb-0.5 block">Geburtsjahr</Label>
-                  <Input type="number" inputMode="numeric" value={birthYear} onChange={(e) => setBirthYear(e.target.value)} placeholder="1990" className="h-8 text-sm bg-muted/50" />
+                  <Input id="settings-birth" type="number" inputMode="numeric" value={birthYear} onChange={(e) => setBirthYear(e.target.value)} onKeyDown={(e) => handleProfileKeyDown(e, "settings-birth")} placeholder="1990" className="h-8 text-sm bg-muted/50" />
                 </div>
                 <div>
                   <Label className="text-[10px] font-medium text-muted-foreground mb-0.5 block">Größe (cm)</Label>
-                  <Input type="number" inputMode="numeric" value={heightCm} onChange={(e) => setHeightCm(e.target.value)} placeholder="180" className="h-8 text-sm bg-muted/50" />
+                  <Input id="settings-height" type="number" inputMode="numeric" value={heightCm} onChange={(e) => setHeightCm(e.target.value)} onKeyDown={(e) => handleProfileKeyDown(e, "settings-height")} placeholder="180" className="h-8 text-sm bg-muted/50" />
                 </div>
                 <div>
                   <Label className="text-[10px] font-medium text-muted-foreground mb-0.5 block">Gewicht (kg)</Label>
-                  <Input type="number" inputMode="decimal" step="0.1" value={weightKg} onChange={(e) => setWeightKg(e.target.value)} placeholder="80.0" className="h-8 text-sm bg-muted/50" />
+                  <Input id="settings-weight" type="number" inputMode="decimal" step="0.1" value={weightKg} onChange={(e) => setWeightKg(e.target.value)} onKeyDown={(e) => handleProfileKeyDown(e, "settings-weight")} placeholder="80.0" className="h-8 text-sm bg-muted/50" />
                 </div>
               </div>
               {bmrPreview && (
@@ -510,24 +530,24 @@ const SettingsDialog = ({
               <div className="grid grid-cols-2 gap-2">
                 <div>
                   <Label className="text-[10px] font-medium text-muted-foreground mb-0.5 block">Zielgewicht (kg)</Label>
-                  <Input type="number" inputMode="decimal" step="0.1" value={goalWeightKg} onChange={(e) => setGoalWeightKg(e.target.value)} placeholder="75.0" className="h-8 text-sm bg-muted/50" />
+                  <Input id="settings-goalweight" type="number" inputMode="decimal" step="0.1" value={goalWeightKg} onChange={(e) => setGoalWeightKg(e.target.value)} onKeyDown={(e) => handleProfileKeyDown(e, "settings-goalweight")} placeholder="75.0" className="h-8 text-sm bg-muted/50" />
                 </div>
                 <div>
                   <Label className="text-[10px] font-medium text-muted-foreground mb-0.5 block">Flüssigkeit pro Tag (ml)</Label>
-                  <Input type="number" inputMode="numeric" value={goalFluidMl} onChange={(e) => setGoalFluidMl(e.target.value)} placeholder="2500" className="h-8 text-sm bg-muted/50" />
+                  <Input id="settings-fluid" type="number" inputMode="numeric" value={goalFluidMl} onChange={(e) => setGoalFluidMl(e.target.value)} onKeyDown={(e) => handleProfileKeyDown(e, "settings-fluid")} placeholder="2500" className="h-8 text-sm bg-muted/50" />
                 </div>
                 <div>
                   <Label className="text-[10px] font-medium text-muted-foreground mb-0.5 block">Defizit pro Tag (kcal)</Label>
-                  <Input type="number" inputMode="numeric" value={goalDeficit} onChange={(e) => setGoalDeficit(e.target.value)} placeholder="500" className="h-8 text-sm bg-muted/50" />
+                  <Input id="settings-deficit" type="number" inputMode="numeric" value={goalDeficit} onChange={(e) => setGoalDeficit(e.target.value)} onKeyDown={(e) => handleProfileKeyDown(e, "settings-deficit")} placeholder="500" className="h-8 text-sm bg-muted/50" />
                 </div>
                 <div>
                   <Label className="text-[10px] font-medium text-muted-foreground mb-0.5 block">Activity Bonus pro Tag (kcal)</Label>
-                  <Input type="number" inputMode="numeric" value={goalActivityBonus} onChange={(e) => setGoalActivityBonus(e.target.value)} placeholder="300" className="h-8 text-sm bg-muted/50" />
+                  <Input id="settings-activity" type="number" inputMode="numeric" value={goalActivityBonus} onChange={(e) => setGoalActivityBonus(e.target.value)} onKeyDown={(e) => handleProfileKeyDown(e, "settings-activity")} placeholder="300" className="h-8 text-sm bg-muted/50" />
                 </div>
               </div>
             </div>
 
-            <Button onClick={handleSaveProfile} disabled={!currentProfile} className="w-full h-8 text-xs gap-2">
+            <Button id="settings-save" onClick={handleSaveProfile} disabled={!currentProfile} className="w-full h-8 text-xs gap-2">
               <Save className="w-4 h-4" />
               Profil speichern
             </Button>
