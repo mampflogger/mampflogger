@@ -15,6 +15,43 @@ import { FoodItem, foodDatabase, saveFoodDatabase } from "@/data/foodDatabase";
 
 const SYNC_META_KEY = "mampflogger-remote-sync";
 const SYNC_INTERVAL_MS = 6 * 60 * 60 * 1000; // 6 Stunden
+const MAX_RESPONSE_SIZE = 5 * 1024 * 1024; // 5 MB limit
+const MAX_ITEMS = 5000;
+const MAX_STRING_LENGTH = 200;
+
+/**
+ * Validates that a remote URL is safe to fetch from.
+ * Allows relative paths (e.g. /lebensmittelliste.json) and HTTPS URLs.
+ * Blocks localhost, private IPs, and non-HTTPS protocols.
+ */
+function isValidRemoteUrl(url: string): boolean {
+  // Allow relative paths (starts with /)
+  if (url.startsWith("/") && !url.startsWith("//")) return true;
+
+  try {
+    const parsed = new URL(url);
+    if (parsed.protocol !== "https:") return false;
+    const hostname = parsed.hostname.toLowerCase();
+    if (["localhost", "127.0.0.1", "0.0.0.0", "[::1]"].includes(hostname)) return false;
+    if (hostname.match(/^(10\.|172\.(1[6-9]|2[0-9]|3[01])\.|192\.168\.)/)) return false;
+    if (hostname.endsWith(".local") || hostname.endsWith(".internal")) return false;
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/** Sanitize a string field: trim and limit length */
+function sanitizeString(value: unknown, maxLen = MAX_STRING_LENGTH): string {
+  if (typeof value !== "string") return "";
+  return value.trim().slice(0, maxLen);
+}
+
+/** Sanitize a numeric field */
+function sanitizeNumber(value: unknown, fallback = 0): number {
+  if (typeof value !== "number" || !isFinite(value)) return fallback;
+  return Math.max(0, value);
+}
 
 interface SyncMeta {
   lastFetched: number;   // Unix-Timestamp ms
@@ -48,6 +85,12 @@ export async function syncRemoteFoodDatabase(
 ): Promise<{ added: number; skipped: number; error?: string }> {
   if (!remoteUrl) return { added: 0, skipped: 0 };
 
+  // Validate URL before fetching
+  if (!isValidRemoteUrl(remoteUrl)) {
+    console.warn("[RemoteFoodSync] Ungültige URL blockiert:", remoteUrl);
+    return { added: 0, skipped: 0, error: "Ungültige oder unsichere URL" };
+  }
+
   // Cache-Check: Nicht öfter als alle 6h fetchen (außer force=true)
   if (!force) {
     const meta = loadSyncMeta();
@@ -72,14 +115,25 @@ export async function syncRemoteFoodDatabase(
       throw new Error(`HTTP ${response.status}`);
     }
 
-    const json = await response.json();
+    // Check response size to prevent memory exhaustion
+    const contentLength = response.headers.get("content-length");
+    if (contentLength && parseInt(contentLength, 10) > MAX_RESPONSE_SIZE) {
+      throw new Error("Response too large");
+    }
+
+    const text = await response.text();
+    if (text.length > MAX_RESPONSE_SIZE) {
+      throw new Error("Response too large");
+    }
+
+    const json = JSON.parse(text);
 
     // Format: entweder direkt ein Array oder { version, items }
     if (Array.isArray(json)) {
-      remoteItems = json;
+      remoteItems = json.slice(0, MAX_ITEMS);
     } else if (json.items && Array.isArray(json.items)) {
-      remoteItems = json.items;
-      if (json.version) remoteVersion = json.version;
+      remoteItems = json.items.slice(0, MAX_ITEMS);
+      if (json.version) remoteVersion = String(json.version).slice(0, 50);
     } else {
       throw new Error("Unbekanntes JSON-Format");
     }
@@ -97,30 +151,28 @@ export async function syncRemoteFoodDatabase(
 
   for (const item of remoteItems) {
     // Validierung: Pflichtfelder vorhanden?
-    if (!item.name || typeof item.calories !== "number") {
+    const name = sanitizeString(item.name);
+    if (!name || typeof item.calories !== "number" || !isFinite(item.calories)) {
       skipped++;
       continue;
     }
 
-    const nameLower = item.name.toLowerCase();
+    const nameLower = name.toLowerCase();
 
     if (existingNames.has(nameLower)) {
-      // Bereits vorhanden – niemals überschreiben
       skipped++;
     } else {
-      // Neues Item – hinzufügen
       const newItem: FoodItem = {
-        name: item.name,
-        baseUnit: item.baseUnit ?? "100g",
-        baseAmount: item.baseAmount ?? 100,
-        calories: item.calories,
-        protein: item.protein ?? 0,
-        fat: item.fat ?? 0,
-        carbs: item.carbs ?? 0,
-        fiber: item.fiber ?? 0,
-        ...(item.defaultAmount != null ? { defaultAmount: item.defaultAmount } : {}),
-        ...(item.liquidMl != null ? { liquidMl: item.liquidMl } : {}),
-        // Markierung: kam vom Server, nicht vom User angelegt
+        name,
+        baseUnit: sanitizeString(item.baseUnit, 20) || "100g",
+        baseAmount: sanitizeNumber(item.baseAmount, 100),
+        calories: sanitizeNumber(item.calories),
+        protein: sanitizeNumber(item.protein),
+        fat: sanitizeNumber(item.fat),
+        carbs: sanitizeNumber(item.carbs),
+        fiber: sanitizeNumber(item.fiber),
+        ...(item.defaultAmount != null ? { defaultAmount: sanitizeNumber(item.defaultAmount) } : {}),
+        ...(item.liquidMl != null ? { liquidMl: sanitizeNumber(item.liquidMl) } : {}),
         isRemote: true,
       };
       foodDatabase.push(newItem);
@@ -168,6 +220,10 @@ export function loadRemoteUrl(): string {
   return stored;
 }
 
-export function saveRemoteUrl(url: string): void {
+export function saveRemoteUrl(url: string): boolean {
+  if (!isValidRemoteUrl(url)) return false;
   localStorage.setItem(REMOTE_URL_KEY, url);
+  return true;
 }
+
+export { isValidRemoteUrl };
