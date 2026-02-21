@@ -96,6 +96,7 @@ const SettingsDialog = ({
   const [goalFluidMl, setGoalFluidMl] = useState("");
   const [goalDeficit, setGoalDeficit] = useState("");
   const [goalActivityBonus, setGoalActivityBonus] = useState("");
+  const [goalWeightKg, setGoalWeightKg] = useState("");
 
   // Import state
   const [importType, setImportType] = useState<ImportType | null>(null);
@@ -185,6 +186,7 @@ const SettingsDialog = ({
       setGoalFluidMl(profile.goalFluidMl ? String(profile.goalFluidMl) : "");
       setGoalDeficit(profile.goalDeficit ? String(profile.goalDeficit) : "");
       setGoalActivityBonus(profile.goalActivityBonus ? String(profile.goalActivityBonus) : "");
+      setGoalWeightKg(profile.goalWeightKg ? String(profile.goalWeightKg) : "");
     }
     if (!isOpen) {
       setEditingFood(null);
@@ -209,6 +211,7 @@ const SettingsDialog = ({
           goalFluidMl: goalFluidMl ? parseInt(goalFluidMl) : undefined,
           goalDeficit: goalDeficit ? parseInt(goalDeficit) : undefined,
           goalActivityBonus: goalActivityBonus ? parseInt(goalActivityBonus) : undefined,
+          goalWeightKg: goalWeightKg ? parseFloat(goalWeightKg) : undefined,
         }
       : null;
 
@@ -463,50 +466,57 @@ const SettingsDialog = ({
 
         {/* Profile Tab */}
         {tab === "profile" && (
-          <div className="space-y-2">
-            <div>
-              <Label className="text-[10px] font-medium text-muted-foreground mb-0.5 block">Name</Label>
-              <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Dein Name" className="h-8 text-sm bg-muted/50" autoCorrect="off" spellCheck={false} />
-            </div>
-            <div>
-              <Label className="text-[10px] font-medium text-muted-foreground mb-0.5 block">Geschlecht</Label>
-              <div className="flex gap-2">
-                {(["male", "female"] as const).map((g) => (
-                  <button key={g} type="button" onClick={() => setGender(g)}
-                    className={`flex-1 py-1 rounded-lg text-xs font-semibold transition-colors ${
-                      gender === g ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:text-foreground"
-                    }`}
-                  >
-                    {g === "male" ? "Männlich" : "Weiblich"}
-                  </button>
-                ))}
-              </div>
-            </div>
-            <div className="grid grid-cols-3 gap-2">
+          <div className="space-y-3">
+            {/* Profile Card */}
+            <div className="rounded-xl bg-accent/20 p-3 space-y-2">
               <div>
-                <Label className="text-[10px] font-medium text-muted-foreground mb-0.5 block">Geburtsjahr</Label>
-                <Input type="number" inputMode="numeric" value={birthYear} onChange={(e) => setBirthYear(e.target.value)} placeholder="1990" className="h-8 text-sm bg-muted/50" />
+                <Label className="text-[10px] font-medium text-muted-foreground mb-0.5 block">Name</Label>
+                <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Dein Name" className="h-8 text-sm bg-muted/50" autoCorrect="off" spellCheck={false} />
               </div>
               <div>
-                <Label className="text-[10px] font-medium text-muted-foreground mb-0.5 block">Größe (cm)</Label>
-                <Input type="number" inputMode="numeric" value={heightCm} onChange={(e) => setHeightCm(e.target.value)} placeholder="180" className="h-8 text-sm bg-muted/50" />
+                <Label className="text-[10px] font-medium text-muted-foreground mb-0.5 block">Geschlecht</Label>
+                <div className="flex gap-2">
+                  {(["male", "female"] as const).map((g) => (
+                    <button key={g} type="button" onClick={() => setGender(g)}
+                      className={`flex-1 py-1 rounded-lg text-xs font-semibold transition-colors ${
+                        gender === g ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:text-foreground"
+                      }`}
+                    >
+                      {g === "male" ? "Männlich" : "Weiblich"}
+                    </button>
+                  ))}
+                </div>
               </div>
-              <div>
-                <Label className="text-[10px] font-medium text-muted-foreground mb-0.5 block">Gewicht (kg)</Label>
-                <Input type="number" inputMode="decimal" step="0.1" value={weightKg} onChange={(e) => setWeightKg(e.target.value)} placeholder="80.0" className="h-8 text-sm bg-muted/50" />
-              </div>
-            </div>
-            {bmrPreview && (
-              <div className="rounded-lg bg-accent/40 px-2 py-1.5 flex items-center justify-between">
-                <span className="text-[10px] text-muted-foreground font-medium">Grundumsatz (BMR)</span>
-                <span className="text-base font-bold text-foreground">{bmrPreview} <span className="text-[10px] font-normal text-muted-foreground">kcal/Tag</span></span>
-              </div>
-            )}
-
-            {/* Your Goals */}
-            <div className="border-t border-border pt-2">
-              <Label className="text-[10px] font-semibold text-muted-foreground mb-1.5 block uppercase tracking-wider">YOUR DAILY GOALS</Label>
               <div className="grid grid-cols-3 gap-2">
+                <div>
+                  <Label className="text-[10px] font-medium text-muted-foreground mb-0.5 block">Geburtsjahr</Label>
+                  <Input type="number" inputMode="numeric" value={birthYear} onChange={(e) => setBirthYear(e.target.value)} placeholder="1990" className="h-8 text-sm bg-muted/50" />
+                </div>
+                <div>
+                  <Label className="text-[10px] font-medium text-muted-foreground mb-0.5 block">Größe (cm)</Label>
+                  <Input type="number" inputMode="numeric" value={heightCm} onChange={(e) => setHeightCm(e.target.value)} placeholder="180" className="h-8 text-sm bg-muted/50" />
+                </div>
+                <div>
+                  <Label className="text-[10px] font-medium text-muted-foreground mb-0.5 block">Gewicht (kg)</Label>
+                  <Input type="number" inputMode="decimal" step="0.1" value={weightKg} onChange={(e) => setWeightKg(e.target.value)} placeholder="80.0" className="h-8 text-sm bg-muted/50" />
+                </div>
+              </div>
+              {bmrPreview && (
+                <div className="rounded-lg bg-accent/40 px-2 py-1.5 flex items-center justify-between">
+                  <span className="text-[10px] text-muted-foreground font-medium">Grundumsatz (BMR)</span>
+                  <span className="text-base font-bold text-foreground">{bmrPreview} <span className="text-[10px] font-normal text-muted-foreground">kcal/Tag</span></span>
+                </div>
+              )}
+            </div>
+
+            {/* Goals Card */}
+            <div className="rounded-xl bg-accent/20 p-3 space-y-2">
+              <Label className="text-[10px] font-semibold text-muted-foreground mb-1 block uppercase tracking-wider">YOUR GOALS</Label>
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <Label className="text-[10px] font-medium text-muted-foreground mb-0.5 block">Zielgewicht kg</Label>
+                  <Input type="number" inputMode="decimal" step="0.1" value={goalWeightKg} onChange={(e) => setGoalWeightKg(e.target.value)} placeholder="75.0" className="h-8 text-sm bg-muted/50" />
+                </div>
                 <div>
                   <Label className="text-[10px] font-medium text-muted-foreground mb-0.5 block">Flüssigkeit ml</Label>
                   <Input type="number" inputMode="numeric" value={goalFluidMl} onChange={(e) => setGoalFluidMl(e.target.value)} placeholder="2500" className="h-8 text-sm bg-muted/50" />
