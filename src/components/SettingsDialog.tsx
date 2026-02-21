@@ -827,7 +827,7 @@ const SettingsDialog = ({
                   autoCorrect="off"
                   spellCheck={false}
                 />
-                <div className="max-h-60 overflow-y-auto overflow-x-auto -mx-1 px-1">
+                <div className="max-h-60 overflow-y-auto overflow-x-auto -mx-1 px-1 mt-1.5">
                   <table className="w-full text-[10px]">
                     <thead>
                       <tr className="border-b border-border">
