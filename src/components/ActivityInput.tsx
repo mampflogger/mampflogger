@@ -164,7 +164,7 @@ const ActivityInput = ({
             placeholder="0"
             value={value}
             onChange={(e) => setValue(e.target.value)}
-            onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); selectTriggerRef.current?.focus(); } }}
+            onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); submitButtonRef.current?.focus(); } }}
             className="h-9 bg-muted/50 text-xs px-2"
           />
         </div>
