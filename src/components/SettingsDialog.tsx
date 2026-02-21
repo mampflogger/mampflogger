@@ -514,19 +514,19 @@ const SettingsDialog = ({
               <Label className="text-[10px] font-semibold text-muted-foreground mb-1 block uppercase tracking-wider">YOUR GOALS</Label>
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <Label className="text-[10px] font-medium text-muted-foreground mb-0.5 block">Zielgewicht kg</Label>
+                  <Label className="text-[10px] font-medium text-muted-foreground mb-0.5 block">Zielgewicht (kg)</Label>
                   <Input type="number" inputMode="decimal" step="0.1" value={goalWeightKg} onChange={(e) => setGoalWeightKg(e.target.value)} placeholder="75.0" className="h-8 text-sm bg-muted/50" />
                 </div>
                 <div>
-                  <Label className="text-[10px] font-medium text-muted-foreground mb-0.5 block">Flüssigkeit ml</Label>
+                  <Label className="text-[10px] font-medium text-muted-foreground mb-0.5 block">Flüssigkeit pro Tag (ml)</Label>
                   <Input type="number" inputMode="numeric" value={goalFluidMl} onChange={(e) => setGoalFluidMl(e.target.value)} placeholder="2500" className="h-8 text-sm bg-muted/50" />
                 </div>
                 <div>
-                  <Label className="text-[10px] font-medium text-muted-foreground mb-0.5 block">Defizit kcal</Label>
+                  <Label className="text-[10px] font-medium text-muted-foreground mb-0.5 block">Defizit pro Tag (kcal)</Label>
                   <Input type="number" inputMode="numeric" value={goalDeficit} onChange={(e) => setGoalDeficit(e.target.value)} placeholder="500" className="h-8 text-sm bg-muted/50" />
                 </div>
                 <div>
-                  <Label className="text-[10px] font-medium text-muted-foreground mb-0.5 block">Activity kcal</Label>
+                  <Label className="text-[10px] font-medium text-muted-foreground mb-0.5 block">Activity Bonus pro Tag (kcal)</Label>
                   <Input type="number" inputMode="numeric" value={goalActivityBonus} onChange={(e) => setGoalActivityBonus(e.target.value)} placeholder="300" className="h-8 text-sm bg-muted/50" />
                 </div>
               </div>
