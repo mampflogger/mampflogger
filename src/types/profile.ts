@@ -7,6 +7,7 @@ export interface UserProfile {
   goalFluidMl?: number;
   goalDeficit?: number;
   goalActivityBonus?: number;
+  goalWeightKg?: number;
 }
 
 export interface ActivityType {
