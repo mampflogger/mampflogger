@@ -248,92 +248,46 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [] 
   };
 
   return (
-    <div className="space-y-5 animate-fade-in">
+    <div className="space-y-4 animate-fade-in">
       {/* Stats Row */}
-      <div className={`grid gap-3 w-full ${avgDeficit7 !== null ? "grid-cols-3" : "grid-cols-2"}`}>
-        <div className="rounded-xl bg-accent/40 p-3 text-center">
-          <p className="text-xs text-muted-foreground font-medium">Woche</p>
-          <p className="text-xl font-bold text-foreground mt-0.5 tabular-nums tracking-tight leading-tight">{weekTotals.totalCalories}</p>
-          <p className="text-xs text-muted-foreground">kcal</p>
-        </div>
-        <div className="rounded-xl bg-accent/40 p-3 text-center">
-          <p className="text-xs text-muted-foreground font-medium">Ø Tag</p>
-          <p className="text-xl font-bold text-foreground mt-0.5 tabular-nums tracking-tight leading-tight">{weekTotals.avgCalories}</p>
-          <p className="text-xs text-muted-foreground">kcal</p>
-        </div>
-        {avgDeficit7 !== null && (
+      <div className="glass-card rounded-xl p-3">
+        <h2 className="text-[10px] font-semibold text-muted-foreground mb-2 uppercase tracking-wider">Übersicht</h2>
+        <div className={`grid gap-3 w-full ${avgDeficit7 !== null ? "grid-cols-3" : "grid-cols-2"}`}>
           <div className="rounded-xl bg-accent/40 p-3 text-center">
-            <p className="text-xs text-muted-foreground font-medium">Ø Defizit</p>
-            <div className="flex items-center justify-center gap-0.5 mt-0.5">
-              {avgDeficit7 > 0 ? (
-                <TrendingDown className="w-3.5 h-3.5 shrink-0" style={{ color: "hsl(var(--success))" }} />
-              ) : (
-                <TrendingUp className="w-3.5 h-3.5 shrink-0" style={{ color: "hsl(var(--destructive))" }} />
-              )}
-              <p className="text-xl font-bold tabular-nums tracking-tight leading-tight" style={{ color: avgDeficit7 > 0 ? "hsl(var(--success))" : "hsl(var(--destructive))" }}>
-                {Math.abs(avgDeficit7)}
-              </p>
-            </div>
+            <p className="text-xs text-muted-foreground font-medium">Woche</p>
+            <p className="text-xl font-bold text-foreground mt-0.5 tabular-nums tracking-tight leading-tight">{weekTotals.totalCalories}</p>
             <p className="text-xs text-muted-foreground">kcal</p>
           </div>
-        )}
-      </div>
-
-      {/* Calories Bar Chart */}
-      <div>
-        <h3 className="text-xs font-semibold text-muted-foreground mb-3 uppercase tracking-wider">
-          Kalorien pro Tag
-        </h3>
-        <div className="h-44">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={weekData} margin={{ top: 4, right: 0, left: -20, bottom: 0 }}>
-              <XAxis dataKey="label" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} />
-              <YAxis
-                axisLine={false}
-                tickLine={false}
-                domain={[0, (dataMax: number) => Math.ceil(Math.max(dataMax, bmr ?? 0, 2000) / 500) * 500]}
-                ticks={calorieTicks}
-                tick={(props: any) => {
-                  const { x, y, payload } = props;
-                  const isBmr = bmr !== null && Math.abs(Number(payload.value) - bmr) < 0.5;
-                  return (
-                    <text x={x} y={y} dy={4} textAnchor="end" fontSize={10}
-                      fontWeight={isBmr ? 600 : 400}
-                      fill={isBmr ? "hsl(var(--destructive))" : "hsl(var(--muted-foreground))"}
-                    >
-                      {payload.value}
-                    </text>
-                  );
-                }}
-              />
-              {calorieTicks.filter(v => !bmr || Math.abs(v - bmr) > 0.5).map((v) => (
-                <ReferenceLine key={v} y={v} stroke="hsl(var(--muted-foreground) / 0.25)" strokeWidth={0.5} />
-              ))}
-              <Tooltip content={<CaloriesTooltip />} cursor={{ fill: "hsl(var(--accent) / 0.4)" }} />
-              <Bar dataKey="calories" radius={[6, 6, 0, 0]} maxBarSize={36}>
-                {weekData.map((entry, index) => (
-                  <Cell key={index} fill={entry.isToday ? COLORS.calories : COLORS.caloriesMuted} />
-                ))}
-              </Bar>
-              {bmr && (
-                <ReferenceLine
-                  y={bmr}
-                  stroke="hsl(var(--destructive))"
-                  strokeDasharray="4 3"
-                  strokeWidth={1.5}
-                />
-              )}
-            </BarChart>
-          </ResponsiveContainer>
+          <div className="rounded-xl bg-accent/40 p-3 text-center">
+            <p className="text-xs text-muted-foreground font-medium">Ø Tag</p>
+            <p className="text-xl font-bold text-foreground mt-0.5 tabular-nums tracking-tight leading-tight">{weekTotals.avgCalories}</p>
+            <p className="text-xs text-muted-foreground">kcal</p>
+          </div>
+          {avgDeficit7 !== null && (
+            <div className="rounded-xl bg-accent/40 p-3 text-center">
+              <p className="text-xs text-muted-foreground font-medium">Ø Defizit</p>
+              <div className="flex items-center justify-center gap-0.5 mt-0.5">
+                {avgDeficit7 > 0 ? (
+                  <TrendingDown className="w-3.5 h-3.5 shrink-0" style={{ color: "hsl(var(--success))" }} />
+                ) : (
+                  <TrendingUp className="w-3.5 h-3.5 shrink-0" style={{ color: "hsl(var(--destructive))" }} />
+                )}
+                <p className="text-xl font-bold tabular-nums tracking-tight leading-tight" style={{ color: avgDeficit7 > 0 ? "hsl(var(--success))" : "hsl(var(--destructive))" }}>
+                  {Math.abs(avgDeficit7)}
+                </p>
+              </div>
+              <p className="text-xs text-muted-foreground">kcal</p>
+            </div>
+          )}
         </div>
       </div>
 
       {/* Deficit Bar Chart */}
       {deficitData && (
-        <div>
-          <h3 className="text-xs font-semibold text-muted-foreground mb-3 uppercase tracking-wider">
+        <div className="glass-card rounded-xl p-3">
+          <h2 className="text-[10px] font-semibold text-muted-foreground mb-2 uppercase tracking-wider">
             Defizit pro Tag
-          </h3>
+          </h2>
           <div className="h-44">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={deficitData} margin={{ top: 4, right: 0, left: -20, bottom: 0 }}>
@@ -381,10 +335,10 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [] 
       )}
 
       {/* Macro Distribution */}
-      <div>
-        <h3 className="text-xs font-semibold text-muted-foreground mb-3 uppercase tracking-wider">
+      <div className="glass-card rounded-xl p-3">
+        <h2 className="text-[10px] font-semibold text-muted-foreground mb-2 uppercase tracking-wider">
           Makro-Verteilung (7 Tage)
-        </h3>
+        </h2>
         <div className="flex gap-1 h-4 rounded-full overflow-hidden bg-muted">
           {weekTotals.proteinPercent > 0 && <div className="rounded-full transition-all duration-500" style={{ width: `${weekTotals.proteinPercent}%`, backgroundColor: MACRO_COLORS.pro }} />}
           {weekTotals.fatPercent > 0 && <div className="rounded-full transition-all duration-500" style={{ width: `${weekTotals.fatPercent}%`, backgroundColor: MACRO_COLORS.fat }} />}
@@ -411,10 +365,10 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [] 
       </div>
 
       {/* Daily macro stacked bars */}
-      <div>
-        <h3 className="text-xs font-semibold text-muted-foreground mb-3 uppercase tracking-wider">
+      <div className="glass-card rounded-xl p-3">
+        <h2 className="text-[10px] font-semibold text-muted-foreground mb-2 uppercase tracking-wider">
           Makros pro Tag (g)
-        </h3>
+        </h2>
         <div className="h-40">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={weekData} margin={{ top: 4, right: 0, left: -20, bottom: 0 }}>

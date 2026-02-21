@@ -440,9 +440,7 @@ const Index = () => {
             )}
           </>
         ) : (
-          <div className="glass-card rounded-xl p-4">
-            <WeeklyOverview entries={entries} selectedDate={selectedDate} profile={profile} bookedActivities={bookedActivities} />
-          </div>
+          <WeeklyOverview entries={entries} selectedDate={selectedDate} profile={profile} bookedActivities={bookedActivities} />
         )}
       </main>
     </div>
