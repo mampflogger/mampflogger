@@ -274,7 +274,7 @@ const Index = () => {
       <header className="sticky top-0 z-10 bg-background/80 backdrop-blur-lg border-b border-border" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
         <div className="max-w-lg mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
+            <a href="/" className="flex items-center gap-2 no-underline text-foreground">
               <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center shrink-0">
                 <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <rect x="1"  y="10" width="3" height="7" rx="0.8" fill="currentColor" className="text-primary-foreground" />
@@ -284,7 +284,7 @@ const Index = () => {
                 </svg>
               </div>
               <h1 className="text-lg font-bold tracking-tight">MampfLogger</h1>
-            </div>
+            </a>
             <div className="flex items-center gap-1">
               <SettingsDialog
                 profile={profile}
