@@ -282,6 +282,55 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [] 
         </div>
       </div>
 
+      {/* Calories per Day */}
+      <div className="glass-card rounded-xl p-3">
+        <h2 className="text-[10px] font-semibold text-muted-foreground mb-2 uppercase tracking-wider">
+          Kalorien pro Tag
+        </h2>
+        <div className="h-44">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={weekData} margin={{ top: 4, right: 0, left: -20, bottom: 0 }}>
+              <XAxis dataKey="label" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} />
+              <YAxis
+                axisLine={false}
+                tickLine={false}
+                domain={[0, (dataMax: number) => Math.ceil(Math.max(dataMax, bmr ?? 0, 2000) / 500) * 500]}
+                ticks={calorieTicks}
+                tick={(props: any) => {
+                  const { x, y, payload } = props;
+                  const isBmr = !!bmr && Math.abs(Number(payload.value) - bmr) < 0.5;
+                  return (
+                    <text x={x} y={y} dy={4} textAnchor="end" fontSize={10}
+                      fontWeight={isBmr ? 600 : 400}
+                      fill={isBmr ? "hsl(var(--destructive))" : "hsl(var(--muted-foreground))"}
+                    >
+                      {payload.value}
+                    </text>
+                  );
+                }}
+              />
+              {calorieTicks.filter(v => !bmr || Math.abs(v - bmr) > 0.5).map((v) => (
+                <ReferenceLine key={v} y={v} stroke="hsl(var(--muted-foreground) / 0.25)" strokeWidth={0.5} />
+              ))}
+              <Tooltip content={<CaloriesTooltip />} cursor={{ fill: "hsl(var(--accent) / 0.4)" }} />
+              <Bar dataKey="calories" radius={[6, 6, 0, 0]} maxBarSize={36}>
+                {weekData.map((_, index) => (
+                  <Cell key={index} fill={COLORS.caloriesMuted} opacity={0.85} />
+                ))}
+              </Bar>
+              {bmr && (
+                <ReferenceLine
+                  y={bmr}
+                  stroke="hsl(var(--destructive))"
+                  strokeDasharray="4 3"
+                  strokeWidth={1.5}
+                />
+              )}
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+
       {/* Deficit Bar Chart */}
       {deficitData && (
         <div className="glass-card rounded-xl p-3">
