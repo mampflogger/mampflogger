@@ -132,7 +132,7 @@ const Landing = () => {
       </section>
 
       {/* PWA Install Guide */}
-      <section className="max-w-2xl mx-auto px-5 pb-10">
+      <section className="max-w-2xl mx-auto px-5 pb-6">
         <div className="glass-card rounded-2xl p-6">
           <div className="flex items-center gap-2 mb-1">
             <Smartphone className="w-5 h-5 text-primary shrink-0" />
@@ -194,7 +194,7 @@ const Landing = () => {
       </section>
 
       {/* CTA bottom */}
-      <section className="max-w-2xl mx-auto px-5 pb-16 text-center">
+      <section className="max-w-2xl mx-auto px-5 pb-6 text-center">
         <div className="glass-card rounded-2xl p-8">
           <p className="font-bold text-lg mb-2">Take your Diet seriously.</p>
           <p className="text-muted-foreground text-sm leading-relaxed mb-6">
