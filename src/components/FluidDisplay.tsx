@@ -11,8 +11,11 @@ const FluidDisplay = ({ entries, goalMl }: FluidDisplayProps) => {
     return sum + (entry.liquidMl ?? 0);
   }, 0);
 
-  const percentage = goalMl && goalMl > 0 ? Math.min(100, Math.round((totalMl / goalMl) * 100)) : null;
+  const rawPercentage = goalMl && goalMl > 0 ? Math.round((totalMl / goalMl) * 100) : null;
+  const percentage = rawPercentage !== null ? Math.min(100, rawPercentage) : null;
   const isReached = goalMl ? totalMl >= goalMl : false;
+  const isExceeded = rawPercentage !== null && rawPercentage > 100;
+  const exceededBy = rawPercentage !== null ? rawPercentage - 100 : 0;
 
   return (
     <div className="space-y-2">
@@ -41,7 +44,11 @@ const FluidDisplay = ({ entries, goalMl }: FluidDisplayProps) => {
           <div className="text-xs text-muted-foreground">
             {totalMl === 0
               ? <span>Trink was, dann kommst du deinem Ziel näher!</span>
-              : <span>Du hast schon <span className="font-bold">{percentage} %</span> deines Tagesziels geschafft.</span>
+              : isExceeded
+                ? <span>Du hast dein Ziel um <span className="font-bold">{exceededBy} %</span> übertroffen.</span>
+                : isReached
+                  ? <span>Du hast dein Ziel erreicht.</span>
+                  : <span>Du hast schon <span className="font-bold">{percentage} %</span> deines Tagesziels geschafft.</span>
             }
           </div>
         </>

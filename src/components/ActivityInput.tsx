@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import {
   ActivityType,
   BookedActivity,
@@ -71,6 +71,8 @@ const ActivityInput = ({
   const [newCalories, setNewCalories] = useState("");
   const [newUnit, setNewUnit] = useState("");
 
+  const valueInputRef = useRef<HTMLInputElement>(null);
+
   // Sync editing state
   const isEditing = !!editingActivity;
 
@@ -112,6 +114,7 @@ const ActivityInput = ({
     setValue("");
     setSelectedTypeId(reordered[0]?.id || "");
     if (isEditing) onCancelEdit();
+    setTimeout(() => valueInputRef.current?.focus(), 0);
   };
 
   const handleAddType = () => {
@@ -152,12 +155,14 @@ const ActivityInput = ({
             {selectedType?.unit || "Menge"}
           </Label>
           <Input
+            ref={valueInputRef}
             type="number"
             inputMode="decimal"
             step="any"
             placeholder="0"
             value={value}
             onChange={(e) => setValue(e.target.value)}
+            onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); handleSubmit(); } }}
             className="h-9 bg-muted/50 text-xs px-2"
           />
         </div>
@@ -165,7 +170,7 @@ const ActivityInput = ({
           <Label className="text-[10px] font-medium text-muted-foreground mb-1 block">
             Activity
           </Label>
-          <Select value={selectedTypeId} onValueChange={setSelectedTypeId}>
+          <Select value={selectedTypeId} onValueChange={(val) => { setSelectedTypeId(val); setTimeout(() => valueInputRef.current?.focus(), 0); }}>
             <SelectTrigger className="h-9 text-xs w-full">
               <SelectValue placeholder="Wählen..." />
             </SelectTrigger>
