@@ -16,7 +16,7 @@ import {
   Cell,
   ReferenceLine,
 } from "recharts";
-import { TrendingDown, TrendingUp } from "lucide-react";
+import { TrendingDown, TrendingUp, Target } from "lucide-react";
 
 interface WeeklyOverviewProps {
   entries: NutritionEntry[];
@@ -170,6 +170,14 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [] 
     return Math.round(totalDeficit / allDates.length);
   }, [profile, entries, bookedActivities]);
 
+  const daysToGoal = useMemo(() => {
+    if (!profile || !profile.goalWeightKg || !avgDeficit7 || avgDeficit7 <= 0) return null;
+    const kgToLose = profile.weightKg - profile.goalWeightKg;
+    if (kgToLose <= 0) return 0;
+    const totalKcalNeeded = kgToLose * 7000;
+    return Math.round(totalKcalNeeded / avgDeficit7);
+  }, [profile, avgDeficit7]);
+
   const maxCalories = useMemo(
     () => Math.max(...weekData.map((d) => d.calories), 100),
     [weekData]
@@ -252,7 +260,7 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [] 
       {/* Stats Row */}
       <div className="glass-card rounded-xl p-3">
         <h2 className="text-[10px] font-semibold text-muted-foreground mb-2 uppercase tracking-wider">Übersicht</h2>
-        <div className={`grid gap-3 w-full ${avgDeficit7 !== null ? "grid-cols-3" : "grid-cols-2"}`}>
+        <div className={`grid gap-3 w-full ${daysToGoal !== null ? "grid-cols-2" : avgDeficit7 !== null ? "grid-cols-3" : "grid-cols-2"}`}>
           <div className="rounded-xl bg-accent/40 p-3 text-center">
             <p className="text-xs text-muted-foreground font-medium">Woche</p>
             <p className="text-xl font-bold text-foreground mt-0.5 tabular-nums tracking-tight leading-tight">{weekTotals.totalCalories}</p>
@@ -277,6 +285,18 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [] 
                 </p>
               </div>
               <p className="text-xs text-muted-foreground">kcal</p>
+            </div>
+          )}
+          {daysToGoal !== null && (
+            <div className="rounded-xl bg-accent/40 p-3 text-center">
+              <p className="text-xs text-muted-foreground font-medium">Zielgewicht in</p>
+              <div className="flex items-center justify-center gap-1 mt-0.5">
+                <Target className="w-3.5 h-3.5 shrink-0 text-primary" />
+                <p className="text-xl font-bold text-primary tabular-nums tracking-tight leading-tight">
+                  {daysToGoal === 0 ? "✓" : daysToGoal}
+                </p>
+              </div>
+              <p className="text-xs text-muted-foreground">{daysToGoal === 0 ? "Erreicht!" : "Tagen"}</p>
             </div>
           )}
         </div>
