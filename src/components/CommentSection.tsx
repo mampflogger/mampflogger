@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
 import { MessageSquare, Send } from "lucide-react";
 import { toast } from "sonner";
+import { loadProfile } from "@/types/profile";
 
 interface Comment {
   id: string;
@@ -21,6 +22,18 @@ const CommentSection = () => {
   const [message, setMessage] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [loading, setLoading] = useState(true);
+
+  // Pre-fill name from profile
+  useEffect(() => {
+    const profile = loadProfile();
+    if (profile?.name) {
+      const currentYear = new Date().getFullYear();
+      const age = currentYear - profile.birthYear;
+      setName(age > 0 && age < 120 ? `${profile.name} (${age})` : profile.name);
+    }
+  }, []);
+
+
 
   const fetchComments = async () => {
     const { data } = await supabase
@@ -114,11 +127,7 @@ const CommentSection = () => {
         {/* Comments list */}
         {loading ? (
           <p className="text-xs text-muted-foreground text-center py-4">Lade Kommentare…</p>
-        ) : comments.length === 0 ? (
-          <p className="text-xs text-muted-foreground text-center py-4">
-            Noch keine Kommentare – sei der Erste! 🚀
-          </p>
-        ) : (
+        ) : comments.length > 0 ? (
           <div className="space-y-3 border-t border-border pt-4">
             <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
               Letzte Kommentare
@@ -137,7 +146,7 @@ const CommentSection = () => {
               </div>
             ))}
           </div>
-        )}
+        ) : null}
       </div>
     </section>
   );
