@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Zap, Activity, BarChart3, Minimize2, Lock, Share, Plus, Smartphone } from "lucide-react";
+import VisitorCounter from "@/components/VisitorCounter";
 
 const features = [
   {
@@ -214,6 +215,7 @@ const Landing = () => {
       <footer className="border-t border-border">
         <div className="max-w-2xl mx-auto px-5 py-4 text-center text-xs text-muted-foreground flex flex-col items-center gap-0.5">
           <span>Keine Anmeldung · Keine Werbung · Keine Kosten</span>
+          <VisitorCounter />
           <span>© {new Date().getFullYear()} MampfLogger</span>
         </div>
       </footer>
