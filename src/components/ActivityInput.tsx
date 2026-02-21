@@ -72,6 +72,8 @@ const ActivityInput = ({
   const [newUnit, setNewUnit] = useState("");
 
   const valueInputRef = useRef<HTMLInputElement>(null);
+  const selectTriggerRef = useRef<HTMLButtonElement>(null);
+  const submitButtonRef = useRef<HTMLButtonElement>(null);
 
   // Sync editing state
   const isEditing = !!editingActivity;
@@ -162,7 +164,7 @@ const ActivityInput = ({
             placeholder="0"
             value={value}
             onChange={(e) => setValue(e.target.value)}
-            onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); handleSubmit(); } }}
+            onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); selectTriggerRef.current?.focus(); } }}
             className="h-9 bg-muted/50 text-xs px-2"
           />
         </div>
@@ -170,8 +172,8 @@ const ActivityInput = ({
           <Label className="text-[10px] font-medium text-muted-foreground mb-1 block">
             Activity
           </Label>
-          <Select value={selectedTypeId} onValueChange={(val) => { setSelectedTypeId(val); setTimeout(() => valueInputRef.current?.focus(), 0); }}>
-            <SelectTrigger className="h-9 text-xs w-full">
+          <Select value={selectedTypeId} onValueChange={(val) => { setSelectedTypeId(val); setTimeout(() => submitButtonRef.current?.focus(), 0); }}>
+            <SelectTrigger ref={selectTriggerRef} className="h-9 text-xs w-full" onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); e.currentTarget.click(); } }}>
               <SelectValue placeholder="Wählen..." />
             </SelectTrigger>
             <SelectContent>
@@ -184,6 +186,7 @@ const ActivityInput = ({
           </Select>
         </div>
         <button
+          ref={submitButtonRef}
           onClick={handleSubmit}
           className="h-9 px-3 rounded-md text-xs font-semibold bg-primary text-primary-foreground shrink-0"
         >
