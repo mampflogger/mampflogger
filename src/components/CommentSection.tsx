@@ -133,7 +133,7 @@ const CommentSection = () => {
               Letzte Kommentare
             </p>
             {comments.map((c) => (
-              <div key={c.id} className="rounded-lg bg-background/50 p-3">
+              <div key={c.id} className="rounded-lg border border-border bg-muted/40 p-3">
                 <div className="flex items-center justify-between mb-1">
                   <span className="text-sm font-semibold">{c.name}</span>
                   <span className="text-[11px] text-muted-foreground">
