@@ -49,6 +49,22 @@ const ProfileDialog = ({ profile, onSave }: ProfileDialogProps) => {
 
   const bmrPreview = currentProfile ? calculateBMR(currentProfile) : null;
 
+  const fieldOrder = ["profile-name", "profile-birth", "profile-height", "profile-weight", "profile-save"];
+
+  const advanceFocus = (currentId: string) => {
+    const idx = fieldOrder.indexOf(currentId);
+    if (idx < 0 || idx >= fieldOrder.length - 1) return;
+    const next = document.getElementById(fieldOrder[idx + 1]);
+    next?.focus();
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, id: string) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      advanceFocus(id);
+    }
+  };
+
   const handleSave = () => {
     if (!currentProfile) return;
     onSave(currentProfile);
@@ -84,6 +100,7 @@ const ProfileDialog = ({ profile, onSave }: ProfileDialogProps) => {
               id="profile-name"
               value={name}
               onChange={(e) => setName(e.target.value)}
+              onKeyDown={(e) => handleKeyDown(e, "profile-name")}
               placeholder="Dein Name"
               className="h-11 bg-muted/50"
             />
@@ -130,6 +147,7 @@ const ProfileDialog = ({ profile, onSave }: ProfileDialogProps) => {
                 inputMode="numeric"
                 value={birthYear}
                 onChange={(e) => setBirthYear(e.target.value)}
+                onKeyDown={(e) => handleKeyDown(e, "profile-birth")}
                 placeholder="1990"
                 min={1900}
                 max={2025}
@@ -146,6 +164,7 @@ const ProfileDialog = ({ profile, onSave }: ProfileDialogProps) => {
                 inputMode="numeric"
                 value={heightCm}
                 onChange={(e) => setHeightCm(e.target.value)}
+                onKeyDown={(e) => handleKeyDown(e, "profile-height")}
                 placeholder="180"
                 className="h-11 bg-muted/50"
               />
@@ -161,6 +180,7 @@ const ProfileDialog = ({ profile, onSave }: ProfileDialogProps) => {
                 step="0.1"
                 value={weightKg}
                 onChange={(e) => setWeightKg(e.target.value)}
+                onKeyDown={(e) => handleKeyDown(e, "profile-weight")}
                 placeholder="80.0"
                 className="h-11 bg-muted/50"
               />
@@ -175,7 +195,7 @@ const ProfileDialog = ({ profile, onSave }: ProfileDialogProps) => {
             </div>
           )}
 
-          <Button onClick={handleSave} disabled={!currentProfile} className="w-full h-11 gap-2">
+          <Button id="profile-save" onClick={handleSave} disabled={!currentProfile} className="w-full h-11 gap-2">
             <Save className="w-4 h-4" />
             Profil speichern
           </Button>
