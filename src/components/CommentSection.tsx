@@ -101,14 +101,14 @@ const CommentSection = () => {
             placeholder="Dein Name (optional)"
             value={name}
             onChange={(e) => setName(e.target.value.slice(0, 50))}
-            className="bg-background/50"
+            className="bg-muted/40 border-border"
           />
           <div className="relative">
             <Textarea
               placeholder="Was denkst du über MampfLogger?"
               value={message}
               onChange={(e) => setMessage(e.target.value.slice(0, MAX_MESSAGE))}
-              className="bg-background/50 min-h-[100px] pr-3 pb-8"
+              className="bg-muted/40 border-border min-h-[100px] pr-3 pb-8"
             />
             <span className="absolute bottom-2 right-3 text-[11px] text-muted-foreground">
               {message.length}/{MAX_MESSAGE}
