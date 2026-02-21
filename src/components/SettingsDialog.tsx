@@ -542,36 +542,39 @@ const SettingsDialog = ({
         {/* Design Tab */}
         {tab === "design" && (
           <div className="space-y-3">
-            <div>
-              <Label className="text-[10px] font-medium text-muted-foreground mb-1 block">Modus</Label>
-              <button
-                onClick={onToggleDarkMode}
-                className="flex items-center gap-3 w-full p-2.5 rounded-lg bg-muted/50 hover:bg-muted transition-colors"
-              >
-                {darkMode ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
-                <span className="text-xs font-medium">{darkMode ? "Dark Mode" : "Light Mode"}</span>
-              </button>
-            </div>
-            <div>
-              <Label className="text-[10px] font-medium text-muted-foreground mb-1 block">Farbthema</Label>
-              <div className="grid grid-cols-4 gap-2">
-                {(Object.keys(THEME_COLORS) as ColorTheme[]).map((key) => (
-                  <button
-                    key={key}
-                    onClick={() => onChangeTheme(key)}
-                    className={`flex flex-col items-center gap-1 p-2.5 rounded-lg border-2 transition-colors ${
-                      colorTheme === key ? "border-primary bg-accent/40" : "border-transparent bg-muted/50 hover:bg-muted"
-                    }`}
-                  >
-                    <div className="w-6 h-6 rounded-full" style={{ backgroundColor: THEME_COLORS[key].swatch }} />
-                    <span className="text-xs font-medium">{THEME_COLORS[key].label}</span>
-                  </button>
-                ))}
+            {/* Appearance Card */}
+            <div className="glass-card rounded-xl p-3 space-y-3">
+              <div>
+                <Label className="text-[10px] font-medium text-muted-foreground mb-1 block">Modus</Label>
+                <button
+                  onClick={onToggleDarkMode}
+                  className="flex items-center gap-3 w-full p-2.5 rounded-lg bg-muted/50 hover:bg-muted transition-colors"
+                >
+                  {darkMode ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
+                  <span className="text-xs font-medium">{darkMode ? "Dark Mode" : "Light Mode"}</span>
+                </button>
+              </div>
+              <div>
+                <Label className="text-[10px] font-medium text-muted-foreground mb-1 block">Farbthema</Label>
+                <div className="grid grid-cols-4 gap-2">
+                  {(Object.keys(THEME_COLORS) as ColorTheme[]).map((key) => (
+                    <button
+                      key={key}
+                      onClick={() => onChangeTheme(key)}
+                      className={`flex flex-col items-center gap-1 p-2.5 rounded-lg border-2 transition-colors ${
+                        colorTheme === key ? "border-primary bg-accent/40" : "border-transparent bg-muted/50 hover:bg-muted"
+                      }`}
+                    >
+                      <div className="w-6 h-6 rounded-full" style={{ backgroundColor: THEME_COLORS[key].swatch }} />
+                      <span className="text-xs font-medium">{THEME_COLORS[key].label}</span>
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
 
-            {/* Remote Food Database Sync */}
-            <div className="border-t border-border pt-3 space-y-2">
+            {/* Remote Sync Card */}
+            <div className="glass-card rounded-xl p-3 space-y-2">
               <Label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1">
                 <Link className="w-3 h-3" />
                 Remote-Lebensmittelliste
@@ -650,8 +653,9 @@ const SettingsDialog = ({
         {/* Food List Tab */}
         {tab === "food" && (
           <div className="space-y-3">
+            <div className="glass-card rounded-xl p-3">
             {editingFood ? (
-              <div className="space-y-3 p-3 rounded-lg border border-border bg-muted/30">
+              <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <p className="text-xs font-semibold text-muted-foreground uppercase">
                     {editingFood.name ? "Lebensmittel bearbeiten" : "Neues Lebensmittel"}
@@ -867,15 +871,16 @@ const SettingsDialog = ({
                 <p className="text-[10px] text-muted-foreground">{foodDatabase.length} Lebensmittel in der Datenbank</p>
               </>
             )}
+            </div>
           </div>
         )}
 
         {/* Data Tab */}
         {tab === "data" && (
-          <div className="space-y-2">
+          <div className="space-y-3">
 
             {/* IMPORT Section */}
-            <div className="rounded-lg border border-border bg-accent/20 p-2 space-y-1.5">
+            <div className="glass-card rounded-xl p-3 space-y-1.5">
               <div className="flex items-center gap-1.5">
                 <Download className="w-3.5 h-3.5 text-primary" />
                 <h3 className="text-[11px] font-bold uppercase tracking-wider text-foreground">Import</h3>
@@ -944,7 +949,7 @@ const SettingsDialog = ({
             </div>
 
             {/* EXPORT Section */}
-            <div className="rounded-lg border border-border bg-accent/20 p-2 space-y-1.5">
+            <div className="glass-card rounded-xl p-3 space-y-1.5">
               <div className="flex items-center gap-1.5">
                 <Upload className="w-3.5 h-3.5 text-primary" />
                 <h3 className="text-[11px] font-bold uppercase tracking-wider text-foreground">Export</h3>
@@ -972,7 +977,7 @@ const SettingsDialog = ({
 
 
             {/* DELETE Section */}
-            <div className="rounded-lg border border-border bg-accent/20 p-2 space-y-1.5">
+            <div className="glass-card rounded-xl p-3 space-y-1.5">
               <div className="flex items-center gap-1.5">
                 <Trash2 className="w-3.5 h-3.5 text-primary" />
                 <h3 className="text-[11px] font-bold uppercase tracking-wider text-foreground">Löschen</h3>
