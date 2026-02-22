@@ -7,6 +7,8 @@ import { FoodItem, searchFood, addFoodItem, trackFoodUsage, getFoodUsageCount } 
 import { useSpeechRecognition } from "@/hooks/useSpeechRecognition";
 import { Mic, MicOff } from "lucide-react";
 
+type FocusedField = "food" | "amount" | null;
+
 interface NutritionFormProps {
   onAdd: (entry: NutritionEntry) => void;
   selectedDate: string;
@@ -38,32 +40,34 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
   const foodInputRef = useRef<HTMLInputElement>(null);
   const amountInputRef = useRef<HTMLInputElement>(null);
 
-  // Voice input for food field
-  const foodVoice = useSpeechRecognition({
-    onResult: (transcript) => {
-      // Search for best match
-      const results = searchFood(transcript);
-      if (results.length > 0) {
-        // Pick first match
-        handleSelectFood(results[0]);
-      } else {
-        // Just fill the text
-        handleFoodChange(transcript);
-      }
-    },
-    onEnd: () => {
-      // Auto-focus amount after recognition
-      setTimeout(() => amountInputRef.current?.focus(), 100);
-    },
-  });
+  const [focusedField, setFocusedField] = useState<FocusedField>("food");
 
-  // Voice input for amount field
-  const amountVoice = useSpeechRecognition({
+  // Single voice recognition instance for both fields
+  const voice = useSpeechRecognition({
     onResult: (transcript) => {
-      // Extract number from spoken text, e.g. "100 Gramm" → "100"
-      const num = transcript.replace(/[^\d.,]/g, "").replace(",", ".");
-      if (num) {
-        handleAmountChange(num);
+      if (focusedField === "food") {
+        // ONLY search database — never show raw transcript
+        const results = searchFood(transcript);
+        if (results.length === 0) {
+          setFood("Nichts gefunden – bitte buchstabieren");
+          setTimeout(() => {
+            setFood("");
+            foodInputRef.current?.focus();
+          }, 1500);
+        } else if (results.length === 1) {
+          handleSelectFood(results[0]);
+        } else {
+          // Multiple matches → show dropdown
+          setFood("");
+          setSuggestions(results);
+          setShowSuggestions(true);
+          setHighlightIndex(-1);
+        }
+      } else if (focusedField === "amount") {
+        const num = transcript.replace(/[^\d.,]/g, "").replace(",", ".");
+        if (num) {
+          handleAmountChange(num);
+        }
       }
     },
   });
@@ -283,6 +287,24 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
 
   return (
     <form onSubmit={handleSubmit} className="animate-fade-in">
+      {/* Mic button top-right */}
+      <div className="flex items-center justify-end mb-1">
+        {voice.isSupported && (
+          <button
+            type="button"
+            onClick={() => voice.isListening ? voice.stop() : voice.start()}
+            className={`flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium transition-colors ${
+              voice.isListening
+                ? "bg-destructive/15 text-destructive animate-pulse"
+                : "bg-muted text-muted-foreground hover:text-foreground hover:bg-muted/80"
+            }`}
+            title="Spracheingabe – spricht ins fokussierte Feld"
+          >
+            {voice.isListening ? <MicOff className="w-3.5 h-3.5" /> : <Mic className="w-3.5 h-3.5" />}
+            {voice.isListening ? "Stopp" : "Mikrofon"}
+          </button>
+        )}
+      </div>
       {/* Row 1: Time (1), Food (3), Amount (1) → 5 cols total */}
       <div className="grid grid-cols-5 gap-2 mb-2">
         <div className="col-span-1">
@@ -314,29 +336,16 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
               value={food}
               onChange={(e) => handleFoodChange(e.target.value)}
               onFocus={() => {
+                setFocusedField("food");
                 if (suggestions.length > 0) setShowSuggestions(true);
               }}
               onKeyDown={handleKeyDown}
-              className="h-9 bg-muted/50 text-xs px-2 pr-8"
+              className={`h-9 bg-muted/50 text-xs px-2 ${voice.isListening && focusedField === "food" ? "ring-2 ring-primary" : ""}`}
               autoComplete="off"
               autoCorrect="off"
               spellCheck={false}
               required
             />
-            {foodVoice.isSupported && (
-              <button
-                type="button"
-                onClick={() => foodVoice.isListening ? foodVoice.stop() : foodVoice.start()}
-                className={`absolute right-1 top-1/2 -translate-y-1/2 p-1 rounded transition-colors ${
-                  foodVoice.isListening
-                    ? "text-destructive animate-pulse"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
-                title="Spracheingabe"
-              >
-                {foodVoice.isListening ? <MicOff className="w-3.5 h-3.5" /> : <Mic className="w-3.5 h-3.5" />}
-              </button>
-            )}
           </div>
           {showSuggestions && dropdownRect && createPortal(
             <ul
@@ -406,22 +415,9 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
               placeholder="0"
               value={amount}
               onChange={(e) => handleAmountChange(e.target.value)}
-              className="h-9 bg-muted/50 text-xs px-2 pr-7"
+              onFocus={() => setFocusedField("amount")}
+              className={`h-9 bg-muted/50 text-xs px-2 ${voice.isListening && focusedField === "amount" ? "ring-2 ring-primary" : ""}`}
             />
-            {amountVoice.isSupported && (
-              <button
-                type="button"
-                onClick={() => amountVoice.isListening ? amountVoice.stop() : amountVoice.start()}
-                className={`absolute right-0.5 top-1/2 -translate-y-1/2 p-1 rounded transition-colors ${
-                  amountVoice.isListening
-                    ? "text-destructive animate-pulse"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
-                title="Spracheingabe"
-              >
-                {amountVoice.isListening ? <MicOff className="w-3 h-3" /> : <Mic className="w-3 h-3" />}
-              </button>
-            )}
           </div>
         </div>
       </div>
