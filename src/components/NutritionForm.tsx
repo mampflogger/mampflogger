@@ -7,7 +7,7 @@ import { FoodItem, searchFood, addFoodItem, trackFoodUsage, getFoodUsageCount } 
 import { useSpeechRecognition } from "@/hooks/useSpeechRecognition";
 import { Mic, MicOff } from "lucide-react";
 
-type FocusedField = "food" | "amount" | null;
+type FocusedField = "food" | "amount" | "submit" | null;
 
 interface NutritionFormProps {
   onAdd: (entry: NutritionEntry) => void;
@@ -39,13 +39,19 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
   const listRef = useRef<HTMLUListElement>(null);
   const foodInputRef = useRef<HTMLInputElement>(null);
   const amountInputRef = useRef<HTMLInputElement>(null);
+  const submitButtonRef = useRef<HTMLButtonElement>(null);
 
   const [focusedField, setFocusedField] = useState<FocusedField>("food");
 
   // Single voice recognition instance for both fields
   const voice = useSpeechRecognition({
     onResult: (transcript) => {
-      if (focusedField === "food") {
+      if (focusedField === "submit") {
+        // Check if user said "buchen"
+        if (transcript.toLowerCase().includes("buchen")) {
+          submitButtonRef.current?.click();
+        }
+      } else if (focusedField === "food") {
         // ONLY search database — never show raw transcript
         const results = searchFood(transcript);
         if (results.length === 0) {
@@ -67,6 +73,11 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
         const num = transcript.replace(/[^\d.,]/g, "").replace(",", ".");
         if (num) {
           handleAmountChange(num);
+          // After amount is filled, focus submit button
+          setTimeout(() => {
+            submitButtonRef.current?.focus();
+            setFocusedField("submit");
+          }, 0);
         }
       }
     },
@@ -277,6 +288,7 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
     setSelectedFood(null);
     setSuggestions([]);
     setShowSuggestions(false);
+    setFocusedField("food");
     setTimeout(() => foodInputRef.current?.focus(), 0);
   };
 
@@ -446,10 +458,18 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
       {/* Submit button */}
       <div className="flex gap-2">
         <button
+          ref={submitButtonRef}
           type="submit"
-          className="flex-1 h-9 rounded-md text-sm font-semibold transition-colors bg-primary text-primary-foreground hover:bg-primary/90"
+          onFocus={() => setFocusedField("submit")}
+          className={`flex-1 h-9 rounded-md text-sm font-semibold transition-colors ${
+            voice.isListening && focusedField === "submit"
+              ? "bg-primary text-primary-foreground ring-2 ring-primary"
+              : "bg-primary text-primary-foreground hover:bg-primary/90"
+          }`}
         >
-          {editingEntry ? "Speichern" : "Hinzufügen"}
+          {voice.isListening && focusedField === "submit"
+            ? <span className="italic">Sag „buchen"</span>
+            : (editingEntry ? "Speichern" : "Hinzufügen")}
         </button>
         {editingEntry && (
           <button
