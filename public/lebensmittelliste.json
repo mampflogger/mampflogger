@@ -40,7 +40,6 @@
     { "name": "Frischkäse 20 %", "baseUnit": "100g", "baseAmount": 100, "calories": 145, "protein": 9, "fat": 10, "carbs": 3, "fiber": 0 },
     { "name": "Frischkäse 60 %", "baseUnit": "100g", "baseAmount": 100, "calories": 255, "protein": 6, "fat": 24, "carbs": 3, "fiber": 0 },
     { "name": "Garnele (Shrimps)", "baseUnit": "100g", "baseAmount": 100, "calories": 92, "protein": 20, "fat": 1, "carbs": 1, "fiber": 0 },
-    { "name": "Gekochter Schinken", "baseUnit": "100g", "baseAmount": 100, "calories": 107, "protein": 19, "fat": 3, "carbs": 0, "fiber": 0 },
     { "name": "Gemüsebrühe", "baseUnit": "100ml", "baseAmount": 100, "calories": 4, "protein": 0, "fat": 0, "carbs": 1, "fiber": 0, "liquidMl": 100 },
     { "name": "Gemüsezwiebeln", "baseUnit": "100g", "baseAmount": 100, "calories": 33, "protein": 1, "fat": 0, "carbs": 6, "fiber": 2 },
     { "name": "Gorgonzola 48 %", "baseUnit": "100g", "baseAmount": 100, "calories": 350, "protein": 19, "fat": 30, "carbs": 1, "fiber": 0 },
