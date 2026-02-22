@@ -47,7 +47,7 @@ export function isDeletedFood(name: string): boolean {
 export function clearDeletedFoods(): void {
   localStorage.removeItem(DELETED_FOODS_KEY);
 }
-const DEFAULT_FOODS: FoodItem[] = [
+export const DEFAULT_FOODS: FoodItem[] = [
   { name: "7UP", baseUnit: "100ml", baseAmount: 100, calories: 38, protein: 0, fat: 0, carbs: 7, fiber: 0, liquidMl: 100 },
   { name: "Ananas", baseUnit: "100g", baseAmount: 100, calories: 50, protein: 1, fat: 0, carbs: 13, fiber: 1 },
   { name: "Apfel", baseUnit: "100g", baseAmount: 100, calories: 52, protein: 0, fat: 0, carbs: 14, fiber: 2 },
@@ -459,7 +459,17 @@ export function removeFoodItem(name: string): void {
   }
 }
 
+/** Clear entire food list – marks ALL defaults as deleted so they won't come back */
 export function clearFoodDatabase(): number {
+  // Mark every default food as deleted so loadFoodDatabase won't re-add them
+  const deleted = loadDeletedFoods();
+  for (const def of DEFAULT_FOODS) {
+    deleted.add(def.name.toLowerCase());
+  }
+  saveDeletedFoods(deleted);
+  // Also clear remote sync cache so remote items won't re-appear
+  localStorage.removeItem("mampflogger-remote-sync");
+
   const count = foodDatabase.length;
   foodDatabase.splice(0, foodDatabase.length);
   saveFoodDatabase(foodDatabase);
