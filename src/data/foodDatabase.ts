@@ -72,7 +72,7 @@ const DEFAULT_FOODS: FoodItem[] = [
   { name: "Erdbeeren", baseUnit: "100g", baseAmount: 100, calories: 32, protein: 1, fat: 0, carbs: 8, fiber: 2 },
   { name: "Erdnüsse", baseUnit: "100g", baseAmount: 100, calories: 567, protein: 26, fat: 49, carbs: 16, fiber: 9 },
   { name: "Erdnussöl", baseUnit: "100ml", baseAmount: 100, calories: 884, protein: 0, fat: 100, carbs: 0, fiber: 0 },
-  { name: "Fanta Orange", baseUnit: "100ml", baseAmount: 100, calories: 38, protein: 0, fat: 0, carbs: 9, fiber: 0, liquidMl: 100 },
+  { name: "Fanta", baseUnit: "100ml", baseAmount: 100, calories: 38, protein: 0, fat: 0, carbs: 9, fiber: 0, liquidMl: 100 },
   { name: "Fassbrause", baseUnit: "100ml", baseAmount: 100, calories: 26, protein: 0, fat: 0, carbs: 6, fiber: 0, liquidMl: 100 },
   { name: "Feige", baseUnit: "100g", baseAmount: 100, calories: 74, protein: 1, fat: 0, carbs: 19, fiber: 3 },
   { name: "Feldsalat", baseUnit: "100g", baseAmount: 100, calories: 14, protein: 2, fat: 0, carbs: 1, fiber: 2 },
