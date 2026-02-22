@@ -241,7 +241,14 @@ const Index = () => {
 
   const isToday = selectedDate === formatDate(new Date());
 
-  const displayDate = new Date(selectedDate + "T00:00:00").toLocaleDateString("de-DE", {
+  const dateObj = new Date(selectedDate + "T00:00:00");
+  const displayWeekday = dateObj.toLocaleDateString("de-DE", { weekday: "long" });
+  const displayDateOnly = dateObj.toLocaleDateString("de-DE", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+  const displayDateWithWeekday = dateObj.toLocaleDateString("de-DE", {
     weekday: "short",
     day: "numeric",
     month: "long",
@@ -350,8 +357,8 @@ const Index = () => {
               <ChevronLeft className="w-5 h-5" />
             </Button>
             <div className="text-center">
-              <p className="text-sm font-semibold">{isToday ? "Heute" : displayDate}</p>
-              {isToday && <p className="text-xs text-muted-foreground">{displayDate}</p>}
+              <p className="text-sm font-semibold">{isToday ? "Heute" : displayWeekday}</p>
+              <p className={isToday ? "text-xs text-muted-foreground" : "text-sm font-semibold"}>{displayDateOnly}</p>
             </div>
             <Button
               variant="ghost"
