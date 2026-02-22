@@ -17,7 +17,7 @@ import {
 } from "lucide-react";
 import { UserProfile, calculateBMR } from "@/types/profile";
 import { NutritionEntry } from "@/types/nutrition";
-import { foodDatabase, addFoodItem, removeFoodItem, updateFoodItem, clearFoodDatabase, reloadFoodDatabase, resetFoodDatabase, FoodItem, loadUnits, deleteUnit, addUnit } from "@/data/foodDatabase";
+import { foodDatabase, addFoodItem, removeFoodItem, updateFoodItem, clearFoodDatabase, reloadFoodDatabase, resetFoodDatabase, DEFAULT_FOODS, FoodItem, loadUnits, deleteUnit, addUnit } from "@/data/foodDatabase";
 import {
   exportEntriesToCsv, exportFoodDatabaseCsv, exportCalorieBalanceCsv, exportActivitiesCsv,
 } from "@/lib/csvExport";
@@ -860,19 +860,30 @@ const SettingsDialog = ({
                   ) : (
                     <div className="rounded-lg border-2 border-destructive p-2.5 space-y-2">
                       <p className="text-xs font-semibold text-destructive">
-                        Lebensmittelliste auf Werkseinstellung zurücksetzen? Eigene Artikel gehen verloren.
+                        Liste zurücksetzen oder komplett leeren?
                       </p>
-                      <div className="flex gap-2">
+                      <div className="flex flex-col gap-1.5">
                         <Button variant="outline" size="sm" onClick={() => {
                           resetFoodDatabase();
                           reloadFoodDatabase();
                           forceUpdate((n) => n + 1);
                           setShowResetFoodConfirm(false);
                           toast.success("Lebensmittelliste auf Werkseinstellung zurückgesetzt!");
-                        }} className="flex-1 h-8 text-xs text-destructive border-destructive/30 hover:bg-destructive/10">
-                          Zurücksetzen
+                        }} className="w-full h-8 text-xs">
+                          <RefreshCw className="w-3 h-3 mr-1.5" />
+                          Werkseinstellung ({DEFAULT_FOODS.length} Artikel)
                         </Button>
-                        <Button variant="secondary" size="sm" autoFocus onClick={() => setShowResetFoodConfirm(false)} className="flex-1 h-8 text-xs ring-2 ring-primary">
+                        <Button variant="outline" size="sm" onClick={() => {
+                          clearFoodDatabase();
+                          reloadFoodDatabase();
+                          forceUpdate((n) => n + 1);
+                          setShowResetFoodConfirm(false);
+                          toast.success("Lebensmittelliste komplett geleert!");
+                        }} className="w-full h-8 text-xs text-destructive border-destructive/30 hover:bg-destructive/10">
+                          <Trash2 className="w-3 h-3 mr-1.5" />
+                          Komplett leeren (0 Artikel)
+                        </Button>
+                        <Button variant="secondary" size="sm" autoFocus onClick={() => setShowResetFoodConfirm(false)} className="w-full h-8 text-xs ring-2 ring-primary">
                           Abbruch
                         </Button>
                       </div>
