@@ -49,7 +49,7 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
         // ONLY search database — never show raw transcript
         const results = searchFood(transcript);
         if (results.length === 0) {
-          setFood("Nichts gefunden – bitte buchstabieren");
+          setFood("Nichts gefunden");
           setTimeout(() => {
             setFood("");
             foodInputRef.current?.focus();
@@ -286,25 +286,22 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
   };
 
   return (
-    <form onSubmit={handleSubmit} className="animate-fade-in">
-      {/* Mic button top-right */}
-      <div className="flex items-center justify-end mb-1">
-        {voice.isSupported && (
-          <button
-            type="button"
-            onClick={() => voice.isListening ? voice.stop() : voice.start()}
-            className={`flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium transition-colors ${
-              voice.isListening
-                ? "bg-destructive/15 text-destructive animate-pulse"
-                : "bg-muted text-muted-foreground hover:text-foreground hover:bg-muted/80"
-            }`}
-            title="Spracheingabe – spricht ins fokussierte Feld"
-          >
-            {voice.isListening ? <MicOff className="w-3.5 h-3.5" /> : <Mic className="w-3.5 h-3.5" />}
-            {voice.isListening ? "Stopp" : "Mikrofon"}
-          </button>
-        )}
-      </div>
+    <form onSubmit={handleSubmit} className="animate-fade-in relative">
+      {/* Mic button top-right, absolutely positioned */}
+      {voice.isSupported && (
+        <button
+          type="button"
+          onClick={() => voice.isListening ? voice.stop() : voice.start()}
+          className={`absolute -top-7 right-0 p-1 rounded-md transition-colors ${
+            voice.isListening
+              ? "bg-destructive/15 text-destructive animate-pulse"
+              : "bg-muted text-muted-foreground hover:text-foreground hover:bg-muted/80"
+          }`}
+          title="Spracheingabe"
+        >
+          {voice.isListening ? <MicOff className="w-3.5 h-3.5" /> : <Mic className="w-3.5 h-3.5" />}
+        </button>
+      )}
       {/* Row 1: Time (1), Food (3), Amount (1) → 5 cols total */}
       <div className="grid grid-cols-5 gap-2 mb-2">
         <div className="col-span-1">
