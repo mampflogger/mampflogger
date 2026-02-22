@@ -47,6 +47,7 @@ export function useSpeechRecognition({ onResult, onEnd, lang = "de-DE" }: UseSpe
     recognition.onend = () => {
       // If still supposed to be listening, restart (browser may stop after silence)
       if (recognitionRef.current && recognitionRef.current._keepAlive) {
+        processedIndexRef.current = 0;
         try { recognition.start(); } catch { /* ignore */ }
         return;
       }
@@ -54,8 +55,13 @@ export function useSpeechRecognition({ onResult, onEnd, lang = "de-DE" }: UseSpe
       onEnd?.();
     };
 
-    recognition.onerror = () => {
-      setIsListening(false);
+    recognition.onerror = (event: { error: string }) => {
+      // Only stop on fatal errors, not on no-speech or aborted
+      if (event.error === "not-allowed" || event.error === "service-not-allowed") {
+        if (recognitionRef.current) recognitionRef.current._keepAlive = false;
+        setIsListening(false);
+      }
+      // For "no-speech", "aborted", "network" etc., onend will handle restart
     };
 
     recognitionRef.current = recognition;
