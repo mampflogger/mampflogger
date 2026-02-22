@@ -11,7 +11,7 @@
  * - Die zuletzt geladene Version wird gespeichert, um unnötige Fetches zu vermeiden
  */
 
-import { FoodItem, foodDatabase, saveFoodDatabase } from "@/data/foodDatabase";
+import { FoodItem, foodDatabase, saveFoodDatabase, isDeletedFood } from "@/data/foodDatabase";
 
 const SYNC_META_KEY = "mampflogger-remote-sync";
 const SYNC_INTERVAL_MS = 6 * 60 * 60 * 1000; // 6 Stunden
@@ -158,6 +158,12 @@ export async function syncRemoteFoodDatabase(
     }
 
     const nameLower = name.toLowerCase();
+
+    // Skip if user explicitly deleted this food
+    if (isDeletedFood(name)) {
+      skipped++;
+      continue;
+    }
 
     if (existingNames.has(nameLower)) {
       skipped++;
