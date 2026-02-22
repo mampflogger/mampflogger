@@ -25,7 +25,7 @@ const NutritionTable = ({ entries, onDelete, onEntryClick }: NutritionTableProps
   }
 
   const summary = calculateDailySummary(entries);
-  const sortedEntries = [...entries].sort((a, b) => b.time.localeCompare(a.time));
+  const sortedEntries = [...entries].sort((a, b) => b.time.localeCompare(a.time) || b.id.localeCompare(a.id));
 
   return (
     <div className="animate-slide-up">
