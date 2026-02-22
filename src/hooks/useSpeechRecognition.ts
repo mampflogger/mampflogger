@@ -17,6 +17,7 @@ export function useSpeechRecognition({ onResult, onEnd, lang = "de-DE" }: UseSpe
   const [isListening, setIsListening] = useState(false);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const recognitionRef = useRef<any>(null);
+  const processedIndexRef = useRef(0);
 
   const isSupported = !!getSpeechRecognition();
 
@@ -31,12 +32,13 @@ export function useSpeechRecognition({ onResult, onEnd, lang = "de-DE" }: UseSpe
     recognition.continuous = true;
 
     recognition.onresult = (event: { results: SpeechRecognitionResultList }) => {
-      // Process only the latest final result
-      for (let i = 0; i < event.results.length; i++) {
+      // Only process new final results (skip already-processed ones)
+      for (let i = processedIndexRef.current; i < event.results.length; i++) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const result = (event.results as any)[i];
         if (result.isFinal) {
           const transcript = result[0].transcript.trim();
+          processedIndexRef.current = i + 1;
           onResult(transcript);
         }
       }
@@ -58,6 +60,7 @@ export function useSpeechRecognition({ onResult, onEnd, lang = "de-DE" }: UseSpe
 
     recognitionRef.current = recognition;
     recognition._keepAlive = true;
+    processedIndexRef.current = 0;
     recognition.start();
     setIsListening(true);
   }, [lang, onResult, onEnd]);
