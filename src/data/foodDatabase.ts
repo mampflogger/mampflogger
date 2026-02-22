@@ -14,7 +14,39 @@ export interface FoodItem {
 }
 
 const FOOD_DB_KEY = "mampflogger-food-database";
+const DELETED_FOODS_KEY = "mampflogger-deleted-foods";
 
+// ---- Deleted-foods blacklist ----
+function loadDeletedFoods(): Set<string> {
+  try {
+    const raw = localStorage.getItem(DELETED_FOODS_KEY);
+    return raw ? new Set(JSON.parse(raw) as string[]) : new Set();
+  } catch { return new Set(); }
+}
+
+function saveDeletedFoods(deleted: Set<string>): void {
+  localStorage.setItem(DELETED_FOODS_KEY, JSON.stringify([...deleted]));
+}
+
+export function markFoodDeleted(name: string): void {
+  const deleted = loadDeletedFoods();
+  deleted.add(name.toLowerCase());
+  saveDeletedFoods(deleted);
+}
+
+export function unmarkFoodDeleted(name: string): void {
+  const deleted = loadDeletedFoods();
+  deleted.delete(name.toLowerCase());
+  saveDeletedFoods(deleted);
+}
+
+export function isDeletedFood(name: string): boolean {
+  return loadDeletedFoods().has(name.toLowerCase());
+}
+
+export function clearDeletedFoods(): void {
+  localStorage.removeItem(DELETED_FOODS_KEY);
+}
 const DEFAULT_FOODS: FoodItem[] = [
   { name: "7UP", baseUnit: "100ml", baseAmount: 100, calories: 38, protein: 0, fat: 0, carbs: 7, fiber: 0, liquidMl: 100 },
   { name: "Ananas", baseUnit: "100g", baseAmount: 100, calories: 50, protein: 1, fat: 0, carbs: 13, fiber: 1 },
@@ -27,6 +59,7 @@ const DEFAULT_FOODS: FoodItem[] = [
   { name: "Austernpilze", baseUnit: "100g", baseAmount: 100, calories: 33, protein: 3, fat: 0, carbs: 6, fiber: 2 },
   { name: "Avocado", baseUnit: "100g", baseAmount: 100, calories: 160, protein: 2, fat: 15, carbs: 9, fiber: 7, defaultAmount: 125 },
   { name: "Backkakao", baseUnit: "100g", baseAmount: 100, calories: 360, protein: 20, fat: 20, carbs: 28, fiber: 33 },
+  { name: "Backpulver", baseUnit: "100g", baseAmount: 100, calories: 100, protein: 0, fat: 0, carbs: 25, fiber: 0 },
   { name: "Banane", baseUnit: "100g", baseAmount: 100, calories: 89, protein: 1, fat: 0, carbs: 23, fiber: 3 },
   { name: "Beinscheibe (Rind)", baseUnit: "100g", baseAmount: 100, calories: 150, protein: 20, fat: 8, carbs: 0, fiber: 0 },
   { name: "Bergkäse 45 %", baseUnit: "100g", baseAmount: 100, calories: 390, protein: 27, fat: 31, carbs: 0, fiber: 0 },
@@ -42,6 +75,7 @@ const DEFAULT_FOODS: FoodItem[] = [
   { name: "Brokkoli", baseUnit: "100g", baseAmount: 100, calories: 34, protein: 3, fat: 1, carbs: 3, fiber: 3 },
   { name: "Brombeeren", baseUnit: "100g", baseAmount: 100, calories: 43, protein: 1, fat: 0, carbs: 10, fiber: 5 },
   { name: "Brotchips (Knoblauch)", baseUnit: "100g", baseAmount: 100, calories: 461, protein: 9, fat: 16, carbs: 69, fiber: 4 },
+  { name: "Bulgur", baseUnit: "100g", baseAmount: 100, calories: 345, protein: 12, fat: 1, carbs: 65, fiber: 8 },
   { name: "Butter", baseUnit: "100g", baseAmount: 100, calories: 740, protein: 0, fat: 85, carbs: 0, fiber: 0 },
   { name: "Cabanossi", baseUnit: "100g", baseAmount: 100, calories: 385, protein: 16, fat: 35, carbs: 1, fiber: 0 },
   { name: "Camembert 30 %", baseUnit: "100g", baseAmount: 100, calories: 225, protein: 22, fat: 14, carbs: 1, fiber: 0 },
@@ -52,12 +86,14 @@ const DEFAULT_FOODS: FoodItem[] = [
   { name: "Champignons", baseUnit: "100g", baseAmount: 100, calories: 22, protein: 4, fat: 0, carbs: 1, fiber: 3 },
   { name: "Cheddar 50 %", baseUnit: "100g", baseAmount: 100, calories: 403, protein: 25, fat: 33, carbs: 1, fiber: 0 },
   { name: "Cherrytomaten", baseUnit: "100g", baseAmount: 100, calories: 18, protein: 1, fat: 0, carbs: 3, fiber: 1 },
+  { name: "Chia-Samen", baseUnit: "100g", baseAmount: 100, calories: 444, protein: 17, fat: 31, carbs: 5, fiber: 34 },
   { name: "Chinakohl", baseUnit: "100g", baseAmount: 100, calories: 13, protein: 1, fat: 0, carbs: 1, fiber: 1 },
   { name: "Chorizo", baseUnit: "100g", baseAmount: 100, calories: 350, protein: 21, fat: 29, carbs: 2, fiber: 0 },
   { name: "Clementine", baseUnit: "100g", baseAmount: 100, calories: 47, protein: 1, fat: 0, carbs: 12, fiber: 2 },
   { name: "Club Mate", baseUnit: "100ml", baseAmount: 100, calories: 20, protein: 0, fat: 0, carbs: 5, fiber: 0, liquidMl: 100 },
   { name: "Coca-Cola Classic", baseUnit: "100ml", baseAmount: 100, calories: 42, protein: 0, fat: 0, carbs: 11, fiber: 0, liquidMl: 100 },
   { name: "Coca-Cola Zero", baseUnit: "100ml", baseAmount: 100, calories: 0, protein: 0, fat: 0, carbs: 0, fiber: 0, liquidMl: 100 },
+  { name: "Couscous", baseUnit: "100g", baseAmount: 100, calories: 350, protein: 12, fat: 1, carbs: 69, fiber: 4 },
   { name: "Dorade", baseUnit: "100g", baseAmount: 100, calories: 100, protein: 20, fat: 2, carbs: 0, fiber: 0 },
   { name: "Dr Pepper", baseUnit: "100ml", baseAmount: 100, calories: 27, protein: 0, fat: 0, carbs: 7, fiber: 0, liquidMl: 100 },
   { name: "Drachenfrucht", baseUnit: "100g", baseAmount: 100, calories: 50, protein: 1, fat: 0, carbs: 11, fiber: 3 },
@@ -109,10 +145,12 @@ const DEFAULT_FOODS: FoodItem[] = [
   { name: "Hähnchenkeule (mit Haut)", baseUnit: "100g", baseAmount: 100, calories: 160, protein: 18, fat: 10, carbs: 0, fiber: 0 },
   { name: "Halloumi 43 %", baseUnit: "100g", baseAmount: 100, calories: 320, protein: 22, fat: 25, carbs: 2, fiber: 0 },
   { name: "Hanföl", baseUnit: "100ml", baseAmount: 100, calories: 884, protein: 0, fat: 100, carbs: 0, fiber: 0 },
+  { name: "Hanfsamen (geschält)", baseUnit: "100g", baseAmount: 100, calories: 550, protein: 30, fat: 45, carbs: 3, fiber: 6 },
   { name: "Hamburger Patty (Rind)", baseUnit: "100g", baseAmount: 100, calories: 240, protein: 18, fat: 19, carbs: 0, fiber: 0 },
   { name: "Harzer Käse 0,5 %", baseUnit: "100g", baseAmount: 100, calories: 125, protein: 30, fat: 1, carbs: 0, fiber: 0 },
   { name: "Haselnüsse", baseUnit: "100g", baseAmount: 100, calories: 628, protein: 15, fat: 61, carbs: 17, fiber: 10 },
   { name: "Heidelbeeren", baseUnit: "100g", baseAmount: 100, calories: 57, protein: 1, fat: 0, carbs: 14, fiber: 2 },
+  { name: "Hefe (frisch)", baseUnit: "100g", baseAmount: 100, calories: 105, protein: 8, fat: 1, carbs: 18, fiber: 0 },
   { name: "Heilbutt (weiß)", baseUnit: "100g", baseAmount: 100, calories: 95, protein: 20, fat: 2, carbs: 0, fiber: 0 },
   { name: "Heringsfilet (Nixe)", baseUnit: "100g", baseAmount: 100, calories: 196, protein: 13, fat: 15, carbs: 3, fiber: 0 },
   { name: "Himbeeren", baseUnit: "100g", baseAmount: 100, calories: 52, protein: 1, fat: 1, carbs: 12, fiber: 7 },
@@ -168,6 +206,7 @@ const DEFAULT_FOODS: FoodItem[] = [
   { name: "Leinsamenöl", baseUnit: "100ml", baseAmount: 100, calories: 884, protein: 0, fat: 100, carbs: 0, fiber: 0 },
   { name: "Limette", baseUnit: "100g", baseAmount: 100, calories: 30, protein: 1, fat: 0, carbs: 11, fiber: 3 },
   { name: "Litschi", baseUnit: "100g", baseAmount: 100, calories: 66, protein: 1, fat: 0, carbs: 17, fiber: 1 },
+  { name: "Lupinenschrot", baseUnit: "100g", baseAmount: 100, calories: 340, protein: 36, fat: 9, carbs: 12, fiber: 28 },
   { name: "Lyoner", baseUnit: "100g", baseAmount: 100, calories: 258, protein: 12, fat: 23, carbs: 1, fiber: 0 },
   { name: "Macadamianüsse", baseUnit: "100g", baseAmount: 100, calories: 718, protein: 8, fat: 76, carbs: 14, fiber: 9 },
   { name: "Magerquark 0,2 %", baseUnit: "100g", baseAmount: 100, calories: 67, protein: 12, fat: 0, carbs: 4, fiber: 0 },
@@ -190,6 +229,8 @@ const DEFAULT_FOODS: FoodItem[] = [
   { name: "Milch 3,5 %", baseUnit: "100ml", baseAmount: 100, calories: 64, protein: 3, fat: 4, carbs: 5, fiber: 0, liquidMl: 100 },
   { name: "Milchkaffee", baseUnit: "1 Tasse", baseAmount: 1, calories: 60, protein: 2, fat: 3, carbs: 4, fiber: 0, defaultAmount: 1, liquidMl: 280 },
   { name: "Mini Harzer", baseUnit: "100g", baseAmount: 100, calories: 121, protein: 29, fat: 1, carbs: 0, fiber: 0 },
+  { name: "Marmelade", baseUnit: "100g", baseAmount: 100, calories: 250, protein: 0, fat: 0, carbs: 60, fiber: 1 },
+  { name: "Mehl", baseUnit: "100g", baseAmount: 100, calories: 340, protein: 10, fat: 1, carbs: 70, fiber: 3 },
   { name: "Möhren", baseUnit: "100g", baseAmount: 100, calories: 41, protein: 1, fat: 0, carbs: 5, fiber: 3 },
   { name: "Monster Energy", baseUnit: "100ml", baseAmount: 100, calories: 47, protein: 0, fat: 0, carbs: 12, fiber: 0, liquidMl: 100 },
   { name: "Mortadella", baseUnit: "100g", baseAmount: 100, calories: 311, protein: 12, fat: 29, carbs: 0, fiber: 0 },
@@ -199,6 +240,7 @@ const DEFAULT_FOODS: FoodItem[] = [
   { name: "Mozzarella 20 %", baseUnit: "100g", baseAmount: 100, calories: 280, protein: 18, fat: 22, carbs: 2, fiber: 0 },
   { name: "Nektarine", baseUnit: "100g", baseAmount: 100, calories: 44, protein: 1, fat: 0, carbs: 11, fiber: 2 },
   { name: "Norwegischer Lachs", baseUnit: "100g", baseAmount: 100, calories: 202, protein: 20, fat: 13, carbs: 0, fiber: 0 },
+  { name: "Nudeln", baseUnit: "100g", baseAmount: 100, calories: 360, protein: 12, fat: 2, carbs: 71, fiber: 3 },
   { name: "Nürnberger Rostbratwurst", baseUnit: "100g", baseAmount: 100, calories: 312, protein: 14, fat: 28, carbs: 1, fiber: 0 },
   { name: "Olivenöl", baseUnit: "100ml", baseAmount: 100, calories: 884, protein: 0, fat: 100, carbs: 0, fiber: 0 },
   { name: "Orange", baseUnit: "100g", baseAmount: 100, calories: 47, protein: 1, fat: 0, carbs: 12, fiber: 2 },
@@ -228,6 +270,7 @@ const DEFAULT_FOODS: FoodItem[] = [
   { name: "Putensteak", baseUnit: "100g", baseAmount: 100, calories: 108, protein: 23, fat: 2, carbs: 0, fiber: 0 },
   { name: "Quark 20 %", baseUnit: "100g", baseAmount: 100, calories: 100, protein: 11, fat: 5, carbs: 3, fiber: 0 },
   { name: "Quark 40 %", baseUnit: "100g", baseAmount: 100, calories: 150, protein: 9, fat: 11, carbs: 3, fiber: 0 },
+  { name: "Quinoa", baseUnit: "100g", baseAmount: 100, calories: 370, protein: 14, fat: 6, carbs: 59, fiber: 7 },
   { name: "Quitte", baseUnit: "100g", baseAmount: 100, calories: 57, protein: 0, fat: 0, carbs: 15, fiber: 2 },
   { name: "Radieschen", baseUnit: "100g", baseAmount: 100, calories: 16, protein: 1, fat: 0, carbs: 2, fiber: 2 },
   { name: "Radler (alkoholfrei)", baseUnit: "100ml", baseAmount: 100, calories: 25, protein: 0, fat: 0, carbs: 6, fiber: 0, liquidMl: 100 },
@@ -235,6 +278,7 @@ const DEFAULT_FOODS: FoodItem[] = [
   { name: "Red Bull", baseUnit: "100ml", baseAmount: 100, calories: 45, protein: 0, fat: 0, carbs: 11, fiber: 0, liquidMl: 100 },
   { name: "Red Bull Energy", baseUnit: "100ml", baseAmount: 100, calories: 45, protein: 0, fat: 0, carbs: 11, fiber: 0, liquidMl: 100 },
   { name: "Regenbogen-Forelle", baseUnit: "100g", baseAmount: 100, calories: 139, protein: 20, fat: 6, carbs: 0, fiber: 0 },
+  { name: "Reis", baseUnit: "100g", baseAmount: 100, calories: 350, protein: 7, fat: 1, carbs: 78, fiber: 1 },
   { name: "Rhabarber", baseUnit: "100g", baseAmount: 100, calories: 21, protein: 1, fat: 0, carbs: 5, fiber: 2 },
   { name: "Rotbarsch", baseUnit: "100g", baseAmount: 100, calories: 103, protein: 18, fat: 4, carbs: 0, fiber: 0 },
   { name: "Ricotta 13 %", baseUnit: "100g", baseAmount: 100, calories: 174, protein: 11, fat: 13, carbs: 3, fiber: 0 },
@@ -309,6 +353,8 @@ const DEFAULT_FOODS: FoodItem[] = [
   { name: "Traubenkernöl", baseUnit: "100ml", baseAmount: 100, calories: 884, protein: 0, fat: 100, carbs: 0, fiber: 0 },
   { name: "Traubensaft", baseUnit: "100ml", baseAmount: 100, calories: 67, protein: 0, fat: 0, carbs: 16, fiber: 0, liquidMl: 100 },
   { name: "Vollkornbrot", baseUnit: "100g", baseAmount: 100, calories: 218, protein: 7, fat: 1, carbs: 41, fiber: 28 },
+  { name: "Vollkornmehl", baseUnit: "100g", baseAmount: 100, calories: 325, protein: 13, fat: 2, carbs: 60, fiber: 11 },
+  { name: "Vollkornnudeln", baseUnit: "100g", baseAmount: 100, calories: 340, protein: 13, fat: 3, carbs: 63, fiber: 10 },
   { name: "Walnüsse", baseUnit: "100g", baseAmount: 100, calories: 654, protein: 15, fat: 65, carbs: 14, fiber: 7 },
   { name: "Walnussöl", baseUnit: "100ml", baseAmount: 100, calories: 884, protein: 0, fat: 100, carbs: 0, fiber: 0 },
   { name: "Wasser", baseUnit: "100g", baseAmount: 100, calories: 0, protein: 0, fat: 0, carbs: 0, fiber: 0 },
@@ -326,6 +372,7 @@ const DEFAULT_FOODS: FoodItem[] = [
   { name: "Zitrone", baseUnit: "100g", baseAmount: 100, calories: 29, protein: 1, fat: 0, carbs: 9, fiber: 3 },
   { name: "Zitronensaft", baseUnit: "100ml", baseAmount: 100, calories: 30, protein: 0, fat: 0, carbs: 3, fiber: 0, liquidMl: 100 },
   { name: "Zucchini", baseUnit: "100g", baseAmount: 100, calories: 17, protein: 1, fat: 0, carbs: 2, fiber: 1 },
+  { name: "Zucker", baseUnit: "100g", baseAmount: 100, calories: 400, protein: 0, fat: 0, carbs: 100, fiber: 0 },
   { name: "Zwetschge", baseUnit: "100g", baseAmount: 100, calories: 45, protein: 1, fat: 0, carbs: 10, fiber: 2 },
   { name: "Zwiebelmettwurst", baseUnit: "100g", baseAmount: 100, calories: 218, protein: 15, fat: 17, carbs: 1, fiber: 0 },
   { name: "Zander", baseUnit: "100g", baseAmount: 100, calories: 84, protein: 19, fat: 1, carbs: 0, fiber: 0 },
@@ -335,9 +382,13 @@ const DEFAULT_FOODS: FoodItem[] = [
 function loadFoodDatabase(): FoodItem[] {
   try {
     const raw = localStorage.getItem(FOOD_DB_KEY);
+    const deletedFoods = loadDeletedFoods();
+
     if (!raw) {
-      localStorage.setItem(FOOD_DB_KEY, JSON.stringify(DEFAULT_FOODS));
-      return [...DEFAULT_FOODS];
+      // First run: filter out any previously deleted items
+      const initial = DEFAULT_FOODS.filter(f => !deletedFoods.has(f.name.toLowerCase()));
+      localStorage.setItem(FOOD_DB_KEY, JSON.stringify(initial));
+      return [...initial];
     }
     const stored: FoodItem[] = JSON.parse(raw);
 
@@ -345,18 +396,25 @@ function loadFoodDatabase(): FoodItem[] {
     const storedMap = new Map(stored.map((f) => [f.name.toLowerCase(), f]));
 
     // For each DEFAULT_FOOD:
+    // - if deleted by user → skip entirely
     // - if not in stored → add it
     // - if in stored but NOT user-created → overwrite with updated DEFAULT values
-    //   (but keep isUserCreated, defaultAmount overrides if user set them)
     let changed = false;
     for (const def of DEFAULT_FOODS) {
       const key = def.name.toLowerCase();
+      if (deletedFoods.has(key)) {
+        // User explicitly deleted this → remove if still present
+        if (storedMap.has(key)) {
+          storedMap.delete(key);
+          changed = true;
+        }
+        continue;
+      }
       const existing = storedMap.get(key);
       if (!existing) {
         storedMap.set(key, { ...def });
         changed = true;
       } else if (!existing.isUserCreated) {
-        // Update macros from DEFAULT but preserve user-set defaultAmount
         const updated: FoodItem = {
           ...def,
           ...(existing.defaultAmount !== undefined ? { defaultAmount: existing.defaultAmount } : {}),
@@ -384,6 +442,8 @@ export const foodDatabase: FoodItem[] = loadFoodDatabase();
 
 export function addFoodItem(item: FoodItem): void {
   if (!foodDatabase.find((f) => f.name.toLowerCase() === item.name.toLowerCase())) {
+    // If user adds an item back, remove from deleted blacklist
+    unmarkFoodDeleted(item.name);
     foodDatabase.push(item);
     saveFoodDatabase(foodDatabase);
   }
@@ -392,6 +452,8 @@ export function addFoodItem(item: FoodItem): void {
 export function removeFoodItem(name: string): void {
   const index = foodDatabase.findIndex((f) => f.name === name);
   if (index >= 0) {
+    // Track deletion so DEFAULT_FOODS and remote sync don't re-add it
+    markFoodDeleted(name);
     foodDatabase.splice(index, 1);
     saveFoodDatabase(foodDatabase);
   }
