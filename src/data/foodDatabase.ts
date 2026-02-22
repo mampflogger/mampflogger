@@ -466,6 +466,16 @@ export function clearFoodDatabase(): number {
   return count;
 }
 
+/** Reset to factory defaults: clear DB, blacklist, sync cache, reload defaults */
+export function resetFoodDatabase(): void {
+  localStorage.removeItem(FOOD_DB_KEY);
+  localStorage.removeItem(DELETED_FOODS_KEY);
+  localStorage.removeItem("mampflogger-remote-sync");
+  foodDatabase.splice(0, foodDatabase.length);
+  const defaults = loadFoodDatabase();
+  foodDatabase.push(...defaults);
+}
+
 export function updateFoodItem(originalName: string, updated: FoodItem): void {
   const index = foodDatabase.findIndex((f) => f.name === originalName);
   if (index >= 0) {

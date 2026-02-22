@@ -17,7 +17,7 @@ import {
 } from "lucide-react";
 import { UserProfile, calculateBMR } from "@/types/profile";
 import { NutritionEntry } from "@/types/nutrition";
-import { foodDatabase, addFoodItem, removeFoodItem, updateFoodItem, clearFoodDatabase, reloadFoodDatabase, FoodItem, loadUnits, deleteUnit, addUnit } from "@/data/foodDatabase";
+import { foodDatabase, addFoodItem, removeFoodItem, updateFoodItem, clearFoodDatabase, reloadFoodDatabase, resetFoodDatabase, FoodItem, loadUnits, deleteUnit, addUnit } from "@/data/foodDatabase";
 import {
   exportEntriesToCsv, exportFoodDatabaseCsv, exportCalorieBalanceCsv, exportActivitiesCsv,
 } from "@/lib/csvExport";
@@ -118,6 +118,7 @@ const SettingsDialog = ({
   const [showDeleteFoodConfirm, setShowDeleteFoodConfirm] = useState(false);
   const [showDeleteRangeConfirm, setShowDeleteRangeConfirm] = useState(false);
   const [showDeleteActivitiesConfirm, setShowDeleteActivitiesConfirm] = useState(false);
+  const [showResetFoodConfirm, setShowResetFoodConfirm] = useState(false);
 
   // Food list state
   const [foodSearch, setFoodSearch] = useState("");
@@ -836,15 +837,48 @@ const SettingsDialog = ({
                 className="hidden"
               />
               {!hasImportResults ? (
-                <Button
-                  variant="default"
-                  size="sm"
-                  onClick={() => fileInputRef.current?.click()}
-                  className="w-full h-7 text-[11px] gap-1.5"
-                >
-                  <FileUp className="w-3 h-3" />
-                  Datei auswählen (.csv, .tsv, .txt)
-                </Button>
+                <div className="space-y-1.5">
+                  <Button
+                    variant="default"
+                    size="sm"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="w-full h-7 text-[11px] gap-1.5"
+                  >
+                    <FileUp className="w-3 h-3" />
+                    Datei auswählen (.csv, .tsv, .txt)
+                  </Button>
+                  {!showResetFoodConfirm ? (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setShowResetFoodConfirm(true)}
+                      className="w-full h-7 text-[11px] gap-1.5"
+                    >
+                      <RefreshCw className="w-3 h-3" />
+                      Reset Lebensmittelliste
+                    </Button>
+                  ) : (
+                    <div className="rounded-lg border-2 border-destructive p-2.5 space-y-2">
+                      <p className="text-xs font-semibold text-destructive">
+                        Lebensmittelliste auf Werkseinstellung zurücksetzen? Eigene Artikel gehen verloren.
+                      </p>
+                      <div className="flex gap-2">
+                        <Button variant="outline" size="sm" onClick={() => {
+                          resetFoodDatabase();
+                          reloadFoodDatabase();
+                          forceUpdate((n) => n + 1);
+                          setShowResetFoodConfirm(false);
+                          toast.success("Lebensmittelliste auf Werkseinstellung zurückgesetzt!");
+                        }} className="flex-1 h-8 text-xs text-destructive border-destructive/30 hover:bg-destructive/10">
+                          Zurücksetzen
+                        </Button>
+                        <Button variant="secondary" size="sm" autoFocus onClick={() => setShowResetFoodConfirm(false)} className="flex-1 h-8 text-xs ring-2 ring-primary">
+                          Abbruch
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+                </div>
               ) : (
                 <div className="rounded-lg bg-background border border-border p-2.5 space-y-2">
                   <div className="flex items-center gap-2 text-xs font-semibold text-foreground">
