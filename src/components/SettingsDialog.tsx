@@ -860,30 +860,19 @@ const SettingsDialog = ({
                   ) : (
                     <div className="rounded-lg border-2 border-destructive p-2.5 space-y-2">
                       <p className="text-xs font-semibold text-destructive">
-                        Liste zurücksetzen oder komplett leeren?
+                        Liste zurücksetzen? Eigene Artikel gehen verloren.
                       </p>
-                      <div className="flex flex-col gap-1.5">
+                      <div className="flex gap-2">
                         <Button variant="outline" size="sm" onClick={() => {
                           resetFoodDatabase();
                           reloadFoodDatabase();
                           forceUpdate((n) => n + 1);
                           setShowResetFoodConfirm(false);
                           toast.success("Lebensmittelliste auf Werkseinstellung zurückgesetzt!");
-                        }} className="w-full h-8 text-xs">
-                          <RefreshCw className="w-3 h-3 mr-1.5" />
-                          Werkseinstellung ({DEFAULT_FOODS.length} Artikel)
+                        }} className="flex-1 h-8 text-xs border-destructive/30 hover:bg-destructive/10 text-destructive">
+                          Reset
                         </Button>
-                        <Button variant="outline" size="sm" onClick={() => {
-                          clearFoodDatabase();
-                          reloadFoodDatabase();
-                          forceUpdate((n) => n + 1);
-                          setShowResetFoodConfirm(false);
-                          toast.success("Lebensmittelliste komplett geleert!");
-                        }} className="w-full h-8 text-xs text-destructive border-destructive/30 hover:bg-destructive/10">
-                          <Trash2 className="w-3 h-3 mr-1.5" />
-                          Komplett leeren (0 Artikel)
-                        </Button>
-                        <Button variant="secondary" size="sm" autoFocus onClick={() => setShowResetFoodConfirm(false)} className="w-full h-8 text-xs ring-2 ring-primary">
+                        <Button variant="secondary" size="sm" autoFocus onClick={() => setShowResetFoodConfirm(false)} className="flex-1 h-8 text-xs ring-2 ring-primary">
                           Abbruch
                         </Button>
                       </div>
