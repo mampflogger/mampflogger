@@ -356,9 +356,9 @@ const Index = () => {
             >
               <ChevronLeft className="w-5 h-5" />
             </Button>
-            <div className="text-center">
+            <div className="text-center min-h-[2.5rem] flex flex-col justify-center">
               <p className="text-sm font-semibold">{isToday ? "Heute" : displayWeekday}</p>
-              <p className={isToday ? "text-xs text-muted-foreground" : "text-sm font-semibold"}>{displayDateOnly}</p>
+              <p className="text-xs text-muted-foreground">{displayDateOnly}</p>
             </div>
             <Button
               variant="ghost"
