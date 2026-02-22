@@ -459,15 +459,19 @@ export function removeFoodItem(name: string): void {
   }
 }
 
-/** Clear entire food list – marks ALL defaults as deleted so they won't come back */
+/** Clear entire food list – marks ALL items (defaults + remote + current) as deleted */
 export function clearFoodDatabase(): number {
-  // Mark every default food as deleted so loadFoodDatabase won't re-add them
   const deleted = loadDeletedFoods();
+  // Mark every default food as deleted
   for (const def of DEFAULT_FOODS) {
     deleted.add(def.name.toLowerCase());
   }
+  // Mark every currently loaded food as deleted (includes remote items)
+  for (const item of foodDatabase) {
+    deleted.add(item.name.toLowerCase());
+  }
   saveDeletedFoods(deleted);
-  // Also clear remote sync cache so remote items won't re-appear
+  // Clear remote sync cache so remote items won't re-appear
   localStorage.removeItem("mampflogger-remote-sync");
 
   const count = foodDatabase.length;
