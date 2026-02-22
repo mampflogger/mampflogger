@@ -171,11 +171,15 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [] 
   }, [profile, entries, bookedActivities]);
 
   const daysToGoal = useMemo(() => {
-    if (!profile || !profile.goalWeightKg || !avgDeficit7 || avgDeficit7 <= 0) return null;
-    const kgToLose = profile.weightKg - profile.goalWeightKg;
-    if (kgToLose <= 0) return 0;
-    const totalKcalNeeded = kgToLose * 7000;
-    return Math.round(totalKcalNeeded / avgDeficit7);
+    if (!profile || !profile.goalWeightKg || avgDeficit7 === null) return null;
+    const kgDiff = profile.weightKg - profile.goalWeightKg; // positive = lose, negative = gain
+    if (Math.abs(kgDiff) < 0.01) return 0; // goal reached
+    // Losing weight: need positive deficit (caloric deficit)
+    // Gaining weight: need negative deficit (caloric surplus)
+    if (kgDiff > 0 && avgDeficit7 <= 0) return null; // wants to lose but is in surplus
+    if (kgDiff < 0 && avgDeficit7 >= 0) return null; // wants to gain but is in deficit
+    const totalKcalNeeded = Math.abs(kgDiff) * 7000;
+    return Math.round(totalKcalNeeded / Math.abs(avgDeficit7));
   }, [profile, avgDeficit7]);
 
   const maxCalories = useMemo(
