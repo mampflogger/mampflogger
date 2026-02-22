@@ -4,6 +4,8 @@ import { NutritionEntry, generateId } from "@/types/nutrition";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { FoodItem, searchFood, addFoodItem, trackFoodUsage, getFoodUsageCount } from "@/data/foodDatabase";
+import { useSpeechRecognition } from "@/hooks/useSpeechRecognition";
+import { Mic, MicOff } from "lucide-react";
 
 interface NutritionFormProps {
   onAdd: (entry: NutritionEntry) => void;
@@ -35,6 +37,36 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
   const listRef = useRef<HTMLUListElement>(null);
   const foodInputRef = useRef<HTMLInputElement>(null);
   const amountInputRef = useRef<HTMLInputElement>(null);
+
+  // Voice input for food field
+  const foodVoice = useSpeechRecognition({
+    onResult: (transcript) => {
+      // Search for best match
+      const results = searchFood(transcript);
+      if (results.length > 0) {
+        // Pick first match
+        handleSelectFood(results[0]);
+      } else {
+        // Just fill the text
+        handleFoodChange(transcript);
+      }
+    },
+    onEnd: () => {
+      // Auto-focus amount after recognition
+      setTimeout(() => amountInputRef.current?.focus(), 100);
+    },
+  });
+
+  // Voice input for amount field
+  const amountVoice = useSpeechRecognition({
+    onResult: (transcript) => {
+      // Extract number from spoken text, e.g. "100 Gramm" → "100"
+      const num = transcript.replace(/[^\d.,]/g, "").replace(",", ".");
+      if (num) {
+        handleAmountChange(num);
+      }
+    },
+  });
 
   // Load editing entry into form
   useEffect(() => {
@@ -273,23 +305,39 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
           <Label htmlFor="food" className="text-[10px] font-medium text-muted-foreground mb-1 block truncate">
             Lebensmittel
           </Label>
-          <Input
-            id="food"
-            ref={foodInputRef}
-            type="text"
-            placeholder="z.B. Haferflocken"
-            value={food}
-            onChange={(e) => handleFoodChange(e.target.value)}
-            onFocus={() => {
-              if (suggestions.length > 0) setShowSuggestions(true);
-            }}
-            onKeyDown={handleKeyDown}
-            className="h-9 bg-muted/50 text-xs px-2"
-            autoComplete="off"
-            autoCorrect="off"
-            spellCheck={false}
-            required
-          />
+          <div className="relative">
+            <Input
+              id="food"
+              ref={foodInputRef}
+              type="text"
+              placeholder="z.B. Haferflocken"
+              value={food}
+              onChange={(e) => handleFoodChange(e.target.value)}
+              onFocus={() => {
+                if (suggestions.length > 0) setShowSuggestions(true);
+              }}
+              onKeyDown={handleKeyDown}
+              className="h-9 bg-muted/50 text-xs px-2 pr-8"
+              autoComplete="off"
+              autoCorrect="off"
+              spellCheck={false}
+              required
+            />
+            {foodVoice.isSupported && (
+              <button
+                type="button"
+                onClick={() => foodVoice.isListening ? foodVoice.stop() : foodVoice.start()}
+                className={`absolute right-1 top-1/2 -translate-y-1/2 p-1 rounded transition-colors ${
+                  foodVoice.isListening
+                    ? "text-destructive animate-pulse"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+                title="Spracheingabe"
+              >
+                {foodVoice.isListening ? <MicOff className="w-3.5 h-3.5" /> : <Mic className="w-3.5 h-3.5" />}
+              </button>
+            )}
+          </div>
           {showSuggestions && dropdownRect && createPortal(
             <ul
               ref={listRef}
@@ -348,17 +396,33 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
           <Label htmlFor="amount" className="text-[10px] font-medium text-muted-foreground mb-1 block truncate">
             {selectedFood ? (selectedFood.baseUnit.startsWith("1 ") ? selectedFood.baseUnit.substring(2) : "g/ml") : "g/ml"}
           </Label>
-          <Input
-            id="amount"
-            ref={amountInputRef}
-            type="number"
-            inputMode="decimal"
-            step="any"
-            placeholder="0"
-            value={amount}
-            onChange={(e) => handleAmountChange(e.target.value)}
-            className="h-9 bg-muted/50 text-xs px-2"
-          />
+          <div className="relative">
+            <Input
+              id="amount"
+              ref={amountInputRef}
+              type="number"
+              inputMode="decimal"
+              step="any"
+              placeholder="0"
+              value={amount}
+              onChange={(e) => handleAmountChange(e.target.value)}
+              className="h-9 bg-muted/50 text-xs px-2 pr-7"
+            />
+            {amountVoice.isSupported && (
+              <button
+                type="button"
+                onClick={() => amountVoice.isListening ? amountVoice.stop() : amountVoice.start()}
+                className={`absolute right-0.5 top-1/2 -translate-y-1/2 p-1 rounded transition-colors ${
+                  amountVoice.isListening
+                    ? "text-destructive animate-pulse"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+                title="Spracheingabe"
+              >
+                {amountVoice.isListening ? <MicOff className="w-3 h-3" /> : <Mic className="w-3 h-3" />}
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
