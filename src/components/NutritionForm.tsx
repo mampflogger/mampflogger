@@ -353,7 +353,6 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
               autoComplete="off"
               autoCorrect="off"
               spellCheck={false}
-              required
             />
           </div>
           {showSuggestions && dropdownRect && createPortal(

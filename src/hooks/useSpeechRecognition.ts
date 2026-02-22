@@ -28,14 +28,26 @@ export function useSpeechRecognition({ onResult, onEnd, lang = "de-DE" }: UseSpe
     recognition.lang = lang;
     recognition.interimResults = false;
     recognition.maxAlternatives = 1;
-    recognition.continuous = false;
+    recognition.continuous = true;
 
-    recognition.onresult = (event: { results: { 0: { 0: { transcript: string } } } }) => {
-      const transcript = event.results[0][0].transcript.trim();
-      onResult(transcript);
+    recognition.onresult = (event: { results: SpeechRecognitionResultList }) => {
+      // Process only the latest final result
+      for (let i = 0; i < event.results.length; i++) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const result = (event.results as any)[i];
+        if (result.isFinal) {
+          const transcript = result[0].transcript.trim();
+          onResult(transcript);
+        }
+      }
     };
 
     recognition.onend = () => {
+      // If still supposed to be listening, restart (browser may stop after silence)
+      if (recognitionRef.current && recognitionRef.current._keepAlive) {
+        try { recognition.start(); } catch { /* ignore */ }
+        return;
+      }
       setIsListening(false);
       onEnd?.();
     };
@@ -45,12 +57,16 @@ export function useSpeechRecognition({ onResult, onEnd, lang = "de-DE" }: UseSpe
     };
 
     recognitionRef.current = recognition;
+    recognition._keepAlive = true;
     recognition.start();
     setIsListening(true);
   }, [lang, onResult, onEnd]);
 
   const stop = useCallback(() => {
-    recognitionRef.current?.stop();
+    if (recognitionRef.current) {
+      recognitionRef.current._keepAlive = false;
+      recognitionRef.current.stop();
+    }
     setIsListening(false);
   }, []);
 
