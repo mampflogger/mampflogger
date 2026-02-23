@@ -64,6 +64,7 @@ export function useSpeechRecognition({ onResult, onEnd, lang = "de-DE" }: UseSpe
     };
 
     recognition.onerror = (event: { error: string }) => {
+      console.warn("[Speech] error:", event.error);
       // Only stop on fatal errors, not on no-speech or aborted
       if (event.error === "not-allowed" || event.error === "service-not-allowed") {
         if (recognitionRef.current) recognitionRef.current._keepAlive = false;
