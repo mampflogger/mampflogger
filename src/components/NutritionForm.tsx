@@ -51,15 +51,30 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
     focusedFieldRef.current = focusedField;
   }, [focusedField]);
 
+  // Helper: fuzzy match for "buchen" command
+  const isBuchenCommand = useCallback((text: string) => {
+    const lower = text.toLowerCase().trim();
+    // Match common misrecognitions of "buchen"
+    return /\b(buchen|buche|buch|buchen\b|buchem|bucher|buchern|butchen|bu[ck]h?en?)\b/.test(lower);
+  }, []);
+
   // Single voice recognition instance for both fields
   const voice = useSpeechRecognition({
-    onResult: useCallback((transcript: string) => {
+    onResult: useCallback((transcript: string, isInterim: boolean) => {
       const currentField = focusedFieldRef.current;
+
+      // For "buchen" command: react on interim results too for speed
       if (currentField === "submit") {
-        if (transcript.toLowerCase().includes("buchen")) {
+        if (isBuchenCommand(transcript)) {
           submitButtonRef.current?.click();
         }
-      } else if (currentField === "food") {
+        return;
+      }
+
+      // For food/amount fields: only act on final results
+      if (isInterim) return;
+
+      if (currentField === "food") {
         const results = searchFood(transcript);
         if (results.length === 0) {
           setFood("Nichts gefunden");
