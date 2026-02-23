@@ -41,10 +41,21 @@ const BOOKED_ACTIVITIES_KEY = "mampflogger-booked-activities";
 
 // Default activity types
 const DEFAULT_ACTIVITY_TYPES: ActivityType[] = [
-  { id: "walking", name: "Spazieren", caloriesPerUnit: 0.03, unit: "Schritte" },
-  { id: "powerwalking", name: "Powerwalking", caloriesPerUnit: 0.06, unit: "Schritte" },
-  { id: "jogging", name: "Joggen", caloriesPerUnit: 70, unit: "km" },
-  { id: "swimming", name: "Schwimmen", caloriesPerUnit: 300, unit: "60min" },
+  { id: "schwimmen", name: "Schwimmen", caloriesPerUnit: 15, unit: "min" },
+  { id: "joggen", name: "Joggen", caloriesPerUnit: 15, unit: "min" },
+  { id: "spazieren-gassi", name: "Spazieren Gassi", caloriesPerUnit: 0.05, unit: "Schritte" },
+  { id: "wandern", name: "Wandern", caloriesPerUnit: 0.06, unit: "Schritte" },
+  { id: "nordik-walking", name: "Nordik Walking", caloriesPerUnit: 0.08, unit: "Schritte" },
+  { id: "bergwandern", name: "Bergwandern", caloriesPerUnit: 0.1, unit: "Schritte" },
+  { id: "radfahren", name: "Radfahren", caloriesPerUnit: 10, unit: "min" },
+  { id: "rennradfahren", name: "Rennradfahren", caloriesPerUnit: 18, unit: "min" },
+  { id: "mountainbiken", name: "Mountainbiken", caloriesPerUnit: 15, unit: "min" },
+  { id: "krafttraining-leicht", name: "Krafttraining leicht", caloriesPerUnit: 6, unit: "min" },
+  { id: "krafttraining-intensiv", name: "Krafttraining intensiv", caloriesPerUnit: 11, unit: "min" },
+  { id: "crossfit-zirkeltraining", name: "Crossfit Zirkeltraining", caloriesPerUnit: 14, unit: "min" },
+  { id: "reiten", name: "Reiten", caloriesPerUnit: 9, unit: "min" },
+  { id: "tanzen-club-party", name: "Tanzen Club Party", caloriesPerUnit: 9, unit: "min" },
+  { id: "tanzen-zumba-hiphop", name: "Tanzen Zumba HipHop", caloriesPerUnit: 14, unit: "min" },
 ];
 
 export function loadProfile(): UserProfile | null {
