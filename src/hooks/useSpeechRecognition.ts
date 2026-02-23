@@ -1,7 +1,7 @@
 import { useState, useRef, useCallback } from "react";
 
 interface UseSpeechRecognitionOptions {
-  onResult: (transcript: string) => void;
+  onResult: (transcript: string, isInterim: boolean) => void;
   onEnd?: () => void;
   lang?: string;
 }
@@ -27,19 +27,27 @@ export function useSpeechRecognition({ onResult, onEnd, lang = "de-DE" }: UseSpe
 
     const recognition = new SR();
     recognition.lang = lang;
-    recognition.interimResults = false;
-    recognition.maxAlternatives = 1;
+    recognition.interimResults = true;
+    recognition.maxAlternatives = 3;
     recognition.continuous = true;
 
     recognition.onresult = (event: { results: SpeechRecognitionResultList }) => {
-      // Only process new final results (skip already-processed ones)
       for (let i = processedIndexRef.current; i < event.results.length; i++) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const result = (event.results as any)[i];
         if (result.isFinal) {
-          const transcript = result[0].transcript.trim();
+          // Collect best transcript from all alternatives
+          let best = "";
+          for (let a = 0; a < result.length; a++) {
+            const alt = result[a].transcript.trim();
+            if (alt.length > best.length) best = alt;
+          }
           processedIndexRef.current = i + 1;
-          onResult(transcript);
+          onResult(best, false);
+        } else {
+          // Interim result — send for quick command detection
+          const interim = result[0].transcript.trim();
+          if (interim) onResult(interim, true);
         }
       }
     };
