@@ -42,17 +42,24 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
   const submitButtonRef = useRef<HTMLButtonElement>(null);
 
   const [focusedField, setFocusedField] = useState<FocusedField>("food");
+  const focusedFieldRef = useRef<FocusedField>("food");
+  const handleSelectFoodRef = useRef<(item: FoodItem) => void>(() => {});
+  const handleAmountChangeRef = useRef<(value: string) => void>(() => {});
+
+  // Keep ref in sync with state
+  useEffect(() => {
+    focusedFieldRef.current = focusedField;
+  }, [focusedField]);
 
   // Single voice recognition instance for both fields
   const voice = useSpeechRecognition({
-    onResult: (transcript) => {
-      if (focusedField === "submit") {
-        // Check if user said "buchen"
+    onResult: useCallback((transcript: string) => {
+      const currentField = focusedFieldRef.current;
+      if (currentField === "submit") {
         if (transcript.toLowerCase().includes("buchen")) {
           submitButtonRef.current?.click();
         }
-      } else if (focusedField === "food") {
-        // ONLY search database — never show raw transcript
+      } else if (currentField === "food") {
         const results = searchFood(transcript);
         if (results.length === 0) {
           setFood("Nichts gefunden");
@@ -61,26 +68,25 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
             foodInputRef.current?.focus();
           }, 1500);
         } else if (results.length === 1) {
-          handleSelectFood(results[0]);
+          handleSelectFoodRef.current(results[0]);
         } else {
-          // Multiple matches → show dropdown
           setFood("");
           setSuggestions(results);
           setShowSuggestions(true);
           setHighlightIndex(-1);
         }
-      } else if (focusedField === "amount") {
+      } else if (currentField === "amount") {
         const num = transcript.replace(/[^\d.,]/g, "").replace(",", ".");
         if (num) {
-          handleAmountChange(num);
-          // After amount is filled, focus submit button
+          handleAmountChangeRef.current(num);
           setTimeout(() => {
             submitButtonRef.current?.focus();
             setFocusedField("submit");
           }, 0);
         }
       }
-    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []),
   });
 
   // Load editing entry into form
@@ -180,7 +186,10 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
     }
   };
 
-  // Time auto-format: "2240" → "22:40"
+  // Keep function refs current for voice callback
+  handleSelectFoodRef.current = handleSelectFood;
+  handleAmountChangeRef.current = handleAmountChange;
+
   const handleTimeChange = (raw: string) => {
     const digits = raw.replace(/\D/g, "").slice(0, 4);
     if (digits.length <= 2) {
