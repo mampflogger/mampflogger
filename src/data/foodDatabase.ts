@@ -377,6 +377,10 @@ export const DEFAULT_FOODS: FoodItem[] = [
   { name: "Zwiebelmettwurst", baseUnit: "100g", baseAmount: 100, calories: 218, protein: 15, fat: 17, carbs: 1, fiber: 0 },
   { name: "Zander", baseUnit: "100g", baseAmount: 100, calories: 84, protein: 19, fat: 1, carbs: 0, fiber: 0 },
   { name: "Zwiebeln", baseUnit: "100g", baseAmount: 100, calories: 28, protein: 1, fat: 0, carbs: 6, fiber: 2 },
+  { name: "Gekochter Schinken", baseUnit: "100g", baseAmount: 100, calories: 107, protein: 19, fat: 3, carbs: 0, fiber: 0 },
+  { name: "Fanta Orange", baseUnit: "100ml", baseAmount: 100, calories: 38, protein: 0, fat: 0, carbs: 9, fiber: 0, liquidMl: 100 },
+  { name: "Poree (Lauch)", baseUnit: "100g", baseAmount: 100, calories: 31, protein: 2, fat: 0, carbs: 7, fiber: 3 },
+  { name: "Testnahrung", baseUnit: "100g", baseAmount: 100, calories: 50, protein: 10, fat: 10, carbs: 10, fiber: 0 },
 ];
 
 function loadFoodDatabase(): FoodItem[] {
