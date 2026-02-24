@@ -13,7 +13,7 @@ import { Label } from "@/components/ui/label";
 import {
   Settings, Sun, Moon, Trash2, Upload, Download, UserCircle, Save, Check,
   AlertCircle, FileSpreadsheet, UtensilsCrossed, Palette, BarChart3, FileUp,
-  ChevronLeft, ChevronRight, RefreshCw,
+  ChevronLeft, ChevronRight, RefreshCw, List,
 } from "lucide-react";
 import { UserProfile, calculateBMR } from "@/types/profile";
 import { NutritionEntry } from "@/types/nutrition";
@@ -469,14 +469,48 @@ const SettingsDialog = ({
           <Settings className="w-4 h-4" />
         </Button>
       </DialogTrigger>
-      <DialogContent className="w-screen h-[100dvh] max-w-none max-h-[100dvh] rounded-none flex flex-col p-0 md:h-[85vh] md:max-h-[90vh] md:max-w-lg md:rounded-lg">
-        <div className="shrink-0 px-4 pt-[calc(env(safe-area-inset-top)+3rem)] pb-0">
-          <DialogHeader className="pb-1">
-            <DialogTitle className="text-base">Einstellungen</DialogTitle>
-          </DialogHeader>
+      <DialogContent hideClose className="w-screen h-[100dvh] max-w-none max-h-[100dvh] rounded-none flex flex-col p-0 md:h-[85vh] md:max-h-[90vh] md:max-w-lg md:rounded-lg">
+        {/* Identical header as main app */}
+        <header className="shrink-0 sticky top-0 z-10 bg-background/80 backdrop-blur-lg border-b border-border" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
+          <div className="max-w-lg mx-auto px-4 py-3">
+            <div className="flex items-center justify-between">
+              <a href="/" className="flex items-center gap-2 no-underline text-foreground">
+                <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center shrink-0">
+                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="1" y="10" width="3" height="7" rx="0.8" fill="currentColor" className="text-primary-foreground" />
+                    <rect x="5" y="6" width="3" height="11" rx="0.8" fill="currentColor" className="text-primary-foreground" />
+                    <rect x="9" y="8" width="3" height="9" rx="0.8" fill="currentColor" className="text-primary-foreground" />
+                    <rect x="13" y="3" width="3" height="14" rx="0.8" fill="currentColor" className="text-primary-foreground" />
+                  </svg>
+                </div>
+                <h1 className="text-lg font-bold tracking-tight">MampfLogger</h1>
+              </a>
+              <div className="flex items-center gap-1">
+                <Button variant="ghost" size="icon" className="h-8 w-8 bg-accent" title="Einstellungen" onClick={() => handleOpen(false)}>
+                  <Settings className="w-4 h-4" />
+                </Button>
+                <div className="flex items-center bg-muted rounded-lg p-0.5">
+                  <button className="flex items-center gap-1 px-2 py-1.5 rounded-md text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors" onClick={() => handleOpen(false)}>
+                    <List className="w-3.5 h-3.5" />
+                    <span className="hidden sm:inline">Eingabe</span>
+                  </button>
+                  <button className="flex items-center gap-1 px-2 py-1.5 rounded-md text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors" onClick={() => handleOpen(false)}>
+                    <BarChart3 className="w-3.5 h-3.5" />
+                    <span className="hidden sm:inline">Statistik</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </header>
 
+        <DialogHeader className="sr-only">
+          <DialogTitle>Einstellungen</DialogTitle>
+        </DialogHeader>
+
+        <div className="shrink-0 px-4 pt-3 pb-0">
           {/* Tab bar */}
-          <div className="flex gap-1 border border-input rounded-xl p-1 mt-3 mb-0 bg-card">
+          <div className="flex gap-1 border border-input rounded-xl p-1 mb-0 bg-card">
             {tabs.map((t) => (
               <button
                 key={t.id}
