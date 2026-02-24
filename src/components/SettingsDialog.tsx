@@ -766,7 +766,7 @@ const SettingsDialog = ({
                       <ChevronRight className={`w-3.5 h-3.5 text-muted-foreground transition-transform shrink-0 ml-1 ${showCategoryDropdown ? "rotate-90" : ""}`} />
                     </button>
                     {showCategoryDropdown && (
-                      <div className="absolute left-0 right-0 z-[200] bottom-full mb-1 rounded-md border border-border bg-popover shadow-lg max-h-48 overflow-y-auto">
+                      <div className="absolute left-0 right-0 z-[200] bottom-full mb-1 rounded-md border border-border bg-popover shadow-lg max-h-[60vh] overflow-y-auto">
                         <div
                           className={`px-3 py-2 text-xs cursor-pointer transition-colors ${!editFoodCategory ? "bg-primary/10 text-primary font-medium" : "hover:bg-muted/60"}`}
                           onPointerDown={(e) => { e.preventDefault(); setEditFoodCategory(""); setShowCategoryDropdown(false); }}
