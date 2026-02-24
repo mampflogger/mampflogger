@@ -310,31 +310,27 @@ const Index = () => {
                 onDeleteAllActivities={deleteAllActivities}
                 openToNewFood={openNewFood}
                 onOpenToNewFoodHandled={() => setOpenNewFood(false)}
+                activeTab={activeTab}
+                onSetActiveTab={setActiveTab}
               />
-              <div className="flex items-center bg-muted rounded-lg p-0.5">
-                <button
-                  onClick={() => setActiveTab("log")}
-                  className={`flex items-center gap-1 px-2 py-1.5 rounded-md text-xs font-semibold transition-colors ${
-                    activeTab === "log"
-                      ? "bg-background text-foreground shadow-sm"
-                      : "text-muted-foreground hover:text-foreground"
-                  }`}
-                >
-                  <List className="w-3.5 h-3.5" />
-                  <span className="hidden sm:inline">Eingabe</span>
-                </button>
-                <button
-                  onClick={() => setActiveTab("weekly")}
-                  className={`flex items-center gap-1 px-2 py-1.5 rounded-md text-xs font-semibold transition-colors ${
-                    activeTab === "weekly"
-                      ? "bg-background text-foreground shadow-sm"
-                      : "text-muted-foreground hover:text-foreground"
-                  }`}
-                >
-                  <BarChart3 className="w-3.5 h-3.5" />
-                  <span className="hidden sm:inline">Statistik</span>
-                </button>
-              </div>
+              <Button
+                variant="ghost"
+                size="icon"
+                className={`h-8 w-8 ${activeTab === "log" ? "bg-muted" : ""}`}
+                onClick={() => setActiveTab("log")}
+                title="Eingabe"
+              >
+                <List className="w-4 h-4" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                className={`h-8 w-8 ${activeTab === "weekly" ? "bg-muted" : ""}`}
+                onClick={() => setActiveTab("weekly")}
+                title="Statistik"
+              >
+                <BarChart3 className="w-4 h-4" />
+              </Button>
             </div>
           </div>
         </div>

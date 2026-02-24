@@ -56,6 +56,8 @@ interface SettingsDialogProps {
   onDeleteAllActivities: () => number;
   openToNewFood?: boolean;
   onOpenToNewFoodHandled?: () => void;
+  activeTab: "log" | "weekly";
+  onSetActiveTab: (tab: "log" | "weekly") => void;
 }
 
 type ImportType = "csv-entries" | "csv-balance" | "csv-food";
@@ -83,6 +85,7 @@ const SettingsDialog = ({
   profile, onSaveProfile, darkMode, onToggleDarkMode,
   colorTheme, onChangeTheme, entries, bookedActivities,
   onImport, onImportActivities, onCount, onDelete, onDeleteAll, onDeleteAllActivities, openToNewFood, onOpenToNewFoodHandled,
+  activeTab, onSetActiveTab,
 }: SettingsDialogProps) => {
   const [open, setOpen] = useState(false);
   const [tab, setTab] = useState<SettingsTab>("profile");
@@ -497,19 +500,15 @@ const SettingsDialog = ({
                 <h1 className="text-lg font-bold tracking-tight">MampfLogger</h1>
               </a>
               <div className="flex items-center gap-1">
-                <Button variant="ghost" size="icon" className="h-8 w-8 bg-accent" title="Einstellungen" onClick={() => handleOpen(false)}>
+                <Button variant="ghost" size="icon" className="h-8 w-8 bg-muted" title="Einstellungen" onClick={() => handleOpen(false)}>
                   <Settings className="w-4 h-4" />
                 </Button>
-                <div className="flex items-center bg-muted rounded-lg p-0.5">
-                  <button className="flex items-center gap-1 px-2 py-1.5 rounded-md text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors" onClick={() => handleOpen(false)}>
-                    <List className="w-3.5 h-3.5" />
-                    <span className="hidden sm:inline">Eingabe</span>
-                  </button>
-                  <button className="flex items-center gap-1 px-2 py-1.5 rounded-md text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors" onClick={() => handleOpen(false)}>
-                    <BarChart3 className="w-3.5 h-3.5" />
-                    <span className="hidden sm:inline">Statistik</span>
-                  </button>
-                </div>
+                <Button variant="ghost" size="icon" className="h-8 w-8" title="Eingabe" onClick={() => { handleOpen(false); onSetActiveTab("log"); }}>
+                  <List className="w-4 h-4" />
+                </Button>
+                <Button variant="ghost" size="icon" className="h-8 w-8" title="Statistik" onClick={() => { handleOpen(false); onSetActiveTab("weekly"); }}>
+                  <BarChart3 className="w-4 h-4" />
+                </Button>
               </div>
             </div>
           </div>
