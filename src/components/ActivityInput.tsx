@@ -242,7 +242,7 @@ const ActivityInput = ({
               <div className="max-w-lg mx-auto px-4 w-full pb-8">
                 {/* New activity form card */}
                 <div className="glass-card rounded-xl p-3 my-3 space-y-3">
-                  <h2 className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Neue Sportart</h2>
+                  <h2 className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Neue Aktivität</h2>
                   <div>
                     <Label className="text-xs">Name</Label>
                     <Input
@@ -280,7 +280,7 @@ const ActivityInput = ({
 
                 {/* Existing types card */}
                 <div className="glass-card rounded-xl p-3 space-y-1">
-                  <h2 className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-2">Vorhandene Typen</h2>
+                  <h2 className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-2">Gespeicherte Workouts</h2>
                   {activityTypes.map((t) => (
                     <div key={t.id} className="flex items-center justify-between text-xs py-1.5 border-b border-border last:border-b-0">
                       <span>{t.name} ({t.caloriesPerUnit} kcal/{t.unit})</span>
