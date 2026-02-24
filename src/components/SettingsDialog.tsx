@@ -630,7 +630,7 @@ const SettingsDialog = ({
                 <Label className="text-[10px] font-medium text-muted-foreground mb-1 block">Modus</Label>
                 <button
                   onClick={onToggleDarkMode}
-                  className="flex items-center gap-3 w-full p-2.5 rounded-lg bg-muted/50 hover:bg-muted transition-colors"
+                  className="flex items-center gap-3 w-full p-2.5 rounded-lg bg-muted/50 hover:bg-muted transition-colors border border-input"
                 >
                   {darkMode ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
                   <span className="text-xs font-medium">{darkMode ? "Dark Mode" : "Light Mode"}</span>
@@ -644,7 +644,7 @@ const SettingsDialog = ({
                       key={key}
                       onClick={() => onChangeTheme(key)}
                       className={`flex flex-col items-center gap-1 p-2.5 rounded-lg border-2 transition-colors ${
-                        colorTheme === key ? "border-primary bg-accent/40" : "border-transparent bg-muted/50 hover:bg-muted"
+                        colorTheme === key ? "border-primary bg-accent/40" : "border-input bg-muted/50 hover:bg-muted"
                       }`}
                     >
                       <div className="w-6 h-6 rounded-full" style={{ backgroundColor: THEME_COLORS[key].swatch }} />
