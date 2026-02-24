@@ -471,7 +471,7 @@ const SettingsDialog = ({
       </DialogTrigger>
       <DialogContent
         hideClose
-        className="w-screen h-[100dvh] max-w-none max-h-[100dvh] rounded-none flex flex-col p-0 gap-0 md:h-[85vh] md:max-h-[90vh] md:max-w-lg md:rounded-lg"
+        className="w-screen h-[100dvh] max-w-none max-h-[100dvh] rounded-none flex flex-col p-0 gap-0 data-[state=open]:animate-none data-[state=closed]:animate-none md:left-0 md:top-0 md:w-screen md:translate-x-0 md:translate-y-0 md:h-[100dvh] md:max-h-[100dvh] md:max-w-none md:rounded-none"
         style={{
           '--tw-enter-scale': '1',
           '--tw-exit-scale': '1',
@@ -518,6 +518,7 @@ const SettingsDialog = ({
         <main className="flex-1 min-h-0 overflow-y-auto">
           <DialogHeader className="sr-only">
             <DialogTitle>Einstellungen</DialogTitle>
+            <DialogDescription>Einstellungsmenü von MampfLogger</DialogDescription>
           </DialogHeader>
           <div className="max-w-lg mx-auto px-4 pb-8">
             {/* Tab bar – gleiche Außenmaße wie Datums-Kasten */}
