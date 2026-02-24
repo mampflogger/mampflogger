@@ -469,7 +469,18 @@ const SettingsDialog = ({
           <Settings className="w-4 h-4" />
         </Button>
       </DialogTrigger>
-      <DialogContent hideClose className="w-screen h-[100dvh] max-w-none max-h-[100dvh] rounded-none flex flex-col p-0 md:h-[85vh] md:max-h-[90vh] md:max-w-lg md:rounded-lg">
+      <DialogContent
+        hideClose
+        className="w-screen h-[100dvh] max-w-none max-h-[100dvh] rounded-none flex flex-col p-0 md:h-[85vh] md:max-h-[90vh] md:max-w-lg md:rounded-lg"
+        style={{
+          '--tw-enter-scale': '1',
+          '--tw-exit-scale': '1',
+          '--tw-enter-translate-x': '0',
+          '--tw-enter-translate-y': '0',
+          '--tw-exit-translate-x': '0',
+          '--tw-exit-translate-y': '0',
+        } as React.CSSProperties}
+      >
         {/* Identical header as main app */}
         <header className="shrink-0 sticky top-0 z-10 bg-background/80 backdrop-blur-lg border-b border-border" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
           <div className="max-w-lg mx-auto px-4 py-3">
@@ -504,11 +515,10 @@ const SettingsDialog = ({
           </div>
         </header>
 
-        <DialogHeader className="sr-only">
-          <DialogTitle>Einstellungen</DialogTitle>
-        </DialogHeader>
-
         <main className="flex-1 min-h-0 overflow-y-auto">
+          <DialogHeader className="sr-only">
+            <DialogTitle>Einstellungen</DialogTitle>
+          </DialogHeader>
           <div className="max-w-lg mx-auto px-4 pb-8">
             {/* Tab bar – gleiche Außenmaße wie Datums-Kasten */}
             <div className="glass-card rounded-xl p-3 my-3">
