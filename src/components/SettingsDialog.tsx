@@ -643,7 +643,7 @@ const SettingsDialog = ({
                     <button
                       key={key}
                       onClick={() => onChangeTheme(key)}
-                      className={`flex flex-col items-center gap-1 p-2.5 rounded-lg border-2 transition-colors ${
+                      className={`flex flex-col items-center gap-1 p-2.5 rounded-lg border transition-colors ${
                         colorTheme === key ? "border-primary bg-accent/40" : "border-input bg-muted/50 hover:bg-muted"
                       }`}
                     >
