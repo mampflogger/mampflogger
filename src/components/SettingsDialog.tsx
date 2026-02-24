@@ -476,7 +476,7 @@ const SettingsDialog = ({
           </DialogHeader>
 
           {/* Tab bar */}
-          <div className="flex gap-1 border border-input rounded-xl p-1 mt-3 mb-0">
+          <div className="flex gap-1 border border-input rounded-xl p-1 mt-3 mb-0 bg-muted/50">
             {tabs.map((t) => (
               <button
                 key={t.id}
