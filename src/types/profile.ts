@@ -37,7 +37,11 @@ export interface DailyActivity {
 const PROFILE_KEY = "nutrition-log-profile";
 const ACTIVITY_KEY = "nutrition-log-activities";
 const ACTIVITY_TYPES_KEY = "mampflogger-activity-types";
+const ACTIVITY_TYPES_VERSION_KEY = "mampflogger-activity-types-version";
 const BOOKED_ACTIVITIES_KEY = "mampflogger-booked-activities";
+
+// Bump this whenever DEFAULT_ACTIVITY_TYPES changes
+const ACTIVITY_TYPES_VERSION = 2;
 
 // Default activity types
 const DEFAULT_ACTIVITY_TYPES: ActivityType[] = [
@@ -103,11 +107,17 @@ export function setActivityForDate(
 
 // Activity Types CRUD
 export function loadActivityTypes(): ActivityType[] {
+  const storedVersion = localStorage.getItem(ACTIVITY_TYPES_VERSION_KEY);
+  if (!storedVersion || parseInt(storedVersion, 10) < ACTIVITY_TYPES_VERSION) {
+    // Reset to new defaults when version changes
+    saveActivityTypes(DEFAULT_ACTIVITY_TYPES);
+    localStorage.setItem(ACTIVITY_TYPES_VERSION_KEY, String(ACTIVITY_TYPES_VERSION));
+    return [...DEFAULT_ACTIVITY_TYPES];
+  }
   try {
     const data = localStorage.getItem(ACTIVITY_TYPES_KEY);
     if (data) return JSON.parse(data);
   } catch {}
-  // Initialize with defaults
   saveActivityTypes(DEFAULT_ACTIVITY_TYPES);
   return [...DEFAULT_ACTIVITY_TYPES];
 }
