@@ -471,7 +471,7 @@ const SettingsDialog = ({
       </DialogTrigger>
       <DialogContent
         hideClose
-        className="w-screen h-[100dvh] max-w-none max-h-[100dvh] rounded-none flex flex-col p-0 gap-0 data-[state=open]:animate-none data-[state=closed]:animate-none md:left-0 md:top-0 md:w-screen md:translate-x-0 md:translate-y-0 md:h-[100dvh] md:max-h-[100dvh] md:max-w-none md:rounded-none"
+        className="w-screen h-[100dvh] max-w-none max-h-[100dvh] rounded-none border-0 flex flex-col p-0 gap-0 data-[state=open]:animate-none data-[state=closed]:animate-none md:left-0 md:top-0 md:w-screen md:translate-x-0 md:translate-y-0 md:h-[100dvh] md:max-h-[100dvh] md:max-w-none md:rounded-none md:border-0"
         style={{
           '--tw-enter-scale': '1',
           '--tw-exit-scale': '1',
@@ -515,12 +515,12 @@ const SettingsDialog = ({
           </div>
         </header>
 
-        <main className="flex-1 min-h-0 overflow-y-auto">
+        <main className={`flex-1 min-h-0 flex flex-col ${tab === "food" ? "overflow-hidden" : "overflow-y-auto"}`}>
           <DialogHeader className="sr-only">
             <DialogTitle>Einstellungen</DialogTitle>
             <DialogDescription>Einstellungsmenü von MampfLogger</DialogDescription>
           </DialogHeader>
-          <div className="max-w-lg mx-auto px-4 pb-8">
+          <div className={`max-w-lg mx-auto px-4 w-full ${tab === "food" ? "flex-1 min-h-0 flex flex-col pb-4" : "pb-8"}`}>
             {/* Tab bar – gleiche Außenmaße wie Datums-Kasten */}
             <div className="glass-card rounded-xl p-3 my-3">
               <div className="grid grid-cols-4 gap-1.5 h-10">
