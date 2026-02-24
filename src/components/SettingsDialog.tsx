@@ -17,7 +17,7 @@ import {
 } from "lucide-react";
 import { UserProfile, calculateBMR } from "@/types/profile";
 import { NutritionEntry } from "@/types/nutrition";
-import { foodDatabase, addFoodItem, removeFoodItem, updateFoodItem, clearFoodDatabase, reloadFoodDatabase, resetFoodDatabase, DEFAULT_FOODS, FoodItem, loadUnits, deleteUnit, addUnit } from "@/data/foodDatabase";
+import { foodDatabase, addFoodItem, removeFoodItem, updateFoodItem, clearFoodDatabase, reloadFoodDatabase, resetFoodDatabase, DEFAULT_FOODS, FoodItem, loadUnits, deleteUnit, addUnit, FOOD_CATEGORIES, FoodCategory } from "@/data/foodDatabase";
 import {
   exportEntriesToCsv, exportFoodDatabaseCsv, exportCalorieBalanceCsv, exportActivitiesCsv,
 } from "@/lib/csvExport";
@@ -132,9 +132,12 @@ const SettingsDialog = ({
   const [editFoodFib, setEditFoodFib] = useState("");
   const [editFoodDefault, setEditFoodDefault] = useState("");
   const [editFoodLiquid, setEditFoodLiquid] = useState("");
+  const [editFoodCategory, setEditFoodCategory] = useState<FoodCategory | "">("");
   const [showUnitDropdown, setShowUnitDropdown] = useState(false);
+  const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
   const [, forceUpdate] = useState(0);
   const [foodNavIndex, setFoodNavIndex] = useState<number | null>(null);
+  const [selectedCategories, setSelectedCategories] = useState<Set<string>>(new Set());
 
 
 
@@ -169,6 +172,7 @@ const SettingsDialog = ({
     setEditFoodFib("");
     setEditFoodDefault("");
     setEditFoodLiquid("");
+    setEditFoodCategory("");
   };
 
   const handleOpen = (isOpen: boolean) => {
@@ -187,6 +191,7 @@ const SettingsDialog = ({
     if (!isOpen) {
       setEditingFood(null);
       setShowUnitDropdown(false);
+      setShowCategoryDropdown(false);
       setImportType(null);
       setRawText("");
       setPreview(null);
@@ -251,6 +256,7 @@ const SettingsDialog = ({
     setEditFoodFib(String(food.fiber));
     setEditFoodDefault(food.defaultAmount ? String(food.defaultAmount) : "");
     setEditFoodLiquid(food.liquidMl ? String(food.liquidMl) : "");
+    setEditFoodCategory(food.category || "");
     if (index !== undefined) setFoodNavIndex(index);
   };
 
@@ -274,6 +280,7 @@ const SettingsDialog = ({
       fiber: parseFloat(editFoodFib) || 0,
       defaultAmount: editFoodDefault ? parseFloat(editFoodDefault) || undefined : undefined,
       liquidMl: editFoodLiquid ? parseFloat(editFoodLiquid) || undefined : undefined,
+      category: editFoodCategory || undefined,
     };
     updateFoodItem(editingFood.name, updated);
     const isNew = !editingFood.name;
@@ -435,9 +442,15 @@ const SettingsDialog = ({
     forceUpdate((n) => n + 1);
   };
 
-  const filteredFoods = foodSearch
-    ? foodDatabase.filter((f) => f.name.toLowerCase().includes(foodSearch.toLowerCase()))
-    : [...foodDatabase].sort((a, b) => a.name.localeCompare(b.name));
+  const filteredFoods = (() => {
+    let list = foodSearch
+      ? foodDatabase.filter((f) => f.name.toLowerCase().includes(foodSearch.toLowerCase()))
+      : [...foodDatabase].sort((a, b) => a.name.localeCompare(b.name));
+    if (selectedCategories.size > 0) {
+      list = list.filter((f) => f.category && selectedCategories.has(f.category));
+    }
+    return list;
+  })();
 
   const hasImportResults = (preview && preview.length > 0) || (foodPreview && foodPreview.length > 0) || (activityPreview && activityPreview.length > 0);
   const importResultCount = preview?.length || foodPreview?.length || activityPreview?.length || 0;
@@ -741,13 +754,39 @@ const SettingsDialog = ({
                     <Input type="number" inputMode="decimal" value={editFoodFib} onChange={(e) => setEditFoodFib(e.target.value)} className="h-9 text-xs" />
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-3 gap-2">
+                  <div className="relative">
+                    <Label className="text-[10px] text-muted-foreground">Kategorie</Label>
+                    <button
+                      type="button"
+                      className="w-full flex items-center justify-between h-9 px-3 text-xs rounded-md border border-input bg-background hover:bg-muted/60 transition-colors"
+                      onClick={() => setShowCategoryDropdown(v => !v)}
+                    >
+                      <span className="truncate">{editFoodCategory || "–"}</span>
+                      <ChevronRight className={`w-3.5 h-3.5 text-muted-foreground transition-transform shrink-0 ml-1 ${showCategoryDropdown ? "rotate-90" : ""}`} />
+                    </button>
+                    {showCategoryDropdown && (
+                      <div className="absolute left-0 right-0 z-[200] mt-1 rounded-md border border-border bg-popover shadow-lg max-h-48 overflow-y-auto">
+                        <div
+                          className={`px-3 py-2 text-xs cursor-pointer transition-colors ${!editFoodCategory ? "bg-primary/10 text-primary font-medium" : "hover:bg-muted/60"}`}
+                          onPointerDown={(e) => { e.preventDefault(); setEditFoodCategory(""); setShowCategoryDropdown(false); }}
+                        >–</div>
+                        {FOOD_CATEGORIES.map(cat => (
+                          <div
+                            key={cat}
+                            className={`px-3 py-2 text-xs cursor-pointer transition-colors ${editFoodCategory === cat ? "bg-primary/10 text-primary font-medium" : "hover:bg-muted/60"}`}
+                            onPointerDown={(e) => { e.preventDefault(); setEditFoodCategory(cat); setShowCategoryDropdown(false); }}
+                          >{cat}</div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                   <div>
                     <Label className="text-[10px] text-muted-foreground">Standardwert</Label>
                     <Input type="number" inputMode="decimal" value={editFoodDefault} onChange={(e) => setEditFoodDefault(e.target.value)} placeholder="z.B. 125" className="h-9 text-xs" />
                   </div>
                   <div>
-                    <Label className="text-[10px] text-muted-foreground">Flüssigkeit in ml</Label>
+                    <Label className="text-[10px] text-muted-foreground">Flüssigkeit (ml)</Label>
                     <Input type="number" inputMode="decimal" value={editFoodLiquid} onChange={(e) => setEditFoodLiquid(e.target.value)} placeholder="z.B. 250" className="h-9 text-xs" />
                   </div>
                 </div>
@@ -762,12 +801,44 @@ const SettingsDialog = ({
               </div>
             ) : (
               <>
-                <button
-                  onClick={handleNewFood}
-                  className="text-xs text-primary font-medium hover:underline"
-                >
-                  + New Food
-                </button>
+                <div className="flex items-center justify-between">
+                  <button
+                    onClick={handleNewFood}
+                    className="text-xs text-primary font-medium hover:underline"
+                  >
+                    + New Food
+                  </button>
+                </div>
+                {/* Category filter checkboxes */}
+                <div className="flex flex-wrap gap-x-3 gap-y-1.5 py-1.5">
+                  <label className="flex items-center gap-1 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={selectedCategories.size === 0}
+                      onChange={() => setSelectedCategories(new Set())}
+                      className="w-3.5 h-3.5 rounded border-border accent-primary"
+                    />
+                    <span className="text-[10px] font-medium text-foreground">alle</span>
+                  </label>
+                  {FOOD_CATEGORIES.map(cat => (
+                    <label key={cat} className="flex items-center gap-1 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={selectedCategories.has(cat)}
+                        onChange={() => {
+                          setSelectedCategories(prev => {
+                            const next = new Set(prev);
+                            if (next.has(cat)) next.delete(cat);
+                            else next.add(cat);
+                            return next;
+                          });
+                        }}
+                        className="w-3.5 h-3.5 rounded border-border accent-primary"
+                      />
+                      <span className="text-[10px] font-medium text-foreground">{cat}</span>
+                    </label>
+                  ))}
+                </div>
                 <Input
                   placeholder="Lebensmittel suchen..."
                   value={foodSearch}
