@@ -483,7 +483,7 @@ const SettingsDialog = ({
                 onClick={() => setTab(t.id)}
                 className={`flex-1 flex flex-col items-center justify-center gap-0.5 px-2 py-2 rounded-lg text-[10px] font-semibold transition-colors ${
                   tab === t.id
-                    ? "bg-muted text-foreground shadow-sm"
+                    ? "bg-background text-foreground shadow-sm"
                     : "text-muted-foreground hover:text-foreground"
                 }`}
               >
@@ -494,7 +494,7 @@ const SettingsDialog = ({
           </div>
         </div>
 
-        <div className="flex-1 min-h-0 overflow-y-auto px-4 pt-3 pb-4">
+        <div className="flex-1 min-h-0 overflow-y-auto px-4 pt-3 pb-2">
 
         {/* Profile Tab */}
         {tab === "profile" && (
@@ -850,15 +850,17 @@ const SettingsDialog = ({
                     </label>
                   ))}
                 </div>
+                <div className="mt-2" />
                 <Input
                   placeholder="Lebensmittel suchen..."
+                  
                   value={foodSearch}
                   onChange={(e) => setFoodSearch(e.target.value)}
                   className="h-9 text-xs"
                   autoCorrect="off"
                   spellCheck={false}
                 />
-                <div className="max-h-60 overflow-y-auto overflow-x-auto -mx-1 px-1 mt-1.5">
+                <div className="max-h-[60vh] overflow-y-auto overflow-x-auto -mx-1 px-1 mt-1.5">
                   <table className="w-full text-[10px]">
                     <thead>
                       <tr className="border-b border-border">
