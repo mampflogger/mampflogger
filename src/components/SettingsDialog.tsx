@@ -494,7 +494,7 @@ const SettingsDialog = ({
           </div>
         </div>
 
-        <div className="flex-1 min-h-0 overflow-y-auto px-4 pt-3 pb-2">
+        <div className={`flex-1 min-h-0 flex flex-col px-4 pt-3 pb-2 ${tab === "food" ? "" : "overflow-y-auto"}`}>
 
         {/* Profile Tab */}
         {tab === "profile" && (
@@ -617,8 +617,8 @@ const SettingsDialog = ({
 
         {/* Food List Tab */}
         {tab === "food" && (
-          <div className="space-y-3">
-            <div className="glass-card rounded-xl p-3">
+          <div className="flex flex-col min-h-0 flex-1 gap-3">
+            <div className="glass-card rounded-xl p-3 flex flex-col min-h-0 flex-1">
             {editingFood ? (
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
@@ -811,56 +811,55 @@ const SettingsDialog = ({
                 </div>
               </div>
             ) : (
-              <>
-                <div className="flex items-center justify-between">
-                  <button
-                    onClick={handleNewFood}
-                    className="text-xs text-primary font-medium hover:underline"
-                  >
-                    + New Food
-                  </button>
-                </div>
-                {/* Category filter checkboxes */}
-                <div className="flex flex-wrap gap-x-3 gap-y-1.5 py-1.5">
-                  <label className="flex items-center gap-1 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={selectedCategories.size === 0}
-                      onChange={() => setSelectedCategories(new Set())}
-                      className="w-3.5 h-3.5 rounded border-border accent-primary"
-                    />
-                    <span className="text-[10px] font-medium text-foreground">alle</span>
-                  </label>
-                  {FOOD_CATEGORIES.map(cat => (
-                    <label key={cat} className="flex items-center gap-1 cursor-pointer">
+              <div className="flex flex-col min-h-0 flex-1">
+                {/* Fixed controls area */}
+                <div className="shrink-0 space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <button
+                      onClick={handleNewFood}
+                      className="text-xs text-primary font-medium hover:underline"
+                    >
+                      + New Food
+                    </button>
+                  </div>
+                  {/* Category filter checkboxes */}
+                  <div className="flex flex-wrap gap-x-3 gap-y-1.5 py-1.5">
+                    <label className="flex items-center gap-1 cursor-pointer">
                       <input
                         type="checkbox"
-                        checked={selectedCategories.has(cat)}
-                        onChange={() => {
-                          setSelectedCategories(prev => {
-                            const next = new Set(prev);
-                            if (next.has(cat)) next.delete(cat);
-                            else next.add(cat);
-                            return next;
-                          });
-                        }}
+                        checked={selectedCategories.size === 0}
+                        onChange={() => setSelectedCategories(new Set())}
                         className="w-3.5 h-3.5 rounded border-border accent-primary"
                       />
-                      <span className="text-[10px] font-medium text-foreground">{cat}</span>
+                      <span className="text-[10px] font-medium text-foreground">alle</span>
                     </label>
-                  ))}
-                </div>
-                <div className="mt-2" />
-                <Input
-                  placeholder="Lebensmittel suchen..."
-                  
-                  value={foodSearch}
-                  onChange={(e) => setFoodSearch(e.target.value)}
-                  className="h-9 text-xs"
-                  autoCorrect="off"
-                  spellCheck={false}
-                />
-                <div className="max-h-[45vh] overflow-y-auto overflow-x-auto -mx-1 px-1 mt-1.5">
+                    {FOOD_CATEGORIES.map(cat => (
+                      <label key={cat} className="flex items-center gap-1 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={selectedCategories.has(cat)}
+                          onChange={() => {
+                            setSelectedCategories(prev => {
+                              const next = new Set(prev);
+                              if (next.has(cat)) next.delete(cat);
+                              else next.add(cat);
+                              return next;
+                            });
+                          }}
+                          className="w-3.5 h-3.5 rounded border-border accent-primary"
+                        />
+                        <span className="text-[10px] font-medium text-foreground">{cat}</span>
+                      </label>
+                    ))}
+                  </div>
+                  <Input
+                    placeholder="Lebensmittel suchen..."
+                    value={foodSearch}
+                    onChange={(e) => setFoodSearch(e.target.value)}
+                    className="h-9 text-xs"
+                    autoCorrect="off"
+                    spellCheck={false}
+                  />
                   <table className="w-full text-[10px]">
                     <thead>
                       <tr className="border-b border-border">
@@ -874,6 +873,11 @@ const SettingsDialog = ({
                         <th className="w-5"></th>
                       </tr>
                     </thead>
+                  </table>
+                </div>
+                {/* Scrollable table body */}
+                <div className="flex-1 min-h-0 overflow-y-auto overflow-x-auto -mx-1 px-1">
+                  <table className="w-full text-[10px]">
                     <tbody>
                       {filteredFoods.map((f, idx) => (
                         <tr
@@ -901,8 +905,8 @@ const SettingsDialog = ({
                     </tbody>
                   </table>
                 </div>
-                <p className="text-[10px] text-muted-foreground">{foodDatabase.length} Lebensmittel in der Datenbank</p>
-              </>
+                <p className="shrink-0 text-[10px] text-muted-foreground mt-1">{foodDatabase.length} Lebensmittel in der Datenbank</p>
+              </div>
             )}
             </div>
           </div>
