@@ -200,14 +200,49 @@ const ActivityInput = ({
               + New Workout
             </button>
           </DialogTrigger>
-              <DialogContent className="w-screen h-[100dvh] max-w-none max-h-[100dvh] rounded-none overflow-y-auto sm:h-auto sm:max-h-[90vh] sm:max-w-sm sm:rounded-lg">
-                <DialogHeader>
-                  <DialogTitle>Neue Activity</DialogTitle>
-                  <DialogDescription>
-                    Definiere eine neue Sportart mit Kalorienverbrauch pro Einheit.
-                  </DialogDescription>
-                </DialogHeader>
-                <div className="space-y-3">
+          <DialogContent
+            hideClose
+            className="w-screen h-[100dvh] max-w-none max-h-[100dvh] rounded-none border-0 flex flex-col p-0 gap-0 data-[state=open]:animate-none data-[state=closed]:animate-none md:left-0 md:top-0 md:w-screen md:translate-x-0 md:translate-y-0 md:h-[100dvh] md:max-h-[100dvh] md:max-w-none md:rounded-none md:border-0"
+            style={{
+              '--tw-enter-scale': '1',
+              '--tw-exit-scale': '1',
+              '--tw-enter-translate-x': '0',
+              '--tw-enter-translate-y': '0',
+              '--tw-exit-translate-x': '0',
+              '--tw-exit-translate-y': '0',
+            } as React.CSSProperties}
+          >
+            {/* Standard header */}
+            <header className="shrink-0 sticky top-0 z-10 bg-background/80 backdrop-blur-lg border-b border-border" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
+              <div className="max-w-lg mx-auto px-4 py-3">
+                <div className="flex items-center justify-between">
+                  <a href="/" className="flex items-center gap-2 no-underline text-foreground">
+                    <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center shrink-0">
+                      <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="1" y="10" width="3" height="7" rx="0.8" fill="currentColor" className="text-primary-foreground" />
+                        <rect x="5" y="6" width="3" height="11" rx="0.8" fill="currentColor" className="text-primary-foreground" />
+                        <rect x="9" y="8" width="3" height="9" rx="0.8" fill="currentColor" className="text-primary-foreground" />
+                        <rect x="13" y="3" width="3" height="14" rx="0.8" fill="currentColor" className="text-primary-foreground" />
+                      </svg>
+                    </div>
+                    <h1 className="text-lg font-bold tracking-tight">MampfLogger</h1>
+                  </a>
+                  <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setShowNewType(false)} title="Schließen">
+                    <span className="text-lg">✕</span>
+                  </Button>
+                </div>
+              </div>
+            </header>
+
+            <main className="flex-1 min-h-0 overflow-y-auto">
+              <DialogHeader className="sr-only">
+                <DialogTitle>Neue Activity</DialogTitle>
+                <DialogDescription>Definiere eine neue Sportart mit Kalorienverbrauch pro Einheit.</DialogDescription>
+              </DialogHeader>
+              <div className="max-w-lg mx-auto px-4 w-full pb-8">
+                {/* New activity form card */}
+                <div className="glass-card rounded-xl p-3 my-3 space-y-3">
+                  <h2 className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Neue Sportart</h2>
                   <div>
                     <Label className="text-xs">Name</Label>
                     <Input
@@ -241,25 +276,28 @@ const ActivityInput = ({
                   <Button onClick={handleAddType} className="w-full bg-primary text-primary-foreground">
                     Hinzufügen
                   </Button>
-                  {/* List existing types with delete */}
-                  <div className="border-t border-border pt-3 space-y-1 max-h-40 overflow-y-auto">
-                    <p className="text-[10px] font-semibold text-muted-foreground uppercase">Vorhandene Typen</p>
-                    {activityTypes.map((t) => (
-                      <div key={t.id} className="flex items-center justify-between text-xs py-1">
-                        <span>{t.name} ({t.caloriesPerUnit} kcal/{t.unit})</span>
-                        <button
-                          onClick={() => handleDeleteType(t.id)}
-                          className="p-0.5 rounded text-muted-foreground hover:text-destructive"
-                        >
-                          <Trash2 className="w-3 h-3" />
-                        </button>
-                      </div>
-                    ))}
-                  </div>
                 </div>
-              </DialogContent>
-            </Dialog>
-          </div>
+
+                {/* Existing types card */}
+                <div className="glass-card rounded-xl p-3 space-y-1">
+                  <h2 className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-2">Vorhandene Typen</h2>
+                  {activityTypes.map((t) => (
+                    <div key={t.id} className="flex items-center justify-between text-xs py-1.5 border-b border-border last:border-b-0">
+                      <span>{t.name} ({t.caloriesPerUnit} kcal/{t.unit})</span>
+                      <button
+                        onClick={() => handleDeleteType(t.id)}
+                        className="p-1 rounded text-muted-foreground hover:text-destructive"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </main>
+          </DialogContent>
+        </Dialog>
+      </div>
 
       {isEditing && (
         <button onClick={onCancelEdit} className="text-xs text-muted-foreground underline">
