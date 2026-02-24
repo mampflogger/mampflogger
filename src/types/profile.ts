@@ -41,7 +41,7 @@ const ACTIVITY_TYPES_VERSION_KEY = "mampflogger-activity-types-version";
 const BOOKED_ACTIVITIES_KEY = "mampflogger-booked-activities";
 
 // Bump this whenever DEFAULT_ACTIVITY_TYPES changes
-const ACTIVITY_TYPES_VERSION = 2;
+const ACTIVITY_TYPES_VERSION = 3;
 
 // Default activity types
 const DEFAULT_ACTIVITY_TYPES: ActivityType[] = [
