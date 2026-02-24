@@ -83,7 +83,7 @@ const ProfileDialog = ({ profile, onSave }: ProfileDialogProps) => {
           <UserCircle className="w-4 h-4" />
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-sm">
+      <DialogContent className="w-screen h-[100dvh] max-w-none max-h-[100dvh] rounded-none overflow-y-auto sm:h-auto sm:max-h-[90vh] sm:max-w-sm sm:rounded-lg">
         <DialogHeader>
           <DialogTitle>Persönliches Profil</DialogTitle>
           <DialogDescription>
