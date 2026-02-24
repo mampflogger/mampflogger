@@ -456,10 +456,10 @@ const SettingsDialog = ({
   const importResultCount = preview?.length || foodPreview?.length || activityPreview?.length || 0;
 
   const tabs: { id: SettingsTab; label: string; icon: React.ReactNode }[] = [
-    { id: "profile", label: "Profil", icon: <UserCircle className="w-3.5 h-3.5" /> },
-    { id: "design", label: "Design", icon: <Palette className="w-3.5 h-3.5" /> },
-    { id: "food", label: "Lebensmittel", icon: <UtensilsCrossed className="w-3.5 h-3.5" /> },
-    { id: "data", label: "Daten", icon: <FileSpreadsheet className="w-3.5 h-3.5" /> },
+    { id: "profile", label: "Profil", icon: <UserCircle className="w-4 h-4" /> },
+    { id: "design", label: "Design", icon: <Palette className="w-4 h-4" /> },
+    { id: "food", label: "Lebensmittel", icon: <UtensilsCrossed className="w-4 h-4" /> },
+    { id: "data", label: "Daten", icon: <FileSpreadsheet className="w-4 h-4" /> },
   ];
 
   return (
@@ -510,21 +510,21 @@ const SettingsDialog = ({
 
         <main className="flex-1 min-h-0 overflow-y-auto">
           <div className="max-w-lg mx-auto px-4 pb-8">
-            {/* Tab bar – same position/style as date nav card */}
+            {/* Tab bar – gleiche Außenmaße wie Datums-Kasten */}
             <div className="glass-card rounded-xl p-3 my-3">
-              <div className="flex gap-1 border border-input rounded-xl p-1 bg-card">
+              <div className="grid grid-cols-4 gap-1.5 h-10">
                 {tabs.map((t) => (
                   <button
                     key={t.id}
                     onClick={() => setTab(t.id)}
-                    className={`flex-1 flex flex-col items-center justify-center gap-0.5 px-2 py-2 rounded-lg text-[10px] font-semibold transition-colors ${
+                    className={`h-10 flex flex-col items-center justify-center gap-0.5 rounded-lg px-1 text-[10px] leading-none font-semibold transition-colors ${
                       tab === t.id
                         ? "bg-background text-foreground shadow-sm"
-                        : "text-muted-foreground hover:text-foreground"
+                        : "text-muted-foreground hover:text-foreground hover:bg-background/50"
                     }`}
                   >
                     {t.icon}
-                    <span>{t.label}</span>
+                    <span className="w-full truncate text-center">{t.label}</span>
                   </button>
                 ))}
               </div>
