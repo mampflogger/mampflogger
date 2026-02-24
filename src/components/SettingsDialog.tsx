@@ -469,29 +469,33 @@ const SettingsDialog = ({
           <Settings className="w-4 h-4" />
         </Button>
       </DialogTrigger>
-      <DialogContent className="w-screen h-[100dvh] max-w-none max-h-[100dvh] rounded-none overflow-y-auto p-4 pt-5 sm:h-auto sm:max-h-[90vh] sm:max-w-lg sm:rounded-lg">
-        <DialogHeader className="pb-1">
-          <DialogTitle className="text-base">Einstellungen</DialogTitle>
-          <DialogDescription className="text-[11px]">Profil, Design, Lebensmittel und Datenmanagement</DialogDescription>
-        </DialogHeader>
+      <DialogContent className="w-screen h-[100dvh] max-w-none max-h-[100dvh] rounded-none flex flex-col p-0 sm:h-auto sm:max-h-[90vh] sm:max-w-lg sm:rounded-lg">
+        <div className="shrink-0 px-4 pt-5 pb-0">
+          <DialogHeader className="pb-1">
+            <DialogTitle className="text-base">Einstellungen</DialogTitle>
+            <DialogDescription className="text-[11px]">Profil, Design, Lebensmittel und Datenmanagement</DialogDescription>
+          </DialogHeader>
 
-        {/* Tab bar */}
-        <div className="flex gap-1 bg-muted rounded-lg p-0.5 mb-3">
-          {tabs.map((t) => (
-            <button
-              key={t.id}
-              onClick={() => setTab(t.id)}
-              className={`flex-1 flex items-center justify-center gap-1 px-2 py-1.5 rounded-md text-xs font-semibold transition-colors ${
-                tab === t.id
-                  ? "bg-background text-foreground shadow-sm"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              {t.icon}
-              <span className="hidden sm:inline">{t.label}</span>
-            </button>
-          ))}
+          {/* Tab bar */}
+          <div className="flex gap-1 bg-muted rounded-lg p-0.5 mt-3 mb-0">
+            {tabs.map((t) => (
+              <button
+                key={t.id}
+                onClick={() => setTab(t.id)}
+                className={`flex-1 flex items-center justify-center gap-1 px-2 py-1.5 rounded-md text-xs font-semibold transition-colors ${
+                  tab === t.id
+                    ? "bg-background text-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                {t.icon}
+                <span className="hidden sm:inline">{t.label}</span>
+              </button>
+            ))}
+          </div>
         </div>
+
+        <div className="flex-1 min-h-0 overflow-y-auto px-4 pt-3 pb-4">
 
         {/* Profile Tab */}
         {tab === "profile" && (
@@ -1186,6 +1190,7 @@ const SettingsDialog = ({
 
           </div>
         )}
+        </div>
       </DialogContent>
     </Dialog>
   );
