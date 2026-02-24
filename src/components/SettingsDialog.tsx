@@ -483,7 +483,7 @@ const SettingsDialog = ({
                 onClick={() => setTab(t.id)}
                 className={`flex-1 flex flex-col items-center justify-center gap-0.5 px-2 py-2 rounded-lg text-[10px] font-semibold transition-colors ${
                   tab === t.id
-                    ? "bg-card text-foreground shadow-sm"
+                    ? "bg-background text-foreground shadow-sm"
                     : "text-muted-foreground hover:text-foreground"
                 }`}
               >
