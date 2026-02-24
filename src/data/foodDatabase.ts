@@ -11,6 +11,7 @@ export const FOOD_CATEGORIES = [
   "Milchprodukte",
   "Süßwaren",
   "Sonstiges",
+  "Eigene",
 ] as const;
 
 export type FoodCategory = typeof FOOD_CATEGORIES[number];

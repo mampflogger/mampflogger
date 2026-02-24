@@ -280,7 +280,7 @@ const SettingsDialog = ({
       fiber: parseFloat(editFoodFib) || 0,
       defaultAmount: editFoodDefault ? parseFloat(editFoodDefault) || undefined : undefined,
       liquidMl: editFoodLiquid ? parseFloat(editFoodLiquid) || undefined : undefined,
-      category: editFoodCategory || undefined,
+      category: editFoodCategory || "Eigene",
     };
     updateFoodItem(editingFood.name, updated);
     const isNew = !editingFood.name;
