@@ -470,14 +470,14 @@ const SettingsDialog = ({
         </Button>
       </DialogTrigger>
       <DialogContent className="w-screen h-[100dvh] max-w-none max-h-[100dvh] rounded-none flex flex-col p-0 sm:h-auto sm:max-h-[90vh] sm:max-w-lg sm:rounded-lg">
-        <div className="shrink-0 px-4 pt-5 pb-0">
-          <DialogHeader className="pb-1">
+        <div className="shrink-0 px-4 pt-3 pb-0">
+          <DialogHeader className="pb-0">
             <DialogTitle className="text-base">Einstellungen</DialogTitle>
             <DialogDescription className="text-[11px]">Profil, Design, Lebensmittel und Datenmanagement</DialogDescription>
           </DialogHeader>
 
           {/* Tab bar */}
-          <div className="flex gap-1 bg-muted rounded-lg p-0.5 mt-3 mb-0">
+          <div className="flex gap-1 bg-muted rounded-lg p-0.5 mt-2 mb-0">
             {tabs.map((t) => (
               <button
                 key={t.id}
@@ -495,7 +495,7 @@ const SettingsDialog = ({
           </div>
         </div>
 
-        <div className="flex-1 min-h-0 overflow-y-auto px-4 pt-3 pb-4">
+        <div className="flex-1 min-h-0 overflow-y-auto px-4 pt-2 pb-2">
 
         {/* Profile Tab */}
         {tab === "profile" && (
