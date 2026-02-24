@@ -508,27 +508,27 @@ const SettingsDialog = ({
           <DialogTitle>Einstellungen</DialogTitle>
         </DialogHeader>
 
-        <div className="shrink-0 px-4 pt-3 pb-0">
-          {/* Tab bar */}
-          <div className="flex gap-1 border border-input rounded-xl p-1 mb-0 bg-card">
-            {tabs.map((t) => (
-              <button
-                key={t.id}
-                onClick={() => setTab(t.id)}
-                className={`flex-1 flex flex-col items-center justify-center gap-0.5 px-2 py-2 rounded-lg text-[10px] font-semibold transition-colors ${
-                  tab === t.id
-                    ? "bg-background text-foreground shadow-sm"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                {t.icon}
-                <span>{t.label}</span>
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div className="flex-1 min-h-0 flex flex-col overflow-y-auto px-4 pt-3 pb-2">
+        <main className="flex-1 min-h-0 overflow-y-auto">
+          <div className="max-w-lg mx-auto px-4 pb-8">
+            {/* Tab bar – same position/style as date nav card */}
+            <div className="glass-card rounded-xl p-3 my-3">
+              <div className="flex gap-1 border border-input rounded-xl p-1 bg-card">
+                {tabs.map((t) => (
+                  <button
+                    key={t.id}
+                    onClick={() => setTab(t.id)}
+                    className={`flex-1 flex flex-col items-center justify-center gap-0.5 px-2 py-2 rounded-lg text-[10px] font-semibold transition-colors ${
+                      tab === t.id
+                        ? "bg-background text-foreground shadow-sm"
+                        : "text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    {t.icon}
+                    <span>{t.label}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
 
         {/* Profile Tab */}
         {tab === "profile" && (
@@ -1229,7 +1229,8 @@ const SettingsDialog = ({
 
           </div>
         )}
-        </div>
+          </div>
+        </main>
       </DialogContent>
     </Dialog>
   );
