@@ -220,6 +220,7 @@ const Landing = () => {
         <div className="max-w-2xl mx-auto px-5 py-4 text-center text-xs text-muted-foreground flex flex-col items-center gap-0.5">
           <span>Keine Anmeldung · Keine Werbung · Keine Kosten</span>
           <VisitorCounter />
+          <a href="mailto:email@mampflogger.de" className="hover:text-foreground transition-colors">Kontakt: email@mampflogger.de</a>
           <span>© {new Date().getFullYear()} MampfLogger</span>
         </div>
       </footer>
