@@ -204,10 +204,10 @@ const Landing = () => {
           </p>
           <Button
             size="lg"
-            className="text-base px-8 py-5 font-bold shadow-lg w-auto"
+            className="text-base px-8 py-5 font-bold shadow-lg"
             onClick={() => navigate("/app")}
           >
-            Starte jetzt MampfLogger →
+            Jetzt starten →
           </Button>
         </div>
       </section>
