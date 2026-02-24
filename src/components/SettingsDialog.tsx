@@ -469,7 +469,7 @@ const SettingsDialog = ({
           <Settings className="w-4 h-4" />
         </Button>
       </DialogTrigger>
-      <DialogContent className="w-screen h-[100dvh] max-w-none max-h-[100dvh] rounded-none flex flex-col p-0 sm:h-auto sm:max-h-[90vh] sm:max-w-lg sm:rounded-lg">
+      <DialogContent className="w-screen h-[100dvh] max-w-none max-h-[100dvh] rounded-none flex flex-col p-0 sm:h-[85vh] sm:max-h-[90vh] sm:max-w-lg sm:rounded-lg">
         <div className="shrink-0 px-4 pt-8 pb-0">
           <DialogHeader className="pb-1">
             <DialogTitle className="text-base">Einstellungen</DialogTitle>
