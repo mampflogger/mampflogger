@@ -469,7 +469,7 @@ const SettingsDialog = ({
           <Settings className="w-4 h-4" />
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto p-4 pt-5">
+      <DialogContent className="w-screen h-[100dvh] max-w-none max-h-[100dvh] rounded-none overflow-y-auto p-4 pt-5 sm:h-auto sm:max-h-[90vh] sm:max-w-lg sm:rounded-lg">
         <DialogHeader className="pb-1">
           <DialogTitle className="text-base">Einstellungen</DialogTitle>
           <DialogDescription className="text-[11px]">Profil, Design, Lebensmittel und Datenmanagement</DialogDescription>
@@ -766,19 +766,27 @@ const SettingsDialog = ({
                       <ChevronRight className={`w-3.5 h-3.5 text-muted-foreground transition-transform shrink-0 ml-1 ${showCategoryDropdown ? "rotate-90" : ""}`} />
                     </button>
                     {showCategoryDropdown && (
-                      <div className="absolute left-0 right-0 z-[200] bottom-full mb-1 rounded-md border border-border bg-popover shadow-lg max-h-[60vh] overflow-y-auto">
-                        <div
-                          className={`px-3 py-2 text-xs cursor-pointer transition-colors ${!editFoodCategory ? "bg-primary/10 text-primary font-medium" : "hover:bg-muted/60"}`}
-                          onPointerDown={(e) => { e.preventDefault(); setEditFoodCategory(""); setShowCategoryDropdown(false); }}
-                        >–</div>
-                        {FOOD_CATEGORIES.map(cat => (
+                      <>
+                        <button
+                          type="button"
+                          className="fixed inset-0 z-[210] bg-transparent"
+                          aria-label="Kategorieauswahl schließen"
+                          onClick={() => setShowCategoryDropdown(false)}
+                        />
+                        <div className="fixed inset-x-2 top-2 bottom-2 z-[220] overflow-y-auto rounded-md border border-border bg-popover shadow-lg sm:absolute sm:inset-x-0 sm:top-auto sm:bottom-full sm:mb-1 sm:max-h-[60vh]">
                           <div
-                            key={cat}
-                            className={`px-3 py-2 text-xs cursor-pointer transition-colors ${editFoodCategory === cat ? "bg-primary/10 text-primary font-medium" : "hover:bg-muted/60"}`}
-                            onPointerDown={(e) => { e.preventDefault(); setEditFoodCategory(cat); setShowCategoryDropdown(false); }}
-                          >{cat}</div>
-                        ))}
-                      </div>
+                            className={`px-3 py-2 text-xs cursor-pointer transition-colors ${!editFoodCategory ? "bg-primary/10 text-primary font-medium" : "hover:bg-muted/60"}`}
+                            onPointerDown={(e) => { e.preventDefault(); setEditFoodCategory(""); setShowCategoryDropdown(false); }}
+                          >–</div>
+                          {FOOD_CATEGORIES.map(cat => (
+                            <div
+                              key={cat}
+                              className={`px-3 py-2 text-xs cursor-pointer transition-colors ${editFoodCategory === cat ? "bg-primary/10 text-primary font-medium" : "hover:bg-muted/60"}`}
+                              onPointerDown={(e) => { e.preventDefault(); setEditFoodCategory(cat); setShowCategoryDropdown(false); }}
+                            >{cat}</div>
+                          ))}
+                        </div>
+                      </>
                     )}
                   </div>
                   <div>

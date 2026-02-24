@@ -127,7 +127,7 @@ const ImportDialog = ({ onImport }: ImportDialogProps) => {
           <Upload className="w-4 h-4" />
         </Button>
       </DialogTrigger>
-      <DialogContent className="w-[calc(100vw-2rem)] sm:max-w-lg max-h-[80vh] flex flex-col p-4 sm:p-6 gap-3">
+      <DialogContent className="flex h-[100dvh] w-screen max-h-[100dvh] max-w-none flex-col gap-3 rounded-none p-4 sm:h-auto sm:max-h-[80vh] sm:max-w-lg sm:rounded-lg sm:p-6">
         <DialogHeader className="space-y-1">
           <DialogTitle className="flex items-center gap-2 text-base">
             <FileSpreadsheet className="w-4 h-4 text-primary" />
