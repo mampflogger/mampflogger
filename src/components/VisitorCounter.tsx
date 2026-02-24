@@ -37,11 +37,11 @@ const VisitorCounter = () => {
   }, []);
 
   return (
-    <div className="flex flex-col items-start gap-0.5">
+    <div className="flex flex-col items-center gap-0.5">
       {onlineCount > 0 && (
         <p className="text-[11px] text-muted-foreground tabular-nums flex items-center gap-1">
           <span className="inline-block w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-          {onlineCount} gerade online
+          {onlineCount} {onlineCount === 1 ? "Nutzer" : "Nutzer"} gerade online
         </p>
       )}
       {count !== null && (
