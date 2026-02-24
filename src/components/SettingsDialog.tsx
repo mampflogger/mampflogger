@@ -518,14 +518,14 @@ const SettingsDialog = ({
                 </div>
               </div>
               {currentProfile && bmrPreview && (
-                <div className="grid grid-cols-2 gap-2">
-                  <div className="rounded-lg bg-muted/50 px-2 py-1.5 flex items-center justify-between">
-                    <span className="text-[10px] text-muted-foreground font-medium">Grundumsatz (BMR)</span>
-                    <span className="text-base font-bold text-foreground">{bmrPreview} <span className="text-[10px] font-normal text-muted-foreground">kcal/Tag</span></span>
-                  </div>
+                <div className="grid grid-cols-3 gap-2">
                   <div className="rounded-lg bg-muted/50 px-2 py-1.5 flex items-center justify-between">
                     <span className="text-[10px] text-muted-foreground font-medium">BMI</span>
                     <span className="text-base font-bold text-foreground">{(currentProfile.weightKg / ((currentProfile.heightCm / 100) ** 2)).toFixed(1)} <span className="text-[10px] font-normal text-muted-foreground">kg/m²</span></span>
+                  </div>
+                  <div className="col-span-2 rounded-lg bg-muted/50 px-2 py-1.5 flex items-center justify-between">
+                    <span className="text-[10px] text-muted-foreground font-medium">Grundumsatz (BMR)</span>
+                    <span className="text-base font-bold text-foreground">{bmrPreview} <span className="text-[10px] font-normal text-muted-foreground">kcal/Tag</span></span>
                   </div>
                 </div>
               )}
