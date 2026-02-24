@@ -204,7 +204,7 @@ const Landing = () => {
           </p>
           <Button
             size="lg"
-            className="font-bold px-8"
+            className="text-base px-8 py-5 font-bold shadow-lg"
             onClick={() => navigate("/app")}
           >
             Starte jetzt MampfLogger →
