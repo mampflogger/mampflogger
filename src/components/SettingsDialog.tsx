@@ -470,20 +470,20 @@ const SettingsDialog = ({
         </Button>
       </DialogTrigger>
       <DialogContent className="w-screen h-[100dvh] max-w-none max-h-[100dvh] rounded-none flex flex-col p-0 md:h-[85vh] md:max-h-[90vh] md:max-w-lg md:rounded-lg">
-        <div className="shrink-0 px-4 pt-8 pb-0">
+        <div className="shrink-0 px-4 pt-[calc(env(safe-area-inset-top)+2rem)] pb-0">
           <DialogHeader className="pb-1">
             <DialogTitle className="text-base">Einstellungen</DialogTitle>
           </DialogHeader>
 
           {/* Tab bar */}
-          <div className="flex gap-1 border border-input rounded-xl p-1 mt-3 mb-0 bg-background">
+          <div className="flex gap-1 border border-input rounded-xl p-1 mt-3 mb-0 bg-card">
             {tabs.map((t) => (
               <button
                 key={t.id}
                 onClick={() => setTab(t.id)}
                 className={`flex-1 flex flex-col items-center justify-center gap-0.5 px-2 py-2 rounded-lg text-[10px] font-semibold transition-colors ${
                   tab === t.id
-                    ? "bg-background text-foreground shadow-sm"
+                    ? "bg-card text-foreground shadow-sm"
                     : "text-muted-foreground hover:text-foreground"
                 }`}
               >
