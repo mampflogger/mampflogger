@@ -1,3 +1,20 @@
+export const FOOD_CATEGORIES = [
+  "Fleisch&Wurst",
+  "Fisch&Meeresfrüchte",
+  "Käse",
+  "Nüsse&Samen",
+  "Gemüse",
+  "Brot&Teigwaren",
+  "Öle&Fette",
+  "Getränke",
+  "Obst",
+  "Milchprodukte",
+  "Süßwaren",
+  "Sonstiges",
+] as const;
+
+export type FoodCategory = typeof FOOD_CATEGORIES[number];
+
 export interface FoodItem {
   name: string;
   baseUnit: string; // "100g", "100ml", "1 Stk"
@@ -9,8 +26,145 @@ export interface FoodItem {
   fiber: number;
   defaultAmount?: number; // Standardmenge, z.B. 125g für eine Avocado
   liquidMl?: number; // Flüssigkeit in ml pro baseAmount (z.B. 100 bei 100ml-Basis)
+  category?: FoodCategory;
   isUserCreated?: boolean; // Vom User selbst angelegt (niemals durch Remote überschreiben)
   isRemote?: boolean;      // Vom Remote-Server geladen
+}
+
+// Category mapping for default foods
+const FOOD_CATEGORY_MAP: Record<string, FoodCategory> = {
+  "7UP": "Getränke", "Ananas": "Obst", "Apfel": "Obst", "Apfelsaft": "Getränke", "Apfelschorle": "Getränke",
+  "Appenzeller 50 %": "Käse", "Aprikose": "Obst", "Aubergine": "Gemüse", "Austernpilze": "Gemüse",
+  "Avocado": "Gemüse", "Backkakao": "Süßwaren", "Backpulver": "Sonstiges", "Banane": "Obst",
+  "Beinscheibe (Rind)": "Fleisch&Wurst", "Bergkäse 45 %": "Käse", "Bierschinken": "Fleisch&Wurst",
+  "Bionade Holunder": "Getränke", "Birne": "Obst", "Bitter Lemon": "Getränke", "Blattspinat": "Gemüse",
+  "Blumenkohl": "Gemüse", "Blutwurst": "Fleisch&Wurst", "Bratwurst (fein)": "Fleisch&Wurst",
+  "Brie 50 %": "Käse", "Brokkoli": "Gemüse", "Brombeeren": "Obst", "Brotchips (Knoblauch)": "Süßwaren",
+  "Bulgur": "Brot&Teigwaren", "Butter": "Öle&Fette", "Cabanossi": "Fleisch&Wurst",
+  "Camembert 30 %": "Käse", "Camembert 45 %": "Käse", "Camembert 60 %": "Käse",
+  "Cashewkerne": "Nüsse&Samen", "Cervelatwurst": "Fleisch&Wurst", "Champignons": "Gemüse",
+  "Cheddar 50 %": "Käse", "Cherrytomaten": "Gemüse", "Chia-Samen": "Nüsse&Samen",
+  "Chinakohl": "Gemüse", "Chorizo": "Fleisch&Wurst", "Clementine": "Obst", "Club Mate": "Getränke",
+  "Coca-Cola Classic": "Getränke", "Coca-Cola Zero": "Getränke", "Couscous": "Brot&Teigwaren",
+  "Dorade": "Fisch&Meeresfrüchte", "Dr Pepper": "Getränke", "Drachenfrucht": "Obst",
+  "Edamer 30 %": "Käse", "Edamer 40 %": "Käse", "Eier (XL)": "Sonstiges",
+  "Eistee Pfirsich": "Getränke", "Emmentaler 45 %": "Käse",
+  "Entenbrust (mit Haut)": "Fleisch&Wurst", "Entenkeule (mit Haut)": "Fleisch&Wurst",
+  "Entrecôte (Rind)": "Fleisch&Wurst", "Erdbeeren": "Obst", "Erdnüsse": "Nüsse&Samen",
+  "Erdnussöl": "Öle&Fette", "Fanta": "Getränke", "Fassbrause": "Getränke", "Feige": "Obst",
+  "Feldsalat": "Gemüse", "Fenchel": "Gemüse", "Feta": "Käse", "Feta 45 %": "Käse",
+  "Fleischwurst": "Fleisch&Wurst", "Flussbarsch": "Fisch&Meeresfrüchte",
+  "Frischkäse 0,2 %": "Milchprodukte", "Frischkäse 20 %": "Milchprodukte",
+  "Frischkäse 60 %": "Milchprodukte", "Fritz-Kola": "Getränke", "Fritz-Limo": "Getränke",
+  "Frühkartoffeln": "Gemüse", "Frühstücksfleisch": "Fleisch&Wurst",
+  "Garnele (Shrimps)": "Fisch&Meeresfrüchte", "Gänsebrust (mit Haut)": "Fleisch&Wurst",
+  "Geflügelsalami": "Fleisch&Wurst", "Gelbwurst": "Fleisch&Wurst", "Gemüsebrühe": "Gemüse",
+  "Ginger Ale": "Getränke", "Gemüsezwiebeln": "Gemüse", "Gorgonzola 48 %": "Käse",
+  "Gouda 30 %": "Käse", "Gouda 45 %": "Käse", "Granatapfel": "Obst",
+  "Granatapfelsaft": "Getränke", "Grapefruit": "Obst", "Griech. Joghurt (2%)": "Milchprodukte",
+  "Grünkohl": "Gemüse", "Gurke": "Gemüse", "Hähnchenbrustfilet": "Fleisch&Wurst",
+  "Hähncheninnenfilet": "Fleisch&Wurst", "Hähnchenkeule (mit Haut)": "Fleisch&Wurst",
+  "Halloumi 43 %": "Käse", "Hanföl": "Öle&Fette", "Hanfsamen (geschält)": "Nüsse&Samen",
+  "Hamburger Patty (Rind)": "Fleisch&Wurst", "Harzer Käse 0,5 %": "Käse",
+  "Haselnüsse": "Nüsse&Samen", "Heidelbeeren": "Obst", "Hefe (frisch)": "Sonstiges",
+  "Heilbutt (weiß)": "Fisch&Meeresfrüchte", "Heringsfilet (Nixe)": "Fisch&Meeresfrüchte",
+  "Himbeeren": "Obst", "Hirtenkäse 45 %": "Käse", "Honig": "Süßwaren", "Honigmelone": "Obst",
+  "Hüttenkäse": "Milchprodukte", "Hüttenkäse 0,8 %": "Milchprodukte",
+  "Hüttenkäse 4 %": "Milchprodukte", "Hüttenkäse Bio": "Milchprodukte",
+  "Jagdwurst": "Fleisch&Wurst", "Joghurt 0,1 %": "Milchprodukte",
+  "Joghurt 1,5 %": "Milchprodukte", "Joghurt 3,5 %": "Milchprodukte",
+  "Johannisbeeren": "Obst", "Kabeljau (Dorsch)": "Fisch&Meeresfrüchte",
+  "Kaffee (Milch)": "Getränke", "Karottensaft": "Getränke", "Kaffee (schwarz)": "Getränke",
+  "Kakao 100%": "Süßwaren", "Kakaopulver (rein)": "Süßwaren", "Kaki": "Obst",
+  "Kalbsleber": "Fleisch&Wurst", "Kalbsleberwurst": "Fleisch&Wurst",
+  "Kalbsrücken": "Fleisch&Wurst", "Kalbsschnitzel": "Fleisch&Wurst",
+  "Kaninchenfleisch": "Fleisch&Wurst", "Karotten": "Gemüse",
+  "Karpfen": "Fisch&Meeresfrüchte", "Kartoffeln": "Gemüse",
+  "Kasseler Lachs": "Fleisch&Wurst", "Kasseler Nacken": "Fleisch&Wurst",
+  "Kassler (Aufschnitt)": "Fleisch&Wurst", "Kiwi": "Obst", "Kochschinken": "Fleisch&Wurst",
+  "Kohlrabi": "Gemüse", "Kokosnuss": "Obst", "Kokosnusswasser": "Getränke",
+  "Kokosraspel": "Süßwaren", "Kokosöl": "Öle&Fette", "Krakauer": "Fleisch&Wurst",
+  "Kräuterseitlinge": "Gemüse", "Kürbiskerne": "Nüsse&Samen", "Kürbiskernöl": "Öle&Fette",
+  "Lammfilet": "Fleisch&Wurst", "Lammkeule": "Fleisch&Wurst", "Lammkotelett": "Fleisch&Wurst",
+  "Lammrücken": "Fleisch&Wurst", "Landjäger": "Fleisch&Wurst", "Lauchzwiebel": "Gemüse",
+  "Leberwurst (fein)": "Fleisch&Wurst", "Leerdammer 45 %": "Käse", "Leinsamenöl": "Öle&Fette",
+  "Limette": "Obst", "Litschi": "Obst", "Lupinenschrot": "Brot&Teigwaren",
+  "Lyoner": "Fleisch&Wurst", "Macadamianüsse": "Nüsse&Samen",
+  "Magerquark 0,2 %": "Milchprodukte", "Makrele": "Fisch&Meeresfrüchte",
+  "Malzbier": "Getränke", "Mandarine": "Obst", "Mandeln": "Nüsse&Samen", "Mango": "Obst",
+  "Maracuja": "Obst", "Matjesfilet": "Fisch&Meeresfrüchte", "Melone Cantaloupe": "Obst",
+  "Mezzo Mix": "Getränke", "Melone Wasser": "Obst", "Mettwurst": "Fleisch&Wurst",
+  "Milch 0,1 %": "Milchprodukte", "Miesmuscheln": "Fisch&Meeresfrüchte",
+  "Mineralwasser": "Getränke", "Milch 1,5 %": "Milchprodukte", "Milch (3,8%)": "Milchprodukte",
+  "Milch 3,5 %": "Milchprodukte", "Milchkaffee": "Getränke", "Mini Harzer": "Käse",
+  "Marmelade": "Süßwaren", "Mehl": "Brot&Teigwaren", "Möhren": "Gemüse",
+  "Monster Energy": "Getränke", "Mortadella": "Fleisch&Wurst", "Mountain Dew": "Getränke",
+  "Multivitaminsaft": "Getränke", "Mozzarella 8 %": "Käse", "Mozzarella 20 %": "Käse",
+  "Nektarine": "Obst", "Norwegischer Lachs": "Fisch&Meeresfrüchte",
+  "Nudeln": "Brot&Teigwaren", "Nürnberger Rostbratwurst": "Fleisch&Wurst",
+  "Olivenöl": "Öle&Fette", "Orange": "Obst", "Orangensaft": "Getränke", "Papaya": "Obst",
+  "Paprika (grün/gelb)": "Gemüse", "Paprika (rot)": "Gemüse",
+  "Paprikalyoner": "Fleisch&Wurst", "Paranüsse": "Nüsse&Samen", "Parmesan 32 %": "Käse",
+  "Pastinaken": "Gemüse", "Paulaner Spezi": "Getränke", "Pekannüsse": "Nüsse&Samen",
+  "Pepsi": "Getränke", "Pfirsich": "Obst", "Pflaume": "Obst", "Physalis": "Obst",
+  "Pinienkerne": "Nüsse&Samen", "Pistazien": "Nüsse&Samen", "Porree (Lauch)": "Gemüse",
+  "Presssack (rot)": "Fleisch&Wurst", "Proteinpulver": "Sonstiges",
+  "Putenbrust": "Fleisch&Wurst", "Putenbrust (Aufschnitt)": "Fleisch&Wurst",
+  "Putenfleisch": "Fleisch&Wurst", "Putenoberkeule": "Fleisch&Wurst",
+  "Putensteak": "Fleisch&Wurst", "Quark 20 %": "Milchprodukte",
+  "Quark 40 %": "Milchprodukte", "Quinoa": "Brot&Teigwaren", "Quitte": "Obst",
+  "Radieschen": "Gemüse", "Radler (alkoholfrei)": "Getränke", "Rapsöl": "Öle&Fette",
+  "Red Bull": "Getränke", "Red Bull Energy": "Getränke",
+  "Regenbogen-Forelle": "Fisch&Meeresfrüchte", "Reis": "Brot&Teigwaren",
+  "Rhabarber": "Gemüse", "Rotbarsch": "Fisch&Meeresfrüchte", "Ricotta 13 %": "Käse",
+  "Rinderfilet": "Fleisch&Wurst", "Rindergulasch": "Fleisch&Wurst",
+  "Rinderhackfleisch": "Fleisch&Wurst", "Rinderhüfte": "Fleisch&Wurst",
+  "Rindersalami": "Fleisch&Wurst", "Roastbeef": "Fleisch&Wurst", "Romanasalat": "Gemüse",
+  "Rosenkohl": "Gemüse", "Rote Bete (Glas)": "Gemüse", "Rote Bete (vorgegart)": "Gemüse",
+  "Rotkohl": "Gemüse", "Salami": "Fleisch&Wurst", "Sanddornbeeren": "Obst",
+  "Sardinen (abgetr.)": "Fisch&Meeresfrüchte", "Sauerkirschen": "Obst",
+  "Sauerkraut": "Gemüse", "Schafskäse 45 %": "Käse",
+  "Schinken (gekocht)": "Fleisch&Wurst",
+  "Schokolade Dunkel (70%)": "Süßwaren", "Schokolade Dunkel (85%)": "Süßwaren",
+  "Schokolade Dunkel (100%)": "Süßwaren", "Schokolade Erdbeer-Joghurt": "Süßwaren",
+  "Schokolade Haselnuss": "Süßwaren", "Schokolade Keks & Crunch": "Süßwaren",
+  "Schokolade Mandelsplitter": "Süßwaren", "Schokolade Marzipan": "Süßwaren",
+  "Schokolade Noisette": "Süßwaren", "Schokolade Nougat": "Süßwaren",
+  "Schokolade Vollmilch": "Süßwaren", "Schokolade Weiß": "Süßwaren",
+  "Scholle": "Fisch&Meeresfrüchte", "Schinkenpeperoni": "Gemüse",
+  "Schwarzwälder Schinken": "Fleisch&Wurst", "Schweinebauch": "Fleisch&Wurst",
+  "Schweinefilet": "Fleisch&Wurst", "Schweinegeschnetzeltes": "Fleisch&Wurst",
+  "Schweinegulasch": "Fleisch&Wurst", "Schweinekotelett": "Fleisch&Wurst",
+  "Schweinenacken": "Fleisch&Wurst", "Schweineschnitzel (Oberschale)": "Fleisch&Wurst",
+  "Schweppes Tonic": "Getränke", "Seelachs": "Fisch&Meeresfrüchte",
+  "Sellerie (Stauden)": "Gemüse", "Senf": "Sonstiges",
+  "Serrano Schinken": "Fleisch&Wurst", "Sesamöl": "Öle&Fette",
+  "Sonnenblumenkerne": "Nüsse&Samen", "Sonnenblumenöl": "Öle&Fette",
+  "Spezi": "Getränke", "Spitzkohl": "Gemüse", "Sprite": "Getränke",
+  "Stachelbeeren": "Obst", "Sucuk": "Fleisch&Wurst", "Suppengrün": "Gemüse",
+  "Süßkartoffeln": "Gemüse", "Süßkirschen": "Obst", "Tafelspitz (Rind)": "Fleisch&Wurst",
+  "Teewurst": "Fleisch&Wurst", "Thunfisch (Dose)": "Fisch&Meeresfrüchte",
+  "Thunfisch (frisch)": "Fisch&Meeresfrüchte", "Tilsiter 30 %": "Käse",
+  "Tilsiter 45 %": "Käse", "Tintenfisch (Calamari)": "Fisch&Meeresfrüchte",
+  "TK-Heidelbeeren": "Obst", "Tomaten": "Gemüse", "Tomatenketchup": "Süßwaren",
+  "Tomatensaft": "Getränke", "Tonic Water": "Getränke", "Traubenkernöl": "Öle&Fette",
+  "Traubensaft": "Getränke", "Vollkornbrot": "Brot&Teigwaren",
+  "Vollkornmehl": "Brot&Teigwaren", "Vollkornnudeln": "Brot&Teigwaren",
+  "Walnüsse": "Nüsse&Samen", "Walnussöl": "Öle&Fette", "Wasser": "Getränke",
+  "Weintrauben": "Obst", "Weintrauben rot": "Obst", "Weiße Bohnen (Dose)": "Gemüse",
+  "Weiße Bohnen (Lidl)": "Gemüse", "Weißkohl": "Gemüse",
+  "Wels": "Fisch&Meeresfrüchte", "Weißwurst": "Fleisch&Wurst",
+  "Wiener Würstchen": "Fleisch&Wurst", "Wirsing": "Gemüse", "Ziegenkäse": "Käse",
+  "Ziegenkäse 45 %": "Käse", "Zitrone": "Obst", "Zitronensaft": "Getränke",
+  "Zucchini": "Gemüse", "Zucker": "Süßwaren", "Zwetschge": "Obst",
+  "Zwiebelmettwurst": "Fleisch&Wurst", "Zander": "Fisch&Meeresfrüchte",
+  "Zwiebeln": "Gemüse", "Gekochter Schinken": "Fleisch&Wurst",
+  "Fanta Orange": "Getränke", "Poree (Lauch)": "Gemüse", "Testnahrung": "Sonstiges",
+};
+
+/** Lookup category for a food name */
+export function getFoodCategory(name: string): FoodCategory | undefined {
+  return FOOD_CATEGORY_MAP[name];
 }
 
 const FOOD_DB_KEY = "mampflogger-food-database";
@@ -390,7 +544,9 @@ function loadFoodDatabase(): FoodItem[] {
 
     if (!raw) {
       // First run: filter out any previously deleted items
-      const initial = DEFAULT_FOODS.filter(f => !deletedFoods.has(f.name.toLowerCase()));
+      const initial = DEFAULT_FOODS
+        .filter(f => !deletedFoods.has(f.name.toLowerCase()))
+        .map(f => ({ ...f, category: f.category || FOOD_CATEGORY_MAP[f.name] }));
       localStorage.setItem(FOOD_DB_KEY, JSON.stringify(initial));
       return [...initial];
     }
@@ -416,15 +572,24 @@ function loadFoodDatabase(): FoodItem[] {
       }
       const existing = storedMap.get(key);
       if (!existing) {
-        storedMap.set(key, { ...def });
+        storedMap.set(key, { ...def, category: FOOD_CATEGORY_MAP[def.name] });
         changed = true;
       } else if (!existing.isUserCreated) {
         const updated: FoodItem = {
           ...def,
+          category: FOOD_CATEGORY_MAP[def.name] || existing.category,
           ...(existing.defaultAmount !== undefined ? { defaultAmount: existing.defaultAmount } : {}),
           isUserCreated: false,
         };
         storedMap.set(key, updated);
+        changed = true;
+      }
+    }
+
+    // Migrate: apply categories to items that don't have one yet
+    for (const [key, item] of storedMap) {
+      if (!item.category && FOOD_CATEGORY_MAP[item.name]) {
+        item.category = FOOD_CATEGORY_MAP[item.name];
         changed = true;
       }
     }

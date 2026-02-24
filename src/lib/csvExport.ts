@@ -65,7 +65,7 @@ export function exportEntriesToCsv(entries: NutritionEntry[]): void {
 
 /** Export food database */
 export function exportFoodDatabaseCsv(): void {
-  const header = "Lebensmittel;Einheit;kcal;PRO;FAT;KH;FIB;Standard;LiquidMl";
+  const header = "Lebensmittel;Einheit;kcal;PRO;FAT;KH;FIB;Standard;LiquidMl;Kategorie";
   const rows = foodDatabase.map((f) =>
     [
       `"${f.name.replace(/"/g, '""')}"`,
@@ -77,6 +77,7 @@ export function exportFoodDatabaseCsv(): void {
       f.fiber,
       f.defaultAmount || "",
       f.liquidMl !== undefined ? f.liquidMl : "",
+      f.category || "",
     ].join(";")
   );
 
