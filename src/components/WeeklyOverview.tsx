@@ -260,7 +260,7 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [] 
   };
 
   return (
-    <div className="space-y-4 animate-fade-in">
+    <div className="space-y-3 animate-fade-in">
       {/* Stats Row */}
       <div className="glass-card rounded-xl p-3">
         <h2 className="text-[10px] font-semibold text-muted-foreground mb-2 uppercase tracking-wider">Übersicht</h2>

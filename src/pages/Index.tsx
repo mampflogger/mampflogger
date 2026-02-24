@@ -374,7 +374,7 @@ const Index = () => {
 
         {activeTab === "log" ? (
           <>
-            <div className="glass-card rounded-xl p-3 mb-4">
+            <div className="glass-card rounded-xl p-3 mb-3">
               <h2 className="text-[10px] font-semibold text-muted-foreground mb-2 uppercase tracking-wider">
                 {editingEntry ? "Eintrag bearbeiten" : "Neuer Eintrag"}
               </h2>
@@ -388,7 +388,7 @@ const Index = () => {
             </div>
 
             {todayEntries.length > 0 && (
-              <div className="glass-card rounded-xl p-3 mb-4">
+              <div className="glass-card rounded-xl p-3 mb-3">
                 <h2 className="text-[10px] font-semibold text-muted-foreground mb-2 uppercase tracking-wider">
                   Makro Nährstoffverteilung
                 </h2>
@@ -396,7 +396,7 @@ const Index = () => {
               </div>
             )}
 
-            <div className="glass-card rounded-xl p-3 mb-4">
+            <div className="glass-card rounded-xl p-3 mb-3">
               <h2 className="text-[10px] font-semibold text-muted-foreground mb-2 uppercase tracking-wider">
                 Tagesübersicht
                 {todayEntries.length > 0 && (
@@ -409,7 +409,7 @@ const Index = () => {
             </div>
 
             {profile && (
-              <div className="glass-card rounded-xl p-3 mb-4">
+              <div className="glass-card rounded-xl p-3 mb-3">
                 <h2 className="text-[10px] font-semibold text-muted-foreground mb-2 uppercase tracking-wider">
                   Activity
                 </h2>
@@ -428,7 +428,7 @@ const Index = () => {
             )}
 
             {profile && (
-              <div className="glass-card rounded-xl p-3 mb-4">
+              <div className="glass-card rounded-xl p-3 mb-3">
                 <h2 className="text-[10px] font-semibold text-muted-foreground mb-2 uppercase tracking-wider">
                   Kalorienbilanz
                 </h2>
