@@ -476,7 +476,7 @@ const SettingsDialog = ({
           </DialogHeader>
 
           {/* Tab bar */}
-          <div className="flex gap-1 border border-input rounded-xl p-1 mt-3 mb-0 bg-muted/50">
+          <div className="flex gap-1 border border-input rounded-xl p-1 mt-3 mb-0 bg-background">
             {tabs.map((t) => (
               <button
                 key={t.id}
@@ -494,7 +494,7 @@ const SettingsDialog = ({
           </div>
         </div>
 
-        <div className={`flex-1 min-h-0 flex flex-col px-4 pt-3 pb-2 ${tab === "food" ? "" : "overflow-y-auto"}`}>
+        <div className="flex-1 min-h-0 flex flex-col overflow-y-auto px-4 pt-3 pb-2">
 
         {/* Profile Tab */}
         {tab === "profile" && (
