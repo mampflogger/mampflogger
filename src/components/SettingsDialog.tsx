@@ -14,7 +14,7 @@ import { Label } from "@/components/ui/label";
 import {
   Settings, Sun, Moon, Trash2, Upload, Download, UserCircle, Save, Check,
   AlertCircle, FileSpreadsheet, UtensilsCrossed, Palette, BarChart3, FileUp,
-  ChevronLeft, ChevronRight, RefreshCw, List, Sparkles, Loader2,
+  ChevronLeft, ChevronRight, RefreshCw, List, Sparkles, Loader2, HardDrive,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { UserProfile, calculateBMR } from "@/types/profile";
@@ -120,6 +120,7 @@ const SettingsDialog = ({
   const [activityPreview, setActivityPreview] = useState<BookedActivity[] | null>(null);
   const [balanceHint, setBalanceHint] = useState(false);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
+  const backupInputRef = React.useRef<HTMLInputElement>(null);
   const deleteToRef = React.useRef<HTMLInputElement>(null);
   const deletePreviewBtnRef = React.useRef<HTMLButtonElement>(null);
 
@@ -1118,6 +1119,95 @@ const SettingsDialog = ({
               </div>
             </div>
 
+
+            {/* BACKUP Section */}
+            <div className="glass-card rounded-xl p-3 space-y-1.5">
+              <div className="flex items-center gap-1.5">
+                <HardDrive className="w-3.5 h-3.5 text-primary" />
+                <h3 className="text-[11px] font-bold uppercase tracking-wider text-foreground">Backup</h3>
+              </div>
+              <div className="grid grid-cols-2 gap-1.5">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-9 text-xs gap-1.5"
+                  onClick={() => {
+                    const BACKUP_KEYS = [
+                      "nutrition-log-profile",
+                      "nutrition-log-entries",
+                      "mampflogger-food-database",
+                      "mampflogger-deleted-foods",
+                      "mampflogger-booked-activities",
+                      "mampflogger-activity-types",
+                      "mampflogger-activity-types-version",
+                      "mampflogger-units",
+                      "mampflogger-food-usage",
+                      "mampflogger-dark-mode",
+                      "mampflogger-color-theme",
+                      "mampflogger-remote-url",
+                      "mampflogger-remote-sync",
+                      "mampflogger-last-activity-type",
+                    ];
+                    const backup: Record<string, string | null> = {};
+                    BACKUP_KEYS.forEach((key) => {
+                      const val = localStorage.getItem(key);
+                      if (val !== null) backup[key] = val;
+                    });
+                    const blob = new Blob([JSON.stringify(backup, null, 2)], { type: "application/json" });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement("a");
+                    a.href = url;
+                    a.download = `mampflogger-backup-${new Date().toISOString().slice(0, 10)}.json`;
+                    a.click();
+                    URL.revokeObjectURL(url);
+                    toast.success("Backup erstellt und heruntergeladen!");
+                  }}
+                >
+                  <Download className="w-3.5 h-3.5" />
+                  Backup erstellen
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-9 text-xs gap-1.5"
+                  onClick={() => backupInputRef.current?.click()}
+                >
+                  <Upload className="w-3.5 h-3.5" />
+                  Backup laden
+                </Button>
+              </div>
+              <input
+                ref={backupInputRef}
+                type="file"
+                accept=".json"
+                className="hidden"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (!file) return;
+                  const reader = new FileReader();
+                  reader.onload = (ev) => {
+                    try {
+                      const data = JSON.parse(ev.target?.result as string);
+                      if (typeof data !== "object" || data === null) throw new Error("Ungültig");
+                      let count = 0;
+                      Object.entries(data).forEach(([key, value]) => {
+                        if (typeof value === "string") {
+                          localStorage.setItem(key, value);
+                          count++;
+                        }
+                      });
+                      toast.success(`Backup wiederhergestellt (${count} Schlüssel). App wird neu geladen…`);
+                      setTimeout(() => window.location.reload(), 1200);
+                    } catch {
+                      toast.error("Ungültige Backup-Datei.");
+                    }
+                  };
+                  reader.readAsText(file);
+                  if (backupInputRef.current) backupInputRef.current.value = "";
+                }}
+              />
+              <p className="text-[9px] text-muted-foreground">Speichert Profil, Protokoll, Lebensmittel, Aktivitäten & Einstellungen.</p>
+            </div>
 
             {/* DELETE Section */}
             <div className="glass-card rounded-xl p-3 space-y-1.5">
