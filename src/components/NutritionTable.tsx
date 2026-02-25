@@ -35,7 +35,7 @@ const NutritionTable = ({ entries, onDelete, onEntryClick }: NutritionTableProps
             <tr className="border-b border-border">
               <th className="text-left py-1 pr-1 font-semibold text-muted-foreground">Zeit</th>
               <th className="text-left py-1 pr-1 font-semibold text-muted-foreground">Lebensmittel</th>
-              <th className="text-right py-1 px-0.5 font-semibold text-muted-foreground"><th className="text-right py-1 px-0.5 font-semibold text-muted-foreground">g/ml</th></th>
+              <th className="text-right py-1 px-0.5 font-semibold text-muted-foreground">g/ml</th>
               <th className="text-right py-1 px-0.5 font-semibold text-muted-foreground">kcal</th>
               <th className="text-right py-1 px-0.5 font-semibold" style={{ color: MACRO_COLORS.pro }}>PRO</th>
               <th className="text-right py-1 px-0.5 font-semibold" style={{ color: MACRO_COLORS.fat }}>FAT</th>
@@ -53,7 +53,7 @@ const NutritionTable = ({ entries, onDelete, onEntryClick }: NutritionTableProps
               >
                 <td className="py-1 pr-1 text-muted-foreground whitespace-nowrap">{entry.time}</td>
                 <td className="py-1 pr-1 font-medium max-w-[80px] truncate">{entry.food}</td>
-                <td className="py-1 px-0.5 text-right text-muted-foreground">{entry.amount}</td>
+                <td className="py-1 px-0.5 text-right text-muted-foreground tabular-nums">{entry.amount}</td>
                 <td className="py-1 px-0.5 text-right font-semibold">{Math.round(entry.calories)}</td>
                 <td className="py-1 px-0.5 text-right">{Math.round(entry.protein)}</td>
                 <td className="py-1 px-0.5 text-right">{Math.round(entry.fat)}</td>
