@@ -15,9 +15,11 @@ interface NutritionFormProps {
   editingEntry?: NutritionEntry | null;
   onCancelEdit?: () => void;
   onNewFood?: () => void;
+  externalMicButton?: boolean; // If true, don't render internal mic button
+  onVoiceStateChange?: (isListening: boolean, isSupported: boolean, toggle: () => void) => void;
 }
 
-const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewFood }: NutritionFormProps) => {
+const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewFood, externalMicButton, onVoiceStateChange }: NutritionFormProps) => {
   const now = new Date();
   const currentTime = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
 
@@ -103,6 +105,14 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []),
   });
+
+  // Expose voice state to parent
+  useEffect(() => {
+    if (onVoiceStateChange) {
+      const toggle = () => voice.isListening ? voice.stop() : voice.start();
+      onVoiceStateChange(voice.isListening, voice.isSupported, toggle);
+    }
+  }, [voice.isListening, voice.isSupported, onVoiceStateChange]);
 
   // Load editing entry into form
   useEffect(() => {
@@ -323,8 +333,8 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
 
   return (
     <form onSubmit={handleSubmit} className="animate-fade-in relative">
-      {/* Mic button top-right, absolutely positioned */}
-      {voice.isSupported && (
+      {/* Mic button top-right, absolutely positioned (only if not externally rendered) */}
+      {!externalMicButton && voice.isSupported && (
         <button
           type="button"
           onClick={() => voice.isListening ? voice.stop() : voice.start()}
