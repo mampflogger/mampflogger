@@ -792,7 +792,7 @@ const SettingsDialog = ({
                     <Input type="number" inputMode="decimal" value={editFoodFib} onChange={(e) => setEditFoodFib(e.target.value)} className="h-9 text-xs" />
                   </div>
                 </div>
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-3 gap-2 -mt-1">
                   <div className="relative">
                     <Label className="text-[10px] text-muted-foreground">Kategorie</Label>
                     <button
@@ -838,9 +838,9 @@ const SettingsDialog = ({
                  </div>
                 <div>
                   <Label className="text-[10px] text-muted-foreground">Zusatzinfo</Label>
-                  <Textarea value={editFoodNotes} onChange={(e) => setEditFoodNotes(e.target.value)} placeholder="z.B. inkl. Dressing, Nutri-Score E, Tipps…" className="min-h-[60px] text-xs" />
+                  <Textarea value={editFoodNotes} onChange={(e) => setEditFoodNotes(e.target.value)} placeholder="z.B. vegan, Nutri Score, Haltungsform, Bio usw." className="min-h-[60px] text-xs" />
                 </div>
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-3 gap-2 mt-1">
                   <Button variant="outline" onClick={() => { handleSaveFood(); handleNewFood(); }} className="h-9 text-xs">
                     + Nächstes
                   </Button>
