@@ -914,7 +914,7 @@ const SettingsDialog = ({
                     spellCheck={false}
                   />
                   {/* Desktop: classic table header */}
-                  <table className="w-full text-[10px] hidden md:table">
+                  <table className="w-full text-[10px]">
                     <thead>
                       <tr className="border-b border-border">
                         <th className="text-left py-1 pr-1 font-semibold text-muted-foreground">Lebensmittel</th>
@@ -931,59 +931,61 @@ const SettingsDialog = ({
                 </div>
                 {/* Scrollable list body */}
                 <div className="flex-1 min-h-0 overflow-y-auto overflow-x-auto -mx-1 px-1">
-                  {/* Mobile: two-line layout */}
-                  <div className="md:hidden">
-                    {filteredFoods.map((f, idx) => (
-                      <div
-                        key={f.name}
-                        className="border-b border-border/50 hover:bg-muted/30 cursor-pointer transition-colors py-1.5"
-                        onClick={() => handleEditFood(f, idx)}
-                      >
-                        <div className="flex items-center justify-between">
-                          <span className="font-medium text-[11px] truncate flex-1 mr-2">{f.name}</span>
-                          <button
-                            onClick={(e) => { e.stopPropagation(); handleRemoveFood(f.name); }}
-                            className="p-0.5 rounded text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors shrink-0"
-                          >
-                            <Trash2 className="w-3 h-3" />
-                          </button>
-                        </div>
-                        <div className="flex gap-2 text-[10px] text-muted-foreground mt-0.5">
-                          <span>{f.baseUnit}</span>
-                          <span className="font-semibold text-foreground">{f.calories} kcal</span>
-                          <span style={{ color: "hsl(var(--macro-pro))" }}>{f.protein}P</span>
-                          <span style={{ color: "hsl(var(--macro-fat))" }}>{f.fat}F</span>
-                          <span style={{ color: "hsl(var(--macro-kh))" }}>{f.carbs}K</span>
-                          <span style={{ color: "hsl(var(--macro-fib))" }}>{f.fiber}Fi</span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                  {/* Desktop: classic table rows */}
-                  <table className="w-full text-[10px] hidden md:table">
+                  <table className="w-full text-[10px]">
                     <tbody>
                       {filteredFoods.map((f, idx) => (
-                        <tr
-                          key={f.name}
-                          className="border-b border-border/50 hover:bg-muted/30 cursor-pointer transition-colors"
-                          onClick={() => handleEditFood(f, idx)}
-                        >
-                          <td className="py-1 pr-1 font-medium max-w-[90px] truncate">{f.name}</td>
-                          <td className="py-1 px-0.5 text-right text-muted-foreground whitespace-nowrap">{f.baseUnit}</td>
-                          <td className="py-1 px-0.5 text-right font-semibold">{f.calories}</td>
-                          <td className="py-1 px-0.5 text-right">{f.protein}</td>
-                          <td className="py-1 px-0.5 text-right">{f.fat}</td>
-                          <td className="py-1 px-0.5 text-right">{f.carbs}</td>
-                          <td className="py-1 px-0.5 text-right">{f.fiber}</td>
-                          <td className="py-1 pl-1 pr-0">
-                            <button
-                              onClick={(e) => { e.stopPropagation(); handleRemoveFood(f.name); }}
-                              className="p-0.5 rounded text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
-                            >
-                              <Trash2 className="w-3 h-3" />
-                            </button>
-                          </td>
-                        </tr>
+                        <React.Fragment key={f.name}>
+                          {/* Mobile: row 1 = name spanning all columns */}
+                          <tr
+                            className="border-0 md:hidden hover:bg-muted/30 cursor-pointer transition-colors"
+                            onClick={() => handleEditFood(f, idx)}
+                          >
+                            <td colSpan={7} className="pt-1.5 pb-0 pr-1 font-medium text-[11px]">{f.name}</td>
+                            <td className="pt-1.5 pb-0 pl-1 pr-0">
+                              <button
+                                onClick={(e) => { e.stopPropagation(); handleRemoveFood(f.name); }}
+                                className="p-0.5 rounded text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+                              >
+                                <Trash2 className="w-3 h-3" />
+                              </button>
+                            </td>
+                          </tr>
+                          {/* Mobile: row 2 = macros */}
+                          <tr
+                            className="border-b border-border/50 md:hidden hover:bg-muted/30 cursor-pointer transition-colors"
+                            onClick={() => handleEditFood(f, idx)}
+                          >
+                            <td className="pb-1.5 pt-0 pr-1 text-muted-foreground whitespace-nowrap"></td>
+                            <td className="pb-1.5 pt-0 px-0.5 text-right text-muted-foreground whitespace-nowrap">{f.baseUnit}</td>
+                            <td className="pb-1.5 pt-0 px-0.5 text-right font-semibold">{f.calories}</td>
+                            <td className="pb-1.5 pt-0 px-0.5 text-right">{f.protein}</td>
+                            <td className="pb-1.5 pt-0 px-0.5 text-right">{f.fat}</td>
+                            <td className="pb-1.5 pt-0 px-0.5 text-right">{f.carbs}</td>
+                            <td className="pb-1.5 pt-0 px-0.5 text-right">{f.fiber}</td>
+                            <td className="pb-1.5 pt-0"></td>
+                          </tr>
+                          {/* Desktop: single row as before */}
+                          <tr
+                            className="border-b border-border/50 hidden md:table-row hover:bg-muted/30 cursor-pointer transition-colors"
+                            onClick={() => handleEditFood(f, idx)}
+                          >
+                            <td className="py-1 pr-1 font-medium max-w-[90px] truncate">{f.name}</td>
+                            <td className="py-1 px-0.5 text-right text-muted-foreground whitespace-nowrap">{f.baseUnit}</td>
+                            <td className="py-1 px-0.5 text-right font-semibold">{f.calories}</td>
+                            <td className="py-1 px-0.5 text-right">{f.protein}</td>
+                            <td className="py-1 px-0.5 text-right">{f.fat}</td>
+                            <td className="py-1 px-0.5 text-right">{f.carbs}</td>
+                            <td className="py-1 px-0.5 text-right">{f.fiber}</td>
+                            <td className="py-1 pl-1 pr-0">
+                              <button
+                                onClick={(e) => { e.stopPropagation(); handleRemoveFood(f.name); }}
+                                className="p-0.5 rounded text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+                              >
+                                <Trash2 className="w-3 h-3" />
+                              </button>
+                            </td>
+                          </tr>
+                        </React.Fragment>
                       ))}
                     </tbody>
                   </table>
