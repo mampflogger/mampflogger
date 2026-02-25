@@ -21,6 +21,7 @@ import WeeklyOverview from "@/components/WeeklyOverview";
 import ActivityInput from "@/components/ActivityInput";
 import DeficitDisplay from "@/components/DeficitDisplay";
 import FluidDisplay from "@/components/FluidDisplay";
+import PhotoToLog from "@/components/PhotoToLog";
 
 import SettingsDialog, { ColorTheme } from "@/components/SettingsDialog";
 import { ChevronLeft, ChevronRight, BarChart3, List } from "lucide-react";
@@ -109,10 +110,16 @@ const Index = () => {
       saveEntries(updated);
       setEditingEntry(null);
     } else {
-      const updated = [...entries, entry];
+    const updated = [...entries, entry];
       setEntries(updated);
       saveEntries(updated);
     }
+  };
+
+  const handleAddMultiple = (newEntries: NutritionEntry[]) => {
+    const updated = [...entries, ...newEntries];
+    setEntries(updated);
+    saveEntries(updated);
   };
 
   const handleDelete = (id: string) => {
@@ -387,9 +394,12 @@ const Index = () => {
         {activeTab === "log" ? (
           <>
             <div className="glass-card rounded-xl p-3 mb-3">
-              <h2 className="text-[10px] font-semibold text-muted-foreground mb-2 uppercase tracking-wider">
-                {editingEntry ? "Eintrag bearbeiten" : "Neuer Eintrag"}
-              </h2>
+              <div className="flex items-center justify-between mb-2">
+                <h2 className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
+                  {editingEntry ? "Eintrag bearbeiten" : "Neuer Eintrag"}
+                </h2>
+                <PhotoToLog selectedDate={selectedDate} onAddEntries={handleAddMultiple} />
+              </div>
               <NutritionForm
                 onAdd={handleAdd}
                 selectedDate={selectedDate}
