@@ -1163,7 +1163,7 @@ const SettingsDialog = ({
                     toast.success("Backup erstellt und heruntergeladen!");
                   }}
                 >
-                  <Download className="w-3.5 h-3.5" />
+                  <Upload className="w-3.5 h-3.5" />
                   Backup erstellen
                 </Button>
                 <Button
@@ -1172,7 +1172,7 @@ const SettingsDialog = ({
                   className="h-9 text-xs gap-1.5"
                   onClick={() => backupInputRef.current?.click()}
                 >
-                  <Upload className="w-3.5 h-3.5" />
+                  <Download className="w-3.5 h-3.5" />
                   Backup laden
                 </Button>
               </div>
@@ -1206,7 +1206,7 @@ const SettingsDialog = ({
                   if (backupInputRef.current) backupInputRef.current.value = "";
                 }}
               />
-              <p className="text-[9px] text-muted-foreground">Speichert Profil, Protokoll, Lebensmittel, Aktivitäten & Einstellungen.</p>
+              <p className="text-[9px] text-muted-foreground">Speichert Profil, Protokoll, Aktivitäten, Lebensmittel & Einstellungen.</p>
             </div>
 
             {/* DELETE Section */}
@@ -1251,7 +1251,7 @@ const SettingsDialog = ({
                   />
                 </div>
                 {deletePreview !== null && !deleteConfirmed && (
-                  <p className="text-xs text-destructive font-medium">{deletePreview} Einträge werden gelöscht.</p>
+                  <p className="text-xs text-destructive font-medium">{deletePreview} Protokoll-Einträge werden gelöscht.</p>
                 )}
                 {deleteConfirmed && (
                   <p className="text-xs text-primary font-medium">✓ Gelöscht!</p>
@@ -1263,7 +1263,7 @@ const SettingsDialog = ({
                 ) : !deleteConfirmed && !showDeleteRangeConfirm ? (
                   <div className="flex gap-2">
                     <Button variant="outline" size="sm" onClick={() => setShowDeleteRangeConfirm(true)} disabled={deletePreview === 0} className="flex-1 h-8 text-xs text-destructive border-destructive/30 hover:bg-destructive/10">
-                      {deletePreview} Einträge löschen
+                      {deletePreview} Protokoll-Einträge löschen
                     </Button>
                     <Button variant="secondary" size="sm" autoFocus onClick={() => { setDeletePreview(null); setFromDate(""); setToDate(""); }} className="flex-1 h-8 text-xs ring-2 ring-primary">
                       Abbruch
@@ -1290,7 +1290,7 @@ const SettingsDialog = ({
                       disabled={entries.length === 0}
                       className="flex items-center justify-center gap-1 py-1.5 px-1 rounded-lg bg-background border border-border hover:border-destructive/40 transition-colors disabled:opacity-40 disabled:pointer-events-none"
                     >
-                      <span className="text-[9px] font-semibold text-destructive">Einträge</span>
+                      <span className="text-[9px] font-semibold text-destructive">Protokoll</span>
                       <span className="text-[8px] text-muted-foreground">({entries.length})</span>
                     </button>
                     <button
@@ -1313,7 +1313,7 @@ const SettingsDialog = ({
                 ) : showDeleteAllConfirm ? (
                   <div className="col-span-3 rounded-lg border-2 border-destructive p-2.5 space-y-2">
                     <p className="text-xs font-semibold text-destructive">
-                      Wirklich alle {entries.length} Einträge löschen?
+                      Wirklich alle {entries.length} Protokoll-Einträge löschen?
                     </p>
                     <div className="flex gap-2">
                       <Button variant="outline" size="sm" onClick={handleDeleteAll} className="flex-1 h-8 text-xs text-destructive border-destructive/30 hover:bg-destructive/10">
