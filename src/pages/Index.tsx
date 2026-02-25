@@ -24,7 +24,7 @@ import FluidDisplay from "@/components/FluidDisplay";
 import PhotoToLog from "@/components/PhotoToLog";
 
 import SettingsDialog, { ColorTheme } from "@/components/SettingsDialog";
-import { ChevronLeft, ChevronRight, BarChart3, List } from "lucide-react";
+import { ChevronLeft, ChevronRight, BarChart3, List, Mic, MicOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const Index = () => {
@@ -46,6 +46,7 @@ const Index = () => {
   const [editingEntry, setEditingEntry] = useState<NutritionEntry | null>(null);
   const [editingActivity, setEditingActivity] = useState<BookedActivity | null>(null);
   const [openNewFood, setOpenNewFood] = useState(false);
+  const [voiceState, setVoiceState] = useState<{ isListening: boolean; isSupported: boolean; toggle: () => void }>({ isListening: false, isSupported: false, toggle: () => {} });
   const [darkMode, setDarkMode] = useState(() => {
     const saved = localStorage.getItem("mampflogger-dark-mode");
     if (saved !== null) return saved === "true";
@@ -398,7 +399,21 @@ const Index = () => {
                 <h2 className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
                   {editingEntry ? "Eintrag bearbeiten" : "Neuer Eintrag"}
                 </h2>
-                <PhotoToLog selectedDate={selectedDate} onAddEntries={handleAddMultiple} />
+                <div className="flex items-center gap-1">
+                  {voiceState.isSupported && (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="icon"
+                      onClick={voiceState.toggle}
+                      className={`h-9 w-9 shrink-0 ${voiceState.isListening ? "bg-destructive/15 text-destructive border-destructive/30 animate-pulse" : ""}`}
+                      title="Spracheingabe"
+                    >
+                      {voiceState.isListening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
+                    </Button>
+                  )}
+                  <PhotoToLog selectedDate={selectedDate} onAddEntries={handleAddMultiple} />
+                </div>
               </div>
               <NutritionForm
                 onAdd={handleAdd}
@@ -406,6 +421,8 @@ const Index = () => {
                 editingEntry={editingEntry}
                 onCancelEdit={() => setEditingEntry(null)}
                 onNewFood={() => setOpenNewFood(true)}
+                externalMicButton
+                onVoiceStateChange={(isListening, isSupported, toggle) => setVoiceState({ isListening, isSupported, toggle })}
               />
             </div>
 
