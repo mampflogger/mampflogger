@@ -715,7 +715,7 @@ const SettingsDialog = ({
           <div className="flex flex-col min-h-0 flex-1 gap-3">
             <div className="glass-card rounded-xl p-3 flex flex-col min-h-0 flex-1">
             {editingFood ? (
-              <div className="space-y-1.5">
+              <div className="space-y-2.5">
                 <div className="flex items-center justify-between">
                   <p className="text-xs font-semibold text-muted-foreground uppercase">
                     {editingFood.name ? "Lebensmittel bearbeiten" : "Neues Lebensmittel"}
@@ -747,7 +747,7 @@ const SettingsDialog = ({
                   )}
                 </div>
                 {/* Zeile 1: Lebensmittel + Einheit (fest g/ml) */}
-                <div className="grid grid-cols-5 gap-2 mt-1.5">
+                <div className="grid grid-cols-5 gap-2">
                   <div className="col-span-4">
                     <Label className="text-[10px] text-muted-foreground">Lebensmittel</Label>
                     <Input value={editFoodName} onChange={(e) => setEditFoodName(e.target.value)} className="h-9 text-xs" autoCorrect="off" spellCheck={false} />
@@ -769,7 +769,8 @@ const SettingsDialog = ({
                   {aiLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
                   {aiLoading ? "KI sucht Nährwerte..." : "🤖 KI-Nährwerte suchen"}
                 </Button>
-                {/* Zeile 2: Makros */}
+                {/* Artikelblock: Makros, Kategorie, Zusatzinfo */}
+                <div className="space-y-1.5">
                 <div className="grid grid-cols-5 gap-2">
                   <div>
                     <Label className="text-[10px] text-muted-foreground">kcal</Label>
@@ -840,7 +841,8 @@ const SettingsDialog = ({
                   <Label className="text-[10px] text-muted-foreground">Zusatzinfo</Label>
                   <Textarea value={editFoodNotes} onChange={(e) => setEditFoodNotes(e.target.value)} placeholder="z.B. vegan, Nutri Score, Haltungsform, Bio usw." className="min-h-[60px] text-xs" />
                 </div>
-                <div className="grid grid-cols-3 gap-2 mt-4">
+                </div>
+                <div className="grid grid-cols-3 gap-2 mt-6">
                   <Button variant="outline" onClick={() => { handleSaveFood(); handleNewFood(); }} className="h-9 text-xs">
                     + Nächstes
                   </Button>
