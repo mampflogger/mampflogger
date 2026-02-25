@@ -13,8 +13,9 @@ import { Label } from "@/components/ui/label";
 import {
   Settings, Sun, Moon, Trash2, Upload, Download, UserCircle, Save, Check,
   AlertCircle, FileSpreadsheet, UtensilsCrossed, Palette, BarChart3, FileUp,
-  ChevronLeft, ChevronRight, RefreshCw, List,
+  ChevronLeft, ChevronRight, RefreshCw, List, Sparkles, Loader2,
 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 import { UserProfile, calculateBMR } from "@/types/profile";
 import { NutritionEntry } from "@/types/nutrition";
 import { foodDatabase, addFoodItem, removeFoodItem, updateFoodItem, clearFoodDatabase, reloadFoodDatabase, resetFoodDatabase, DEFAULT_FOODS, FoodItem, FOOD_CATEGORIES, FoodCategory } from "@/data/foodDatabase";
@@ -147,6 +148,7 @@ const SettingsDialog = ({
   const [editFoodCategory, setEditFoodCategory] = useState<FoodCategory | "">("");
   
   const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
+  const [aiLoading, setAiLoading] = useState(false);
   const [, forceUpdate] = useState(0);
   const [foodNavIndex, setFoodNavIndex] = useState<number | null>(null);
   const [selectedCategories, setSelectedCategories] = useState<Set<string>>(new Set());
@@ -185,6 +187,38 @@ const SettingsDialog = ({
     setEditFoodDefault("");
     setEditFoodLiquid("");
     setEditFoodCategory("");
+  };
+
+  const handleAiLookup = async () => {
+    const query = editFoodName.trim();
+    if (!query) {
+      toast.error("Bitte zuerst einen Lebensmittel-Namen eingeben.");
+      return;
+    }
+    setAiLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("food-lookup", {
+        body: { foodName: query },
+      });
+      if (error) throw new Error(error.message);
+      if (!data?.success || !data?.data) throw new Error(data?.error || "Keine Daten erhalten");
+      const n = data.data;
+      setEditFoodName(n.name || query);
+      setEditFoodCal(String(n.calories ?? ""));
+      setEditFoodPro(String(n.protein ?? ""));
+      setEditFoodFat(String(n.fat ?? ""));
+      setEditFoodKh(String(n.carbs ?? ""));
+      setEditFoodFib(String(n.fiber ?? ""));
+      setEditFoodLiquid(n.liquidMl && n.liquidMl > 0 ? String(n.liquidMl) : "");
+      setEditFoodCategory(n.category || "Eigene");
+      setEditFoodDefault(n.defaultAmount ? String(n.defaultAmount) : "");
+      toast.success("KI-Werte übernommen – bitte prüfen & speichern!");
+    } catch (err: any) {
+      console.error("AI lookup error:", err);
+      toast.error(err?.message || "KI-Abfrage fehlgeschlagen");
+    } finally {
+      setAiLoading(false);
+    }
   };
 
   const handleOpen = (isOpen: boolean) => {
@@ -718,6 +752,16 @@ const SettingsDialog = ({
                     </div>
                   </div>
                 </div>
+                {/* KI-Suche Button */}
+                <Button
+                  variant="outline"
+                  onClick={handleAiLookup}
+                  disabled={aiLoading || !editFoodName.trim()}
+                  className="w-full h-9 text-xs gap-2"
+                >
+                  {aiLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
+                  {aiLoading ? "KI sucht Nährwerte..." : "🤖 KI-Nährwerte suchen"}
+                </Button>
                 {/* Zeile 2: Makros */}
                 <div className="grid grid-cols-5 gap-2">
                   <div>
