@@ -831,13 +831,13 @@ const SettingsDialog = ({
                   </div>
                 </div>
                 <div className="grid grid-cols-3 gap-2">
-                  <Button variant="secondary" onClick={() => { handleSaveFood(); handleNewFood(); }} className="h-9 text-xs">
+                  <Button variant="outline" onClick={() => { handleSaveFood(); handleNewFood(); }} className="h-9 text-xs">
                     + Nächstes
                   </Button>
                   <Button onClick={handleSaveFood} className="h-9 text-xs">
                     <Save className="w-3.5 h-3.5 mr-1" /> Speichern
                   </Button>
-                  <Button variant="ghost" onClick={() => { setEditingFood(null); setFoodNavIndex(null); }} className="h-9 text-xs">
+                  <Button variant="secondary" onClick={() => { setEditingFood(null); setFoodNavIndex(null); }} className="h-9 text-xs">
                     ← Tabelle
                   </Button>
                 </div>
