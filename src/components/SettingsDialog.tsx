@@ -913,9 +913,11 @@ const SettingsDialog = ({
                     autoCorrect="off"
                     spellCheck={false}
                   />
-                  {/* Desktop: classic table header */}
+                </div>
+                {/* Scrollable table with sticky header */}
+                <div className="flex-1 min-h-0 overflow-y-auto overflow-x-auto -mx-1 px-1">
                   <table className="w-full text-[10px]">
-                    <thead>
+                    <thead className="sticky top-0 bg-card z-10">
                       <tr className="border-b border-border">
                         <th className="text-left py-1 pr-1 font-semibold text-muted-foreground">Lebensmittel</th>
                         <th className="text-right py-1 px-0.5 font-semibold text-muted-foreground">Einh.</th>
@@ -927,11 +929,6 @@ const SettingsDialog = ({
                         <th className="w-5"></th>
                       </tr>
                     </thead>
-                  </table>
-                </div>
-                {/* Scrollable list body */}
-                <div className="flex-1 min-h-0 overflow-y-auto overflow-x-auto -mx-1 px-1">
-                  <table className="w-full text-[10px]">
                     <tbody>
                       {filteredFoods.map((f, idx) => (
                         <React.Fragment key={f.name}>
