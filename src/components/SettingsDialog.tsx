@@ -17,7 +17,7 @@ import {
 } from "lucide-react";
 import { UserProfile, calculateBMR } from "@/types/profile";
 import { NutritionEntry } from "@/types/nutrition";
-import { foodDatabase, addFoodItem, removeFoodItem, updateFoodItem, clearFoodDatabase, reloadFoodDatabase, resetFoodDatabase, DEFAULT_FOODS, FoodItem, loadUnits, deleteUnit, addUnit, FOOD_CATEGORIES, FoodCategory } from "@/data/foodDatabase";
+import { foodDatabase, addFoodItem, removeFoodItem, updateFoodItem, clearFoodDatabase, reloadFoodDatabase, resetFoodDatabase, DEFAULT_FOODS, FoodItem, FOOD_CATEGORIES, FoodCategory } from "@/data/foodDatabase";
 import {
   exportEntriesToCsv, exportFoodDatabaseCsv, exportCalorieBalanceCsv, exportActivitiesCsv,
 } from "@/lib/csvExport";
@@ -145,7 +145,7 @@ const SettingsDialog = ({
   const [editFoodDefault, setEditFoodDefault] = useState("");
   const [editFoodLiquid, setEditFoodLiquid] = useState("");
   const [editFoodCategory, setEditFoodCategory] = useState<FoodCategory | "">("");
-  const [showUnitDropdown, setShowUnitDropdown] = useState(false);
+  
   const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
   const [, forceUpdate] = useState(0);
   const [foodNavIndex, setFoodNavIndex] = useState<number | null>(null);
@@ -202,7 +202,7 @@ const SettingsDialog = ({
     }
     if (!isOpen) {
       setEditingFood(null);
-      setShowUnitDropdown(false);
+      
       setShowCategoryDropdown(false);
       setImportType(null);
       setRawText("");
@@ -281,17 +281,18 @@ const SettingsDialog = ({
 
   const handleSaveFood = () => {
     if (!editingFood || !editFoodName.trim()) return;
+    const hasLiquid = editFoodLiquid && parseFloat(editFoodLiquid) > 0;
     const updated: FoodItem = {
       name: editFoodName.trim(),
-      baseUnit: editFoodUnit || "100g",
-      baseAmount: editFoodUnit.startsWith("1 ") ? 1 : 100,
+      baseUnit: hasLiquid ? "100ml" : "100g",
+      baseAmount: 100,
       calories: parseFloat(editFoodCal) || 0,
       protein: parseFloat(editFoodPro) || 0,
       fat: parseFloat(editFoodFat) || 0,
       carbs: parseFloat(editFoodKh) || 0,
       fiber: parseFloat(editFoodFib) || 0,
       defaultAmount: editFoodDefault ? parseFloat(editFoodDefault) || undefined : undefined,
-      liquidMl: editFoodLiquid ? parseFloat(editFoodLiquid) || undefined : undefined,
+      liquidMl: hasLiquid ? parseFloat(editFoodLiquid) || undefined : undefined,
       category: editFoodCategory || "Eigene",
     };
     updateFoodItem(editingFood.name, updated);
@@ -704,89 +705,19 @@ const SettingsDialog = ({
                     </div>
                   )}
                 </div>
-                {/* Zeile 1: Lebensmittel (3) + Einheit-Dropdown (2) */}
-                {(() => {
-                  const allUnits = loadUnits();
-                  const isCustomInput = editFoodUnit && !allUnits.includes(editFoodUnit);
-                  return (
-                    <div className="grid grid-cols-5 gap-2">
-                      {/* Lebensmittel: col-span-4 on mobile, col-span-3 on desktop */}
-                      <div className="col-span-4 md:col-span-3">
-                        <Label className="text-[10px] text-muted-foreground">Lebensmittel</Label>
-                        <Input value={editFoodName} onChange={(e) => setEditFoodName(e.target.value)} className="h-9 text-xs" autoCorrect="off" spellCheck={false} />
-                      </div>
-                      {/* Einheit-Dropdown: col-span-1 on mobile, col-span-2 on desktop */}
-                      <div className="col-span-1 md:col-span-2 relative">
-                        <Label className="text-[10px] text-muted-foreground">Einheit</Label>
-                        {isCustomInput ? (
-                          <div className="flex gap-1">
-                            <Input value={editFoodUnit} onChange={(e) => setEditFoodUnit(e.target.value)} className="h-9 text-xs flex-1" autoFocus />
-                            <button type="button" onClick={() => { setEditFoodUnit("100g"); setShowUnitDropdown(false); }} className="h-9 px-2 text-xs text-muted-foreground hover:text-foreground">✕</button>
-                          </div>
-                        ) : (
-                          <>
-                            <button
-                              type="button"
-                              className="w-full flex items-center justify-between h-9 px-3 text-xs rounded-md border border-input bg-background hover:bg-muted/60 transition-colors"
-                              onClick={() => setShowUnitDropdown(v => !v)}
-                            >
-                              <span className="truncate">{editFoodUnit || "Einheit wählen"}</span>
-                              <ChevronRight className={`w-3.5 h-3.5 text-muted-foreground transition-transform shrink-0 ml-1 ${showUnitDropdown ? "rotate-90" : ""}`} />
-                            </button>
-                            {showUnitDropdown && (
-                              <div className="absolute left-0 right-0 z-[200] mt-1 rounded-md border border-border bg-popover shadow-lg">
-                                {allUnits.map(u => (
-                                  <div
-                                    key={u}
-                                    className={`flex items-center justify-between px-3 py-2 text-xs cursor-pointer transition-colors ${
-                                      editFoodUnit === u ? "bg-primary/10 text-primary font-medium" : "hover:bg-muted/60"
-                                    }`}
-                                  >
-                                    <span
-                                      className="flex-1"
-                                      onPointerDown={(e) => {
-                                        e.preventDefault();
-                                        setEditFoodUnit(u);
-                                        setShowUnitDropdown(false);
-                                      }}
-                                    >{u}</span>
-                                    {u !== "100g" && (
-                                      <button
-                                        type="button"
-                                        onPointerDown={(e) => {
-                                          e.stopPropagation();
-                                          e.preventDefault();
-                                          deleteUnit(u);
-                                          if (editFoodUnit === u) setEditFoodUnit("100g");
-                                          forceUpdate(n => n + 1);
-                                          toast.success(`Einheit "${u}" entfernt`);
-                                        }}
-                                        className="p-1 rounded text-destructive hover:bg-destructive/10 shrink-0 ml-2"
-                                        title={`Einheit "${u}" löschen`}
-                                      >
-                                        <Trash2 className="w-3 h-3" />
-                                      </button>
-                                    )}
-                                  </div>
-                                ))}
-                                <div
-                                  className="px-3 py-2 text-xs text-muted-foreground hover:bg-muted/60 cursor-pointer border-t border-border"
-                                  onPointerDown={(e) => {
-                                    e.preventDefault();
-                                    setEditFoodUnit("1 ");
-                                    setShowUnitDropdown(false);
-                                  }}
-                                >
-                                  Eigene…
-                                </div>
-                              </div>
-                            )}
-                          </>
-                        )}
-                      </div>
+                {/* Zeile 1: Lebensmittel + Einheit (fest g/ml) */}
+                <div className="grid grid-cols-5 gap-2">
+                  <div className="col-span-4">
+                    <Label className="text-[10px] text-muted-foreground">Lebensmittel</Label>
+                    <Input value={editFoodName} onChange={(e) => setEditFoodName(e.target.value)} className="h-9 text-xs" autoCorrect="off" spellCheck={false} />
+                  </div>
+                  <div className="col-span-1">
+                    <Label className="text-[10px] text-muted-foreground">g/ml</Label>
+                    <div className="h-9 flex items-center justify-center text-xs text-muted-foreground rounded-md border border-input bg-muted/30">
+                      100
                     </div>
-                  );
-                })()}
+                  </div>
+                </div>
                 {/* Zeile 2: Makros */}
                 <div className="grid grid-cols-5 gap-2">
                   <div>
