@@ -210,7 +210,8 @@ const SettingsDialog = ({
       setEditFoodKh(String(n.carbs ?? ""));
       setEditFoodFib(String(n.fiber ?? ""));
       setEditFoodLiquid(n.liquidMl && n.liquidMl > 0 ? String(n.liquidMl) : "");
-      setEditFoodCategory(n.category || "Eigene");
+      const validCategory = (FOOD_CATEGORIES as readonly string[]).includes(n.category) ? n.category as FoodCategory : "Eigene";
+      setEditFoodCategory(validCategory);
       setEditFoodDefault(n.defaultAmount ? String(n.defaultAmount) : "");
       toast.success("KI-Werte übernommen – bitte prüfen & speichern!");
     } catch (err: any) {
@@ -829,12 +830,15 @@ const SettingsDialog = ({
                     <Input type="number" inputMode="decimal" value={editFoodLiquid} onChange={(e) => setEditFoodLiquid(e.target.value)} placeholder="z.B. 250" className="h-9 text-xs" />
                   </div>
                 </div>
-                <div className="flex gap-2">
-                  <Button onClick={handleSaveFood} className="flex-1 h-9 text-xs">
+                <div className="grid grid-cols-3 gap-2">
+                  <Button variant="outline" onClick={() => { handleSaveFood(); handleNewFood(); }} className="h-9 text-xs">
+                    + Nächstes
+                  </Button>
+                  <Button onClick={handleSaveFood} className="h-9 text-xs">
                     <Save className="w-3.5 h-3.5 mr-1" /> Speichern
                   </Button>
                   <Button variant="ghost" onClick={() => { setEditingFood(null); setFoodNavIndex(null); }} className="h-9 text-xs">
-                    Abbrechen
+                    ← Tabelle
                   </Button>
                 </div>
               </div>
