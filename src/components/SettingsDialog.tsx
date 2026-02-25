@@ -770,7 +770,7 @@ const SettingsDialog = ({
                   {aiLoading ? "KI sucht Nährwerte..." : "🤖 KI-Nährwerte suchen"}
                 </Button>
                 {/* Artikelblock: Makros, Kategorie, Zusatzinfo */}
-                <div className="space-y-1">
+                <div className="space-y-0.5">
                 <div className="grid grid-cols-5 gap-2">
                   <div>
                     <Label className="text-[10px] text-muted-foreground">kcal</Label>
