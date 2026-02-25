@@ -212,11 +212,14 @@
   /* Hide number input spinners */
   input[type="number"]::-webkit-inner-spin-button,
   input[type="number"]::-webkit-outer-spin-button {
-    -webkit-appearance: none;
+    -webkit-appearance: none !important;
+    appearance: none;
     margin: 0;
+    display: none;
   }
   input[type="number"] {
     -moz-appearance: textfield;
+    appearance: textfield;
   }
 
   /* Subtle placeholders */
@@ -231,13 +234,21 @@
     display: none;
   }
 
-  /* Hide iOS blue autofill/stepper icons */
-  input {
+  /* Hide iOS/Safari native input decorations (blue arrows/icons) */
+  input:not([type="checkbox"]):not([type="radio"]) {
     -webkit-appearance: none;
     appearance: none;
   }
+
   input::-webkit-contacts-auto-fill-button,
-  input::-webkit-credentials-auto-fill-button {
+  input::-webkit-credentials-auto-fill-button,
+  input::-webkit-textfield-decoration-container,
+  input::-webkit-clear-button,
+  input::-webkit-search-cancel-button,
+  input::-webkit-search-decoration,
+  input::-webkit-search-results-button,
+  input::-webkit-search-results-decoration {
+    display: none !important;
     visibility: hidden;
     pointer-events: none;
     position: absolute;

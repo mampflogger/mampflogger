@@ -474,7 +474,7 @@ const SettingsDialog = ({
       </DialogTrigger>
       <DialogContent
         hideClose
-        className="w-screen h-[100dvh] max-w-none max-h-[100dvh] rounded-none border-0 flex flex-col p-0 gap-0 data-[state=open]:animate-none data-[state=closed]:animate-none md:left-0 md:top-0 md:w-screen md:translate-x-0 md:translate-y-0 md:h-[100dvh] md:max-h-[100dvh] md:max-w-none md:rounded-none md:border-0"
+        className="w-screen h-[100dvh] max-w-none max-h-[100dvh] rounded-none border-0 flex flex-col p-0 gap-0 data-[state=open]:animate-none data-[state=closed]:animate-none md:left-0 md:top-0 md:w-screen md:translate-x-0 md:translate-y-0 md:h-[100dvh] md:max-h-[100dvh] md:max-w-none md:p-0 md:rounded-none md:border-0"
         style={{
           '--tw-enter-scale': '1',
           '--tw-exit-scale': '1',
