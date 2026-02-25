@@ -38,7 +38,7 @@ serve(async (req) => {
 Regeln:
 - Alle Werte pro 100g/100ml, gerundet auf 1 Dezimalstelle
 - liquidMl: Setze auf 100 wenn es ein Getränk ist, sonst 0
-- category: Wähle aus: Backwaren, Eier, Fette & Öle, Fisch & Meeresfrüchte, Fleisch, Gemüse & Salat, Getränke, Getreide & Nudeln, Milchprodukte, Obst, Snacks & Süßigkeiten, Soßen & Gewürze, Eigene
+- category: Wähle EXAKT eine dieser Kategorien (keine anderen!): Fleisch&Wurst, Fisch&Meeresfrüchte, Käse, Nüsse&Samen, Gemüse, Brot&Teigwaren, Öle&Fette, Getränke, Obst, Milchprodukte, Süßwaren, Sonstiges, Eigene
 - defaultAmount: Typische Portionsgröße in g/ml (z.B. 250 für eine Tasse Kaffee, 30 für eine Scheibe Brot), oder null wenn 100 passt
 - name: Deutsch, Großbuchstabe am Anfang`,
           },
@@ -63,7 +63,7 @@ Regeln:
                   carbs: { type: "number", description: "Carbs in g per 100g/100ml" },
                   fiber: { type: "number", description: "Fiber in g per 100g/100ml" },
                   liquidMl: { type: "number", description: "100 if beverage, 0 otherwise" },
-                  category: { type: "string", description: "Food category in German" },
+                  category: { type: "string", enum: ["Fleisch&Wurst","Fisch&Meeresfrüchte","Käse","Nüsse&Samen","Gemüse","Brot&Teigwaren","Öle&Fette","Getränke","Obst","Milchprodukte","Süßwaren","Sonstiges","Eigene"], description: "Food category in German" },
                   defaultAmount: { type: ["number", "null"], description: "Typical portion size in g/ml or null" },
                 },
                 required: ["name", "calories", "protein", "fat", "carbs", "fiber", "liquidMl", "category"],
