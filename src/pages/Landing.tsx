@@ -89,7 +89,7 @@ const Landing = () => {
         <Button
           size="lg"
           className="text-base px-8 py-5 font-bold shadow-lg"
-          onClick={() => navigate("/app")}
+          onClick={() => navigate("/app?settings=profile")}
         >
           Jetzt starten →
         </Button>
@@ -205,7 +205,7 @@ const Landing = () => {
           <Button
             size="lg"
             className="text-base px-8 py-5 font-bold shadow-lg"
-            onClick={() => navigate("/app")}
+            onClick={() => navigate("/app?settings=profile")}
           >
             Jetzt starten →
           </Button>

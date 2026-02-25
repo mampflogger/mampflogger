@@ -58,6 +58,8 @@ interface SettingsDialogProps {
   onOpenToNewFoodHandled?: () => void;
   activeTab: "log" | "weekly";
   onSetActiveTab: (tab: "log" | "weekly") => void;
+  initialOpen?: boolean;
+  initialTab?: SettingsTab;
 }
 
 type ImportType = "csv-entries" | "csv-balance" | "csv-food";
@@ -85,10 +87,17 @@ const SettingsDialog = ({
   profile, onSaveProfile, darkMode, onToggleDarkMode,
   colorTheme, onChangeTheme, entries, bookedActivities,
   onImport, onImportActivities, onCount, onDelete, onDeleteAll, onDeleteAllActivities, openToNewFood, onOpenToNewFoodHandled,
-  activeTab, onSetActiveTab,
+  activeTab, onSetActiveTab, initialOpen, initialTab,
 }: SettingsDialogProps) => {
-  const [open, setOpen] = useState(false);
-  const [tab, setTab] = useState<SettingsTab>("profile");
+  const [open, setOpen] = useState(initialOpen ?? false);
+  const [tab, setTab] = useState<SettingsTab>(initialTab ?? "profile");
+
+  useEffect(() => {
+    if (initialOpen) {
+      setOpen(true);
+      if (initialTab) setTab(initialTab);
+    }
+  }, [initialOpen, initialTab]);
 
   // Profile state
   const [name, setName] = useState("");
