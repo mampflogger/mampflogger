@@ -831,7 +831,7 @@ const SettingsDialog = ({
                   </div>
                 </div>
                 <div className="grid grid-cols-3 gap-2">
-                  <Button variant="outline" onClick={() => { handleSaveFood(); handleNewFood(); }} className="h-9 text-xs">
+                  <Button variant="secondary" onClick={() => { handleSaveFood(); handleNewFood(); }} className="h-9 text-xs">
                     + Nächstes
                   </Button>
                   <Button onClick={handleSaveFood} className="h-9 text-xs">
