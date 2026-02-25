@@ -17,6 +17,7 @@ import {
   ReferenceLine,
 } from "recharts";
 import { TrendingDown, TrendingUp, Target } from "lucide-react";
+import NutritionCoach from "./NutritionCoach";
 
 interface WeeklyOverviewProps {
   entries: NutritionEntry[];
@@ -481,6 +482,14 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [] 
           </ResponsiveContainer>
         </div>
       </div>
+
+      {/* AI Nutrition Coach */}
+      <NutritionCoach
+        entries={entries}
+        selectedDate={selectedDate}
+        profile={profile}
+        bookedActivities={bookedActivities}
+      />
     </div>
   );
 };
