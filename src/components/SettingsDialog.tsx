@@ -842,7 +842,7 @@ const SettingsDialog = ({
                   <Textarea value={editFoodNotes} onChange={(e) => setEditFoodNotes(e.target.value)} placeholder="z.B. vegan, Nutri Score, Haltungsform, Bio usw." className="min-h-[60px] text-xs" />
                 </div>
                 </div>
-                <div className="grid grid-cols-3 gap-2 !mt-10">
+                <div className="grid grid-cols-3 gap-2 !mt-2">
                   <Button variant="outline" onClick={() => { handleSaveFood(); handleNewFood(); }} className="h-9 text-xs">
                     + Nächstes
                   </Button>
