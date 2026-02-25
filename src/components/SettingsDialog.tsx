@@ -770,7 +770,7 @@ const SettingsDialog = ({
                   {aiLoading ? "KI sucht Nährwerte..." : "🤖 KI-Nährwerte suchen"}
                 </Button>
                 {/* Artikelblock: Makros, Kategorie, Zusatzinfo */}
-                <div className="space-y-1.5">
+                <div className="space-y-2.5">
                 <div className="grid grid-cols-5 gap-2">
                   <div>
                     <Label className="text-[10px] text-muted-foreground">kcal</Label>
@@ -842,7 +842,7 @@ const SettingsDialog = ({
                   <Textarea value={editFoodNotes} onChange={(e) => setEditFoodNotes(e.target.value)} placeholder="z.B. vegan, Nutri Score, Haltungsform, Bio usw." className="min-h-[60px] text-xs" />
                 </div>
                 </div>
-                <div className="grid grid-cols-3 gap-2 mt-6">
+                <div className="grid grid-cols-3 gap-2 mt-10">
                   <Button variant="outline" onClick={() => { handleSaveFood(); handleNewFood(); }} className="h-9 text-xs">
                     + Nächstes
                   </Button>
