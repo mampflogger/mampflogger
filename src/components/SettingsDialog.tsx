@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import {
   Settings, Sun, Moon, Trash2, Upload, Download, UserCircle, Save, Check,
@@ -144,8 +145,9 @@ const SettingsDialog = ({
   const [editFoodKh, setEditFoodKh] = useState("");
   const [editFoodFib, setEditFoodFib] = useState("");
   const [editFoodDefault, setEditFoodDefault] = useState("");
-  const [editFoodLiquid, setEditFoodLiquid] = useState("");
-  const [editFoodCategory, setEditFoodCategory] = useState<FoodCategory | "">("");
+   const [editFoodLiquid, setEditFoodLiquid] = useState("");
+   const [editFoodCategory, setEditFoodCategory] = useState<FoodCategory | "">("");
+   const [editFoodNotes, setEditFoodNotes] = useState("");
   
   const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
   const [aiLoading, setAiLoading] = useState(false);
@@ -185,8 +187,9 @@ const SettingsDialog = ({
     setEditFoodKh("");
     setEditFoodFib("");
     setEditFoodDefault("");
-    setEditFoodLiquid("");
-    setEditFoodCategory("");
+     setEditFoodLiquid("");
+     setEditFoodCategory("");
+     setEditFoodNotes("");
   };
 
   const handleAiLookup = async () => {
@@ -209,8 +212,9 @@ const SettingsDialog = ({
       setEditFoodFat(String(n.fat ?? ""));
       setEditFoodKh(String(n.carbs ?? ""));
       setEditFoodFib(String(n.fiber ?? ""));
-      setEditFoodLiquid(n.liquidMl && n.liquidMl > 0 ? String(n.liquidMl) : "");
-      const validCategory = (FOOD_CATEGORIES as readonly string[]).includes(n.category) ? n.category as FoodCategory : "Eigene";
+       setEditFoodLiquid(n.liquidMl && n.liquidMl > 0 ? String(n.liquidMl) : "");
+       setEditFoodNotes(n.notes || "");
+       const validCategory = (FOOD_CATEGORIES as readonly string[]).includes(n.category) ? n.category as FoodCategory : "Eigene";
       setEditFoodCategory(validCategory);
       setEditFoodDefault(n.defaultAmount ? String(n.defaultAmount) : "");
       toast.success("KI-Werte übernommen – bitte prüfen & speichern!");
@@ -302,8 +306,9 @@ const SettingsDialog = ({
     setEditFoodKh(String(food.carbs));
     setEditFoodFib(String(food.fiber));
     setEditFoodDefault(food.defaultAmount ? String(food.defaultAmount) : "");
-    setEditFoodLiquid(food.liquidMl ? String(food.liquidMl) : "");
-    setEditFoodCategory(food.category || "");
+     setEditFoodLiquid(food.liquidMl ? String(food.liquidMl) : "");
+     setEditFoodCategory(food.category || "");
+     setEditFoodNotes(food.notes || "");
     if (index !== undefined) setFoodNavIndex(index);
   };
 
@@ -327,8 +332,9 @@ const SettingsDialog = ({
       carbs: parseFloat(editFoodKh) || 0,
       fiber: parseFloat(editFoodFib) || 0,
       defaultAmount: editFoodDefault ? parseFloat(editFoodDefault) || undefined : undefined,
-      liquidMl: hasLiquid ? parseFloat(editFoodLiquid) || undefined : undefined,
-      category: editFoodCategory || "Eigene",
+       liquidMl: hasLiquid ? parseFloat(editFoodLiquid) || undefined : undefined,
+       category: editFoodCategory || "Eigene",
+       notes: editFoodNotes.trim() || undefined,
     };
     updateFoodItem(editingFood.name, updated);
     const isNew = !editingFood.name;
@@ -829,6 +835,10 @@ const SettingsDialog = ({
                     <Label className="text-[10px] text-muted-foreground">Flüssigkeit (ml)</Label>
                     <Input type="number" inputMode="decimal" value={editFoodLiquid} onChange={(e) => setEditFoodLiquid(e.target.value)} placeholder="z.B. 250" className="h-9 text-xs" />
                   </div>
+                 </div>
+                <div>
+                  <Label className="text-[10px] text-muted-foreground">Zusatzinfo</Label>
+                  <Textarea value={editFoodNotes} onChange={(e) => setEditFoodNotes(e.target.value)} placeholder="z.B. inkl. Dressing, Nutri-Score E, Tipps…" className="min-h-[60px] text-xs" />
                 </div>
                 <div className="grid grid-cols-3 gap-2">
                   <Button variant="outline" onClick={() => { handleSaveFood(); handleNewFood(); }} className="h-9 text-xs">

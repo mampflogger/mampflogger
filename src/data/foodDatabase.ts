@@ -30,6 +30,7 @@ export interface FoodItem {
   category?: FoodCategory;
   isUserCreated?: boolean; // Vom User selbst angelegt (niemals durch Remote überschreiben)
   isRemote?: boolean;      // Vom Remote-Server geladen
+  notes?: string;          // Freitext-Zusatzinfos zum Lebensmittel
 }
 
 // Category mapping for default foods
