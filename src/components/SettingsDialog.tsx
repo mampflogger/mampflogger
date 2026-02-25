@@ -837,7 +837,7 @@ const SettingsDialog = ({
                   <Button onClick={handleSaveFood} className="h-9 text-xs">
                     <Save className="w-3.5 h-3.5 mr-1" /> Speichern
                   </Button>
-                  <Button variant="secondary" onClick={() => { setEditingFood(null); setFoodNavIndex(null); }} className="h-9 text-xs">
+                  <Button variant="outline" onClick={() => { setEditingFood(null); setFoodNavIndex(null); }} className="h-9 text-xs">
                     ← Tabelle
                   </Button>
                 </div>
