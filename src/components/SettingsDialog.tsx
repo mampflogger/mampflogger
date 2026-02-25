@@ -710,13 +710,13 @@ const SettingsDialog = ({
                   const isCustomInput = editFoodUnit && !allUnits.includes(editFoodUnit);
                   return (
                     <div className="grid grid-cols-5 gap-2">
-                      {/* Lebensmittel: col-span-3 */}
-                      <div className="col-span-3">
+                      {/* Lebensmittel: col-span-4 on mobile, col-span-3 on desktop */}
+                      <div className="col-span-4 md:col-span-3">
                         <Label className="text-[10px] text-muted-foreground">Lebensmittel</Label>
                         <Input value={editFoodName} onChange={(e) => setEditFoodName(e.target.value)} className="h-9 text-xs" autoCorrect="off" spellCheck={false} />
                       </div>
-                      {/* Einheit-Dropdown: col-span-2 */}
-                      <div className="col-span-2 relative">
+                      {/* Einheit-Dropdown: col-span-1 on mobile, col-span-2 on desktop */}
+                      <div className="col-span-1 md:col-span-2 relative">
                         <Label className="text-[10px] text-muted-foreground">Einheit</Label>
                         {isCustomInput ? (
                           <div className="flex gap-1">
@@ -913,7 +913,8 @@ const SettingsDialog = ({
                     autoCorrect="off"
                     spellCheck={false}
                   />
-                  <table className="w-full text-[10px]">
+                  {/* Desktop: classic table header */}
+                  <table className="w-full text-[10px] hidden md:table">
                     <thead>
                       <tr className="border-b border-border">
                         <th className="text-left py-1 pr-1 font-semibold text-muted-foreground">Lebensmittel</th>
@@ -928,9 +929,38 @@ const SettingsDialog = ({
                     </thead>
                   </table>
                 </div>
-                {/* Scrollable table body */}
+                {/* Scrollable list body */}
                 <div className="flex-1 min-h-0 overflow-y-auto overflow-x-auto -mx-1 px-1">
-                  <table className="w-full text-[10px]">
+                  {/* Mobile: two-line layout */}
+                  <div className="md:hidden">
+                    {filteredFoods.map((f, idx) => (
+                      <div
+                        key={f.name}
+                        className="border-b border-border/50 hover:bg-muted/30 cursor-pointer transition-colors py-1.5"
+                        onClick={() => handleEditFood(f, idx)}
+                      >
+                        <div className="flex items-center justify-between">
+                          <span className="font-medium text-[11px] truncate flex-1 mr-2">{f.name}</span>
+                          <button
+                            onClick={(e) => { e.stopPropagation(); handleRemoveFood(f.name); }}
+                            className="p-0.5 rounded text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors shrink-0"
+                          >
+                            <Trash2 className="w-3 h-3" />
+                          </button>
+                        </div>
+                        <div className="flex gap-2 text-[10px] text-muted-foreground mt-0.5">
+                          <span>{f.baseUnit}</span>
+                          <span className="font-semibold text-foreground">{f.calories} kcal</span>
+                          <span style={{ color: "hsl(var(--macro-pro))" }}>{f.protein}P</span>
+                          <span style={{ color: "hsl(var(--macro-fat))" }}>{f.fat}F</span>
+                          <span style={{ color: "hsl(var(--macro-kh))" }}>{f.carbs}K</span>
+                          <span style={{ color: "hsl(var(--macro-fib))" }}>{f.fiber}Fi</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  {/* Desktop: classic table rows */}
+                  <table className="w-full text-[10px] hidden md:table">
                     <tbody>
                       {filteredFoods.map((f, idx) => (
                         <tr
