@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo, useRef, useCallback } from "react";
+import { useSearchParams } from "react-router-dom";
 import { usePwaUpdate } from "@/hooks/usePwaUpdate";
 import { NutritionEntry, formatDate, calculateDailySummary } from "@/types/nutrition";
 import { syncRemoteFoodDatabase, loadRemoteUrl } from "@/lib/remoteFoodSync";
@@ -26,6 +27,15 @@ import { ChevronLeft, ChevronRight, BarChart3, List } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const Index = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const settingsParam = searchParams.get("settings");
+
+  // Clear the URL param after consuming it
+  useEffect(() => {
+    if (settingsParam) {
+      setSearchParams({}, { replace: true });
+    }
+  }, []);
   const { needsUpdate, applyUpdate } = usePwaUpdate();
   const [entries, setEntries] = useState<NutritionEntry[]>([]);
   const [selectedDate, setSelectedDate] = useState(formatDate(new Date()));
@@ -312,6 +322,8 @@ const Index = () => {
                 onOpenToNewFoodHandled={() => setOpenNewFood(false)}
                 activeTab={activeTab}
                 onSetActiveTab={setActiveTab}
+                initialOpen={settingsParam === "profile"}
+                initialTab={settingsParam === "profile" ? "profile" : undefined}
               />
               <Button
                 variant="ghost"
