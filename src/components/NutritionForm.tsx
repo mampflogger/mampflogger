@@ -106,13 +106,15 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
     }, []),
   });
 
-  // Expose voice state to parent
+  // Expose voice state to parent – use ref to avoid infinite re-render loop
+  const onVoiceStateChangeRef = useRef(onVoiceStateChange);
+  onVoiceStateChangeRef.current = onVoiceStateChange;
+  const voiceToggle = useCallback(() => {
+    voice.isListening ? voice.stop() : voice.start();
+  }, [voice.isListening, voice.stop, voice.start]);
   useEffect(() => {
-    if (onVoiceStateChange) {
-      const toggle = () => voice.isListening ? voice.stop() : voice.start();
-      onVoiceStateChange(voice.isListening, voice.isSupported, toggle);
-    }
-  }, [voice.isListening, voice.isSupported, onVoiceStateChange]);
+    onVoiceStateChangeRef.current?.(voice.isListening, voice.isSupported, voiceToggle);
+  }, [voice.isListening, voice.isSupported, voiceToggle]);
 
   // Load editing entry into form
   useEffect(() => {
