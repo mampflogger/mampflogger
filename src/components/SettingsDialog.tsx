@@ -556,7 +556,7 @@ const SettingsDialog = ({
             <div className="glass-card rounded-xl p-3 space-y-2">
               <div>
                 <Label className="text-[10px] font-medium text-muted-foreground mb-0.5 block">Name</Label>
-                <Input id="settings-name" value={name} onChange={(e) => setName(e.target.value)} onKeyDown={(e) => handleProfileKeyDown(e, "settings-name")} placeholder="Dein Name" className="h-8 text-sm bg-muted/50" autoCorrect="off" spellCheck={false} />
+                <Input id="settings-name" value={name} onChange={(e) => setName(e.target.value)} onKeyDown={(e) => handleProfileKeyDown(e, "settings-name")} placeholder="Dein Name" className="h-8 text-sm bg-muted/50" autoCorrect="off" spellCheck={false} autoFocus={initialOpen} />
               </div>
               <div>
                 <Label className="text-[10px] font-medium text-muted-foreground mb-0.5 block">Geschlecht</Label>
