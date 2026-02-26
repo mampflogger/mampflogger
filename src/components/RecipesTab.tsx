@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { foodDatabase, saveFoodDatabase, type FoodItem } from "@/data/foodDatabase";
 
 interface RecipeMacros {
   calories: number;
@@ -169,7 +170,12 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
     setRecalculating(true);
     try {
       const { data, error } = await supabase.functions.invoke("recipe-recalculate", {
-        body: { ingredients: finalIngredients, servings: recipe.servings },
+        body: {
+          ingredients: finalIngredients,
+          servings: recipe.servings,
+          recipeName: recipe.name,
+          oldSteps: recipe.steps,
+        },
       });
 
       if (error) throw error;
@@ -182,16 +188,46 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
       const updatedIngredients = data.ingredients || finalIngredients;
       const totalMacros = data.totalMacros || recipe.totalMacros;
       const perServing = data.perServing || recipe.perServing;
+      const updatedSteps = data.steps || recipe.steps;
+
+      // Add new ingredients to food database
+      if (data.ingredients && Array.isArray(data.ingredients)) {
+        const existingNames = new Set(foodDatabase.map(f => f.name.toLowerCase()));
+        const newFoods: FoodItem[] = [];
+
+        for (const ing of data.ingredients) {
+          if (!existingNames.has(ing.name.toLowerCase()) && ing.per100g) {
+            newFoods.push({
+              name: ing.name,
+              baseUnit: "100g",
+              baseAmount: 100,
+              calories: Math.round(ing.per100g.calories),
+              protein: Math.round(ing.per100g.protein * 10) / 10,
+              fat: Math.round(ing.per100g.fat * 10) / 10,
+              carbs: Math.round(ing.per100g.carbs * 10) / 10,
+              fiber: Math.round(ing.per100g.fiber * 10) / 10,
+              category: "Eigene",
+              isUserCreated: true,
+            });
+          }
+        }
+
+        if (newFoods.length > 0) {
+          foodDatabase.push(...newFoods);
+          saveFoodDatabase(foodDatabase);
+          toast({ title: `${newFoods.length} neue Zutat(en)`, description: "In Lebensmittelliste unter 'Eigene' gespeichert." });
+        }
+      }
 
       setSavedRecipes((prev) =>
         prev.map((r) =>
           r.id === recipeId
-            ? { ...r, ingredients: updatedIngredients, totalMacros, perServing }
+            ? { ...r, ingredients: updatedIngredients, totalMacros, perServing, steps: updatedSteps }
             : r
         )
       );
       stopEditing();
-      toast({ title: "Gespeichert", description: "Rezept und Nährwerte wurden aktualisiert." });
+      toast({ title: "Gespeichert", description: "Rezept, Nährwerte und Zubereitung wurden aktualisiert." });
     } catch (e) {
       console.error("Recalculate error:", e);
       toast({ title: "Fehler", description: "Nährwerte konnten nicht neu berechnet werden.", variant: "destructive" });
