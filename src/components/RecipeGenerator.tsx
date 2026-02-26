@@ -205,44 +205,7 @@ const RecipeGenerator = ({
         </div>
       </div>
 
-      {/* Saved recipes list */}
-      {showSaved && savedRecipes.length > 0 && (
-        <div className="mb-3 space-y-1.5">
-          <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Gespeicherte Rezepte</p>
-          {savedRecipes.map((sr) => (
-            <div
-              key={sr.id}
-              className="flex items-center justify-between rounded-lg bg-accent/40 border border-border/50 px-2.5 py-1.5"
-            >
-              <button
-                onClick={() => handleLoadSaved(sr)}
-                className="flex-1 text-left text-[11px] font-medium text-foreground hover:text-primary transition-colors"
-              >
-                {sr.name}
-                <span className="ml-1.5 text-muted-foreground font-normal">
-                  {sr.perServing.calories} kcal/Portion
-                </span>
-              </button>
-              <div className="flex items-center gap-1 shrink-0 ml-2">
-                <button
-                  onClick={() => handleAddToLog(sr)}
-                  className="p-1 rounded text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"
-                  title="1 Portion ins Protokoll"
-                >
-                  <Plus className="w-3 h-3" />
-                </button>
-                <button
-                  onClick={() => handleDeleteSaved(sr.id)}
-                  className="p-1 rounded text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
-                  title="Rezept löschen"
-                >
-                  <Trash2 className="w-3 h-3" />
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
+      {/* Saved recipes list - moved below recipe result */}
 
       {/* Selected ingredients chips */}
       {selectedFoods.length > 0 && (
@@ -390,6 +353,45 @@ const RecipeGenerator = ({
               )}
             </Button>
           </div>
+        </div>
+      )}
+
+      {/* Saved recipes list - below current recipe */}
+      {showSaved && savedRecipes.length > 0 && (
+        <div className="mt-3 space-y-1.5">
+          <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Gespeicherte Rezepte</p>
+          {savedRecipes.map((sr) => (
+            <div
+              key={sr.id}
+              className="flex items-center justify-between rounded-lg bg-accent/40 border border-border/50 px-2.5 py-1.5"
+            >
+              <button
+                onClick={() => handleLoadSaved(sr)}
+                className="flex-1 text-left text-[11px] font-medium text-foreground hover:text-primary transition-colors"
+              >
+                {sr.name}
+                <span className="ml-1.5 text-muted-foreground font-normal">
+                  {sr.perServing.calories} kcal/Portion
+                </span>
+              </button>
+              <div className="flex items-center gap-1 shrink-0 ml-2">
+                <button
+                  onClick={() => handleAddToLog(sr)}
+                  className="p-1 rounded text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"
+                  title="1 Portion ins Protokoll"
+                >
+                  <Plus className="w-3 h-3" />
+                </button>
+                <button
+                  onClick={() => handleDeleteSaved(sr.id)}
+                  className="p-1 rounded text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+                  title="Rezept löschen"
+                >
+                  <Trash2 className="w-3 h-3" />
+                </button>
+              </div>
+            </div>
+          ))}
         </div>
       )}
     </div>
