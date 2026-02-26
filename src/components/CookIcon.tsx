@@ -6,8 +6,7 @@ const CookIcon = ({ className = "w-3.5 h-3.5" }: { className?: string }) => (
     src={cookIconUser}
     alt=""
     aria-hidden="true"
-    className={`${className} object-contain shrink-0 translate-y-[0.5px]`}
-    style={{ width: '0.8em', height: '0.8em', minWidth: '12px', minHeight: '12px' }}
+    className={`${className} object-contain shrink-0`}
     loading="lazy"
     decoding="async"
   />
