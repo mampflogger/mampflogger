@@ -46,7 +46,7 @@ Antworte NUR mit einem JSON-Objekt:
     "fiber": 4
   },
   "ingredients": [
-    { "name": "Hüttenkäse", "amount": "300g", "isMain": true, "per100g": { "calories": 98, "protein": 12.3, "fat": 4.3, "carbs": 1.2, "fiber": 0 } }
+    { "name": "Hüttenkäse", "amount": "300g", "isMain": true, "category": "Milchprodukte", "per100g": { "calories": 98, "protein": 12.3, "fat": 4.3, "carbs": 1.2, "fiber": 0 } }
   ],
   "steps": [
     "1. Schritt eins...",
@@ -60,7 +60,7 @@ Regeln:
 - Bei Zutaten die nur als Text eingegeben wurden (z.B. "200g Parmesan"): extrahiere Name und Menge korrekt
 - Portionen: ${servings || 2}
 - Kein zusätzlicher Text außerhalb des JSON
-- Gib die bereinigte Zutatenliste mit korrekten name/amount/isMain/per100g Feldern zurück
+- Gib die bereinigte Zutatenliste mit korrekten name/amount/isMain/category/per100g Feldern zurück. category muss eine der folgenden sein: Fleisch&Wurst, Fisch&Meeresfrüchte, Käse, Nüsse&Samen, Gemüse, Brot&Teigwaren, Öle&Fette, Getränke, Obst, Milchprodukte, Süßwaren, Sonstiges, Eigene
 - Die Zubereitungsschritte müssen ALLE Zutaten erwähnen und sinnvoll in den Kochablauf integrieren
 - Orientiere dich am Stil der bisherigen Schritte, aber passe sie an die neue Zutatenliste an
 - Rezeptname: ${recipeName || "Unbekannt"}`;

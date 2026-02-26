@@ -168,6 +168,37 @@ export function getFoodCategory(name: string): FoodCategory | undefined {
   return FOOD_CATEGORY_MAP[name];
 }
 
+/** Smart category guesser: checks exact match, then keyword-based heuristics.
+ *  Falls back to "Eigene" only if nothing matches. */
+export function guessCategory(name: string, aiCategory?: string): FoodCategory {
+  // 1. If AI provided a valid category, use it
+  if (aiCategory && (FOOD_CATEGORIES as readonly string[]).includes(aiCategory)) {
+    return aiCategory as FoodCategory;
+  }
+  // 2. Exact match from category map
+  const exact = FOOD_CATEGORY_MAP[name];
+  if (exact) return exact;
+  // 3. Keyword heuristics
+  const lower = name.toLowerCase();
+  const keywords: [string[], FoodCategory][] = [
+    [["huhn", "hähn", "pute", "rind", "schwein", "lamm", "ente", "gans", "kalb", "wurst", "schinken", "speck", "hack", "filet", "steak", "braten", "gulasch", "schnitzel", "salami", "fleisch", "bacon"], "Fleisch&Wurst"],
+    [["lachs", "forelle", "thunfisch", "kabeljau", "hering", "garnele", "shrimp", "muschel", "fisch", "scholle", "barsch", "karpfen", "dorsch", "sardine", "calamari", "tintenfisch", "dorade", "heilbutt", "makrele"], "Fisch&Meeresfrüchte"],
+    [["käse", "parmesan", "mozzarella", "gouda", "edamer", "emmentaler", "cheddar", "feta", "brie", "camembert", "halloumi", "ricotta", "gorgonzola"], "Käse"],
+    [["nuss", "nüsse", "mandel", "cashew", "pistazie", "walnuss", "erdnuss", "samen", "kerne", "pekan", "macadamia", "haselnuss", "paranuss"], "Nüsse&Samen"],
+    [["salat", "spinat", "kohl", "brokkoli", "blumenkohl", "zucchini", "aubergine", "paprika", "tomate", "gurke", "karotte", "möhre", "lauch", "zwiebel", "knoblauch", "sellerie", "fenchel", "radieschen", "champignon", "pilz", "erbse", "bohne", "gemüse", "kartoffel", "süßkartoffel", "kürbis", "mais", "petersilie", "basilikum", "kräuter", "dill", "schnittlauch", "rosmarin", "thymian", "oregano", "kohlrabi", "rote bete"], "Gemüse"],
+    [["brot", "nudel", "pasta", "spaghetti", "penne", "makkaroni", "reis", "mehl", "teig", "semmel", "brötchen", "toast", "couscous", "bulgur", "quinoa", "haferflocken", "müsli", "cornflakes", "tortilla", "wrap"], "Brot&Teigwaren"],
+    [["öl", "fett", "butter", "margarine", "schmalz", "mayonnaise", "mayo"], "Öle&Fette"],
+    [["saft", "cola", "limo", "wasser", "tee", "kaffee", "milchkaffee", "kakao", "brühe", "smoothie", "bier", "wein", "sekt", "energy", "mate"], "Getränke"],
+    [["apfel", "birne", "banane", "orange", "zitrone", "limette", "kiwi", "mango", "ananas", "erdbeere", "himbeere", "blaubeere", "heidelbeere", "kirsche", "traube", "melone", "pflaume", "pfirsich", "aprikose", "obst", "beere"], "Obst"],
+    [["joghurt", "quark", "milch", "sahne", "rahm", "skyr", "buttermilch", "kefir", "schmand", "crème fraîche", "molke"], "Milchprodukte"],
+    [["schokolade", "gummibärchen", "bonbon", "keks", "kuchen", "eis", "zucker", "honig", "marmelade", "nutella", "süß"], "Süßwaren"],
+  ];
+  for (const [words, cat] of keywords) {
+    if (words.some(w => lower.includes(w))) return cat;
+  }
+  return "Eigene";
+}
+
 const FOOD_DB_KEY = "mampflogger-food-database";
 const DELETED_FOODS_KEY = "mampflogger-deleted-foods";
 

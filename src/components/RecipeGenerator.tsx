@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useMemo } from "react";
-import { FoodItem, foodDatabase, saveFoodDatabase } from "@/data/foodDatabase";
+import { FoodItem, foodDatabase, saveFoodDatabase, guessCategory } from "@/data/foodDatabase";
 import { NutritionEntry, generateId } from "@/types/nutrition";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -253,7 +253,7 @@ const RecipeGenerator = ({
               fat: Math.round(ing.per100g.fat * 10) / 10,
               carbs: Math.round(ing.per100g.carbs * 10) / 10,
               fiber: Math.round(ing.per100g.fiber * 10) / 10,
-              category: "Eigene",
+              category: guessCategory(ing.name, ing.category),
               isUserCreated: true,
             });
           }
@@ -262,7 +262,7 @@ const RecipeGenerator = ({
         if (newFoods.length > 0) {
           foodDatabase.push(...newFoods);
           saveFoodDatabase(foodDatabase);
-          toast({ title: `${newFoods.length} neue Zutat(en)`, description: "In Lebensmittelliste unter 'Eigene' gespeichert." });
+          toast({ title: `${newFoods.length} neue Zutat(en)`, description: "In passende Kategorien einsortiert." });
         }
       }
 

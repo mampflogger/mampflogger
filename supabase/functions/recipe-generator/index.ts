@@ -32,8 +32,8 @@ Antworte NUR mit einem JSON-Objekt in diesem Format:
   "servings": 2,
   "prepTime": "20 Min.",
   "ingredients": [
-    { "name": "Zutat", "amount": "200g", "isMain": true },
-    { "name": "Ergänzung", "amount": "1 EL", "isMain": false }
+    { "name": "Zutat", "amount": "200g", "isMain": true, "category": "Fleisch&Wurst" },
+    { "name": "Ergänzung", "amount": "1 EL", "isMain": false, "category": "Öle&Fette" }
   ],
   "steps": [
     "Schritt 1: ...",
@@ -59,6 +59,8 @@ Regeln:
 - Rezept soll einfach und schnell sein (max 30 Min.)
 - Alle Nährwerte realistisch schätzen
 - Hauptzutaten mit isMain: true markieren
+- Jede Zutat bekommt eine passende category aus: Fleisch&Wurst, Fisch&Meeresfrüchte, Käse, Nüsse&Samen, Gemüse, Brot&Teigwaren, Öle&Fette, Getränke, Obst, Milchprodukte, Süßwaren, Sonstiges
+- Nur wenn keine Kategorie passt: "Eigene"
 - 3-6 Zubereitungsschritte
 - Portionsgröße angeben
 - Kein zusätzlicher Text außerhalb des JSON`;
