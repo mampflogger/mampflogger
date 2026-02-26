@@ -218,7 +218,7 @@ const RecipeGenerator = ({
         <div className="flex items-start gap-1.5 rounded-lg border border-border/50 bg-background p-2 mb-2">
           <Sparkles className="w-3.5 h-3.5 text-primary shrink-0 mt-0.5" />
           <p className="text-[10px] text-muted-foreground leading-relaxed">
-            Klicke bis zu fünf Kochmützen in der Zutatenliste an und lass dir von der KI ein Rezept erstellen.
+            Klicke bis zu fünf Kochmützen <CookIcon className="w-3.5 h-3.5 inline-block text-primary align-text-bottom" /> in der Zutatenliste an und lass dir von der KI ein Rezept erstellen.
           </p>
         </div>
       )}
