@@ -5,13 +5,13 @@ export function Toaster() {
   const { toasts } = useToast();
 
   return (
-    <ToastProvider>
+    <ToastProvider duration={1500}>
       {toasts.map(function ({ id, title, description, action, ...props }) {
         return (
           <Toast key={id} {...props}>
-            <div className="grid gap-1">
-              {title && <ToastTitle>{title}</ToastTitle>}
-              {description && <ToastDescription>{description}</ToastDescription>}
+            <div className="flex items-center gap-2">
+              {title && <ToastTitle className="text-xs font-semibold">{title}</ToastTitle>}
+              {description && <ToastDescription className="text-xs">{description}</ToastDescription>}
             </div>
             {action}
             <ToastClose />
