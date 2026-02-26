@@ -113,7 +113,7 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
       .join("\n");
     const stepsList = recipe.steps.map((s, i) => `${i + 1}. ${s}`).join("\n");
     const ps = recipe.perServing;
-    const text = `🍽️ ${recipe.name}\n\n👥 ${recipe.servings} Portionen · ⏱️ ${recipe.prepTime}\n\n📋 Zutaten:\n${ingredientsList}\n\n👨‍🍳 Zubereitung:\n${stepsList}\n\n📊 Pro Portion: ${ps.calories} kcal | P: ${ps.protein}g | F: ${ps.fat}g | KH: ${ps.carbs}g | Ballaststoffe: ${ps.fiber}g`;
+    const text = `🍽️ ${recipe.name}\n\n👥 ${recipe.servings} Portionen · ⏱️ ${recipe.prepTime}\n\n📋 Zutaten:\n${ingredientsList}\n\n👨‍🍳 Zubereitung:\n${stepsList}\n\n📊 Pro Portion: ${ps.calories} kcal | Protein: ${ps.protein}g | Fett: ${ps.fat}g | Kohlenhydrate: ${ps.carbs}g | Ballaststoffe: ${ps.fiber}g\n\n—\n🚀 Ein Service von mampflogger.de – Hol dir die kostenlose App und kreiere deine eigenen Rezepte!\n👉 https://mampflogger.lovable.app`;
 
     if (navigator.share) {
       try {
