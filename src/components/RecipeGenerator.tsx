@@ -188,10 +188,10 @@ const RecipeGenerator = ({
         <div className="flex items-center gap-1">
           {savedRecipes.length > 0 && (
             <Button
-              variant={showSaved ? "secondary" : "ghost"}
+              variant="ghost"
               size="sm"
               onClick={() => setShowSaved(!showSaved)}
-              className="h-6 text-[10px] px-2 gap-1"
+              className={`h-6 text-[10px] px-2 gap-1 ${showSaved ? "bg-background border border-border" : ""}`}
             >
               <BookOpen className="w-3 h-3" />
               {savedRecipes.length}
