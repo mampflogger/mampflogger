@@ -277,7 +277,7 @@ const RecipeGenerator = ({
       {recipe && (
         <div className="mt-3 space-y-3 animate-fade-in">
           {/* Title & meta */}
-          <div className="rounded-lg bg-accent/40 border border-border/50 p-3">
+          <div className="rounded-lg bg-muted/50 border border-border/50 p-3">
             <h3 className="text-sm font-bold text-foreground">{recipe.name}</h3>
             <div className="flex gap-3 mt-1 text-[11px] text-muted-foreground">
               <span>👥 {recipe.servings} Portionen</span>
@@ -286,7 +286,7 @@ const RecipeGenerator = ({
           </div>
 
           {/* Ingredients */}
-          <div className="rounded-lg bg-accent/40 border border-border/50 p-3">
+          <div className="rounded-lg bg-muted/50 border border-border/50 p-3">
             <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">Zutaten</p>
             <ul className="space-y-0.5">
               {recipe.ingredients.map((ing, i) => (
@@ -301,7 +301,7 @@ const RecipeGenerator = ({
           </div>
 
           {/* Steps */}
-          <div className="rounded-lg bg-accent/40 border border-border/50 p-3">
+          <div className="rounded-lg bg-muted/50 border border-border/50 p-3">
             <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">Zubereitung</p>
             <ol className="space-y-1">
               {recipe.steps.map((step, i) => (
@@ -313,30 +313,38 @@ const RecipeGenerator = ({
           </div>
 
           {/* Macros */}
-          <div className="rounded-lg bg-accent/40 border border-border/50 p-3">
+          <div className="rounded-lg bg-muted/50 border border-border/50 p-3">
             <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">Nährwerte</p>
-            <div className="grid grid-cols-2 gap-2 text-[11px]">
-              <div>
-                <p className="font-semibold text-foreground mb-0.5">Gesamt ({recipe.servings} Portionen)</p>
-                <div className="space-y-0.5 text-muted-foreground">
-                  <p>{recipe.totalMacros.calories} kcal</p>
-                  <p style={{ color: "hsl(var(--macro-pro))" }}>P: {recipe.totalMacros.protein}g</p>
-                  <p style={{ color: "hsl(var(--macro-fat))" }}>F: {recipe.totalMacros.fat}g</p>
-                  <p style={{ color: "hsl(var(--macro-kh))" }}>KH: {recipe.totalMacros.carbs}g</p>
-                  <p style={{ color: "hsl(var(--macro-fib))" }}>Bal: {recipe.totalMacros.fiber}g</p>
-                </div>
-              </div>
-              <div>
-                <p className="font-semibold text-foreground mb-0.5">Pro Portion</p>
-                <div className="space-y-0.5 text-muted-foreground">
-                  <p>{recipe.perServing.calories} kcal</p>
-                  <p style={{ color: "hsl(var(--macro-pro))" }}>P: {recipe.perServing.protein}g</p>
-                  <p style={{ color: "hsl(var(--macro-fat))" }}>F: {recipe.perServing.fat}g</p>
-                  <p style={{ color: "hsl(var(--macro-kh))" }}>KH: {recipe.perServing.carbs}g</p>
-                  <p style={{ color: "hsl(var(--macro-fib))" }}>Bal: {recipe.perServing.fiber}g</p>
-                </div>
-              </div>
-            </div>
+            <table className="w-full text-[11px]">
+              <thead>
+                <tr className="text-muted-foreground">
+                  <th className="text-left font-medium pb-1"></th>
+                  <th className="text-right font-medium pb-1">kcal</th>
+                  <th className="text-right font-medium pb-1" style={{ color: "hsl(var(--macro-pro))" }}>Pro</th>
+                  <th className="text-right font-medium pb-1" style={{ color: "hsl(var(--macro-fat))" }}>Fat</th>
+                  <th className="text-right font-medium pb-1" style={{ color: "hsl(var(--macro-kh))" }}>KH</th>
+                  <th className="text-right font-medium pb-1" style={{ color: "hsl(var(--macro-fib))" }}>Fib</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr className="text-foreground">
+                  <td className="font-semibold pr-2 py-0.5">Gesamt</td>
+                  <td className="text-right py-0.5">{recipe.totalMacros.calories}</td>
+                  <td className="text-right py-0.5">{recipe.totalMacros.protein}g</td>
+                  <td className="text-right py-0.5">{recipe.totalMacros.fat}g</td>
+                  <td className="text-right py-0.5">{recipe.totalMacros.carbs}g</td>
+                  <td className="text-right py-0.5">{recipe.totalMacros.fiber}g</td>
+                </tr>
+                <tr className="text-foreground">
+                  <td className="font-semibold pr-2 py-0.5">Pro Portion</td>
+                  <td className="text-right py-0.5">{recipe.perServing.calories}</td>
+                  <td className="text-right py-0.5">{recipe.perServing.protein}g</td>
+                  <td className="text-right py-0.5">{recipe.perServing.fat}g</td>
+                  <td className="text-right py-0.5">{recipe.perServing.carbs}g</td>
+                  <td className="text-right py-0.5">{recipe.perServing.fiber}g</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
 
           {/* Action buttons */}
@@ -345,7 +353,7 @@ const RecipeGenerator = ({
               onClick={() => handleAddToLog()}
               disabled={added}
               className="flex-1 h-9 text-xs gap-2"
-              variant={added ? "secondary" : "default"}
+              variant={added ? "secondary" : "outline"}
             >
               {added ? (
                 <>
