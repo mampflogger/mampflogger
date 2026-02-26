@@ -626,13 +626,66 @@ export function saveFoodDatabase(items: FoodItem[]): void {
 
 export const foodDatabase: FoodItem[] = loadFoodDatabase();
 
-export function addFoodItem(item: FoodItem): void {
-  if (!foodDatabase.find((f) => f.name.toLowerCase() === item.name.toLowerCase())) {
-    // If user adds an item back, remove from deleted blacklist
-    unmarkFoodDeleted(item.name);
-    foodDatabase.push(item);
-    saveFoodDatabase(foodDatabase);
+/**
+ * Normalize a food name for fuzzy comparison:
+ * strips parenthetical qualifiers, common suffixes, and extra whitespace.
+ */
+function normalizeFoodName(name: string): string {
+  return name
+    .toLowerCase()
+    .replace(/\s*\(.*?\)\s*/g, " ")           // remove (roh), (ungekocht), etc.
+    .replace(/\b(roh|ungekocht|trocken|gekocht|gegart|frisch|tiefgefroren|bio)\b/gi, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+/**
+ * Check if an existing food item is essentially the same as a new one.
+ * Matches on: normalized name similarity + calorie proximity (±15%).
+ */
+function findSimilarFood(item: FoodItem): FoodItem | undefined {
+  const normalizedNew = normalizeFoodName(item.name);
+  if (!normalizedNew) return undefined;
+
+  // Normalize calories to per-100 basis for fair comparison
+  const newCalPer100 = item.baseAmount > 0 ? (item.calories / item.baseAmount) * 100 : item.calories;
+
+  for (const existing of foodDatabase) {
+    const normalizedExisting = normalizeFoodName(existing.name);
+
+    // Check name similarity: one contains the other, or they're identical after normalization
+    const nameMatch =
+      normalizedNew === normalizedExisting ||
+      normalizedExisting.includes(normalizedNew) ||
+      normalizedNew.includes(normalizedExisting);
+
+    if (!nameMatch) continue;
+
+    // Compare calories (per 100 basis) – within 15% tolerance
+    const existCalPer100 = existing.baseAmount > 0 ? (existing.calories / existing.baseAmount) * 100 : existing.calories;
+    if (existCalPer100 === 0 && newCalPer100 === 0) return existing;
+    const maxCal = Math.max(existCalPer100, newCalPer100);
+    if (maxCal > 0 && Math.abs(existCalPer100 - newCalPer100) / maxCal <= 0.15) {
+      return existing;
+    }
   }
+  return undefined;
+}
+
+export function addFoodItem(item: FoodItem): void {
+  // Exact name match → skip
+  if (foodDatabase.find((f) => f.name.toLowerCase() === item.name.toLowerCase())) {
+    return;
+  }
+  // Fuzzy duplicate detection → skip if a similar food already exists
+  const similar = findSimilarFood(item);
+  if (similar) {
+    return;
+  }
+  // If user adds an item back, remove from deleted blacklist
+  unmarkFoodDeleted(item.name);
+  foodDatabase.push(item);
+  saveFoodDatabase(foodDatabase);
 }
 
 export function removeFoodItem(name: string): void {
