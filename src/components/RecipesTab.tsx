@@ -493,6 +493,33 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
             </p>
           </div>
         </div>
+        {/* Hidden file input for photo-to-recipe (empty state) */}
+        <input
+          ref={photoInputRef}
+          type="file"
+          accept="image/*"
+          capture="environment"
+          className="hidden"
+          onChange={handlePhotoFileChange}
+        />
+        {/* Photo-to-Recipe Dialog (empty state) */}
+        <Dialog open={showPhotoDialog} onOpenChange={setShowPhotoDialog}>
+          <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2 text-sm">
+                <Camera className="w-4 h-4" />
+                Rezept aus Foto
+              </DialogTitle>
+            </DialogHeader>
+            {photoAnalyzing && (
+              <div className="flex flex-col items-center gap-2 py-6">
+                <Loader2 className="w-6 h-6 animate-spin text-primary" />
+                <p className="text-xs text-muted-foreground">Foto wird analysiert…</p>
+              </div>
+            )}
+            {photoError && <p className="text-xs text-destructive text-center py-4">{photoError}</p>}
+          </DialogContent>
+        </Dialog>
       </div>
     );
   }
