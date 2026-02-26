@@ -50,7 +50,7 @@ const DeficitDisplay = ({ profile, activityBonus, consumedCalories, goalDeficit 
 
   return (
     <div className="space-y-2">
-      <div className="rounded-lg bg-accent/40 px-3 py-1.5 space-y-1">
+      <div className="rounded-lg bg-background px-3 py-1.5 space-y-1">
         <div className="flex items-center justify-between text-xs text-muted-foreground">
           <span className="flex items-center gap-1">
             <Flame className="w-3.5 h-3.5" />

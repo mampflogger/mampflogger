@@ -331,7 +331,7 @@ const ActivityInput = ({
               </div>
             </div>
           ))}
-          <div className="flex items-center justify-between rounded-lg bg-accent/40 px-3 py-1.5 mt-1">
+          <div className="flex items-center justify-between rounded-lg bg-background px-3 py-1.5 mt-1">
             <span className="text-xs text-muted-foreground font-medium">Activity Bonus</span>
             <span className="text-sm font-bold text-foreground">+{activityBonus} kcal</span>
           </div>

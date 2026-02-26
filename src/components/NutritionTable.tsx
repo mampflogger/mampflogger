@@ -75,7 +75,7 @@ const NutritionTable = ({ entries, onDelete, onEntryClick }: NutritionTableProps
             ))}
           </tbody>
           <tfoot>
-            <tr className="border-t-2 border-primary/20 bg-accent/40">
+            <tr className="border-t-2 border-primary/20 bg-background">
               <td className="py-1 px-0.5 font-bold" colSpan={3}>Summe</td>
               <td className="py-1 px-0.5 text-right font-bold">{summary.totalCalories}</td>
               <td className="py-1 px-0.5 text-right font-bold" style={{ color: MACRO_COLORS.pro }}>{summary.totalProtein}</td>

@@ -142,7 +142,7 @@ const ImportDialog = ({ onImport }: ImportDialogProps) => {
           {/* Only show input section when no results yet */}
           {!hasResults && (
             <>
-              <div className="rounded-md bg-accent/40 p-2 text-xs text-muted-foreground">
+              <div className="rounded-md bg-background p-2 text-xs text-muted-foreground">
                 <span className="font-semibold text-foreground">Formate: </span>
                 Protokoll, Bilanz oder Lebensmittelliste.
               </div>

@@ -117,7 +117,7 @@ const NutritionCoach = ({ entries, selectedDate, profile, bookedActivities = [] 
       {result && (
         <div className="space-y-3 animate-fade-in">
           {/* Summary */}
-          <div className="rounded-lg bg-accent/40 border border-border/50 p-3">
+          <div className="rounded-lg bg-background border border-border/50 p-3">
             <p className="text-xs font-medium text-foreground leading-relaxed">{result.summary}</p>
           </div>
 
@@ -126,7 +126,7 @@ const NutritionCoach = ({ entries, selectedDate, profile, bookedActivities = [] 
             {result.tips.map((tip, i) => (
               <div
                 key={i}
-                className="rounded-lg bg-accent/40 border border-border/50 p-3 flex gap-3 items-start"
+                className="rounded-lg bg-background border border-border/50 p-3 flex gap-3 items-start"
               >
                 <span className="text-xl shrink-0 mt-0.5">{tip.icon}</span>
                 <div className="min-w-0">

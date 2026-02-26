@@ -244,7 +244,7 @@ const RecipeGenerator = ({
       {recipe && (
         <div className="mt-3 space-y-3 animate-fade-in">
           {/* Title & meta */}
-           <div className="rounded-lg bg-accent/40 border border-border/50 p-3">
+           <div className="rounded-lg bg-background border border-border/50 p-3">
             <h3 className="text-sm font-bold text-foreground">{recipe.name}</h3>
             <div className="flex gap-3 mt-1 text-[11px] text-muted-foreground">
               <span>👥 {recipe.servings} Portionen</span>
@@ -253,7 +253,7 @@ const RecipeGenerator = ({
           </div>
 
           {/* Ingredients */}
-          <div className="rounded-lg bg-accent/40 border border-border/50 p-3">
+          <div className="rounded-lg bg-background border border-border/50 p-3">
             <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">Zutaten</p>
             <ul className="space-y-0.5">
               {recipe.ingredients.map((ing, i) => (
@@ -268,7 +268,7 @@ const RecipeGenerator = ({
           </div>
 
           {/* Steps */}
-          <div className="rounded-lg bg-accent/40 border border-border/50 p-3">
+          <div className="rounded-lg bg-background border border-border/50 p-3">
             <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">Zubereitung</p>
             <ol className="space-y-1">
               {recipe.steps.map((step, i) => (
@@ -280,7 +280,7 @@ const RecipeGenerator = ({
           </div>
 
           {/* Macros */}
-          <div className="rounded-lg bg-accent/40 border border-border/50 p-3">
+          <div className="rounded-lg bg-background border border-border/50 p-3">
             <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">Nährwerte</p>
             <table className="w-full text-[11px]">
               <thead>
@@ -363,7 +363,7 @@ const RecipeGenerator = ({
           {savedRecipes.map((sr) => (
             <div
               key={sr.id}
-              className="flex items-center justify-between rounded-lg bg-accent/40 border border-border/50 px-2.5 py-1.5"
+              className="flex items-center justify-between rounded-lg bg-background border border-border/50 px-2.5 py-1.5"
             >
               <button
                 onClick={() => handleLoadSaved(sr)}
