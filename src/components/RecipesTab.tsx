@@ -622,7 +622,6 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
                                   <Trash2 className="w-3 h-3" />
                                 </button>
                               )}
-                              <span className="shrink-0 w-5 text-center inline-flex items-center justify-center">{ing.isMain ? "⭐" : ""}</span>
                               {isEditing && hasNumber ? (
                                 <span className="flex items-center gap-1">
                                   <Input
@@ -632,12 +631,12 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
                                     onChange={(e) => handleAmountChange(i, e.target.value)}
                                     className="h-6 w-14 px-1 text-[11px] text-center font-medium"
                                   />
-                                  <span>{parsed!.rest} {ing.name}</span>
+                                  <span>{parsed!.rest} {ing.name}{ing.isMain ? " ⭐" : ""}</span>
                                 </span>
                               ) : (
                                 <span>
                                   {ing.amount && <span className="font-medium">{ing.amount}</span>}
-                                  {ing.amount ? " " : ""}{ing.name}
+                                  {ing.amount ? " " : ""}{ing.name}{ing.isMain ? " ⭐" : ""}
                                 </span>
                               )}
                             </li>
