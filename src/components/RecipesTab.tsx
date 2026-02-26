@@ -1,12 +1,18 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import { NutritionEntry, generateId } from "@/types/nutrition";
-import { Trash2, ChevronDown, ChevronUp, Sparkles, Pencil, Check, Plus, Loader2, Share2, PlusCircle, MessageCircle } from "lucide-react";
+import { Trash2, ChevronDown, ChevronUp, Sparkles, Pencil, Check, Plus, Loader2, Share2, PlusCircle, MessageCircle, Camera } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { foodDatabase, saveFoodDatabase, type FoodItem } from "@/data/foodDatabase";
 import ManualRecipeForm from "@/components/ManualRecipeForm";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 interface RecipeMacros {
   calories: number;
@@ -73,8 +79,13 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [recalculating, setRecalculating] = useState(false);
   const [showManualForm, setShowManualForm] = useState(false);
+  const [photoAnalyzing, setPhotoAnalyzing] = useState(false);
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const [showPhotoDialog, setShowPhotoDialog] = useState(false);
+  const [photoError, setPhotoError] = useState<string | null>(null);
   const suggestionsRef = useRef<HTMLDivElement>(null);
   const nameInputRef = useRef<HTMLInputElement>(null);
+  const photoInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
   const foodSuggestions = useMemo(() => {
@@ -140,6 +151,97 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
   const handleManualSave = (recipe: SavedRecipe) => {
     setSavedRecipes((prev) => [recipe, ...prev]);
     setShowManualForm(false);
+  };
+
+  const handlePhotoCaptureClick = () => {
+    photoInputRef.current?.click();
+  };
+
+  const handlePhotoFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setPhotoError(null);
+
+    const reader = new FileReader();
+    reader.onload = async (ev) => {
+      const base64 = ev.target?.result as string;
+      setPhotoPreview(base64);
+      setShowPhotoDialog(true);
+      setPhotoAnalyzing(true);
+
+      try {
+        const { data, error: fnError } = await supabase.functions.invoke("photo-to-recipe", {
+          body: { imageBase64: base64 },
+        });
+
+        if (fnError) {
+          setPhotoError("Analyse fehlgeschlagen. Bitte versuche es erneut.");
+          console.error("photo-to-recipe error:", fnError);
+          setPhotoAnalyzing(false);
+          return;
+        }
+        if (data?.error) {
+          setPhotoError(data.error);
+          setPhotoAnalyzing(false);
+          return;
+        }
+
+        // Save new foods to database
+        if (data.ingredients && Array.isArray(data.ingredients)) {
+          const existingNames = new Set(foodDatabase.map(f => f.name.toLowerCase()));
+          const newFoods: FoodItem[] = [];
+          for (const ing of data.ingredients) {
+            if (!existingNames.has(ing.name.toLowerCase()) && ing.per100g) {
+              newFoods.push({
+                name: ing.name,
+                baseUnit: "100g",
+                baseAmount: 100,
+                calories: Math.round(ing.per100g.calories),
+                protein: Math.round(ing.per100g.protein * 10) / 10,
+                fat: Math.round(ing.per100g.fat * 10) / 10,
+                carbs: Math.round(ing.per100g.carbs * 10) / 10,
+                fiber: Math.round(ing.per100g.fiber * 10) / 10,
+                category: "Eigene",
+                isUserCreated: true,
+              });
+            }
+          }
+          if (newFoods.length > 0) {
+            foodDatabase.push(...newFoods);
+            saveFoodDatabase(foodDatabase);
+          }
+        }
+
+        const recipe: SavedRecipe = {
+          id: generateId(),
+          savedAt: new Date().toISOString(),
+          name: data.name || "Foto-Rezept",
+          servings: data.servings || 2,
+          prepTime: data.prepTime || "–",
+          ingredients: (data.ingredients || []).map((ing: any) => ({
+            name: ing.name,
+            amount: ing.amount || "",
+            isMain: ing.isMain || false,
+          })),
+          steps: data.steps || [],
+          totalMacros: data.totalMacros || { calories: 0, protein: 0, fat: 0, carbs: 0, fiber: 0 },
+          perServing: data.perServing || { calories: 0, protein: 0, fat: 0, carbs: 0, fiber: 0 },
+        };
+
+        setSavedRecipes((prev) => [recipe, ...prev]);
+        setExpandedId(recipe.id);
+        setShowPhotoDialog(false);
+        setPhotoPreview(null);
+        toast({ title: "Rezept erstellt!", description: `${recipe.name} wurde aus dem Foto generiert.` });
+      } catch (err) {
+        console.error("Photo-to-recipe error:", err);
+        setPhotoError("Verbindungsfehler. Bitte versuche es erneut.");
+      } finally {
+        setPhotoAnalyzing(false);
+      }
+    };
+    reader.readAsDataURL(file);
+    e.target.value = "";
   };
 
   const handleAddToLog = (recipe: SavedRecipe) => {
@@ -313,13 +415,23 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
           <h2 className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
             Gespeicherte Rezepte (0)
           </h2>
-          <button
-            onClick={() => setShowManualForm(true)}
-            className="text-primary hover:text-primary/80 transition-colors"
-            title="Neues Rezept anlegen"
-          >
-            <PlusCircle className="w-4 h-4" />
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setShowManualForm(true)}
+              className="flex items-center gap-1 text-primary hover:text-primary/80 transition-colors"
+              title="Neues Rezept anlegen"
+            >
+              <PlusCircle className="w-4 h-4" />
+              <span className="text-[10px] font-semibold">Neu</span>
+            </button>
+            <button
+              onClick={handlePhotoCaptureClick}
+              className="p-1 rounded text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"
+              title="Rezept aus Foto erstellen"
+            >
+              <Camera className="w-4 h-4" />
+            </button>
+          </div>
         </div>
         <div className="text-center py-8">
           <p className="text-muted-foreground text-sm">Noch keine gespeicherten Rezepte.</p>
@@ -340,13 +452,23 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
         <h2 className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
           Gespeicherte Rezepte ({savedRecipes.length})
         </h2>
-        <button
-          onClick={() => setShowManualForm(!showManualForm)}
-          className="text-primary hover:text-primary/80 transition-colors"
-          title="Neues Rezept anlegen"
-        >
-          <PlusCircle className="w-4 h-4" />
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setShowManualForm(!showManualForm)}
+            className="flex items-center gap-1 text-primary hover:text-primary/80 transition-colors"
+            title="Neues Rezept anlegen"
+          >
+            <PlusCircle className="w-4 h-4" />
+            <span className="text-[10px] font-semibold">Neu</span>
+          </button>
+          <button
+            onClick={handlePhotoCaptureClick}
+            className="p-1 rounded text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"
+            title="Rezept aus Foto erstellen"
+          >
+            <Camera className="w-4 h-4" />
+          </button>
+        </div>
       </div>
 
       {showManualForm && (
@@ -604,6 +726,53 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
           );
         })}
       </div>
+
+      {/* Hidden file input for photo-to-recipe */}
+      <input
+        ref={photoInputRef}
+        type="file"
+        accept="image/*"
+        capture="environment"
+        className="hidden"
+        onChange={handlePhotoFileChange}
+      />
+
+      {/* Photo-to-Recipe Dialog */}
+      <Dialog open={showPhotoDialog} onOpenChange={setShowPhotoDialog}>
+        <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-sm">
+              <Camera className="w-4 h-4" />
+              Rezept aus Foto
+            </DialogTitle>
+          </DialogHeader>
+
+          {photoPreview && (
+            <div className="rounded-lg overflow-hidden border border-border">
+              <img src={photoPreview} alt="Gericht" className="w-full h-48 object-cover" />
+            </div>
+          )}
+
+          {photoAnalyzing && (
+            <div className="flex flex-col items-center gap-2 py-6">
+              <Loader2 className="w-8 h-8 animate-spin text-primary" />
+              <p className="text-sm text-muted-foreground">KI erstellt Rezept aus Foto…</p>
+            </div>
+          )}
+
+          {photoError && (
+            <div className="bg-destructive/10 text-destructive rounded-lg p-3 text-sm">
+              {photoError}
+            </div>
+          )}
+
+          {!photoAnalyzing && !photoError && photoPreview && (
+            <p className="text-xs text-muted-foreground text-center py-2">
+              Rezept wurde erstellt und gespeichert!
+            </p>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
