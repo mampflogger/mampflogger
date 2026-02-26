@@ -3,7 +3,7 @@ import { Camera, Loader2, Check, X, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { NutritionEntry, generateId } from "@/types/nutrition";
 import { supabase } from "@/integrations/supabase/client";
-import { addFoodItem } from "@/data/foodDatabase";
+import { addFoodItem, guessCategory } from "@/data/foodDatabase";
 import {
   Dialog,
   DialogContent,
@@ -119,7 +119,7 @@ const PhotoToLog = ({ selectedDate, onAddEntries }: PhotoToLogProps) => {
           fat: Math.round(f.fat * factor),
           carbs: Math.round(f.carbs * factor),
           fiber: Math.round(f.fiber * factor),
-          category: f.category as any,
+          category: f.category as any || guessCategory(f.name),
         });
 
         return {

@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { foodDatabase, saveFoodDatabase, type FoodItem } from "@/data/foodDatabase";
+import { foodDatabase, saveFoodDatabase, guessCategory, type FoodItem } from "@/data/foodDatabase";
 import ManualRecipeForm from "@/components/ManualRecipeForm";
 import {
   Dialog,
@@ -222,7 +222,7 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
                 fat: Math.round(ing.per100g.fat * 10) / 10,
                 carbs: Math.round(ing.per100g.carbs * 10) / 10,
                 fiber: Math.round(ing.per100g.fiber * 10) / 10,
-                category: "Eigene",
+                category: guessCategory(ing.name, ing.category),
                 isUserCreated: true,
               });
             }
@@ -429,7 +429,7 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
               fat: Math.round(ing.per100g.fat * 10) / 10,
               carbs: Math.round(ing.per100g.carbs * 10) / 10,
               fiber: Math.round(ing.per100g.fiber * 10) / 10,
-              category: "Eigene",
+              category: guessCategory(ing.name, ing.category),
               isUserCreated: true,
             });
           }
@@ -438,7 +438,7 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
         if (newFoods.length > 0) {
           foodDatabase.push(...newFoods);
           saveFoodDatabase(foodDatabase);
-          toast({ title: `${newFoods.length} neue Zutat(en)`, description: "In Lebensmittelliste unter 'Eigene' gespeichert." });
+          toast({ title: `${newFoods.length} neue Zutat(en)`, description: "In passende Kategorien einsortiert." });
         }
       }
 

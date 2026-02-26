@@ -3,7 +3,7 @@ import { createPortal } from "react-dom";
 import { NutritionEntry, generateId } from "@/types/nutrition";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { FoodItem, searchFood, addFoodItem, trackFoodUsage, getFoodUsageCount } from "@/data/foodDatabase";
+import { FoodItem, searchFood, addFoodItem, trackFoodUsage, getFoodUsageCount, guessCategory } from "@/data/foodDatabase";
 import { useSpeechRecognition } from "@/hooks/useSpeechRecognition";
 import { Mic, MicOff } from "lucide-react";
 
@@ -303,6 +303,7 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
         fat: Math.round(parsedFat * factor),
         carbs: Math.round(parsedCarbs * factor),
         fiber: Math.round(parsedFiber * factor),
+        category: guessCategory(food.trim()),
       });
     }
 

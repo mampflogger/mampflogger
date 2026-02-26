@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { foodDatabase, saveFoodDatabase, type FoodItem } from "@/data/foodDatabase";
+import { foodDatabase, saveFoodDatabase, guessCategory, type FoodItem } from "@/data/foodDatabase";
 
 interface RecipeMacros {
   calories: number;
@@ -156,7 +156,7 @@ const ManualRecipeForm = ({ onSave, onCancel }: ManualRecipeFormProps) => {
               fat: Math.round(ing.per100g.fat * 10) / 10,
               carbs: Math.round(ing.per100g.carbs * 10) / 10,
               fiber: Math.round(ing.per100g.fiber * 10) / 10,
-              category: "Eigene",
+              category: guessCategory(ing.name, ing.category),
               isUserCreated: true,
             });
           }
