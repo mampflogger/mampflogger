@@ -581,12 +581,12 @@ const SettingsDialog = ({
           </div>
         </header>
 
-        <main className={`flex-1 min-h-0 flex flex-col ${tab === "food" ? "overflow-hidden" : "overflow-y-auto"}`}>
+        <main className="flex-1 min-h-0 flex flex-col overflow-y-auto">
           <DialogHeader className="sr-only">
             <DialogTitle>Einstellungen</DialogTitle>
             <DialogDescription>Einstellungsmenü von MampfLogger</DialogDescription>
           </DialogHeader>
-          <div className={`max-w-lg mx-auto px-4 w-full ${tab === "food" ? "flex-1 min-h-0 flex flex-col pb-4" : "pb-8"}`}>
+          <div className="max-w-lg mx-auto px-4 w-full pb-8">
             {/* Tab bar – gleiche Außenmaße wie Datums-Kasten */}
             <div className="glass-card rounded-xl p-3 my-3">
               <div className="grid grid-cols-4 gap-1.5 h-10">
@@ -728,8 +728,8 @@ const SettingsDialog = ({
 
         {/* Food List Tab */}
         {tab === "food" && (
-          <div className="flex flex-col min-h-0 flex-1 gap-3">
-            <div className="glass-card rounded-xl p-3 flex flex-col min-h-0 flex-1">
+          <div className="space-y-3">
+            <div className="glass-card rounded-xl p-3">
             {editingFood ? (
               <div className="space-y-2.5">
                 <div className="flex items-center justify-between">
@@ -922,7 +922,7 @@ const SettingsDialog = ({
                   />
                 </div>
                 {/* Scrollable table with sticky header */}
-                <div className="flex-1 min-h-0 overflow-y-auto overflow-x-auto -mx-1 px-1">
+                <div className="max-h-[40vh] overflow-y-auto overflow-x-auto -mx-1 px-1">
                   <table className="w-full text-[10px]">
                     <thead className="sticky top-0 bg-card z-10">
                       <tr className="border-b border-border">
