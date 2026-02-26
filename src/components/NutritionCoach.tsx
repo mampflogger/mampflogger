@@ -117,7 +117,7 @@ const NutritionCoach = ({ entries, selectedDate, profile, bookedActivities = [] 
       {result && (
         <div className="space-y-3 animate-fade-in">
           {/* Summary */}
-          <div className="rounded-lg bg-primary/10 border border-primary/20 p-3">
+          <div className="rounded-lg bg-accent/40 border border-border/50 p-3">
             <p className="text-xs font-medium text-foreground leading-relaxed">{result.summary}</p>
           </div>
 
