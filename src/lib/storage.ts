@@ -9,7 +9,7 @@ export function loadEntries(): NutritionEntry[] {
     const entries: NutritionEntry[] = data ? JSON.parse(data) : [];
     const db = foodDatabase;
     // Filter invalid dates + migrate missing liquidMl from DB
-    return entries
+    const result = entries
       .filter(
         (e) =>
           e.date &&
@@ -24,6 +24,11 @@ export function loadEntries(): NutritionEntry[] {
         const factor = e.amount / food.baseAmount;
         return { ...e, liquidMl: Math.round(food.liquidMl * factor) };
       });
+    // Persist migration so backups include liquidMl
+    if (result.some((e, i) => e !== entries[i])) {
+      saveEntries(result);
+    }
+    return result;
   } catch {
     return [];
   }
