@@ -3,7 +3,7 @@ import { FoodItem } from "@/data/foodDatabase";
 import { NutritionEntry, generateId } from "@/types/nutrition";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Loader2, X, Plus, Check, Trash2, BookOpen, Save, Sparkles } from "lucide-react";
+import { Loader2, X, Plus, Check, Trash2, Save, Sparkles } from "lucide-react";
 import CookIcon from "@/components/CookIcon";
 import { useToast } from "@/hooks/use-toast";
 
@@ -199,9 +199,8 @@ const RecipeGenerator = ({
               variant="ghost"
               size="sm"
               onClick={() => setShowSaved(!showSaved)}
-              className={`h-6 text-[10px] px-2 gap-1 ${showSaved ? "bg-background border border-border" : ""}`}
+              className={`h-6 text-[10px] px-2 ${showSaved ? "bg-background border border-border" : ""}`}
             >
-              <BookOpen className="w-3 h-3" />
               {savedRecipes.length}
             </Button>
           )}
