@@ -622,7 +622,7 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
                                   <Trash2 className="w-3 h-3" />
                                 </button>
                               )}
-                              <span className="shrink-0">{ing.isMain ? "⭐" : "•"}</span>
+                              <span className="shrink-0 w-5 text-center inline-flex items-center justify-center">{ing.isMain ? "⭐" : ""}</span>
                               {isEditing && hasNumber ? (
                                 <span className="flex items-center gap-1">
                                   <Input
