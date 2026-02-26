@@ -89,6 +89,7 @@ const RecipeGenerator = ({
   const [recipe, setRecipe] = useState<Recipe | null>(null);
   const [loading, setLoading] = useState(false);
   const [added, setAdded] = useState(false);
+  const [saved, setSaved] = useState(false);
   const [savedRecipes, setSavedRecipes] = useState<SavedRecipe[]>(loadSavedRecipes);
   const [showSaved, setShowSaved] = useState(false);
   const { toast } = useToast();
@@ -102,6 +103,7 @@ const RecipeGenerator = ({
     setLoading(true);
     setRecipe(null);
     setAdded(false);
+    setSaved(false);
     try {
       const frequentFoods = getFrequentFoods(entries);
       const { data, error } = await supabase.functions.invoke("recipe-generator", {
@@ -125,12 +127,13 @@ const RecipeGenerator = ({
 
   const handleSaveRecipe = () => {
     if (!recipe) return;
-    const saved: SavedRecipe = {
+    const savedEntry: SavedRecipe = {
       ...recipe,
       id: generateId(),
       savedAt: new Date().toISOString(),
     };
-    setSavedRecipes((prev) => [saved, ...prev]);
+    setSavedRecipes((prev) => [savedEntry, ...prev]);
+    setSaved(true);
     toast({ title: "Gespeichert!", description: `${recipe.name} wurde zu deinen Rezepten hinzugefügt.` });
   };
 
@@ -143,6 +146,7 @@ const RecipeGenerator = ({
     const { id, savedAt, ...recipeData } = saved;
     setRecipe(recipeData);
     setAdded(false);
+    setSaved(false);
     setShowSaved(false);
   };
 
@@ -353,7 +357,7 @@ const RecipeGenerator = ({
               onClick={() => handleAddToLog()}
               disabled={added}
               className="flex-1 h-9 text-xs gap-2"
-              variant={added ? "secondary" : "outline"}
+              variant={added ? "secondary" : "default"}
             >
               {added ? (
                 <>
@@ -369,11 +373,21 @@ const RecipeGenerator = ({
             </Button>
             <Button
               onClick={handleSaveRecipe}
-              variant="outline"
+              disabled={saved}
+              variant={saved ? "secondary" : "default"}
               className="h-9 text-xs gap-1.5 px-3"
             >
-              <Save className="w-3.5 h-3.5" />
-              Speichern
+              {saved ? (
+                <>
+                  <Check className="w-3.5 h-3.5" />
+                  Gespeichert
+                </>
+              ) : (
+                <>
+                  <Save className="w-3.5 h-3.5" />
+                  Speichern
+                </>
+              )}
             </Button>
           </div>
         </div>
