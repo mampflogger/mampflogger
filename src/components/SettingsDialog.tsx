@@ -603,23 +603,25 @@ const SettingsDialog = ({
             <DialogDescription>Einstellungsmenü von MampfLogger</DialogDescription>
           </DialogHeader>
           <div className="max-w-lg mx-auto px-4 w-full pb-8">
-            {/* Tab bar – gleiche Außenmaße wie Datums-Kasten */}
-            <div className="glass-card rounded-xl p-3 my-3">
-              <div className="grid grid-cols-5 gap-1 h-10">
-                {tabs.map((t) => (
-                  <button
-                    key={t.id}
-                    onClick={() => setTab(t.id)}
-                    className={`h-10 flex flex-col items-center justify-center gap-0.5 rounded-lg px-1 text-[10px] leading-none font-semibold transition-colors ${
-                      tab === t.id
-                        ? "bg-background text-foreground shadow-sm"
-                        : "text-muted-foreground hover:text-foreground hover:bg-background/50"
-                    }`}
-                  >
-                    {t.icon}
-                    <span className="w-full truncate text-center">{t.label}</span>
-                  </button>
-                ))}
+            {/* Tab bar – sticky below header */}
+            <div className="sticky top-0 z-[9] -mx-4 px-4 pt-3 pb-0 bg-background">
+              <div className="glass-card rounded-xl p-3 mb-3">
+                <div className="grid grid-cols-5 gap-1 h-10">
+                  {tabs.map((t) => (
+                    <button
+                      key={t.id}
+                      onClick={() => setTab(t.id)}
+                      className={`h-10 flex flex-col items-center justify-center gap-0.5 rounded-lg px-1 text-[10px] leading-none font-semibold transition-colors ${
+                        tab === t.id
+                          ? "bg-background text-foreground shadow-sm"
+                          : "text-muted-foreground hover:text-foreground hover:bg-background/50"
+                      }`}
+                    >
+                      {t.icon}
+                      <span className="w-full truncate text-center">{t.label}</span>
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
 
