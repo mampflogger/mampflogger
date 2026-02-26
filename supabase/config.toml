@@ -8,3 +8,6 @@ verify_jwt = false
 
 [functions.nutrition-coach]
 verify_jwt = false
+
+[functions.recipe-generator]
+verify_jwt = false
