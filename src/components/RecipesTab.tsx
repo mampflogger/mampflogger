@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import { NutritionEntry, generateId } from "@/types/nutrition";
-import { Trash2, ChevronDown, ChevronUp, Sparkles, Pencil, Check, Plus, Loader2, Share2, PlusCircle } from "lucide-react";
+import { Trash2, ChevronDown, ChevronUp, Sparkles, Pencil, Check, Plus, Loader2, Share2, PlusCircle, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
@@ -107,13 +107,17 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
     toast({ title: "Gelöscht", description: "Rezept wurde entfernt." });
   };
 
-  const handleShare = async (recipe: SavedRecipe) => {
+  const buildShareText = (recipe: SavedRecipe) => {
     const ingredientsList = recipe.ingredients
       .map((ing) => `${ing.amount ? ing.amount + " " : ""}${ing.name}`)
       .join("\n");
     const stepsList = recipe.steps.map((s, i) => `${i + 1}. ${s}`).join("\n");
     const ps = recipe.perServing;
-    const text = `🍽️ ${recipe.name}\n\n👥 ${recipe.servings} Portionen · ⏱️ ${recipe.prepTime}\n\n📋 Zutaten:\n${ingredientsList}\n\n👨‍🍳 Zubereitung:\n${stepsList}\n\n📊 Pro Portion: ${ps.calories} kcal | Protein: ${ps.protein}g | Fett: ${ps.fat}g | Kohlenhydrate: ${ps.carbs}g | Ballaststoffe: ${ps.fiber}g\n\n—\n📊 Ein Service von mampflogger.de\nHol dir die kostenlose App!\n\n▸ Precision Tracking\n▸ Next-Level Activity\n▸ Clean Dashboard\n▸ Minimal Design\n▸ Keine Anmeldung · Keine Werbung · Keine Kosten`;
+    return `🍽️ ${recipe.name}\n\n👥 ${recipe.servings} Portionen · ⏱️ ${recipe.prepTime}\n\n📋 Zutaten:\n${ingredientsList}\n\n👨‍🍳 Zubereitung:\n${stepsList}\n\n📊 Pro Portion: ${ps.calories} kcal | Protein: ${ps.protein}g | Fett: ${ps.fat}g | Kohlenhydrate: ${ps.carbs}g | Ballaststoffe: ${ps.fiber}g\n\n—\n📊 Ein Service von mampflogger.de\nHol dir die kostenlose App!\n\n▸ Precision Tracking\n▸ Next-Level Activity\n▸ Clean Dashboard\n▸ Minimal Design\n▸ Keine Anmeldung · Keine Werbung · Keine Kosten`;
+  };
+
+  const handleShare = async (recipe: SavedRecipe) => {
+    const text = buildShareText(recipe);
 
     if (navigator.share) {
       try {
@@ -125,6 +129,12 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
       await navigator.clipboard.writeText(text);
       toast({ title: "Kopiert!", description: "Rezept wurde in die Zwischenablage kopiert." });
     }
+  };
+
+  const handleWhatsAppShare = (recipe: SavedRecipe) => {
+    const text = buildShareText(recipe);
+    const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
+    window.open(url, "_blank");
   };
 
   const handleManualSave = (recipe: SavedRecipe) => {
@@ -367,6 +377,13 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
                   </div>
                 </button>
                 <div className="flex items-center gap-1 shrink-0 ml-2">
+                  <button
+                    onClick={() => handleWhatsAppShare(sr)}
+                    className="p-1 rounded text-muted-foreground hover:text-success hover:bg-success/10 transition-colors"
+                    title="Via WhatsApp teilen"
+                  >
+                    <MessageCircle className="w-3 h-3" />
+                  </button>
                   <button
                     onClick={() => handleShare(sr)}
                     className="p-1 rounded text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"
