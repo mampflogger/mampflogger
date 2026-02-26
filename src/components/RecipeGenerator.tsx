@@ -622,7 +622,7 @@ const RecipeGenerator = ({
               ) : (
                 <>
                   <Plus className="w-3.5 h-3.5" />
-                  1 Portion übernehmen
+                  Portion buchen
                 </>
               )}
             </Button>
@@ -660,7 +660,7 @@ const RecipeGenerator = ({
                 ) : (
                   <>
                     <Save className="w-3.5 h-3.5" />
-                    Rezept speichern
+                    Speichern
                   </>
                 )}
               </Button>
