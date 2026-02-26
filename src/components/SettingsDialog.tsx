@@ -586,9 +586,6 @@ const SettingsDialog = ({
                 <Button variant="ghost" size="icon" className="h-8 w-8" title="Eingabe" onClick={() => { handleOpen(false); onSetActiveTab("log"); }}>
                   <List className="w-4 h-4" />
                 </Button>
-                <Button variant="ghost" size="icon" className={`h-8 w-8 ${tab === "recipes" ? "bg-muted" : ""}`} title="Rezepte" onClick={() => setTab("recipes")}>
-                  <BookOpen className="w-4 h-4" />
-                </Button>
                 <Button variant="ghost" size="icon" className="h-8 w-8" title="Statistik" onClick={() => { handleOpen(false); onSetActiveTab("weekly"); }}>
                   <BarChart3 className="w-4 h-4" />
                 </Button>
