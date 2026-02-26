@@ -940,7 +940,7 @@ const SettingsDialog = ({
                   </div>
                 </div>
                 {/* Scrollable table with sticky header */}
-                <div className="max-h-[40vh] overflow-y-auto overflow-x-auto -mx-1 px-1">
+                <div className="max-h-[30vh] overflow-y-auto overflow-x-auto -mx-1 px-1">
                   <table className="w-full text-[10px]">
                     <thead className="sticky top-0 bg-card z-10">
                       <tr className="border-b border-border">

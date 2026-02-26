@@ -194,16 +194,6 @@ const RecipeGenerator = ({
           KI-Rezeptgenerator
         </h2>
         <div className="flex items-center gap-1">
-          {savedRecipes.length > 0 && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setShowSaved(!showSaved)}
-              className={`h-6 text-[10px] px-2 ${showSaved ? "bg-background border border-border" : ""}`}
-            >
-              {savedRecipes.length}
-            </Button>
-          )}
           {selectedFoods.length > 0 && (
             <Button variant="ghost" size="sm" onClick={handleClearAll} className="h-6 text-[10px] px-2">
               Alle entfernen
