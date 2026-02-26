@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
-import { usePwaUpdate } from "@/hooks/usePwaUpdate";
+
 import { NutritionEntry, formatDate, calculateDailySummary } from "@/types/nutrition";
 import { syncRemoteFoodDatabase, loadRemoteUrl } from "@/lib/remoteFoodSync";
 import {
@@ -37,7 +37,7 @@ const Index = () => {
       setSearchParams({}, { replace: true });
     }
   }, []);
-  const { needsUpdate, applyUpdate } = usePwaUpdate();
+  
   const [entries, setEntries] = useState<NutritionEntry[]>([]);
   const [selectedDate, setSelectedDate] = useState(formatDate(new Date()));
   const [activeTab, setActiveTab] = useState<"log" | "weekly">("log");
@@ -276,26 +276,6 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* PWA Update Banner */}
-      {needsUpdate && (
-        <div className="fixed inset-x-0 bottom-0 z-50 p-4 pb-[calc(1rem+env(safe-area-inset-bottom))]">
-          <div className="max-w-lg mx-auto bg-primary text-primary-foreground rounded-2xl shadow-2xl p-4 flex flex-col gap-3">
-            <div className="flex items-center gap-2 text-base font-bold">
-              <span className="text-xl">🔄</span>
-              <span>Neue Version verfügbar!</span>
-            </div>
-            <p className="text-sm opacity-90 leading-snug">
-              Eine Aktualisierung wurde heruntergeladen. Tippe auf den Button – die App lädt neu und ist sofort auf dem neuesten Stand.
-            </p>
-            <button
-              onClick={applyUpdate}
-              className="w-full bg-primary-foreground text-primary font-bold py-3 rounded-xl text-sm active:opacity-80"
-            >
-              ✓ Jetzt aktualisieren
-            </button>
-          </div>
-        </div>
-      )}
       {/* Header */}
       <header className="sticky top-0 z-10 bg-background/80 backdrop-blur-lg border-b border-border" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
         <div className="max-w-lg mx-auto px-4 py-3">
