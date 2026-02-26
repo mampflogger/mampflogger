@@ -189,12 +189,12 @@ const ProfileDialog = ({ profile, onSave }: ProfileDialogProps) => {
 
           {currentProfile && bmrPreview && (
             <div className="grid grid-cols-2 gap-2">
-              <div className="rounded-xl bg-accent/40 p-3 text-center">
+              <div className="rounded-xl bg-background p-3 text-center">
                 <p className="text-xs text-muted-foreground font-medium">Grundumsatz (BMR)</p>
                 <p className="text-2xl font-bold text-foreground mt-0.5">{bmrPreview}</p>
                 <p className="text-xs text-muted-foreground">kcal / Tag</p>
               </div>
-              <div className="rounded-xl bg-accent/40 p-3 text-center">
+              <div className="rounded-xl bg-background p-3 text-center">
                 <p className="text-xs text-muted-foreground font-medium">BMI</p>
                 <p className="text-2xl font-bold text-foreground mt-0.5">
                   {(currentProfile.weightKg / ((currentProfile.heightCm / 100) ** 2)).toFixed(1)}

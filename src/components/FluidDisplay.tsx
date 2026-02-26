@@ -19,7 +19,7 @@ const FluidDisplay = ({ entries, goalMl }: FluidDisplayProps) => {
 
   return (
     <div className="space-y-2">
-      <div className="flex items-center justify-between rounded-lg bg-accent/40 px-3 py-1.5">
+      <div className="flex items-center justify-between rounded-lg bg-background px-3 py-1.5">
         <span className="flex items-center gap-1 text-xs text-muted-foreground font-medium">
           <Droplets className="w-3.5 h-3.5" />
           Flüssigkeitsaufnahme
