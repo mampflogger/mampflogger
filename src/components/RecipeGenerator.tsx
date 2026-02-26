@@ -98,6 +98,15 @@ const RecipeGenerator = ({
     saveSavedRecipes(savedRecipes);
   }, [savedRecipes]);
 
+  // Reset recipe when all foods are manually removed
+  useEffect(() => {
+    if (selectedFoods.length === 0) {
+      setRecipe(null);
+      setAdded(false);
+      setSaved(false);
+    }
+  }, [selectedFoods.length]);
+
   const handleGenerate = async () => {
     if (selectedFoods.length === 0) return;
     setLoading(true);
