@@ -952,7 +952,7 @@ const SettingsDialog = ({
                         <th className="text-right py-1 px-0.5 font-semibold" style={{ color: "hsl(var(--macro-fat))" }}>FAT</th>
                         <th className="text-right py-1 px-0.5 font-semibold" style={{ color: "hsl(var(--macro-kh))" }}>KH</th>
                         <th className="text-right py-1 px-0.5 font-semibold" style={{ color: "hsl(var(--macro-fib))" }}>FIB</th>
-                        <th className="w-5"></th>
+                        <th className="w-5 pl-3"></th>
                       </tr>
                     </thead>
                     <tbody>
@@ -964,7 +964,7 @@ const SettingsDialog = ({
                             onClick={() => handleEditFood(f, idx)}
                           >
                             <td colSpan={7} className="pt-1.5 pb-0 pr-1 font-medium text-[11px]">{f.name}</td>
-                            <td className="pt-1.5 pb-0 pl-0 pr-0 whitespace-nowrap">
+                            <td className="pt-1.5 pb-0 pl-3 pr-0 whitespace-nowrap">
                               <button
                                 onClick={(e) => { e.stopPropagation(); toggleRecipeFood(f); }}
                                 className={`p-0.5 rounded transition-colors ${isRecipeSelected(f.name) ? "text-primary" : "text-muted-foreground/70 hover:text-primary/80"}`}
@@ -1006,7 +1006,7 @@ const SettingsDialog = ({
                             <td className="py-1 px-0.5 text-right">{f.fat}</td>
                             <td className="py-1 px-0.5 text-right">{f.carbs}</td>
                             <td className="py-1 px-0.5 text-right">{f.fiber}</td>
-                            <td className="py-1 pl-1 pr-0 whitespace-nowrap">
+                            <td className="py-1 pl-3 pr-0 whitespace-nowrap">
                               <button
                                 onClick={(e) => { e.stopPropagation(); toggleRecipeFood(f); }}
                                 className={`p-0.5 rounded transition-colors ${isRecipeSelected(f.name) ? "text-primary" : "text-muted-foreground/70 hover:text-primary/80"}`}
