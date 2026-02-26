@@ -626,7 +626,7 @@ const RecipeGenerator = ({
                 </>
               )}
             </Button>
-            {isEditing ? (
+            {isEditing && (
               <Button
                 onClick={handleSaveEdits}
                 disabled={recalculating}
@@ -642,26 +642,25 @@ const RecipeGenerator = ({
                   "Änderungen übernehmen"
                 )}
               </Button>
-            ) : (
-              <Button
-                onClick={handleSaveRecipe}
-                disabled={saved}
-                variant={saved ? "outline" : "default"}
-                className="flex-1 h-9 text-xs gap-1.5"
-              >
-                {saved ? (
-                  <>
-                    <Check className="w-3.5 h-3.5" />
-                    Gespeichert
-                  </>
-                ) : (
-                  <>
-                    <Save className="w-3.5 h-3.5" />
-                    Speichern
-                  </>
-                )}
-              </Button>
             )}
+            <Button
+              onClick={handleSaveRecipe}
+              disabled={saved}
+              variant={saved ? "outline" : "default"}
+              className="flex-1 h-9 text-xs gap-1.5"
+            >
+              {saved ? (
+                <>
+                  <Check className="w-3.5 h-3.5" />
+                  Gespeichert
+                </>
+              ) : (
+                <>
+                  <Save className="w-3.5 h-3.5" />
+                  Rezept speichern
+                </>
+              )}
+            </Button>
           </div>
         </div>
       )}
