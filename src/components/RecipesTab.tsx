@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { NutritionEntry, generateId } from "@/types/nutrition";
 import { Trash2, ChevronDown, ChevronUp, Sparkles, Pencil, Check, Plus, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -68,8 +68,32 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
   const [editIngredients, setEditIngredients] = useState<RecipeIngredient[]>([]);
   const [newIngredientAmount, setNewIngredientAmount] = useState("");
   const [newIngredientName, setNewIngredientName] = useState("");
+  const [selectedFoodItem, setSelectedFoodItem] = useState<FoodItem | null>(null);
+  const [showSuggestions, setShowSuggestions] = useState(false);
   const [recalculating, setRecalculating] = useState(false);
+  const suggestionsRef = useRef<HTMLDivElement>(null);
+  const nameInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
+
+  const foodSuggestions = useMemo(() => {
+    const q = newIngredientName.trim().toLowerCase();
+    if (q.length < 1) return [];
+    return foodDatabase
+      .filter((f) => f.name.toLowerCase().includes(q))
+      .slice(0, 8);
+  }, [newIngredientName]);
+
+  // Close suggestions on outside click
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (suggestionsRef.current && !suggestionsRef.current.contains(e.target as Node) &&
+          nameInputRef.current && !nameInputRef.current.contains(e.target as Node)) {
+        setShowSuggestions(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
 
   useEffect(() => {
     saveSavedRecipes(savedRecipes);
@@ -113,6 +137,8 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
     setEditIngredients([]);
     setNewIngredientAmount("");
     setNewIngredientName("");
+    setSelectedFoodItem(null);
+    setShowSuggestions(false);
   };
 
   const handleAmountChange = (index: number, newNum: string) => {
@@ -130,15 +156,22 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
     setEditIngredients((prev) => prev.filter((_, i) => i !== index));
   };
 
+  const handleSelectSuggestion = (food: FoodItem) => {
+    setNewIngredientName(food.name);
+    setSelectedFoodItem(food);
+    setShowSuggestions(false);
+  };
+
   const handleAddIngredient = () => {
     const name = newIngredientName.trim();
     if (!name) return;
     const amount = newIngredientAmount.trim();
-    // Combine amount + name into proper ingredient format
     const amountStr = amount ? `${amount}` : "";
     setEditIngredients((prev) => [...prev, { name, amount: amountStr, isMain: false }]);
     setNewIngredientAmount("");
     setNewIngredientName("");
+    setSelectedFoodItem(null);
+    setShowSuggestions(false);
   };
 
   const handleSaveEdits = async (recipeId: string) => {
@@ -360,7 +393,7 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
 
                     {/* Add ingredient fields in edit mode */}
                     {isEditing && (
-                      <div className="flex items-center gap-1 mt-1.5">
+                      <div className="relative flex items-center gap-1 mt-1.5">
                         <Input
                           type="text"
                           inputMode="decimal"
@@ -369,14 +402,43 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
                           placeholder="Menge"
                           className="h-6 text-[11px] px-2 w-16 shrink-0"
                         />
-                        <Input
-                          type="text"
-                          value={newIngredientName}
-                          onChange={(e) => setNewIngredientName(e.target.value)}
-                          onKeyDown={(e) => e.key === "Enter" && handleAddIngredient()}
-                          placeholder="Zutat hinzufügen…"
-                          className="h-6 text-[11px] px-2 flex-1"
-                        />
+                        <div className="relative flex-1">
+                          <Input
+                            ref={nameInputRef}
+                            type="text"
+                            value={newIngredientName}
+                            onChange={(e) => {
+                              setNewIngredientName(e.target.value);
+                              setSelectedFoodItem(null);
+                              setShowSuggestions(true);
+                            }}
+                            onFocus={() => newIngredientName.trim().length >= 1 && setShowSuggestions(true)}
+                            onKeyDown={(e) => e.key === "Enter" && handleAddIngredient()}
+                            placeholder="Zutat hinzufügen…"
+                            className="h-6 text-[11px] px-2 w-full"
+                          />
+                          {showSuggestions && foodSuggestions.length > 0 && (
+                            <div
+                              ref={suggestionsRef}
+                              className="absolute left-0 right-0 top-full mt-0.5 z-50 max-h-40 overflow-y-auto rounded-md border border-border bg-popover shadow-md"
+                            >
+                              {foodSuggestions.map((food, idx) => (
+                                <button
+                                  key={idx}
+                                  type="button"
+                                  className="w-full text-left px-2 py-1 text-[11px] text-popover-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
+                                  onMouseDown={(e) => e.preventDefault()}
+                                  onClick={() => handleSelectSuggestion(food)}
+                                >
+                                  <span className="font-medium">{food.name}</span>
+                                  <span className="ml-1.5 text-muted-foreground">
+                                    {food.calories} kcal
+                                  </span>
+                                </button>
+                              ))}
+                            </div>
+                          )}
+                        </div>
                         <button
                           onClick={handleAddIngredient}
                           disabled={!newIngredientName.trim()}
