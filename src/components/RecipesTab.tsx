@@ -499,7 +499,7 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
                       disabled={recalculating}
                       className="flex-1 h-9 text-xs gap-1.5"
                     >
-                      +1 Portion buchen
+                      Portion buchen
                     </Button>
                     {isEditing && (
                       <Button
