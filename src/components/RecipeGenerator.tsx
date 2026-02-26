@@ -1,9 +1,10 @@
-import { useState, useEffect } from "react";
-import { FoodItem } from "@/data/foodDatabase";
+import { useState, useEffect, useRef, useMemo } from "react";
+import { FoodItem, foodDatabase, saveFoodDatabase } from "@/data/foodDatabase";
 import { NutritionEntry, generateId } from "@/types/nutrition";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Loader2, X, Plus, Check, Trash2, Save, Sparkles } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Loader2, X, Plus, Check, Trash2, Save, Sparkles, Pencil } from "lucide-react";
 import CookIcon from "@/components/CookIcon";
 import { useToast } from "@/hooks/use-toast";
 
@@ -78,6 +79,12 @@ function getFrequentFoods(entries: NutritionEntry[]): { name: string }[] {
     .map(([name]) => ({ name }));
 }
 
+function extractNumber(amount: string): { num: string; rest: string } | null {
+  const m = amount.match(/^(\d+[\d.,]*)\s*(.*)/);
+  if (m) return { num: m[1], rest: m[2] };
+  return null;
+}
+
 const RecipeGenerator = ({
   selectedFoods,
   onRemoveFood,
@@ -92,7 +99,38 @@ const RecipeGenerator = ({
   const [saved, setSaved] = useState(false);
   const [savedRecipes, setSavedRecipes] = useState<SavedRecipe[]>(loadSavedRecipes);
   const [showSaved, setShowSaved] = useState(false);
+
+  // Edit mode state
+  const [isEditing, setIsEditing] = useState(false);
+  const [editIngredients, setEditIngredients] = useState<RecipeIngredient[]>([]);
+  const [newIngredientAmount, setNewIngredientAmount] = useState("");
+  const [newIngredientName, setNewIngredientName] = useState("");
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [recalculating, setRecalculating] = useState(false);
+  const suggestionsRef = useRef<HTMLDivElement>(null);
+  const nameInputRef = useRef<HTMLInputElement>(null);
+
   const { toast } = useToast();
+
+  const foodSuggestions = useMemo(() => {
+    const q = newIngredientName.trim().toLowerCase();
+    if (q.length < 1) return [];
+    return foodDatabase
+      .filter((f) => f.name.toLowerCase().includes(q))
+      .slice(0, 8);
+  }, [newIngredientName]);
+
+  // Close suggestions on outside click
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (suggestionsRef.current && !suggestionsRef.current.contains(e.target as Node) &&
+          nameInputRef.current && !nameInputRef.current.contains(e.target as Node)) {
+        setShowSuggestions(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
 
   useEffect(() => {
     saveSavedRecipes(savedRecipes);
@@ -104,8 +142,141 @@ const RecipeGenerator = ({
       setRecipe(null);
       setAdded(false);
       setSaved(false);
+      stopEditing();
     }
   }, [selectedFoods.length]);
+
+  const startEditing = () => {
+    if (!recipe) return;
+    setIsEditing(true);
+    setEditIngredients([...recipe.ingredients]);
+    setNewIngredientAmount("");
+    setNewIngredientName("");
+  };
+
+  const stopEditing = () => {
+    setIsEditing(false);
+    setEditIngredients([]);
+    setNewIngredientAmount("");
+    setNewIngredientName("");
+    setShowSuggestions(false);
+  };
+
+  const handleAmountChange = (index: number, newNum: string) => {
+    setEditIngredients((prev) => {
+      const updated = [...prev];
+      const parsed = extractNumber(updated[index].amount);
+      if (parsed) {
+        updated[index] = { ...updated[index], amount: `${newNum}${parsed.rest ? " " + parsed.rest : ""}`.trim() };
+      }
+      return updated;
+    });
+  };
+
+  const handleDeleteIngredient = (index: number) => {
+    setEditIngredients((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const handleSelectSuggestion = (food: FoodItem) => {
+    setNewIngredientName(food.name);
+    setShowSuggestions(false);
+  };
+
+  const handleAddIngredient = () => {
+    const name = newIngredientName.trim();
+    if (!name) return;
+    const amount = newIngredientAmount.trim();
+    setEditIngredients((prev) => [...prev, { name, amount: amount || "", isMain: false }]);
+    setNewIngredientAmount("");
+    setNewIngredientName("");
+    setShowSuggestions(false);
+  };
+
+  const handleSaveEdits = async () => {
+    if (!recipe) return;
+
+    let finalIngredients = [...editIngredients];
+    const pendingName = newIngredientName.trim();
+    if (pendingName) {
+      const pendingAmount = newIngredientAmount.trim();
+      finalIngredients.push({ name: pendingName, amount: pendingAmount || "", isMain: false });
+    }
+
+    if (finalIngredients.length === 0) {
+      toast({ title: "Fehler", description: "Das Rezept braucht mindestens eine Zutat.", variant: "destructive" });
+      return;
+    }
+
+    const origStr = JSON.stringify(recipe.ingredients);
+    const newStr = JSON.stringify(finalIngredients);
+    if (origStr === newStr) {
+      stopEditing();
+      return;
+    }
+
+    setRecalculating(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("recipe-recalculate", {
+        body: {
+          ingredients: finalIngredients,
+          servings: recipe.servings,
+          recipeName: recipe.name,
+          oldSteps: recipe.steps,
+        },
+      });
+
+      if (error) throw error;
+      if (data?.error) {
+        toast({ title: "Fehler", description: data.error, variant: "destructive" });
+        setRecalculating(false);
+        return;
+      }
+
+      const updatedIngredients = data.ingredients || finalIngredients;
+      const totalMacros = data.totalMacros || recipe.totalMacros;
+      const perServing = data.perServing || recipe.perServing;
+      const updatedSteps = data.steps || recipe.steps;
+
+      // Add new ingredients to food database
+      if (data.ingredients && Array.isArray(data.ingredients)) {
+        const existingNames = new Set(foodDatabase.map(f => f.name.toLowerCase()));
+        const newFoods: FoodItem[] = [];
+
+        for (const ing of data.ingredients) {
+          if (!existingNames.has(ing.name.toLowerCase()) && ing.per100g) {
+            newFoods.push({
+              name: ing.name,
+              baseUnit: "100g",
+              baseAmount: 100,
+              calories: Math.round(ing.per100g.calories),
+              protein: Math.round(ing.per100g.protein * 10) / 10,
+              fat: Math.round(ing.per100g.fat * 10) / 10,
+              carbs: Math.round(ing.per100g.carbs * 10) / 10,
+              fiber: Math.round(ing.per100g.fiber * 10) / 10,
+              category: "Eigene",
+              isUserCreated: true,
+            });
+          }
+        }
+
+        if (newFoods.length > 0) {
+          foodDatabase.push(...newFoods);
+          saveFoodDatabase(foodDatabase);
+          toast({ title: `${newFoods.length} neue Zutat(en)`, description: "In Lebensmittelliste unter 'Eigene' gespeichert." });
+        }
+      }
+
+      setRecipe({ ...recipe, ingredients: updatedIngredients, totalMacros, perServing, steps: updatedSteps });
+      setSaved(false);
+      stopEditing();
+      toast({ title: "Aktualisiert", description: "Rezept, Nährwerte und Zubereitung wurden neu berechnet." });
+    } catch (e) {
+      console.error("Recalculate error:", e);
+      toast({ title: "Fehler", description: "Nährwerte konnten nicht neu berechnet werden.", variant: "destructive" });
+    } finally {
+      setRecalculating(false);
+    }
+  };
 
   const handleGenerate = async () => {
     if (selectedFoods.length === 0) return;
@@ -113,6 +284,7 @@ const RecipeGenerator = ({
     setRecipe(null);
     setAdded(false);
     setSaved(false);
+    stopEditing();
     try {
       const frequentFoods = getFrequentFoods(entries);
       const { data, error } = await supabase.functions.invoke("recipe-generator", {
@@ -157,6 +329,7 @@ const RecipeGenerator = ({
     setAdded(false);
     setSaved(false);
     setShowSaved(false);
+    stopEditing();
   };
 
   const handleClearAll = () => {
@@ -165,6 +338,7 @@ const RecipeGenerator = ({
     setAdded(false);
     setSaved(false);
     setShowSaved(false);
+    stopEditing();
   };
 
   const handleAddToLog = (r?: Recipe) => {
@@ -194,6 +368,8 @@ const RecipeGenerator = ({
 
   const hasContent = selectedFoods.length > 0 || savedRecipes.length > 0;
   if (!hasContent) return null;
+
+  const displayIngredients = isEditing ? editIngredients : (recipe?.ingredients || []);
 
   return (
     <div className="glass-card rounded-xl p-3 mt-3">
@@ -268,17 +444,119 @@ const RecipeGenerator = ({
 
           {/* Ingredients */}
           <div className="rounded-lg bg-background border border-border/50 p-3">
-            <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">Zutaten</p>
+            <div className="flex items-center gap-1.5 mb-1.5">
+              <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Zutaten</p>
+              {!isEditing ? (
+                <button
+                  onClick={startEditing}
+                  className="p-0.5 rounded text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"
+                  title="Zutaten bearbeiten"
+                >
+                  <Pencil className="w-3 h-3" />
+                </button>
+              ) : (
+                <button
+                  onClick={handleSaveEdits}
+                  disabled={recalculating}
+                  className="p-0.5 rounded text-primary hover:bg-primary/10 transition-colors disabled:opacity-50"
+                  title="Änderungen speichern"
+                >
+                  <Check className="w-3 h-3" />
+                </button>
+              )}
+            </div>
             <ul className="space-y-0.5">
-              {recipe.ingredients.map((ing, i) => (
-                <li key={i} className="text-[11px] text-foreground flex items-start gap-1.5">
-                  <span className="shrink-0 mt-0.5">{ing.isMain ? "⭐" : "•"}</span>
-                  <span>
-                    <span className="font-medium">{ing.amount}</span> {ing.name}
-                  </span>
-                </li>
-              ))}
+              {displayIngredients.map((ing, i) => {
+                const parsed = extractNumber(ing.amount);
+                const hasNumber = !!parsed;
+
+                return (
+                  <li key={i} className="text-[11px] text-foreground flex items-center gap-1.5">
+                    {isEditing && (
+                      <button
+                        onClick={() => handleDeleteIngredient(i)}
+                        className="p-0.5 rounded text-muted-foreground hover:text-destructive transition-colors shrink-0"
+                      >
+                        <Trash2 className="w-3 h-3" />
+                      </button>
+                    )}
+                    <span className="shrink-0">{ing.isMain ? "⭐" : "•"}</span>
+                    {isEditing && hasNumber ? (
+                      <span className="flex items-center gap-1">
+                        <Input
+                          type="text"
+                          inputMode="decimal"
+                          value={parsed!.num}
+                          onChange={(e) => handleAmountChange(i, e.target.value)}
+                          className="h-6 w-14 px-1 text-[11px] text-center font-medium"
+                        />
+                        <span>{parsed!.rest} {ing.name}</span>
+                      </span>
+                    ) : (
+                      <span>
+                        {ing.amount && <span className="font-medium">{ing.amount}</span>}
+                        {ing.amount ? " " : ""}{ing.name}
+                      </span>
+                    )}
+                  </li>
+                );
+              })}
             </ul>
+
+            {/* Add ingredient fields in edit mode */}
+            {isEditing && (
+              <div className="relative flex items-center gap-1 mt-1.5">
+                <Input
+                  type="text"
+                  inputMode="decimal"
+                  value={newIngredientAmount}
+                  onChange={(e) => setNewIngredientAmount(e.target.value)}
+                  placeholder="Menge"
+                  className="h-6 text-[11px] px-2 w-16 shrink-0"
+                />
+                <div className="relative flex-1">
+                  <Input
+                    ref={nameInputRef}
+                    type="text"
+                    value={newIngredientName}
+                    onChange={(e) => {
+                      setNewIngredientName(e.target.value);
+                      setShowSuggestions(true);
+                    }}
+                    onFocus={() => newIngredientName.trim().length >= 1 && setShowSuggestions(true)}
+                    onKeyDown={(e) => e.key === "Enter" && handleAddIngredient()}
+                    placeholder="Zutat hinzufügen…"
+                    className="h-6 text-[11px] px-2 w-full"
+                  />
+                  {showSuggestions && foodSuggestions.length > 0 && (
+                    <div
+                      ref={suggestionsRef}
+                      className="absolute left-0 right-0 top-full mt-0.5 z-50 max-h-40 overflow-y-auto rounded-md border border-border bg-popover shadow-md"
+                    >
+                      {foodSuggestions.map((food, idx) => (
+                        <button
+                          key={idx}
+                          type="button"
+                          className="w-full text-left px-2 py-1 text-[11px] text-popover-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
+                          onMouseDown={(e) => e.preventDefault()}
+                          onClick={() => handleSelectSuggestion(food)}
+                        >
+                          <span className="font-medium">{food.name}</span>
+                          <span className="ml-1.5 text-muted-foreground">{food.calories} kcal</span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                <button
+                  onClick={handleAddIngredient}
+                  disabled={!newIngredientName.trim()}
+                  className="p-0.5 rounded text-primary hover:bg-primary/10 transition-colors disabled:opacity-30"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Steps */}
@@ -332,7 +610,7 @@ const RecipeGenerator = ({
           <div className="flex gap-2">
             <Button
               onClick={() => handleAddToLog()}
-              disabled={added}
+              disabled={added || recalculating}
               className="flex-1 h-9 text-xs gap-2"
               variant={added ? "outline" : "default"}
             >
@@ -348,24 +626,42 @@ const RecipeGenerator = ({
                 </>
               )}
             </Button>
-            <Button
-              onClick={handleSaveRecipe}
-              disabled={saved}
-              variant={saved ? "outline" : "default"}
-              className="flex-1 h-9 text-xs gap-1.5"
-            >
-              {saved ? (
-                <>
-                  <Check className="w-3.5 h-3.5" />
-                  Gespeichert
-                </>
-              ) : (
-                <>
-                  <Save className="w-3.5 h-3.5" />
-                  Speichern
-                </>
-              )}
-            </Button>
+            {isEditing ? (
+              <Button
+                onClick={handleSaveEdits}
+                disabled={recalculating}
+                variant="outline"
+                className="flex-1 h-9 text-xs gap-1.5"
+              >
+                {recalculating ? (
+                  <>
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    Berechne…
+                  </>
+                ) : (
+                  "Änderungen übernehmen"
+                )}
+              </Button>
+            ) : (
+              <Button
+                onClick={handleSaveRecipe}
+                disabled={saved}
+                variant={saved ? "outline" : "default"}
+                className="flex-1 h-9 text-xs gap-1.5"
+              >
+                {saved ? (
+                  <>
+                    <Check className="w-3.5 h-3.5" />
+                    Gespeichert
+                  </>
+                ) : (
+                  <>
+                    <Save className="w-3.5 h-3.5" />
+                    Speichern
+                  </>
+                )}
+              </Button>
+            )}
           </div>
         </div>
       )}
