@@ -367,10 +367,10 @@ const RecipeGenerator = ({
             >
               <button
                 onClick={() => handleLoadSaved(sr)}
-                className="flex-1 text-left text-[11px] font-medium text-foreground hover:text-primary transition-colors"
+                className="flex-1 text-left hover:text-primary transition-colors"
               >
-                {sr.name}
-                <span className="ml-1.5 text-muted-foreground font-normal">
+                <span className="block text-[11px] font-medium text-foreground">{sr.name}</span>
+                <span className="block text-[10px] text-muted-foreground font-normal">
                   {sr.perServing.calories} kcal/Portion
                 </span>
               </button>
