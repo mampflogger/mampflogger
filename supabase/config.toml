@@ -11,3 +11,6 @@ verify_jwt = false
 
 [functions.recipe-generator]
 verify_jwt = false
+
+[functions.recipe-recalculate]
+verify_jwt = false

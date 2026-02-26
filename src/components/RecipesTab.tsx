@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 import { NutritionEntry, generateId } from "@/types/nutrition";
-import { Trash2, ChevronDown, ChevronUp, Sparkles, Pencil, Check, Plus } from "lucide-react";
+import { Trash2, ChevronDown, ChevronUp, Sparkles, Pencil, Check, Plus, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 interface RecipeMacros {
   calories: number;
@@ -64,7 +65,9 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editIngredients, setEditIngredients] = useState<RecipeIngredient[]>([]);
-  const [newIngredientText, setNewIngredientText] = useState("");
+  const [newIngredientAmount, setNewIngredientAmount] = useState("");
+  const [newIngredientName, setNewIngredientName] = useState("");
+  const [recalculating, setRecalculating] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -100,13 +103,15 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
   const startEditing = (recipe: SavedRecipe) => {
     setEditingId(recipe.id);
     setEditIngredients([...recipe.ingredients]);
-    setNewIngredientText("");
+    setNewIngredientAmount("");
+    setNewIngredientName("");
   };
 
   const stopEditing = () => {
     setEditingId(null);
     setEditIngredients([]);
-    setNewIngredientText("");
+    setNewIngredientAmount("");
+    setNewIngredientName("");
   };
 
   const handleAmountChange = (index: number, newNum: string) => {
@@ -125,27 +130,74 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
   };
 
   const handleAddIngredient = () => {
-    const text = newIngredientText.trim();
-    if (!text) return;
-    setEditIngredients((prev) => [...prev, { name: text, amount: "", isMain: false }]);
-    setNewIngredientText("");
+    const name = newIngredientName.trim();
+    if (!name) return;
+    const amount = newIngredientAmount.trim();
+    // Combine amount + name into proper ingredient format
+    const amountStr = amount ? `${amount}` : "";
+    setEditIngredients((prev) => [...prev, { name, amount: amountStr, isMain: false }]);
+    setNewIngredientAmount("");
+    setNewIngredientName("");
   };
 
-  const handleSaveEdits = (recipeId: string) => {
-    // Add pending new ingredient if text is present
+  const handleSaveEdits = async (recipeId: string) => {
+    // Add pending new ingredient if present
     let finalIngredients = [...editIngredients];
-    const pendingText = newIngredientText.trim();
-    if (pendingText) {
-      finalIngredients.push({ name: pendingText, amount: "", isMain: false });
+    const pendingName = newIngredientName.trim();
+    if (pendingName) {
+      const pendingAmount = newIngredientAmount.trim();
+      finalIngredients.push({ name: pendingName, amount: pendingAmount || "", isMain: false });
     }
 
-    setSavedRecipes((prev) =>
-      prev.map((r) =>
-        r.id === recipeId ? { ...r, ingredients: finalIngredients } : r
-      )
-    );
-    stopEditing();
-    toast({ title: "Gespeichert", description: "Rezept wurde aktualisiert." });
+    if (finalIngredients.length === 0) {
+      toast({ title: "Fehler", description: "Das Rezept braucht mindestens eine Zutat.", variant: "destructive" });
+      return;
+    }
+
+    const recipe = savedRecipes.find((r) => r.id === recipeId);
+    if (!recipe) return;
+
+    // Check if anything actually changed
+    const origStr = JSON.stringify(recipe.ingredients);
+    const newStr = JSON.stringify(finalIngredients);
+    if (origStr === newStr) {
+      stopEditing();
+      return;
+    }
+
+    // Recalculate macros via AI
+    setRecalculating(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("recipe-recalculate", {
+        body: { ingredients: finalIngredients, servings: recipe.servings },
+      });
+
+      if (error) throw error;
+      if (data?.error) {
+        toast({ title: "Fehler", description: data.error, variant: "destructive" });
+        setRecalculating(false);
+        return;
+      }
+
+      const updatedIngredients = data.ingredients || finalIngredients;
+      const totalMacros = data.totalMacros || recipe.totalMacros;
+      const perServing = data.perServing || recipe.perServing;
+
+      setSavedRecipes((prev) =>
+        prev.map((r) =>
+          r.id === recipeId
+            ? { ...r, ingredients: updatedIngredients, totalMacros, perServing }
+            : r
+        )
+      );
+      stopEditing();
+      toast({ title: "Gespeichert", description: "Rezept und Nährwerte wurden aktualisiert." });
+    } catch (e) {
+      console.error("Recalculate error:", e);
+      toast({ title: "Fehler", description: "Nährwerte konnten nicht neu berechnet werden.", variant: "destructive" });
+    } finally {
+      setRecalculating(false);
+    }
   };
 
   if (savedRecipes.length === 0) {
@@ -224,7 +276,8 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
                       ) : (
                         <button
                           onClick={() => handleSaveEdits(sr.id)}
-                          className="p-0.5 rounded text-primary hover:bg-primary/10 transition-colors"
+                          disabled={recalculating}
+                          className="p-0.5 rounded text-primary hover:bg-primary/10 transition-colors disabled:opacity-50"
                           title="Änderungen speichern"
                         >
                           <Check className="w-3 h-3" />
@@ -238,7 +291,7 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
 
                         return (
                           <li key={i} className="text-[11px] text-foreground flex items-center gap-1.5">
-                            {isEditing && !hasNumber && (
+                            {isEditing && (
                               <button
                                 onClick={() => handleDeleteIngredient(i)}
                                 className="p-0.5 rounded text-muted-foreground hover:text-destructive transition-colors shrink-0"
@@ -269,20 +322,28 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
                       })}
                     </ul>
 
-                    {/* Add ingredient field in edit mode */}
+                    {/* Add ingredient fields in edit mode */}
                     {isEditing && (
                       <div className="flex items-center gap-1 mt-1.5">
                         <Input
                           type="text"
-                          value={newIngredientText}
-                          onChange={(e) => setNewIngredientText(e.target.value)}
+                          inputMode="decimal"
+                          value={newIngredientAmount}
+                          onChange={(e) => setNewIngredientAmount(e.target.value)}
+                          placeholder="Menge"
+                          className="h-6 text-[11px] px-2 w-16 shrink-0"
+                        />
+                        <Input
+                          type="text"
+                          value={newIngredientName}
+                          onChange={(e) => setNewIngredientName(e.target.value)}
                           onKeyDown={(e) => e.key === "Enter" && handleAddIngredient()}
                           placeholder="Zutat hinzufügen…"
                           className="h-6 text-[11px] px-2 flex-1"
                         />
                         <button
                           onClick={handleAddIngredient}
-                          disabled={!newIngredientText.trim()}
+                          disabled={!newIngredientName.trim()}
                           className="p-0.5 rounded text-primary hover:bg-primary/10 transition-colors disabled:opacity-30"
                         >
                           <Plus className="w-3.5 h-3.5" />
@@ -337,6 +398,7 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
                   <div className="flex gap-2">
                     <Button
                       onClick={() => handleAddToLog(sr)}
+                      disabled={recalculating}
                       className="flex-1 h-9 text-xs gap-1.5"
                     >
                       +1 Portion buchen
@@ -344,10 +406,18 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
                     {isEditing && (
                       <Button
                         onClick={() => handleSaveEdits(sr.id)}
+                        disabled={recalculating}
                         variant="outline"
                         className="flex-1 h-9 text-xs gap-1.5"
                       >
-                        Rezept speichern
+                        {recalculating ? (
+                          <>
+                            <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                            Berechne…
+                          </>
+                        ) : (
+                          "Rezept speichern"
+                        )}
                       </Button>
                     )}
                   </div>
