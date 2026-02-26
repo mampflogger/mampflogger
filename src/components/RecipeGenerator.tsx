@@ -161,7 +161,7 @@ const RecipeGenerator = ({
       id: generateId(),
       date: selectedDate,
       time,
-      food: `🍳 ${target.name} (1 Portion)`,
+      food: `${target.name} (1 Portion)`,
       amount: Math.round(ps.calories),
       calories: ps.calories,
       protein: ps.protein,
@@ -235,7 +235,7 @@ const RecipeGenerator = ({
             ) : (
               <CookIcon className="w-3.5 h-3.5" />
             )}
-            {loading ? "Rezept wird erstellt…" : `🍳 Rezept generieren (${selectedFoods.length} Zutaten)`}
+            {loading ? "Rezept wird erstellt…" : `Rezept generieren (${selectedFoods.length} Zutaten)`}
           </Button>
         </>
       )}
