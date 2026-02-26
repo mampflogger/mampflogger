@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FoodItem } from "@/data/foodDatabase";
 import { NutritionEntry, generateId } from "@/types/nutrition";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { ChefHat, Loader2, X, Plus, Check } from "lucide-react";
+import { Loader2, X, Plus, Check, Trash2, BookOpen, Save } from "lucide-react";
+import CookIcon from "@/components/CookIcon";
 import { useToast } from "@/hooks/use-toast";
 
 interface RecipeIngredient {
@@ -30,6 +31,11 @@ interface Recipe {
   perServing: RecipeMacros;
 }
 
+interface SavedRecipe extends Recipe {
+  id: string;
+  savedAt: string;
+}
+
 interface RecipeGeneratorProps {
   selectedFoods: FoodItem[];
   onRemoveFood: (name: string) => void;
@@ -37,6 +43,21 @@ interface RecipeGeneratorProps {
   entries: NutritionEntry[];
   selectedDate: string;
   onAddEntry: (entry: NutritionEntry) => void;
+}
+
+const SAVED_RECIPES_KEY = "mampflogger-saved-recipes";
+
+function loadSavedRecipes(): SavedRecipe[] {
+  try {
+    const data = localStorage.getItem(SAVED_RECIPES_KEY);
+    return data ? JSON.parse(data) : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveSavedRecipes(recipes: SavedRecipe[]): void {
+  localStorage.setItem(SAVED_RECIPES_KEY, JSON.stringify(recipes));
 }
 
 function getFrequentFoods(entries: NutritionEntry[]): { name: string }[] {
@@ -68,7 +89,13 @@ const RecipeGenerator = ({
   const [recipe, setRecipe] = useState<Recipe | null>(null);
   const [loading, setLoading] = useState(false);
   const [added, setAdded] = useState(false);
+  const [savedRecipes, setSavedRecipes] = useState<SavedRecipe[]>(loadSavedRecipes);
+  const [showSaved, setShowSaved] = useState(false);
   const { toast } = useToast();
+
+  useEffect(() => {
+    saveSavedRecipes(savedRecipes);
+  }, [savedRecipes]);
 
   const handleGenerate = async () => {
     if (selectedFoods.length === 0) return;
@@ -96,18 +123,42 @@ const RecipeGenerator = ({
     }
   };
 
-  const handleAddToLog = () => {
+  const handleSaveRecipe = () => {
     if (!recipe) return;
+    const saved: SavedRecipe = {
+      ...recipe,
+      id: generateId(),
+      savedAt: new Date().toISOString(),
+    };
+    setSavedRecipes((prev) => [saved, ...prev]);
+    toast({ title: "Gespeichert!", description: `${recipe.name} wurde zu deinen Rezepten hinzugefügt.` });
+  };
+
+  const handleDeleteSaved = (id: string) => {
+    setSavedRecipes((prev) => prev.filter((r) => r.id !== id));
+    toast({ title: "Gelöscht", description: "Rezept wurde entfernt." });
+  };
+
+  const handleLoadSaved = (saved: SavedRecipe) => {
+    const { id, savedAt, ...recipeData } = saved;
+    setRecipe(recipeData);
+    setAdded(false);
+    setShowSaved(false);
+  };
+
+  const handleAddToLog = (r?: Recipe) => {
+    const target = r || recipe;
+    if (!target) return;
     const now = new Date();
     const time = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
-    const ps = recipe.perServing;
+    const ps = target.perServing;
 
     const entry: NutritionEntry = {
       id: generateId(),
       date: selectedDate,
       time,
-      food: `🍳 ${recipe.name} (1 Portion)`,
-      amount: Math.round(ps.calories), // Use calories as "amount" placeholder
+      food: `🍳 ${target.name} (1 Portion)`,
+      amount: Math.round(ps.calories),
       calories: ps.calories,
       protein: ps.protein,
       carbs: ps.carbs,
@@ -116,52 +167,111 @@ const RecipeGenerator = ({
     };
 
     onAddEntry(entry);
-    setAdded(true);
-    toast({ title: "Übernommen!", description: `${recipe.name} wurde ins Tagesprotokoll eingetragen.` });
+    if (!r) setAdded(true);
+    toast({ title: "Übernommen!", description: `${target.name} wurde ins Tagesprotokoll eingetragen.` });
   };
 
-  if (selectedFoods.length === 0) return null;
+  const hasContent = selectedFoods.length > 0 || savedRecipes.length > 0;
+  if (!hasContent) return null;
 
   return (
     <div className="glass-card rounded-xl p-3 mt-3">
       <div className="flex items-center justify-between mb-2">
         <h2 className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
-          <ChefHat className="w-3.5 h-3.5" />
+          <CookIcon className="w-3.5 h-3.5" />
           KI-Rezeptgenerator
         </h2>
-        <Button variant="ghost" size="sm" onClick={onClearAll} className="h-6 text-[10px] px-2">
-          Alle entfernen
-        </Button>
+        <div className="flex items-center gap-1">
+          {savedRecipes.length > 0 && (
+            <Button
+              variant={showSaved ? "secondary" : "ghost"}
+              size="sm"
+              onClick={() => setShowSaved(!showSaved)}
+              className="h-6 text-[10px] px-2 gap-1"
+            >
+              <BookOpen className="w-3 h-3" />
+              {savedRecipes.length}
+            </Button>
+          )}
+          {selectedFoods.length > 0 && (
+            <Button variant="ghost" size="sm" onClick={onClearAll} className="h-6 text-[10px] px-2">
+              Alle entfernen
+            </Button>
+          )}
+        </div>
       </div>
+
+      {/* Saved recipes list */}
+      {showSaved && savedRecipes.length > 0 && (
+        <div className="mb-3 space-y-1.5">
+          <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Gespeicherte Rezepte</p>
+          {savedRecipes.map((sr) => (
+            <div
+              key={sr.id}
+              className="flex items-center justify-between rounded-lg bg-muted/50 border border-border/50 px-2.5 py-1.5"
+            >
+              <button
+                onClick={() => handleLoadSaved(sr)}
+                className="flex-1 text-left text-[11px] font-medium text-foreground hover:text-primary transition-colors"
+              >
+                {sr.name}
+                <span className="ml-1.5 text-muted-foreground font-normal">
+                  {sr.perServing.calories} kcal/Portion
+                </span>
+              </button>
+              <div className="flex items-center gap-1 shrink-0 ml-2">
+                <button
+                  onClick={() => handleAddToLog(sr)}
+                  className="p-1 rounded text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"
+                  title="1 Portion ins Protokoll"
+                >
+                  <Plus className="w-3 h-3" />
+                </button>
+                <button
+                  onClick={() => handleDeleteSaved(sr.id)}
+                  className="p-1 rounded text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+                  title="Rezept löschen"
+                >
+                  <Trash2 className="w-3 h-3" />
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
 
       {/* Selected ingredients chips */}
-      <div className="flex flex-wrap gap-1.5 mb-3">
-        {selectedFoods.map((f) => (
-          <span
-            key={f.name}
-            className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-primary/15 text-primary text-[11px] font-medium"
-          >
-            {f.name}
-            <button onClick={() => onRemoveFood(f.name)} className="hover:text-destructive transition-colors">
-              <X className="w-3 h-3" />
-            </button>
-          </span>
-        ))}
-      </div>
+      {selectedFoods.length > 0 && (
+        <>
+          <div className="flex flex-wrap gap-1.5 mb-3">
+            {selectedFoods.map((f) => (
+              <span
+                key={f.name}
+                className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-muted border border-border text-foreground text-[11px] font-medium"
+              >
+                {f.name}
+                <button onClick={() => onRemoveFood(f.name)} className="hover:text-destructive transition-colors">
+                  <X className="w-3 h-3" />
+                </button>
+              </span>
+            ))}
+          </div>
 
-      {/* Generate button */}
-      <Button
-        onClick={handleGenerate}
-        disabled={loading || selectedFoods.length === 0}
-        className="w-full h-9 text-xs gap-2"
-      >
-        {loading ? (
-          <Loader2 className="w-3.5 h-3.5 animate-spin" />
-        ) : (
-          <ChefHat className="w-3.5 h-3.5" />
-        )}
-        {loading ? "Rezept wird erstellt…" : `🍳 Rezept generieren (${selectedFoods.length} Zutaten)`}
-      </Button>
+          {/* Generate button */}
+          <Button
+            onClick={handleGenerate}
+            disabled={loading || selectedFoods.length === 0}
+            className="w-full h-9 text-xs gap-2"
+          >
+            {loading ? (
+              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+            ) : (
+              <CookIcon className="w-3.5 h-3.5" />
+            )}
+            {loading ? "Rezept wird erstellt…" : `🍳 Rezept generieren (${selectedFoods.length} Zutaten)`}
+          </Button>
+        </>
+      )}
 
       {/* Recipe result */}
       {recipe && (
@@ -229,25 +339,35 @@ const RecipeGenerator = ({
             </div>
           </div>
 
-          {/* Add to log button */}
-          <Button
-            onClick={handleAddToLog}
-            disabled={added}
-            className="w-full h-9 text-xs gap-2"
-            variant={added ? "secondary" : "default"}
-          >
-            {added ? (
-              <>
-                <Check className="w-3.5 h-3.5" />
-                Im Protokoll eingetragen
-              </>
-            ) : (
-              <>
-                <Plus className="w-3.5 h-3.5" />
-                1 Portion ins Tagesprotokoll übernehmen
-              </>
-            )}
-          </Button>
+          {/* Action buttons */}
+          <div className="flex gap-2">
+            <Button
+              onClick={() => handleAddToLog()}
+              disabled={added}
+              className="flex-1 h-9 text-xs gap-2"
+              variant={added ? "secondary" : "default"}
+            >
+              {added ? (
+                <>
+                  <Check className="w-3.5 h-3.5" />
+                  Eingetragen
+                </>
+              ) : (
+                <>
+                  <Plus className="w-3.5 h-3.5" />
+                  1 Portion übernehmen
+                </>
+              )}
+            </Button>
+            <Button
+              onClick={handleSaveRecipe}
+              variant="outline"
+              className="h-9 text-xs gap-1.5 px-3"
+            >
+              <Save className="w-3.5 h-3.5" />
+              Speichern
+            </Button>
+          </div>
         </div>
       )}
     </div>

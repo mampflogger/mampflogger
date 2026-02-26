@@ -15,8 +15,8 @@ import {
   Settings, Sun, Moon, Trash2, Upload, Download, UserCircle, Save, Check,
   AlertCircle, FileSpreadsheet, UtensilsCrossed, Palette, BarChart3, FileUp,
   ChevronLeft, ChevronRight, RefreshCw, List, Sparkles, Loader2, HardDrive,
-  ChefHat,
 } from "lucide-react";
+import CookIcon from "@/components/CookIcon";
 import { supabase } from "@/integrations/supabase/client";
 import { UserProfile, calculateBMR } from "@/types/profile";
 import { NutritionEntry } from "@/types/nutrition";
@@ -948,10 +948,10 @@ const SettingsDialog = ({
                             <td className="pt-1.5 pb-0 pl-0 pr-0 whitespace-nowrap">
                               <button
                                 onClick={(e) => { e.stopPropagation(); toggleRecipeFood(f); }}
-                                className={`p-0.5 rounded transition-colors ${isRecipeSelected(f.name) ? "text-primary" : "text-muted-foreground/40 hover:text-primary/60"}`}
+                                className={`p-0.5 rounded transition-colors ${isRecipeSelected(f.name) ? "text-primary" : "text-muted-foreground/70 hover:text-primary/80"}`}
                                 title="Für Rezept auswählen"
                               >
-                                <ChefHat className="w-3 h-3" />
+                                <CookIcon className="w-3.5 h-3.5" />
                               </button>
                               <button
                                 onClick={(e) => { e.stopPropagation(); handleRemoveFood(f.name); }}
@@ -990,10 +990,10 @@ const SettingsDialog = ({
                             <td className="py-1 pl-1 pr-0 whitespace-nowrap">
                               <button
                                 onClick={(e) => { e.stopPropagation(); toggleRecipeFood(f); }}
-                                className={`p-0.5 rounded transition-colors ${isRecipeSelected(f.name) ? "text-primary" : "text-muted-foreground/40 hover:text-primary/60"}`}
+                                className={`p-0.5 rounded transition-colors ${isRecipeSelected(f.name) ? "text-primary" : "text-muted-foreground/70 hover:text-primary/80"}`}
                                 title="Für Rezept auswählen"
                               >
-                                <ChefHat className="w-3 h-3" />
+                                <CookIcon className="w-3.5 h-3.5" />
                               </button>
                               <button
                                 onClick={(e) => { e.stopPropagation(); handleRemoveFood(f.name); }}
