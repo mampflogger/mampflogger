@@ -15,6 +15,7 @@ import {
   Settings, Sun, Moon, Trash2, Upload, Download, UserCircle, Save, Check,
   AlertCircle, FileSpreadsheet, UtensilsCrossed, Palette, BarChart3, FileUp,
   ChevronLeft, ChevronRight, RefreshCw, List, Sparkles, Loader2, HardDrive,
+  ChefHat,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { UserProfile, calculateBMR } from "@/types/profile";
@@ -28,7 +29,7 @@ import { parseImportText } from "@/lib/importParser";
 import { BookedActivity } from "@/types/profile";
 import { toast } from "sonner";
 import { syncRemoteFoodDatabase, loadRemoteUrl } from "@/lib/remoteFoodSync";
-
+import RecipeGenerator from "@/components/RecipeGenerator";
 
 type SettingsTab = "profile" | "design" | "food" | "data";
 
@@ -62,6 +63,8 @@ interface SettingsDialogProps {
   onSetActiveTab: (tab: "log" | "weekly") => void;
   initialOpen?: boolean;
   initialTab?: SettingsTab;
+  selectedDate: string;
+  onAddEntry: (entry: NutritionEntry) => void;
 }
 
 type ImportType = "csv-entries" | "csv-balance" | "csv-food";
@@ -89,7 +92,7 @@ const SettingsDialog = ({
   profile, onSaveProfile, darkMode, onToggleDarkMode,
   colorTheme, onChangeTheme, entries, bookedActivities,
   onImport, onImportActivities, onCount, onDelete, onDeleteAll, onDeleteAllActivities, openToNewFood, onOpenToNewFoodHandled,
-  activeTab, onSetActiveTab, initialOpen, initialTab,
+  activeTab, onSetActiveTab, initialOpen, initialTab, selectedDate, onAddEntry,
 }: SettingsDialogProps) => {
   const [open, setOpen] = useState(initialOpen ?? false);
   const [tab, setTab] = useState<SettingsTab>(initialTab ?? "profile");
@@ -155,7 +158,7 @@ const SettingsDialog = ({
   const [, forceUpdate] = useState(0);
   const [foodNavIndex, setFoodNavIndex] = useState<number | null>(null);
   const [selectedCategories, setSelectedCategories] = useState<Set<string>>(new Set());
-
+  const [selectedRecipeFoods, setSelectedRecipeFoods] = useState<FoodItem[]>([]);
 
 
   // Handle external "New Food" trigger
@@ -250,6 +253,7 @@ const SettingsDialog = ({
       setFoodPreview(null);
       setActivityPreview(null);
       setBalanceHint(false);
+      setSelectedRecipeFoods([]);
     }
   };
 
@@ -496,6 +500,17 @@ const SettingsDialog = ({
     removeFoodItem(foodName);
     forceUpdate((n) => n + 1);
   };
+
+  const toggleRecipeFood = (food: FoodItem) => {
+    setSelectedRecipeFoods((prev) => {
+      const exists = prev.some((f) => f.name === food.name);
+      if (exists) return prev.filter((f) => f.name !== food.name);
+      if (prev.length >= 5) return prev;
+      return [...prev, food];
+    });
+  };
+
+  const isRecipeSelected = (name: string) => selectedRecipeFoods.some((f) => f.name === name);
 
   const filteredFoods = (() => {
     let list = foodSearch
@@ -930,7 +945,14 @@ const SettingsDialog = ({
                             onClick={() => handleEditFood(f, idx)}
                           >
                             <td colSpan={7} className="pt-1.5 pb-0 pr-1 font-medium text-[11px]">{f.name}</td>
-                            <td className="pt-1.5 pb-0 pl-1 pr-0">
+                            <td className="pt-1.5 pb-0 pl-0 pr-0 whitespace-nowrap">
+                              <button
+                                onClick={(e) => { e.stopPropagation(); toggleRecipeFood(f); }}
+                                className={`p-0.5 rounded transition-colors ${isRecipeSelected(f.name) ? "text-primary" : "text-muted-foreground/40 hover:text-primary/60"}`}
+                                title="Für Rezept auswählen"
+                              >
+                                <ChefHat className="w-3 h-3" />
+                              </button>
                               <button
                                 onClick={(e) => { e.stopPropagation(); handleRemoveFood(f.name); }}
                                 className="p-0.5 rounded text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
@@ -965,7 +987,14 @@ const SettingsDialog = ({
                             <td className="py-1 px-0.5 text-right">{f.fat}</td>
                             <td className="py-1 px-0.5 text-right">{f.carbs}</td>
                             <td className="py-1 px-0.5 text-right">{f.fiber}</td>
-                            <td className="py-1 pl-1 pr-0">
+                            <td className="py-1 pl-1 pr-0 whitespace-nowrap">
+                              <button
+                                onClick={(e) => { e.stopPropagation(); toggleRecipeFood(f); }}
+                                className={`p-0.5 rounded transition-colors ${isRecipeSelected(f.name) ? "text-primary" : "text-muted-foreground/40 hover:text-primary/60"}`}
+                                title="Für Rezept auswählen"
+                              >
+                                <ChefHat className="w-3 h-3" />
+                              </button>
                               <button
                                 onClick={(e) => { e.stopPropagation(); handleRemoveFood(f.name); }}
                                 className="p-0.5 rounded text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
@@ -983,6 +1012,14 @@ const SettingsDialog = ({
               </div>
             )}
             </div>
+            <RecipeGenerator
+              selectedFoods={selectedRecipeFoods}
+              onRemoveFood={(name) => setSelectedRecipeFoods((prev) => prev.filter((f) => f.name !== name))}
+              onClearAll={() => setSelectedRecipeFoods([])}
+              entries={entries}
+              selectedDate={selectedDate}
+              onAddEntry={onAddEntry}
+            />
           </div>
         )}
 

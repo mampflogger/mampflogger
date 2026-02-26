@@ -332,6 +332,8 @@ const Index = () => {
                 onSetActiveTab={setActiveTab}
                 initialOpen={settingsParam === "profile"}
                 initialTab={settingsParam === "profile" ? "profile" : undefined}
+                selectedDate={selectedDate}
+                onAddEntry={handleAdd}
               />
               <Button
                 variant="ghost"
