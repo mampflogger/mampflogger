@@ -24,7 +24,7 @@ import FluidDisplay from "@/components/FluidDisplay";
 import PhotoToLog from "@/components/PhotoToLog";
 
 import SettingsDialog, { ColorTheme } from "@/components/SettingsDialog";
-import { ChevronLeft, ChevronRight, BarChart3, List, Mic, MicOff } from "lucide-react";
+import { ChevronLeft, ChevronRight, BarChart3, List, Mic, MicOff, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const Index = () => {
@@ -46,6 +46,7 @@ const Index = () => {
   const [editingEntry, setEditingEntry] = useState<NutritionEntry | null>(null);
   const [editingActivity, setEditingActivity] = useState<BookedActivity | null>(null);
   const [openNewFood, setOpenNewFood] = useState(false);
+  const [openRecipes, setOpenRecipes] = useState(false);
   const [voiceState, setVoiceState] = useState<{ isListening: boolean; isSupported: boolean; toggle: () => void }>({ isListening: false, isSupported: false, toggle: () => {} });
   const [darkMode, setDarkMode] = useState(() => {
     const saved = localStorage.getItem("mampflogger-dark-mode");
@@ -328,6 +329,8 @@ const Index = () => {
                 onDeleteAllActivities={deleteAllActivities}
                 openToNewFood={openNewFood}
                 onOpenToNewFoodHandled={() => setOpenNewFood(false)}
+                openToRecipes={openRecipes}
+                onOpenToRecipesHandled={() => setOpenRecipes(false)}
                 activeTab={activeTab}
                 onSetActiveTab={setActiveTab}
                 initialOpen={settingsParam === "profile"}
@@ -343,6 +346,15 @@ const Index = () => {
                 title="Eingabe"
               >
                 <List className="w-4 h-4" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8"
+                onClick={() => setOpenRecipes(true)}
+                title="Rezepte"
+              >
+                <BookOpen className="w-4 h-4" />
               </Button>
               <Button
                 variant="ghost"
