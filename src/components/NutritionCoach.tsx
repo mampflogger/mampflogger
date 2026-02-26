@@ -3,7 +3,7 @@ import { NutritionEntry, calculateDailySummary, formatDate } from "@/types/nutri
 import { UserProfile, BookedActivity, calculateBMR, calculateBookedActivityBonus } from "@/types/profile";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Sparkles, Loader2 } from "lucide-react";
+import { Sparkles, Loader2, Search } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface CoachTip {
@@ -102,7 +102,7 @@ const NutritionCoach = ({ entries, selectedDate, profile, bookedActivities = [] 
           {loading ? (
             <Loader2 className="w-3.5 h-3.5 animate-spin" />
           ) : (
-            <Sparkles className="w-3.5 h-3.5 text-primary" />
+            <Search className="w-3.5 h-3.5" />
           )}
           {loading ? "Analysiere…" : "Woche analysieren"}
         </Button>
@@ -110,7 +110,7 @@ const NutritionCoach = ({ entries, selectedDate, profile, bookedActivities = [] 
 
       {!result && !loading && (
         <p className="text-xs text-muted-foreground">
-          Lass deine Wochendaten von der KI analysieren und erhalte personalisierte Ernährungstipps.
+          Lass deine Wochendaten von der <Sparkles className="w-3 h-3 text-primary inline-block align-middle -mt-0.5" /> KI analysieren und erhalte personalisierte Ernährungstipps.
         </p>
       )}
 
