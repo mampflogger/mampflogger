@@ -139,7 +139,7 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
       `📊 Pro Portion: ${ps.calories} kcal · Protein ${ps.protein}g · Fett ${ps.fat}g · KH ${ps.carbs}g · Ballast ${ps.fiber}g`,
       ``,
       `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`,
-      `Erstellt mit der App für gesunde Ernährung`,
+      `Erstellt mit der App für gesunde Ernährung auf`,
       `*𝗠𝗮𝗺𝗽𝗳𝗟𝗼𝗴𝗴𝗲𝗿.𝗱𝗲*`,
       `Keine Anmeldung · Keine Werbung · Keine Kosten`,
     ].join("\n");
