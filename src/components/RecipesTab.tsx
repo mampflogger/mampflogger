@@ -1,11 +1,12 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import { NutritionEntry, generateId } from "@/types/nutrition";
-import { Trash2, ChevronDown, ChevronUp, Sparkles, Pencil, Check, Plus, Loader2 } from "lucide-react";
+import { Trash2, ChevronDown, ChevronUp, Sparkles, Pencil, Check, Plus, Loader2, Share2, PlusCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { foodDatabase, saveFoodDatabase, type FoodItem } from "@/data/foodDatabase";
+import ManualRecipeForm from "@/components/ManualRecipeForm";
 
 interface RecipeMacros {
   calories: number;
@@ -71,6 +72,7 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
   const [selectedFoodItem, setSelectedFoodItem] = useState<FoodItem | null>(null);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [recalculating, setRecalculating] = useState(false);
+  const [showManualForm, setShowManualForm] = useState(false);
   const suggestionsRef = useRef<HTMLDivElement>(null);
   const nameInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
@@ -103,6 +105,31 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
     setSavedRecipes((prev) => prev.filter((r) => r.id !== id));
     if (editingId === id) setEditingId(null);
     toast({ title: "Gelöscht", description: "Rezept wurde entfernt." });
+  };
+
+  const handleShare = async (recipe: SavedRecipe) => {
+    const ingredientsList = recipe.ingredients
+      .map((ing) => `${ing.amount ? ing.amount + " " : ""}${ing.name}`)
+      .join("\n");
+    const stepsList = recipe.steps.map((s, i) => `${i + 1}. ${s}`).join("\n");
+    const ps = recipe.perServing;
+    const text = `🍽️ ${recipe.name}\n\n👥 ${recipe.servings} Portionen · ⏱️ ${recipe.prepTime}\n\n📋 Zutaten:\n${ingredientsList}\n\n👨‍🍳 Zubereitung:\n${stepsList}\n\n📊 Pro Portion: ${ps.calories} kcal | P: ${ps.protein}g | F: ${ps.fat}g | KH: ${ps.carbs}g | Ballaststoffe: ${ps.fiber}g`;
+
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: recipe.name, text });
+      } catch (e) {
+        // User cancelled share
+      }
+    } else {
+      await navigator.clipboard.writeText(text);
+      toast({ title: "Kopiert!", description: "Rezept wurde in die Zwischenablage kopiert." });
+    }
+  };
+
+  const handleManualSave = (recipe: SavedRecipe) => {
+    setSavedRecipes((prev) => [recipe, ...prev]);
+    setShowManualForm(false);
   };
 
   const handleAddToLog = (recipe: SavedRecipe) => {
@@ -269,9 +296,21 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
     }
   };
 
-  if (savedRecipes.length === 0) {
+  if (savedRecipes.length === 0 && !showManualForm) {
     return (
       <div className="glass-card rounded-xl p-3">
+        <div className="flex items-center justify-between mb-2">
+          <h2 className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
+            Gespeicherte Rezepte (0)
+          </h2>
+          <button
+            onClick={() => setShowManualForm(true)}
+            className="text-primary hover:text-primary/80 transition-colors"
+            title="Neues Rezept anlegen"
+          >
+            <PlusCircle className="w-4 h-4" />
+          </button>
+        </div>
         <div className="text-center py-8">
           <p className="text-muted-foreground text-sm">Noch keine gespeicherten Rezepte.</p>
           <div className="flex items-start gap-1.5 rounded-lg border border-border/50 bg-background p-2 mt-3 mx-auto max-w-[280px]">
@@ -287,9 +326,25 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
 
   return (
     <div className="glass-card rounded-xl p-3">
-      <h2 className="text-[10px] font-semibold text-muted-foreground mb-2 uppercase tracking-wider">
-        Gespeicherte Rezepte ({savedRecipes.length})
-      </h2>
+      <div className="flex items-center justify-between mb-2">
+        <h2 className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
+          Gespeicherte Rezepte ({savedRecipes.length})
+        </h2>
+        <button
+          onClick={() => setShowManualForm(!showManualForm)}
+          className="text-primary hover:text-primary/80 transition-colors"
+          title="Neues Rezept anlegen"
+        >
+          <PlusCircle className="w-4 h-4" />
+        </button>
+      </div>
+
+      {showManualForm && (
+        <div className="mb-2">
+          <ManualRecipeForm onSave={handleManualSave} onCancel={() => setShowManualForm(false)} />
+        </div>
+      )}
+
       <div className="space-y-1.5">
         {savedRecipes.map((sr) => {
           const isEditing = editingId === sr.id;
@@ -312,6 +367,13 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
                   </div>
                 </button>
                 <div className="flex items-center gap-1 shrink-0 ml-2">
+                  <button
+                    onClick={() => handleShare(sr)}
+                    className="p-1 rounded text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"
+                    title="Rezept teilen"
+                  >
+                    <Share2 className="w-3 h-3" />
+                  </button>
                   <button
                     onClick={() => handleDelete(sr.id)}
                     className="p-1 rounded text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
