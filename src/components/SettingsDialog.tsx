@@ -800,8 +800,8 @@ const SettingsDialog = ({
                   disabled={aiLoading || !editFoodName.trim()}
                   className="w-full h-9 text-xs gap-2"
                 >
-                  {aiLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
-                  {aiLoading ? "KI sucht Nährwerte..." : "🤖 KI-Nährwerte suchen"}
+                  {aiLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5 text-primary" />}
+                  {aiLoading ? "KI sucht Nährwerte..." : <><Search className="w-3.5 h-3.5 text-muted-foreground" /> KI-Nährwerte suchen</>}
                 </Button>
                 {/* Artikelblock: Makros, Kategorie, Zusatzinfo */}
                 <div className="space-y-0.5">

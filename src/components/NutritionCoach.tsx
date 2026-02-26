@@ -102,7 +102,7 @@ const NutritionCoach = ({ entries, selectedDate, profile, bookedActivities = [] 
           {loading ? (
             <Loader2 className="w-3.5 h-3.5 animate-spin" />
           ) : (
-            <Sparkles className="w-3.5 h-3.5" />
+            <Sparkles className="w-3.5 h-3.5 text-primary" />
           )}
           {loading ? "Analysiere…" : "Woche analysieren"}
         </Button>
