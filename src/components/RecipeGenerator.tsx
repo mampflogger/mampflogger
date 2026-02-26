@@ -150,6 +150,14 @@ const RecipeGenerator = ({
     setShowSaved(false);
   };
 
+  const handleClearAll = () => {
+    onClearAll();
+    setRecipe(null);
+    setAdded(false);
+    setSaved(false);
+    setShowSaved(false);
+  };
+
   const handleAddToLog = (r?: Recipe) => {
     const target = r || recipe;
     if (!target) return;
@@ -198,7 +206,7 @@ const RecipeGenerator = ({
             </Button>
           )}
           {selectedFoods.length > 0 && (
-            <Button variant="ghost" size="sm" onClick={onClearAll} className="h-6 text-[10px] px-2">
+            <Button variant="ghost" size="sm" onClick={handleClearAll} className="h-6 text-[10px] px-2">
               Alle entfernen
             </Button>
           )}
