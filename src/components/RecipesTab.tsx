@@ -140,7 +140,7 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
       ``,
       `━━━━━━━━━━━━━━━━━━━━`,
       `Ein Service von mampflogger.de`,
-      `📊 MampfLogger – Hol dir die App!`,
+      `𝗠𝗮𝗺𝗽𝗳𝗟𝗼𝗴𝗴𝗲𝗿 – Hol dir die App!`,
       `Keine Anmeldung · Keine Werbung · Keine Kosten`,
     ].join("\n");
   };
