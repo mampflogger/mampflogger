@@ -3,7 +3,7 @@ import { FoodItem } from "@/data/foodDatabase";
 import { NutritionEntry, generateId } from "@/types/nutrition";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Loader2, X, Plus, Check, Trash2, BookOpen, Save } from "lucide-react";
+import { Loader2, X, Plus, Check, Trash2, BookOpen, Save, Sparkles } from "lucide-react";
 import CookIcon from "@/components/CookIcon";
 import { useToast } from "@/hooks/use-toast";
 
@@ -188,7 +188,7 @@ const RecipeGenerator = ({
 
   return (
     <div className="glass-card rounded-xl p-3 mt-3">
-      <div className="flex items-center justify-between mb-2">
+      <div className="flex items-center justify-between mb-1">
         <h2 className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
           <CookIcon className="w-3.5 h-3.5" />
           KI-Rezeptgenerator
@@ -213,7 +213,15 @@ const RecipeGenerator = ({
         </div>
       </div>
 
-      {/* Saved recipes list - moved below recipe result */}
+      {/* Hint text */}
+      {!recipe && selectedFoods.length === 0 && (
+        <div className="flex items-start gap-1.5 rounded-lg border border-border/50 bg-background p-2 mb-2">
+          <Sparkles className="w-3.5 h-3.5 text-primary shrink-0 mt-0.5" />
+          <p className="text-[10px] text-muted-foreground leading-relaxed">
+            Klicke bis zu fünf Kochmützen in der Zutatenliste an und lass dir von der KI ein Rezept erstellen.
+          </p>
+        </div>
+      )}
 
       {/* Selected ingredients chips */}
       {selectedFoods.length > 0 && (

@@ -14,7 +14,7 @@ import { Label } from "@/components/ui/label";
 import {
   Settings, Sun, Moon, Trash2, Upload, Download, UserCircle, Save, Check,
   AlertCircle, FileSpreadsheet, UtensilsCrossed, Palette, BarChart3, FileUp,
-  ChevronLeft, ChevronRight, RefreshCw, List, Sparkles, Loader2, HardDrive,
+  ChevronLeft, ChevronRight, RefreshCw, List, Sparkles, Loader2, HardDrive, BookOpen,
 } from "lucide-react";
 import CookIcon from "@/components/CookIcon";
 import { supabase } from "@/integrations/supabase/client";
@@ -30,8 +30,9 @@ import { BookedActivity } from "@/types/profile";
 import { toast } from "sonner";
 import { syncRemoteFoodDatabase, loadRemoteUrl } from "@/lib/remoteFoodSync";
 import RecipeGenerator from "@/components/RecipeGenerator";
+import RecipesTab from "@/components/RecipesTab";
 
-type SettingsTab = "profile" | "design" | "food" | "data";
+type SettingsTab = "profile" | "design" | "food" | "recipes" | "data";
 
 export type ColorTheme = "green" | "yellow" | "blue" | "pink";
 
@@ -59,6 +60,8 @@ interface SettingsDialogProps {
   onDeleteAllActivities: () => number;
   openToNewFood?: boolean;
   onOpenToNewFoodHandled?: () => void;
+  openToRecipes?: boolean;
+  onOpenToRecipesHandled?: () => void;
   activeTab: "log" | "weekly";
   onSetActiveTab: (tab: "log" | "weekly") => void;
   initialOpen?: boolean;
@@ -91,7 +94,7 @@ function parseDateInputToISO(text: string): string {
 const SettingsDialog = ({
   profile, onSaveProfile, darkMode, onToggleDarkMode,
   colorTheme, onChangeTheme, entries, bookedActivities,
-  onImport, onImportActivities, onCount, onDelete, onDeleteAll, onDeleteAllActivities, openToNewFood, onOpenToNewFoodHandled,
+  onImport, onImportActivities, onCount, onDelete, onDeleteAll, onDeleteAllActivities, openToNewFood, onOpenToNewFoodHandled, openToRecipes, onOpenToRecipesHandled,
   activeTab, onSetActiveTab, initialOpen, initialTab, selectedDate, onAddEntry,
 }: SettingsDialogProps) => {
   const [open, setOpen] = useState(initialOpen ?? false);
@@ -170,6 +173,15 @@ const SettingsDialog = ({
       onOpenToNewFoodHandled?.();
     }
   }, [openToNewFood]);
+
+  // Handle external "Recipes" trigger
+  useEffect(() => {
+    if (openToRecipes) {
+      setOpen(true);
+      setTab("recipes");
+      onOpenToRecipesHandled?.();
+    }
+  }, [openToRecipes]);
 
   const handleNewFood = () => {
     const blank: FoodItem = {
@@ -529,6 +541,7 @@ const SettingsDialog = ({
     { id: "profile", label: "Profil", icon: <UserCircle className="w-4 h-4" /> },
     { id: "design", label: "Design", icon: <Palette className="w-4 h-4" /> },
     { id: "food", label: "Lebensmittel", icon: <UtensilsCrossed className="w-4 h-4" /> },
+    { id: "recipes", label: "Rezepte", icon: <BookOpen className="w-4 h-4" /> },
     { id: "data", label: "Daten", icon: <FileSpreadsheet className="w-4 h-4" /> },
   ];
 
@@ -573,6 +586,9 @@ const SettingsDialog = ({
                 <Button variant="ghost" size="icon" className="h-8 w-8" title="Eingabe" onClick={() => { handleOpen(false); onSetActiveTab("log"); }}>
                   <List className="w-4 h-4" />
                 </Button>
+                <Button variant="ghost" size="icon" className={`h-8 w-8 ${tab === "recipes" ? "bg-muted" : ""}`} title="Rezepte" onClick={() => setTab("recipes")}>
+                  <BookOpen className="w-4 h-4" />
+                </Button>
                 <Button variant="ghost" size="icon" className="h-8 w-8" title="Statistik" onClick={() => { handleOpen(false); onSetActiveTab("weekly"); }}>
                   <BarChart3 className="w-4 h-4" />
                 </Button>
@@ -589,7 +605,7 @@ const SettingsDialog = ({
           <div className="max-w-lg mx-auto px-4 w-full pb-8">
             {/* Tab bar – gleiche Außenmaße wie Datums-Kasten */}
             <div className="glass-card rounded-xl p-3 my-3">
-              <div className="grid grid-cols-4 gap-1.5 h-10">
+              <div className="grid grid-cols-5 gap-1 h-10">
                 {tabs.map((t) => (
                   <button
                     key={t.id}
@@ -1020,6 +1036,13 @@ const SettingsDialog = ({
               selectedDate={selectedDate}
               onAddEntry={onAddEntry}
             />
+          </div>
+        )}
+
+        {/* Recipes Tab */}
+        {tab === "recipes" && (
+          <div className="space-y-3">
+            <RecipesTab entries={entries} selectedDate={selectedDate} onAddEntry={onAddEntry} />
           </div>
         )}
 
