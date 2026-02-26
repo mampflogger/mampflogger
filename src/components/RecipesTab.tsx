@@ -489,7 +489,7 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
           <div className="flex items-start gap-1.5 rounded-lg border border-border/50 bg-background p-2 mt-3 mx-auto max-w-[280px]">
             <Sparkles className="w-3.5 h-3.5 text-primary shrink-0 mt-0.5" />
             <p className="text-[10px] text-muted-foreground leading-relaxed text-left">
-              Gehe zu Lebensmittel, klicke bis zu fünf Kochmützen an und lass dir von der KI ein Rezept erstellen.
+              Gehe zu Lebensmittel, klicke bis zu fünf Kochmützen an und lass dir von der KI ein Rezept erstellen – oder lade ein Bild über das Kamerasymbol hoch.
             </p>
           </div>
         </div>
