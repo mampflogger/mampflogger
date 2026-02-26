@@ -38,6 +38,7 @@ interface SavedRecipe {
   steps: string[];
   totalMacros: RecipeMacros;
   perServing: RecipeMacros;
+  photoUrl?: string;
 }
 
 const SAVED_RECIPES_KEY = "mampflogger-saved-recipes";
@@ -86,6 +87,8 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
   const suggestionsRef = useRef<HTMLDivElement>(null);
   const nameInputRef = useRef<HTMLInputElement>(null);
   const photoInputRef = useRef<HTMLInputElement>(null);
+  const recipePhotoInputRef = useRef<HTMLInputElement>(null);
+  const [recipePhotoTargetId, setRecipePhotoTargetId] = useState<string | null>(null);
   const { toast } = useToast();
 
   const foodSuggestions = useMemo(() => {
@@ -246,6 +249,8 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
           perServing: data.perServing || { calories: 0, protein: 0, fat: 0, carbs: 0, fiber: 0 },
         };
 
+        // Store the photo with the recipe
+        recipe.photoUrl = base64;
         setSavedRecipes((prev) => [recipe, ...prev]);
         setExpandedId(recipe.id);
         setShowPhotoDialog(false);
@@ -260,6 +265,34 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
     };
     reader.readAsDataURL(file);
     e.target.value = "";
+  };
+
+  const handleRecipePhotoClick = (recipeId: string) => {
+    setRecipePhotoTargetId(recipeId);
+    recipePhotoInputRef.current?.click();
+  };
+
+  const handleRecipePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !recipePhotoTargetId) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const base64 = ev.target?.result as string;
+      setSavedRecipes((prev) =>
+        prev.map((r) => r.id === recipePhotoTargetId ? { ...r, photoUrl: base64 } : r)
+      );
+      toast({ title: "Foto gespeichert!", description: "Das Rezeptfoto wurde hinzugefügt." });
+      setRecipePhotoTargetId(null);
+    };
+    reader.readAsDataURL(file);
+    e.target.value = "";
+  };
+
+  const handleDeleteRecipePhoto = (recipeId: string) => {
+    setSavedRecipes((prev) =>
+      prev.map((r) => r.id === recipeId ? { ...r, photoUrl: undefined } : r)
+    );
+    toast({ title: "Foto entfernt" });
   };
 
   const handleAddToLog = (recipe: SavedRecipe) => {
@@ -549,124 +582,162 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
                     <span>⏱️ {sr.prepTime}</span>
                   </div>
 
-                  {/* Ingredients */}
-                  <div>
-                    <div className="flex items-center gap-1.5 mb-1">
-                      <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Zutaten</p>
-                      {!isEditing ? (
+                  {/* Ingredients + Photo side by side */}
+                  <div className="flex gap-3">
+                    {/* Ingredients */}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-1.5 mb-1">
+                        <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Zutaten</p>
+                        {!isEditing ? (
+                          <button
+                            onClick={() => startEditing(sr)}
+                            className="p-0.5 rounded text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"
+                            title="Zutaten bearbeiten"
+                          >
+                            <Pencil className="w-3 h-3" />
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => handleSaveEdits(sr.id)}
+                            disabled={recalculating}
+                            className="p-0.5 rounded text-primary hover:bg-primary/10 transition-colors disabled:opacity-50"
+                            title="Änderungen speichern"
+                          >
+                            <Check className="w-3 h-3" />
+                          </button>
+                        )}
+                      </div>
+                      <ul className="space-y-0.5">
+                        {displayIngredients.map((ing, i) => {
+                          const parsed = extractNumber(ing.amount);
+                          const hasNumber = !!parsed;
+
+                          return (
+                            <li key={i} className="text-[11px] text-foreground flex items-center gap-1.5">
+                              {isEditing && (
+                                <button
+                                  onClick={() => handleDeleteIngredient(i)}
+                                  className="p-0.5 rounded text-muted-foreground hover:text-destructive transition-colors shrink-0"
+                                >
+                                  <Trash2 className="w-3 h-3" />
+                                </button>
+                              )}
+                              <span className="shrink-0">{ing.isMain ? "⭐" : "•"}</span>
+                              {isEditing && hasNumber ? (
+                                <span className="flex items-center gap-1">
+                                  <Input
+                                    type="text"
+                                    inputMode="decimal"
+                                    value={parsed!.num}
+                                    onChange={(e) => handleAmountChange(i, e.target.value)}
+                                    className="h-6 w-14 px-1 text-[11px] text-center font-medium"
+                                  />
+                                  <span>{parsed!.rest} {ing.name}</span>
+                                </span>
+                              ) : (
+                                <span>
+                                  {ing.amount && <span className="font-medium">{ing.amount}</span>}
+                                  {ing.amount ? " " : ""}{ing.name}
+                                </span>
+                              )}
+                            </li>
+                          );
+                        })}
+                      </ul>
+
+                      {/* Add ingredient fields in edit mode */}
+                      {isEditing && (
+                        <div className="relative flex items-center gap-1 mt-1.5">
+                          <Input
+                            type="text"
+                            inputMode="decimal"
+                            value={newIngredientAmount}
+                            onChange={(e) => setNewIngredientAmount(e.target.value)}
+                            placeholder="Menge"
+                            className="h-6 text-[11px] px-2 w-16 shrink-0"
+                          />
+                          <div className="relative flex-1">
+                            <Input
+                              ref={nameInputRef}
+                              type="text"
+                              value={newIngredientName}
+                              onChange={(e) => {
+                                setNewIngredientName(e.target.value);
+                                setSelectedFoodItem(null);
+                                setShowSuggestions(true);
+                              }}
+                              onFocus={() => newIngredientName.trim().length >= 1 && setShowSuggestions(true)}
+                              onKeyDown={(e) => e.key === "Enter" && handleAddIngredient()}
+                              placeholder="Zutat hinzufügen…"
+                              className="h-6 text-[11px] px-2 w-full"
+                            />
+                            {showSuggestions && foodSuggestions.length > 0 && (
+                              <div
+                                ref={suggestionsRef}
+                                className="absolute left-0 right-0 top-full mt-0.5 z-50 max-h-40 overflow-y-auto rounded-md border border-border bg-popover shadow-md"
+                              >
+                                {foodSuggestions.map((food, idx) => (
+                                  <button
+                                    key={idx}
+                                    type="button"
+                                    className="w-full text-left px-2 py-1 text-[11px] text-popover-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
+                                    onMouseDown={(e) => e.preventDefault()}
+                                    onClick={() => handleSelectSuggestion(food)}
+                                  >
+                                    <span className="font-medium">{food.name}</span>
+                                    <span className="ml-1.5 text-muted-foreground">
+                                      {food.calories} kcal
+                                    </span>
+                                  </button>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                          <button
+                            onClick={handleAddIngredient}
+                            disabled={!newIngredientName.trim()}
+                            className="p-0.5 rounded text-primary hover:bg-primary/10 transition-colors disabled:opacity-30"
+                          >
+                            <Plus className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Recipe Photo */}
+                    <div className="shrink-0 w-[140px] flex flex-col items-end gap-1">
+                      <div className="flex items-center gap-1">
+                        <span className="text-[10px] font-semibold text-primary uppercase tracking-wider">Foto</span>
                         <button
-                          onClick={() => startEditing(sr)}
-                          className="p-0.5 rounded text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"
-                          title="Zutaten bearbeiten"
+                          onClick={() => handleRecipePhotoClick(sr.id)}
+                          className="p-0.5 rounded text-primary hover:bg-primary/10 transition-colors"
+                          title="Foto hinzufügen"
                         >
-                          <Pencil className="w-3 h-3" />
+                          <Camera className="w-3.5 h-3.5" />
                         </button>
+                      </div>
+                      {sr.photoUrl ? (
+                        <div className="relative w-[140px] h-[140px] rounded-lg overflow-hidden border border-border/50 group">
+                          <img src={sr.photoUrl} alt={sr.name} className="w-full h-full object-cover" />
+                          <button
+                            onClick={() => handleDeleteRecipePhoto(sr.id)}
+                            className="absolute top-1 right-1 p-0.5 rounded bg-background/80 text-muted-foreground hover:text-destructive opacity-0 group-hover:opacity-100 transition-opacity"
+                            title="Foto entfernen"
+                          >
+                            <Trash2 className="w-3 h-3" />
+                          </button>
+                        </div>
                       ) : (
                         <button
-                          onClick={() => handleSaveEdits(sr.id)}
-                          disabled={recalculating}
-                          className="p-0.5 rounded text-primary hover:bg-primary/10 transition-colors disabled:opacity-50"
-                          title="Änderungen speichern"
+                          onClick={() => handleRecipePhotoClick(sr.id)}
+                          className="w-[140px] h-[140px] rounded-lg border-2 border-dashed border-border/60 flex flex-col items-center justify-center gap-1.5 text-muted-foreground/40 hover:border-primary/40 hover:text-primary/40 transition-colors cursor-pointer"
+                          title="Foto hinzufügen"
                         >
-                          <Check className="w-3 h-3" />
+                          <Camera className="w-6 h-6" />
+                          <span className="text-[9px]">Foto hinzufügen</span>
                         </button>
                       )}
                     </div>
-                    <ul className="space-y-0.5">
-                      {displayIngredients.map((ing, i) => {
-                        const parsed = extractNumber(ing.amount);
-                        const hasNumber = !!parsed;
-
-                        return (
-                          <li key={i} className="text-[11px] text-foreground flex items-center gap-1.5">
-                            {isEditing && (
-                              <button
-                                onClick={() => handleDeleteIngredient(i)}
-                                className="p-0.5 rounded text-muted-foreground hover:text-destructive transition-colors shrink-0"
-                              >
-                                <Trash2 className="w-3 h-3" />
-                              </button>
-                            )}
-                            <span className="shrink-0">{ing.isMain ? "⭐" : "•"}</span>
-                            {isEditing && hasNumber ? (
-                              <span className="flex items-center gap-1">
-                                <Input
-                                  type="text"
-                                  inputMode="decimal"
-                                  value={parsed!.num}
-                                  onChange={(e) => handleAmountChange(i, e.target.value)}
-                                  className="h-6 w-14 px-1 text-[11px] text-center font-medium"
-                                />
-                                <span>{parsed!.rest} {ing.name}</span>
-                              </span>
-                            ) : (
-                              <span>
-                                {ing.amount && <span className="font-medium">{ing.amount}</span>}
-                                {ing.amount ? " " : ""}{ing.name}
-                              </span>
-                            )}
-                          </li>
-                        );
-                      })}
-                    </ul>
-
-                    {/* Add ingredient fields in edit mode */}
-                    {isEditing && (
-                      <div className="relative flex items-center gap-1 mt-1.5">
-                        <Input
-                          type="text"
-                          inputMode="decimal"
-                          value={newIngredientAmount}
-                          onChange={(e) => setNewIngredientAmount(e.target.value)}
-                          placeholder="Menge"
-                          className="h-6 text-[11px] px-2 w-16 shrink-0"
-                        />
-                        <div className="relative flex-1">
-                          <Input
-                            ref={nameInputRef}
-                            type="text"
-                            value={newIngredientName}
-                            onChange={(e) => {
-                              setNewIngredientName(e.target.value);
-                              setSelectedFoodItem(null);
-                              setShowSuggestions(true);
-                            }}
-                            onFocus={() => newIngredientName.trim().length >= 1 && setShowSuggestions(true)}
-                            onKeyDown={(e) => e.key === "Enter" && handleAddIngredient()}
-                            placeholder="Zutat hinzufügen…"
-                            className="h-6 text-[11px] px-2 w-full"
-                          />
-                          {showSuggestions && foodSuggestions.length > 0 && (
-                            <div
-                              ref={suggestionsRef}
-                              className="absolute left-0 right-0 top-full mt-0.5 z-50 max-h-40 overflow-y-auto rounded-md border border-border bg-popover shadow-md"
-                            >
-                              {foodSuggestions.map((food, idx) => (
-                                <button
-                                  key={idx}
-                                  type="button"
-                                  className="w-full text-left px-2 py-1 text-[11px] text-popover-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
-                                  onMouseDown={(e) => e.preventDefault()}
-                                  onClick={() => handleSelectSuggestion(food)}
-                                >
-                                  <span className="font-medium">{food.name}</span>
-                                  <span className="ml-1.5 text-muted-foreground">
-                                    {food.calories} kcal
-                                  </span>
-                                </button>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-                        <button
-                          onClick={handleAddIngredient}
-                          disabled={!newIngredientName.trim()}
-                          className="p-0.5 rounded text-primary hover:bg-primary/10 transition-colors disabled:opacity-30"
-                        >
-                          <Plus className="w-3.5 h-3.5" />
-                        </button>
-                      </div>
-                    )}
                   </div>
 
                   {/* Steps */}
@@ -753,6 +824,16 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
         capture="environment"
         className="hidden"
         onChange={handlePhotoFileChange}
+      />
+
+      {/* Hidden file input for recipe photo upload */}
+      <input
+        ref={recipePhotoInputRef}
+        type="file"
+        accept="image/*"
+        capture="environment"
+        className="hidden"
+        onChange={handleRecipePhotoChange}
       />
 
       {/* Photo-to-Recipe Dialog */}
