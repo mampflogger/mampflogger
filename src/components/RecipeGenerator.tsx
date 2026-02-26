@@ -235,7 +235,7 @@ const RecipeGenerator = ({
             ) : (
               <CookIcon className="w-3.5 h-3.5" />
             )}
-            {loading ? "Rezept wird erstellt…" : `Rezept generieren (${selectedFoods.length} Zutaten)`}
+            {loading ? "Rezept wird erstellt…" : "Rezept generieren"}
           </Button>
         </>
       )}
@@ -297,18 +297,18 @@ const RecipeGenerator = ({
                 <tr className="text-foreground">
                   <td className="font-semibold pr-2 py-0.5">Gesamt</td>
                   <td className="text-right py-0.5">{recipe.totalMacros.calories}</td>
-                  <td className="text-right py-0.5">{recipe.totalMacros.protein}g</td>
-                  <td className="text-right py-0.5">{recipe.totalMacros.fat}g</td>
-                  <td className="text-right py-0.5">{recipe.totalMacros.carbs}g</td>
-                  <td className="text-right py-0.5">{recipe.totalMacros.fiber}g</td>
+                  <td className="text-right py-0.5">{recipe.totalMacros.protein}</td>
+                  <td className="text-right py-0.5">{recipe.totalMacros.fat}</td>
+                  <td className="text-right py-0.5">{recipe.totalMacros.carbs}</td>
+                  <td className="text-right py-0.5">{recipe.totalMacros.fiber}</td>
                 </tr>
                 <tr className="text-foreground">
                   <td className="font-semibold pr-2 py-0.5">Pro Portion</td>
                   <td className="text-right py-0.5">{recipe.perServing.calories}</td>
-                  <td className="text-right py-0.5">{recipe.perServing.protein}g</td>
-                  <td className="text-right py-0.5">{recipe.perServing.fat}g</td>
-                  <td className="text-right py-0.5">{recipe.perServing.carbs}g</td>
-                  <td className="text-right py-0.5">{recipe.perServing.fiber}g</td>
+                  <td className="text-right py-0.5">{recipe.perServing.protein}</td>
+                  <td className="text-right py-0.5">{recipe.perServing.fat}</td>
+                  <td className="text-right py-0.5">{recipe.perServing.carbs}</td>
+                  <td className="text-right py-0.5">{recipe.perServing.fiber}</td>
                 </tr>
               </tbody>
             </table>
