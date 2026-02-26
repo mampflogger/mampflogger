@@ -14,7 +14,7 @@ import { Label } from "@/components/ui/label";
 import {
   Settings, Sun, Moon, Trash2, Upload, Download, UserCircle, Save, Check,
   AlertCircle, FileSpreadsheet, UtensilsCrossed, Palette, BarChart3, FileUp,
-  ChevronLeft, ChevronRight, RefreshCw, List, Sparkles, Loader2, HardDrive, BookOpen,
+  ChevronLeft, ChevronRight, RefreshCw, List, Sparkles, Loader2, HardDrive, BookOpen, Search,
 } from "lucide-react";
 import CookIcon from "@/components/CookIcon";
 import { supabase } from "@/integrations/supabase/client";
@@ -928,14 +928,17 @@ const SettingsDialog = ({
                       </label>
                     ))}
                   </div>
-                  <Input
-                    placeholder="Lebensmittel suchen..."
-                    value={foodSearch}
-                    onChange={(e) => setFoodSearch(e.target.value)}
-                    className="h-9 text-xs"
-                    autoCorrect="off"
-                    spellCheck={false}
-                  />
+                  <div className="relative">
+                    <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground pointer-events-none" />
+                    <Input
+                      placeholder="Lebensmittel suchen..."
+                      value={foodSearch}
+                      onChange={(e) => setFoodSearch(e.target.value)}
+                      className="h-9 text-xs pl-8"
+                      autoCorrect="off"
+                      spellCheck={false}
+                    />
+                  </div>
                 </div>
                 {/* Scrollable table with sticky header */}
                 <div className="max-h-[40vh] overflow-y-auto overflow-x-auto -mx-1 px-1">
