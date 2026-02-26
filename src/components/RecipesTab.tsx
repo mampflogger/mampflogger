@@ -707,13 +707,13 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
                     {/* Recipe Photo */}
                     <div className="shrink-0 w-[140px] flex flex-col items-end gap-1">
                       <div className="flex items-center gap-1">
-                        <span className="text-[10px] font-semibold text-primary uppercase tracking-wider">Foto</span>
+                        <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Foto</span>
                         <button
                           onClick={() => handleRecipePhotoClick(sr.id)}
-                          className="p-0.5 rounded text-primary hover:bg-primary/10 transition-colors"
+                          className="p-0.5 rounded text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
                           title="Foto hinzufügen"
                         >
-                          <Camera className="w-3.5 h-3.5" />
+                          <Camera className="w-4 h-4" />
                         </button>
                       </div>
                       {sr.photoUrl ? (
