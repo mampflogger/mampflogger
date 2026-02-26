@@ -124,7 +124,25 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
       .join("\n");
     const stepsList = recipe.steps.map((s, i) => `${i + 1}. ${s}`).join("\n");
     const ps = recipe.perServing;
-    return `🍽️ ${recipe.name}\n\n👥 ${recipe.servings} Portionen · ⏱️ ${recipe.prepTime}\n\n📋 Zutaten:\n${ingredientsList}\n\n👨‍🍳 Zubereitung:\n${stepsList}\n\n📊 Pro Portion: ${ps.calories} kcal | Protein: ${ps.protein}g | Fett: ${ps.fat}g | Kohlenhydrate: ${ps.carbs}g | Ballaststoffe: ${ps.fiber}g\n\n━━━━━━━━━━━━━━━━━━━━\n📊 MampfLogger · mampflogger.de\nHol dir die kostenlose App!\n\n▸ Keine Anmeldung · Keine Werbung · Keine Kosten`;
+    return [
+      `🍽️ Mein Lieblingsrezept für dich:`,
+      ``,
+      `*${recipe.name}*`,
+      `👥 ${recipe.servings} Portionen · ⏱️ ${recipe.prepTime}`,
+      ``,
+      `📋 Zutaten:`,
+      ingredientsList,
+      ``,
+      `👨‍🍳 Zubereitung:`,
+      stepsList,
+      ``,
+      `📊 Pro Portion: ${ps.calories} kcal · Protein ${ps.protein}g · Fett ${ps.fat}g · KH ${ps.carbs}g · Ballast ${ps.fiber}g`,
+      ``,
+      `━━━━━━━━━━━━━━━━━━━━`,
+      `Ein Service von mampflogger.de`,
+      `📊 MampfLogger – Hol dir die App!`,
+      `Keine Anmeldung · Keine Werbung · Keine Kosten`,
+    ].join("\n");
   };
 
   const handleShare = async (recipe: SavedRecipe) => {
