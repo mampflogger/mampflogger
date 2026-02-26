@@ -350,15 +350,6 @@ const Index = () => {
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-8 w-8"
-                onClick={() => setOpenRecipes(true)}
-                title="Rezepte"
-              >
-                <BookOpen className="w-4 h-4" />
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon"
                 className={`h-8 w-8 ${activeTab === "weekly" ? "bg-muted" : ""}`}
                 onClick={() => setActiveTab("weekly")}
                 title="Statistik"
