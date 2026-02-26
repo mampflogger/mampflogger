@@ -113,7 +113,7 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
       .join("\n");
     const stepsList = recipe.steps.map((s, i) => `${i + 1}. ${s}`).join("\n");
     const ps = recipe.perServing;
-    return `🍽️ ${recipe.name}\n\n👥 ${recipe.servings} Portionen · ⏱️ ${recipe.prepTime}\n\n📋 Zutaten:\n${ingredientsList}\n\n👨‍🍳 Zubereitung:\n${stepsList}\n\n📊 Pro Portion: ${ps.calories} kcal | Protein: ${ps.protein}g | Fett: ${ps.fat}g | Kohlenhydrate: ${ps.carbs}g | Ballaststoffe: ${ps.fiber}g\n\n—\n📊 Ein Service von mampflogger.de\nHol dir die kostenlose App!\n\n▸ Precision Tracking\n▸ Next-Level Activity\n▸ Clean Dashboard\n▸ Minimal Design\n▸ Keine Anmeldung · Keine Werbung · Keine Kosten`;
+    return `🍽️ ${recipe.name}\n\n👥 ${recipe.servings} Portionen · ⏱️ ${recipe.prepTime}\n\n📋 Zutaten:\n${ingredientsList}\n\n👨‍🍳 Zubereitung:\n${stepsList}\n\n📊 Pro Portion: ${ps.calories} kcal | Protein: ${ps.protein}g | Fett: ${ps.fat}g | Kohlenhydrate: ${ps.carbs}g | Ballaststoffe: ${ps.fiber}g\n\n━━━━━━━━━━━━━━━━━━━━\n📊 MampfLogger · mampflogger.de\nHol dir die kostenlose App!\n\n▸ Keine Anmeldung · Keine Werbung · Keine Kosten`;
   };
 
   const handleShare = async (recipe: SavedRecipe) => {
@@ -121,7 +121,7 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
 
     if (navigator.share) {
       try {
-        await navigator.share({ title: recipe.name, text });
+        await navigator.share({ text });
       } catch (e) {
         // User cancelled share
       }
@@ -133,8 +133,8 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
 
   const handleWhatsAppShare = (recipe: SavedRecipe) => {
     const text = buildShareText(recipe);
-    const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
-    window.open(url, "_blank");
+    const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`;
+    window.location.href = url;
   };
 
   const handleManualSave = (recipe: SavedRecipe) => {
