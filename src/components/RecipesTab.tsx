@@ -349,7 +349,7 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
       carbs: Math.round(ps.carbs * factor * 10) / 10,
       fiber: Math.round(ps.fiber * factor * 10) / 10,
       defaultAmount: servingWeight,
-      ...(liquidPerServing > 0 ? { liquidMl: Math.round((liquidPerServing / servingWeight) * 100) } : {}),
+      ...(liquidPerServing > 0 ? { liquidMl: liquidPerServing } : {}),
       category: "Eigene",
       isUserCreated: true,
     };
@@ -682,6 +682,16 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
                           const parsed = extractNumber(ing.amount);
                           const hasNumber = !!parsed;
 
+                          // Calculate approximate calories for this ingredient
+                          const food = foodDatabase.find((f) => f.name.toLowerCase() === ing.name.toLowerCase());
+                          let ingKcal: number | null = null;
+                          if (food && parsed) {
+                            const val = parseFloat(parsed.num.replace(",", "."));
+                            if (val > 0) {
+                              ingKcal = Math.round((food.calories / food.baseAmount) * val);
+                            }
+                          }
+
                           return (
                             <li key={i} className="text-[11px] text-foreground flex items-center gap-1.5">
                               {isEditing && (
@@ -704,10 +714,13 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
                                   <span>{parsed!.rest} {ing.name}{ing.isMain ? " ⭐" : ""}</span>
                                 </span>
                               ) : (
-                                <span>
+                                <span className="flex-1">
                                   {ing.amount && <span className="font-medium">{ing.amount}</span>}
                                   {ing.amount ? " " : ""}{ing.name}{ing.isMain ? " ⭐" : ""}
                                 </span>
+                              )}
+                              {!isEditing && ingKcal !== null && (
+                                <span className="text-[10px] text-muted-foreground ml-auto shrink-0">{ingKcal} kcal</span>
                               )}
                             </li>
                           );
