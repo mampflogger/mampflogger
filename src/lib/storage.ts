@@ -8,7 +8,7 @@ export function loadEntries(): NutritionEntry[] {
     const data = localStorage.getItem(STORAGE_KEY);
     const entries: NutritionEntry[] = data ? JSON.parse(data) : [];
     const db = foodDatabase;
-    // Filter invalid dates + migrate missing liquidMl from DB
+    // Filter invalid dates + recalculate liquidMl from DB on every load
     const result = entries
       .filter(
         (e) =>
@@ -18,11 +18,22 @@ export function loadEntries(): NutritionEntry[] {
           /^\d{4}-\d{2}-\d{2}$/.test(e.date)
       )
       .map((e) => {
-        if (e.liquidMl !== undefined) return e;
+        // Immer liquidMl anhand der aktuellen Lebensmittel-DB neu berechnen
         const food = db.find((f) => f.name.toLowerCase() === e.food.toLowerCase());
-        if (!food?.liquidMl) return e;
-        const factor = e.amount / food.baseAmount;
-        return { ...e, liquidMl: Math.round(food.liquidMl * factor) };
+        if (food?.liquidMl && e.amount > 0) {
+          const factor = e.amount / food.baseAmount;
+          const correctMl = Math.round(food.liquidMl * factor);
+          if (e.liquidMl !== correctMl) {
+            return { ...e, liquidMl: correctMl };
+          }
+          return e;
+        }
+        // Kein Liquid-Eintrag in der DB → liquidMl entfernen falls vorhanden
+        if (e.liquidMl !== undefined && !food?.liquidMl) {
+          const { liquidMl: _, ...rest } = e;
+          return rest as NutritionEntry;
+        }
+        return e;
       });
     // Persist migration so backups include liquidMl
     if (result.some((e, i) => e !== entries[i])) {
