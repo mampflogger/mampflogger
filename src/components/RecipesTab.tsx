@@ -294,9 +294,18 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
     recipePhotoInputRef.current?.click();
   };
 
-  const handleRecipePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
+  const handleRecipePhotoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    let file = e.target.files?.[0];
     if (!file || !recipePhotoTargetId) return;
+
+    // Convert HEIC/HEIF to JPEG if needed
+    try {
+      file = await ensureCompatibleImage(file);
+    } catch (err) {
+      toast({ title: "Fehler", description: "Bildformat konnte nicht konvertiert werden. Bitte verwende JPG oder PNG.", variant: "destructive" });
+      return;
+    }
+
     const reader = new FileReader();
     reader.onload = (ev) => {
       const base64 = ev.target?.result as string;
@@ -718,11 +727,11 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
                           }
 
                           return (
-                            <li key={i} className="text-[11px] text-foreground flex items-center gap-1.5">
+                            <li key={i} className="text-[11px] text-foreground flex items-baseline gap-0">
                               {isEditing && (
                                 <button
                                   onClick={() => handleDeleteIngredient(i)}
-                                  className="p-0.5 rounded text-muted-foreground hover:text-destructive transition-colors shrink-0"
+                                  className="p-0.5 rounded text-muted-foreground hover:text-destructive transition-colors shrink-0 mr-1"
                                 >
                                   <Trash2 className="w-3 h-3" />
                                 </button>
@@ -739,13 +748,20 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
                                   <span>{parsed!.rest} {ing.name}{ing.isMain ? " ⭐" : ""}</span>
                                 </span>
                               ) : (
-                                <span className="flex-1">
-                                  {ing.amount && <span className="font-medium">{ing.amount}</span>}
-                                  {ing.amount ? " " : ""}{ing.name}{ing.isMain ? " ⭐" : ""}
-                                </span>
-                              )}
-                              {!isEditing && ingKcal !== null && (
-                                <span className="text-[10px] text-muted-foreground ml-auto shrink-0">{ingKcal} kcal</span>
+                                <>
+                                  <span className="inline-block w-[5ch] text-right font-medium shrink-0 font-mono text-[10px]">
+                                    {parsed ? parsed.num : ""}
+                                  </span>
+                                  <span className="inline-block w-[3ch] text-left shrink-0 font-mono text-[10px] ml-px">
+                                    {parsed ? ` ${parsed.rest}` : ing.amount ? ing.amount : ""}
+                                  </span>
+                                  <span className="ml-1">
+                                    {!parsed && !ing.amount ? "" : ""}{ing.name}{ing.isMain ? " ⭐" : ""}
+                                    {ingKcal !== null && (
+                                      <span className="font-medium text-muted-foreground"> ({ingKcal} kcal)</span>
+                                    )}
+                                  </span>
+                                </>
                               )}
                             </li>
                           );
