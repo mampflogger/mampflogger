@@ -53,7 +53,20 @@ function loadSavedRecipes(): SavedRecipe[] {
 }
 
 function saveSavedRecipes(recipes: SavedRecipe[]): void {
-  localStorage.setItem(SAVED_RECIPES_KEY, JSON.stringify(recipes));
+  try {
+    localStorage.setItem(SAVED_RECIPES_KEY, JSON.stringify(recipes));
+  } catch (e) {
+    if (e instanceof DOMException && e.name === "QuotaExceededError") {
+      // Strip photos and retry
+      const stripped = recipes.map(({ photoUrl, ...rest }) => rest);
+      try {
+        localStorage.setItem(SAVED_RECIPES_KEY, JSON.stringify(stripped));
+        console.warn("[RecipesTab] localStorage voll – Rezeptfotos wurden entfernt um Platz zu sparen.");
+      } catch {
+        console.error("[RecipesTab] localStorage voll – Rezepte konnten nicht gespeichert werden.");
+      }
+    }
+  }
 }
 
 /** Extract the leading numeric part (e.g. "400" from "400g") */
