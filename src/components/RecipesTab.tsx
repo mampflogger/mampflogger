@@ -881,18 +881,18 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
                     </div>
 
                     {/* Recipe Photo – below ingredients */}
-                    <div className="flex flex-col items-start gap-1">
-                      <div className="flex items-center gap-1">
-                        <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Foto</span>
-                        <button
-                          onClick={() => handleRecipePhotoClick(sr.id)}
-                          className="p-0.5 rounded text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
-                          title="Foto hinzufügen"
-                        >
-                          <Camera className="w-4 h-4" />
-                        </button>
-                      </div>
-                      {sr.photoUrl ? (
+                    {sr.photoUrl ? (
+                      <div className="flex flex-col items-start gap-1">
+                        <div className="flex items-center gap-1">
+                          <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Foto</span>
+                          <button
+                            onClick={() => handleRecipePhotoClick(sr.id)}
+                            className="p-0.5 rounded text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+                            title="Foto ändern"
+                          >
+                            <Camera className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
                         <div className="relative w-full max-w-[280px] aspect-[4/3] rounded-lg overflow-hidden border border-border/50 group">
                           <img src={sr.photoUrl} alt={sr.name} className="w-full h-full object-cover" />
                           <button
@@ -903,17 +903,17 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
                             <Trash2 className="w-3 h-3" />
                           </button>
                         </div>
-                      ) : (
-                        <button
-                          onClick={() => handleRecipePhotoClick(sr.id)}
-                          className="w-full max-w-[280px] aspect-[4/3] rounded-lg border-2 border-dashed border-border/60 flex flex-col items-center justify-center gap-1.5 text-muted-foreground/40 hover:border-primary/40 hover:text-primary/40 transition-colors cursor-pointer"
-                          title="Foto hinzufügen"
-                        >
-                          <Camera className="w-6 h-6" />
-                          <span className="text-[9px]">Foto hinzufügen</span>
-                        </button>
-                      )}
-                    </div>
+                      </div>
+                    ) : (
+                      <button
+                        onClick={() => handleRecipePhotoClick(sr.id)}
+                        className="flex items-center gap-1.5 py-1 px-2 rounded-md border border-dashed border-border/60 text-muted-foreground/50 hover:border-primary/40 hover:text-primary/50 transition-colors cursor-pointer"
+                        title="Foto hinzufügen"
+                      >
+                        <Camera className="w-3.5 h-3.5" />
+                        <span className="text-[10px]">Foto hinzufügen</span>
+                      </button>
+                    )}
                   </div>
 
                   {/* Steps */}
@@ -927,6 +927,8 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
                   </div>
 
                   {/* Macros */}
+                  <div>
+                  <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1">Nährstoffe</p>
                   <table className="w-full text-[11px]">
                     <thead>
                       <tr className="text-muted-foreground">
@@ -957,6 +959,7 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
                       </tr>
                     </tbody>
                   </table>
+                  </div>
 
                   {/* Action buttons */}
                   <div className="flex gap-2">
