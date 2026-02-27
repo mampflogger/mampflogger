@@ -937,7 +937,7 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
                       <Button
                         onClick={() => handleSaveEdits(sr.id)}
                         disabled={recalculating}
-                        variant="outline"
+                        variant="default"
                         className="flex-1 h-9 text-xs gap-1.5"
                       >
                         {recalculating ? (
