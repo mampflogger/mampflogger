@@ -179,18 +179,24 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
 
     if (navigator.share) {
       try {
-        const shareData: ShareData = { text };
-
-        // On Apple share sheets, attaching files often hides WhatsApp as a target.
-        // Keep system share text-only there so WhatsApp stays selectable.
-        if (recipe.photoUrl && !isAppleShareSurface()) {
+        // Try sharing with image first
+        if (recipe.photoUrl) {
           const file = await dataUrlToFile(recipe.photoUrl, `${recipe.name.replace(/\s+/g, "_")}.jpg`);
           if (file && navigator.canShare?.({ files: [file] })) {
-            shareData.files = [file];
+            try {
+              await navigator.share({ text, files: [file] });
+              return;
+            } catch (imgErr: any) {
+              // If user cancelled, stop entirely
+              if (imgErr?.name === "AbortError") return;
+              // Otherwise fall through to text-only share
+              console.warn("Share with image failed, falling back to text:", imgErr);
+            }
           }
         }
 
-        await navigator.share(shareData);
+        // Fallback: text-only share
+        await navigator.share({ text });
       } catch (e: any) {
         if (e?.name !== "AbortError") {
           console.error("Share failed:", e);
@@ -734,10 +740,9 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
 
                 return (
                 <div className="px-2.5 pb-2.5 space-y-2 border-t border-border/30 pt-2">
-                  {/* Ingredients + Photo side by side */}
-                  <div className="flex gap-3">
-                    {/* Ingredients */}
-                    <div className="flex-1 min-w-0">
+                  {/* Ingredients + Photo stacked */}
+                  <div className="space-y-3">
+                    <div>
                       <div className="flex items-center gap-1.5 mb-1">
                         <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Zutaten</p>
                         {!isEditing ? (
@@ -873,8 +878,8 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
                       </div>
                     </div>
 
-                    {/* Recipe Photo */}
-                    <div className="shrink-0 w-[140px] flex flex-col items-end gap-1">
+                    {/* Recipe Photo – below ingredients */}
+                    <div className="flex flex-col items-start gap-1">
                       <div className="flex items-center gap-1">
                         <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Foto</span>
                         <button
@@ -886,7 +891,7 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
                         </button>
                       </div>
                       {sr.photoUrl ? (
-                        <div className="relative w-[140px] h-[140px] rounded-lg overflow-hidden border border-border/50 group">
+                        <div className="relative w-full max-w-[280px] aspect-[4/3] rounded-lg overflow-hidden border border-border/50 group">
                           <img src={sr.photoUrl} alt={sr.name} className="w-full h-full object-cover" />
                           <button
                             onClick={() => handleDeleteRecipePhoto(sr.id)}
@@ -899,7 +904,7 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
                       ) : (
                         <button
                           onClick={() => handleRecipePhotoClick(sr.id)}
-                          className="w-[140px] h-[140px] rounded-lg border-2 border-dashed border-border/60 flex flex-col items-center justify-center gap-1.5 text-muted-foreground/40 hover:border-primary/40 hover:text-primary/40 transition-colors cursor-pointer"
+                          className="w-full max-w-[280px] aspect-[4/3] rounded-lg border-2 border-dashed border-border/60 flex flex-col items-center justify-center gap-1.5 text-muted-foreground/40 hover:border-primary/40 hover:text-primary/40 transition-colors cursor-pointer"
                           title="Foto hinzufügen"
                         >
                           <Camera className="w-6 h-6" />
