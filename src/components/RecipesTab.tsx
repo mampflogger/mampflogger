@@ -455,13 +455,7 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
     const recipe = savedRecipes.find((r) => r.id === recipeId);
     if (!recipe) return;
 
-    // Check if anything actually changed
-    const origStr = JSON.stringify(recipe.ingredients);
-    const newStr = JSON.stringify(finalIngredients);
-    if (origStr === newStr) {
-      stopEditing();
-      return;
-    }
+    // Always recalculate when user explicitly saves (even if ingredients look the same)
 
     // Recalculate macros via AI
     setRecalculating(true);
@@ -713,16 +707,23 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
                           const parsed = extractNumber(ing.amount);
                           const hasNumber = !!parsed;
 
-                          // Calculate approximate calories for this ingredient
-                          const ingNameLower = ing.name.toLowerCase();
-                          const food = foodDatabase.find((f) => f.name.toLowerCase() === ingNameLower)
-                            || foodDatabase.find((f) => ingNameLower.includes(f.name.toLowerCase()) || f.name.toLowerCase().includes(ingNameLower));
+                          // Calculate calories for this ingredient
                           let ingKcal: number | null = null;
-                          if (food && parsed) {
+                          if (parsed) {
                             const val = parseFloat(parsed.num.replace(",", "."));
                             if (val > 0) {
-                              // If amount unit is ml, treat as ml; otherwise as grams
-                              ingKcal = Math.round((food.calories / food.baseAmount) * val);
+                              // Prefer per100g from AI response (stored on ingredient)
+                              if ((ing as any).per100g?.calories != null) {
+                                ingKcal = Math.round(((ing as any).per100g.calories / 100) * val);
+                              } else {
+                                // Fallback: local food database
+                                const ingNameLower = ing.name.toLowerCase();
+                                const food = foodDatabase.find((f) => f.name.toLowerCase() === ingNameLower)
+                                  || foodDatabase.find((f) => ingNameLower.includes(f.name.toLowerCase()) || f.name.toLowerCase().includes(ingNameLower));
+                                if (food) {
+                                  ingKcal = Math.round((food.calories / food.baseAmount) * val);
+                                }
+                              }
                             }
                           }
 
