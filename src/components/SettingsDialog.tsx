@@ -843,7 +843,7 @@ const SettingsDialog = ({
                           aria-label="Kategorieauswahl schließen"
                           onClick={() => setShowCategoryDropdown(false)}
                         />
-                        <div className="absolute left-0 right-0 bottom-full mb-1 z-[220] overflow-y-auto rounded-md border border-border bg-popover shadow-lg max-h-[55vh]">
+                        <div className="absolute left-0 right-0 bottom-[calc(100%-1.25rem)] mb-0 z-[220] overflow-y-auto rounded-md border border-border bg-popover shadow-lg max-h-[55vh]">
                           <div
                             className={`px-3 py-0.5 text-xs leading-4 cursor-pointer transition-colors ${!editFoodCategory ? "bg-primary/10 text-primary font-medium" : "hover:bg-muted/60"}`}
                             onPointerDown={(e) => { e.preventDefault(); setEditFoodCategory(""); setShowCategoryDropdown(false); }}
