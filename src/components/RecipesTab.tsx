@@ -708,11 +708,6 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
 
                 return (
                 <div className="px-2.5 pb-2.5 space-y-2 border-t border-border/30 pt-2">
-                  <div className="flex gap-3 text-[10px] text-muted-foreground">
-                    <span>👥 {sr.servings} Portionen</span>
-                    <span>⏱️ {sr.prepTime}</span>
-                  </div>
-
                   {/* Ingredients + Photo side by side */}
                   <div className="flex gap-3">
                     {/* Ingredients */}
@@ -844,6 +839,12 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
                           </button>
                         </div>
                       )}
+
+                      {/* Servings + Time under ingredients */}
+                      <div className="flex gap-3 text-[10px] text-muted-foreground mt-1.5">
+                        <span>👥 {sr.servings} Portionen</span>
+                        <span>⏱️ {sr.prepTime}</span>
+                      </div>
                     </div>
 
                     {/* Recipe Photo */}
