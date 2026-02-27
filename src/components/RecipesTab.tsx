@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useMemo } from "react";
-import { ensureCompatibleImage } from "@/lib/imageUtils";
+import { ensureCompatibleImage, resizeImageToDataUrl } from "@/lib/imageUtils";
 import { NutritionEntry, generateId } from "@/types/nutrition";
 import { Trash2, ChevronDown, ChevronUp, Sparkles, Pencil, Check, Plus, Loader2, Share2, PlusCircle, MessageCircle, Camera } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -239,7 +239,8 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
 
     const reader = new FileReader();
     reader.onload = async (ev) => {
-      const base64 = ev.target?.result as string;
+      const rawBase64 = ev.target?.result as string;
+      const base64 = await resizeImageToDataUrl(rawBase64);
       setPhotoPreview(base64);
       setShowPhotoDialog(true);
       setPhotoAnalyzing(true);
@@ -339,8 +340,9 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
     }
 
     const reader = new FileReader();
-    reader.onload = (ev) => {
-      const base64 = ev.target?.result as string;
+    reader.onload = async (ev) => {
+      const rawBase64 = ev.target?.result as string;
+      const base64 = await resizeImageToDataUrl(rawBase64);
       setSavedRecipes((prev) =>
         prev.map((r) => r.id === recipePhotoTargetId ? { ...r, photoUrl: base64 } : r)
       );
