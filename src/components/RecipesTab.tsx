@@ -683,11 +683,14 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
                           const hasNumber = !!parsed;
 
                           // Calculate approximate calories for this ingredient
-                          const food = foodDatabase.find((f) => f.name.toLowerCase() === ing.name.toLowerCase());
+                          const ingNameLower = ing.name.toLowerCase();
+                          const food = foodDatabase.find((f) => f.name.toLowerCase() === ingNameLower)
+                            || foodDatabase.find((f) => ingNameLower.includes(f.name.toLowerCase()) || f.name.toLowerCase().includes(ingNameLower));
                           let ingKcal: number | null = null;
                           if (food && parsed) {
                             const val = parseFloat(parsed.num.replace(",", "."));
                             if (val > 0) {
+                              // If amount unit is ml, treat as ml; otherwise as grams
                               ingKcal = Math.round((food.calories / food.baseAmount) * val);
                             }
                           }
