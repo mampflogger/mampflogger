@@ -928,11 +928,10 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
 
                   {/* Macros */}
                   <div>
-                  <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1">Nährstoffe</p>
                   <table className="w-full text-[11px]">
                     <thead>
                       <tr className="text-muted-foreground">
-                        <th className="text-left font-medium pb-1"></th>
+                        <th className="text-left font-semibold pb-1 text-[10px] uppercase tracking-wider">Nährstoffe</th>
                         <th className="text-right font-medium pb-1">kcal</th>
                         <th className="text-right font-medium pb-1" style={{ color: "hsl(var(--macro-pro))" }}>Pro</th>
                         <th className="text-right font-medium pb-1" style={{ color: "hsl(var(--macro-fat))" }}>Fat</th>
