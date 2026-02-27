@@ -142,8 +142,6 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
     const stepsList = recipe.steps.map((s, i) => `${i + 1}. ${s.replace(/^\d+\.\s*/, "")}`).join("\n");
     const ps = recipe.perServing;
     return [
-      `🍽️ Ein Lieblingsrezept für dich:`,
-      ``,
       `*${recipe.name}*`,
       `👥 ${recipe.servings} Portionen · ⏱️ ${recipe.prepTime}`,
       ``,
@@ -155,7 +153,7 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
       ``,
       `📊 Pro Portion: ${ps.calories} kcal · Protein ${ps.protein}g · Fett ${ps.fat}g · Kohlenhydrate ${ps.carbs}g · Ballaststoffe ${ps.fiber}g`,
       ``,
-      `• Erstellt mit der *𝗸𝗼𝘀𝘁𝗲𝗻𝗹𝗼𝘀𝗲𝗻* Ernährungs-App auf *𝗠𝗮𝗺𝗽𝗳𝗟𝗼𝗴𝗴𝗲𝗿.𝗱𝗲* · https://mampflogger.de`,
+      `• Erstellt mit der *𝗸𝗼𝘀𝘁𝗲𝗻𝗹𝗼𝘀𝗲𝗻* Ernährungs-App auf *𝗠𝗮𝗺𝗽𝗳𝗟𝗼𝗴𝗴𝗲𝗿.𝗱𝗲* · (https://mampflogger.de)`,
     ].join("\n");
   };
 
@@ -184,7 +182,7 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
           const file = await dataUrlToFile(recipe.photoUrl, `${recipe.name.replace(/\s+/g, "_")}.jpg`);
           if (file && navigator.canShare?.({ files: [file] })) {
             try {
-              await navigator.share({ title: recipe.name, text, files: [file] });
+              await navigator.share({ title: `🍽️ Ein Lieblingsrezept für dich`, text, files: [file] });
               return;
             } catch (imgErr: any) {
               // If user cancelled, stop entirely
@@ -196,7 +194,7 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
         }
 
         // Fallback: text-only share
-        await navigator.share({ title: recipe.name, text });
+        await navigator.share({ title: `🍽️ Ein Lieblingsrezept für dich`, text });
       } catch (e: any) {
         if (e?.name !== "AbortError") {
           console.error("Share failed:", e);
