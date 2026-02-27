@@ -155,7 +155,7 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
       ``,
       `📊 Pro Portion: ${ps.calories} kcal · Protein ${ps.protein}g · Fett ${ps.fat}g · Kohlenhydrate ${ps.carbs}g · Ballaststoffe ${ps.fiber}g`,
       ``,
-      `• Erstellt mit der *𝗸𝗼𝘀𝘁𝗲𝗻𝗹𝗼𝘀𝗲𝗻* Ernährungs-App auf *𝗠𝗮𝗺𝗽𝗳𝗟𝗼𝗴𝗴𝗲𝗿.𝗱𝗲* !`,
+      `• Erstellt mit der *𝗸𝗼𝘀𝘁𝗲𝗻𝗹𝗼𝘀𝗲𝗻* Ernährungs-App auf *𝗠𝗮𝗺𝗽𝗳𝗟𝗼𝗴𝗴𝗲𝗿.𝗱𝗲* !\n👉 https://mampflogger.lovable.app`,
     ].join("\n");
   };
 
