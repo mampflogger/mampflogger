@@ -1,4 +1,5 @@
 import { useState, useRef } from "react";
+import { ensureCompatibleImage } from "@/lib/imageUtils";
 import { Camera, Loader2, Check, X, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { NutritionEntry, generateId } from "@/types/nutrition";
@@ -42,12 +43,20 @@ const PhotoToLog = ({ selectedDate, onAddEntries }: PhotoToLogProps) => {
   };
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
+    let file = e.target.files?.[0];
     if (!file) return;
 
     // Reset
     setError(null);
     setRecognizedFoods([]);
+
+    // Convert HEIC/HEIF to JPEG if needed
+    try {
+      file = await ensureCompatibleImage(file);
+    } catch (err) {
+      setError("Bildformat konnte nicht konvertiert werden. Bitte verwende JPG oder PNG.");
+      return;
+    }
 
     // Create preview
     const reader = new FileReader();
