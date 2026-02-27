@@ -299,6 +299,16 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
     const now = new Date();
     const time = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
     const ps = recipe.perServing;
+    // Flüssigkeit aus ml-Zutaten berechnen
+    const recipeLiquidMl = recipe.ingredients.reduce((sum, ing) => {
+      if (/ml\b/i.test(ing.amount)) {
+        const match = ing.amount.match(/[\d.,]+/);
+        return sum + (match ? parseFloat(match[0].replace(",", ".")) : 0);
+      }
+      return sum;
+    }, 0);
+    const entryLiquidMl = recipeLiquidMl > 0 ? Math.round(recipeLiquidMl / recipe.servings) : undefined;
+
     const entry: NutritionEntry = {
       id: generateId(),
       date: selectedDate,
@@ -310,15 +320,23 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
       carbs: ps.carbs,
       fat: ps.fat,
       fiber: ps.fiber,
+      ...(entryLiquidMl ? { liquidMl: entryLiquidMl } : {}),
     };
     onAddEntry(entry);
 
     // Rezept auch als Lebensmittel in der DB speichern (Kategorie "Eigene")
     // Makros werden auf "pro 100g einer Portion" normalisiert
+    // Flüssigkeit aus Zutaten mit "ml" erkennen (z.B. "500 ml Wasser", "200ml Brühe")
+    let totalLiquidMl = 0;
     const portionWeight = recipe.ingredients.reduce((sum, ing) => {
       const match = ing.amount.match(/[\d.,]+/);
-      return sum + (match ? parseFloat(match[0].replace(",", ".")) : 0);
+      const val = match ? parseFloat(match[0].replace(",", ".")) : 0;
+      if (/ml\b/i.test(ing.amount)) {
+        totalLiquidMl += val;
+      }
+      return sum + val;
     }, 0) || 100; // Fallback 100g wenn keine Mengen erkennbar
+    const liquidPerServing = Math.round(totalLiquidMl / recipe.servings);
     const servingWeight = Math.round(portionWeight / recipe.servings);
     const factor = 100 / servingWeight;
     const foodItem: FoodItem = {
@@ -331,6 +349,7 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
       carbs: Math.round(ps.carbs * factor * 10) / 10,
       fiber: Math.round(ps.fiber * factor * 10) / 10,
       defaultAmount: servingWeight,
+      ...(liquidPerServing > 0 ? { liquidMl: 100 } : {}),
       category: "Eigene",
       isUserCreated: true,
     };
