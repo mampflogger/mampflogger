@@ -153,7 +153,7 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
       `👨‍🍳 Zubereitung:`,
       stepsList,
       ``,
-      `📊 Pro Portion: ${ps.calories} kcal · Protein ${ps.protein}g · Fett ${ps.fat}g · KH ${ps.carbs}g · Ballast ${ps.fiber}g`,
+      `📊 Pro Portion: ${ps.calories} kcal · Protein ${ps.protein}g · Fett ${ps.fat}g · Kohlenhydrate ${ps.carbs}g · Ballaststoffe ${ps.fiber}g`,
       ``,
       `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`,
       `Erstellt mit der App für gesunde Ernährung auf`,
