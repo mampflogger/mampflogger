@@ -1,5 +1,49 @@
 import heic2any from "heic2any";
 
+const MAX_DIMENSION = 1200;
+const JPEG_QUALITY = 0.82;
+
+/**
+ * Resizes an image to fit within MAX_DIMENSION x MAX_DIMENSION,
+ * converting it to JPEG. Returns a base64 data URL.
+ */
+export function resizeImageToDataUrl(
+  source: string | Blob,
+  maxDim = MAX_DIMENSION,
+  quality = JPEG_QUALITY,
+): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => {
+      let { naturalWidth: w, naturalHeight: h } = img;
+      if (w > maxDim || h > maxDim) {
+        const ratio = Math.min(maxDim / w, maxDim / h);
+        w = Math.round(w * ratio);
+        h = Math.round(h * ratio);
+      }
+      const canvas = document.createElement("canvas");
+      canvas.width = w;
+      canvas.height = h;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) { reject(new Error("Canvas context unavailable")); return; }
+      ctx.drawImage(img, 0, 0, w, h);
+      const dataUrl = canvas.toDataURL("image/jpeg", quality);
+      if (typeof source === "string") {
+        // nothing to revoke
+      } else {
+        URL.revokeObjectURL(img.src);
+      }
+      resolve(dataUrl);
+    };
+    img.onerror = () => reject(new Error("Image load failed"));
+    if (source instanceof Blob) {
+      img.src = URL.createObjectURL(source);
+    } else {
+      img.src = source;
+    }
+  });
+}
+
 /**
  * Tries to render the image via an <img> + canvas.
  * Works on Safari/iOS which natively support HEIC.
