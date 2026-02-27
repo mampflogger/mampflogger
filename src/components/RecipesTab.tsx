@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useMemo } from "react";
+import { ensureCompatibleImage } from "@/lib/imageUtils";
 import { NutritionEntry, generateId } from "@/types/nutrition";
 import { Trash2, ChevronDown, ChevronUp, Sparkles, Pencil, Check, Plus, Loader2, Share2, PlusCircle, MessageCircle, Camera } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -192,9 +193,17 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
   };
 
   const handlePhotoFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
+    let file = e.target.files?.[0];
     if (!file) return;
     setPhotoError(null);
+
+    // Convert HEIC/HEIF to JPEG if needed
+    try {
+      file = await ensureCompatibleImage(file);
+    } catch (err) {
+      setPhotoError("Bildformat konnte nicht konvertiert werden. Bitte verwende JPG oder PNG.");
+      return;
+    }
 
     const reader = new FileReader();
     reader.onload = async (ev) => {
