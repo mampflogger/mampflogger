@@ -1209,6 +1209,7 @@ const SettingsDialog = ({
                       "mampflogger-remote-url",
                       "mampflogger-remote-sync",
                       "mampflogger-last-activity-type",
+                      "mampflogger-saved-recipes",
                     ];
                     const backup: Record<string, string | null> = {};
                     BACKUP_KEYS.forEach((key) => {
