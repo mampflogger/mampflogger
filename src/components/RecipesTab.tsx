@@ -184,8 +184,11 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
         }
 
         await navigator.share(shareData);
-      } catch (e) {
-        // User cancelled share
+      } catch (e: any) {
+        if (e?.name !== "AbortError") {
+          console.error("Share failed:", e);
+          toast({ title: "Teilen fehlgeschlagen", description: "Bitte versuche den WhatsApp-Button." });
+        }
       }
     } else {
       await navigator.clipboard.writeText(text);
