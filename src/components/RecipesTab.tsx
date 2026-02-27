@@ -159,12 +159,31 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
     ].join("\n");
   };
 
+  const dataUrlToFile = async (dataUrl: string, fileName: string): Promise<File | null> => {
+    try {
+      const res = await fetch(dataUrl);
+      const blob = await res.blob();
+      return new File([blob], fileName, { type: blob.type || "image/jpeg" });
+    } catch {
+      return null;
+    }
+  };
+
   const handleShare = async (recipe: SavedRecipe) => {
     const text = buildShareText(recipe);
 
     if (navigator.share) {
       try {
-        await navigator.share({ text });
+        const shareData: ShareData = { text };
+
+        if (recipe.photoUrl) {
+          const file = await dataUrlToFile(recipe.photoUrl, `${recipe.name.replace(/\s+/g, "_")}.jpg`);
+          if (file && navigator.canShare?.({ files: [file] })) {
+            shareData.files = [file];
+          }
+        }
+
+        await navigator.share(shareData);
       } catch (e) {
         // User cancelled share
       }
