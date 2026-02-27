@@ -139,7 +139,7 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
     const ingredientsList = recipe.ingredients
       .map((ing) => `${ing.amount ? ing.amount + " " : ""}${ing.name}`)
       .join("\n");
-    const stepsList = recipe.steps.map((s, i) => `${i + 1}. ${s}`).join("\n");
+    const stepsList = recipe.steps.map((s, i) => `${i + 1}. ${s.replace(/^\d+\.\s*/, "")}`).join("\n");
     const ps = recipe.perServing;
     return [
       `🍽️ Mein Lieblingsrezept für dich:`,
