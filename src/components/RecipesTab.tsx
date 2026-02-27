@@ -670,7 +670,43 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
               </div>
 
               {/* Expanded details */}
-              {expandedId === sr.id && (
+              {expandedId === sr.id && (() => {
+                // Compute per-ingredient kcal so totals are always consistent with what's displayed
+                const ingKcals: (number | null)[] = (isEditing ? editIngredients : sr.ingredients).map((ing) => {
+                  const parsed = extractNumber(ing.amount);
+                  if (!parsed) return null;
+                  const val = parseFloat(parsed.num.replace(",", "."));
+                  if (val <= 0) return null;
+                  if ((ing as any).per100g?.calories != null) {
+                    return Math.round(((ing as any).per100g.calories / 100) * val);
+                  }
+                  const ingNameLower = ing.name.toLowerCase();
+                  const food = foodDatabase.find((f) => f.name.toLowerCase() === ingNameLower)
+                    || foodDatabase.find((f) => ingNameLower.includes(f.name.toLowerCase()) || f.name.toLowerCase().includes(ingNameLower));
+                  if (food) return Math.round((food.calories / food.baseAmount) * val);
+                  return null;
+                });
+                const allHaveKcal = ingKcals.every((v) => v !== null);
+                const sumKcal = allHaveKcal ? ingKcals.reduce((s, v) => s! + v!, 0)! : null;
+
+                // Derive consistent totals: use summed ingredient kcal when available, keep AI ratios for macros
+                const displayTotal = { ...sr.totalMacros };
+                const displayPerServing = { ...sr.perServing };
+                if (sumKcal !== null && sr.totalMacros.calories > 0) {
+                  const ratio = sumKcal / sr.totalMacros.calories;
+                  displayTotal.calories = sumKcal;
+                  displayTotal.protein = Math.round(sr.totalMacros.protein * ratio * 10) / 10;
+                  displayTotal.fat = Math.round(sr.totalMacros.fat * ratio * 10) / 10;
+                  displayTotal.carbs = Math.round(sr.totalMacros.carbs * ratio * 10) / 10;
+                  displayTotal.fiber = Math.round(sr.totalMacros.fiber * ratio * 10) / 10;
+                  displayPerServing.calories = Math.round(sumKcal / sr.servings);
+                  displayPerServing.protein = Math.round(displayTotal.protein / sr.servings * 10) / 10;
+                  displayPerServing.fat = Math.round(displayTotal.fat / sr.servings * 10) / 10;
+                  displayPerServing.carbs = Math.round(displayTotal.carbs / sr.servings * 10) / 10;
+                  displayPerServing.fiber = Math.round(displayTotal.fiber / sr.servings * 10) / 10;
+                }
+
+                return (
                 <div className="px-2.5 pb-2.5 space-y-2 border-t border-border/30 pt-2">
                   <div className="flex gap-3 text-[10px] text-muted-foreground">
                     <span>👥 {sr.servings} Portionen</span>
@@ -707,25 +743,7 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
                           const parsed = extractNumber(ing.amount);
                           const hasNumber = !!parsed;
 
-                          // Calculate calories for this ingredient
-                          let ingKcal: number | null = null;
-                          if (parsed) {
-                            const val = parseFloat(parsed.num.replace(",", "."));
-                            if (val > 0) {
-                              // Prefer per100g from AI response (stored on ingredient)
-                              if ((ing as any).per100g?.calories != null) {
-                                ingKcal = Math.round(((ing as any).per100g.calories / 100) * val);
-                              } else {
-                                // Fallback: local food database
-                                const ingNameLower = ing.name.toLowerCase();
-                                const food = foodDatabase.find((f) => f.name.toLowerCase() === ingNameLower)
-                                  || foodDatabase.find((f) => ingNameLower.includes(f.name.toLowerCase()) || f.name.toLowerCase().includes(ingNameLower));
-                                if (food) {
-                                  ingKcal = Math.round((food.calories / food.baseAmount) * val);
-                                }
-                              }
-                            }
-                          }
+                          const ingKcal = ingKcals[i];
 
                           return (
                             <li key={i} className="text-[11px] text-foreground flex items-baseline gap-0">
@@ -757,7 +775,7 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
                                     {parsed ? ` ${parsed.rest}` : ing.amount ? ing.amount : ""}
                                   </span>
                                   <span className="ml-1">
-                                    {!parsed && !ing.amount ? "" : ""}{ing.name}{ing.isMain ? " ⭐" : ""}
+                                    {ing.name}{ing.isMain ? " ⭐" : ""}
                                     {ingKcal !== null && (
                                       <span className="font-medium text-muted-foreground"> ({ingKcal} kcal)</span>
                                     )}
@@ -889,19 +907,19 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
                     <tbody>
                       <tr className="text-foreground">
                         <td className="font-semibold pr-2 py-0.5">Gesamt</td>
-                        <td className="text-right py-0.5">{sr.totalMacros.calories}</td>
-                        <td className="text-right py-0.5">{sr.totalMacros.protein}</td>
-                        <td className="text-right py-0.5">{sr.totalMacros.fat}</td>
-                        <td className="text-right py-0.5">{sr.totalMacros.carbs}</td>
-                        <td className="text-right py-0.5">{sr.totalMacros.fiber}</td>
+                        <td className="text-right py-0.5">{displayTotal.calories}</td>
+                        <td className="text-right py-0.5">{displayTotal.protein}</td>
+                        <td className="text-right py-0.5">{displayTotal.fat}</td>
+                        <td className="text-right py-0.5">{displayTotal.carbs}</td>
+                        <td className="text-right py-0.5">{displayTotal.fiber}</td>
                       </tr>
                       <tr className="text-foreground">
                         <td className="font-semibold pr-2 py-0.5">Pro Portion</td>
-                        <td className="text-right py-0.5">{sr.perServing.calories}</td>
-                        <td className="text-right py-0.5">{sr.perServing.protein}</td>
-                        <td className="text-right py-0.5">{sr.perServing.fat}</td>
-                        <td className="text-right py-0.5">{sr.perServing.carbs}</td>
-                        <td className="text-right py-0.5">{sr.perServing.fiber}</td>
+                        <td className="text-right py-0.5">{displayPerServing.calories}</td>
+                        <td className="text-right py-0.5">{displayPerServing.protein}</td>
+                        <td className="text-right py-0.5">{displayPerServing.fat}</td>
+                        <td className="text-right py-0.5">{displayPerServing.carbs}</td>
+                        <td className="text-right py-0.5">{displayPerServing.fiber}</td>
                       </tr>
                     </tbody>
                   </table>
@@ -934,7 +952,8 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
                     )}
                   </div>
                 </div>
-              )}
+                );
+              })()}
             </div>
           );
         })}
