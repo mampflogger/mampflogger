@@ -349,7 +349,7 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
       carbs: Math.round(ps.carbs * factor * 10) / 10,
       fiber: Math.round(ps.fiber * factor * 10) / 10,
       defaultAmount: servingWeight,
-      ...(liquidPerServing > 0 ? { liquidMl: 100 } : {}),
+      ...(liquidPerServing > 0 ? { liquidMl: Math.round((liquidPerServing / servingWeight) * 100) } : {}),
       category: "Eigene",
       isUserCreated: true,
     };
