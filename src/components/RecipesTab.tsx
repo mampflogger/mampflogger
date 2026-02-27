@@ -155,7 +155,7 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
       ``,
       `📊 Pro Portion: ${ps.calories} kcal · Protein ${ps.protein}g · Fett ${ps.fat}g · Kohlenhydrate ${ps.carbs}g · Ballaststoffe ${ps.fiber}g`,
       ``,
-      `• Erstellt mit der *𝗸𝗼𝘀𝘁𝗲𝗻𝗹𝗼𝘀𝗲𝗻* Ernährungs-App auf 𝗠𝗮𝗺𝗽𝗳𝗟𝗼𝗴𝗴𝗲𝗿.𝗱𝗲`,
+      `• Erstellt mit der *𝗸𝗼𝘀𝘁𝗲𝗻𝗹𝗼𝘀𝗲𝗻* Ernährungs-App auf *𝗠𝗮𝗺𝗽𝗳𝗟𝗼𝗴𝗴𝗲𝗿.𝗱𝗲* · mampflogger.de`,
     ].join("\n");
   };
 
@@ -184,7 +184,7 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
           const file = await dataUrlToFile(recipe.photoUrl, `${recipe.name.replace(/\s+/g, "_")}.jpg`);
           if (file && navigator.canShare?.({ files: [file] })) {
             try {
-              await navigator.share({ text, files: [file] });
+              await navigator.share({ title: recipe.name, text, files: [file] });
               return;
             } catch (imgErr: any) {
               // If user cancelled, stop entirely
@@ -196,7 +196,7 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
         }
 
         // Fallback: text-only share
-        await navigator.share({ text });
+        await navigator.share({ title: recipe.name, text });
       } catch (e: any) {
         if (e?.name !== "AbortError") {
           console.error("Share failed:", e);
