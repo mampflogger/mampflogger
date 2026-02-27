@@ -467,7 +467,14 @@ const Index = () => {
                 <h2 className="text-[10px] font-semibold text-muted-foreground mb-2 uppercase tracking-wider">
                   Flüssigkeit
                 </h2>
-                <FluidDisplay entries={todayEntries} goalMl={profile.goalFluidMl} />
+                <FluidDisplay
+                  entries={todayEntries}
+                  goalMl={profile.goalFluidMl}
+                  onRecalculate={() => {
+                    const refreshed = loadEntries();
+                    setEntries(refreshed);
+                  }}
+                />
               </div>
             )}
           </>

@@ -1,12 +1,14 @@
 import { NutritionEntry } from "@/types/nutrition";
-import { Droplets } from "lucide-react";
+import { Droplets, RefreshCw } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface FluidDisplayProps {
   entries: NutritionEntry[];
   goalMl?: number;
+  onRecalculate?: () => void;
 }
 
-const FluidDisplay = ({ entries, goalMl }: FluidDisplayProps) => {
+const FluidDisplay = ({ entries, goalMl, onRecalculate }: FluidDisplayProps) => {
   const totalMl = entries.reduce((sum, entry) => {
     return sum + (entry.liquidMl ?? 0);
   }, 0);
@@ -24,8 +26,19 @@ const FluidDisplay = ({ entries, goalMl }: FluidDisplayProps) => {
           <Droplets className="w-3.5 h-3.5" />
           Flüssigkeitsaufnahme
         </span>
-        <span className="text-sm font-bold text-foreground">
+        <span className="flex items-center gap-2 text-sm font-bold text-foreground">
           {totalMl} ml
+          {onRecalculate && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-6 w-6 text-muted-foreground hover:text-foreground"
+              onClick={onRecalculate}
+              title="Flüssigkeit neu berechnen"
+            >
+              <RefreshCw className="w-3 h-3" />
+            </Button>
+          )}
         </span>
       </div>
       {goalMl && goalMl > 0 && (
