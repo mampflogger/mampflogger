@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { foodDatabase, saveFoodDatabase, guessCategory, type FoodItem } from "@/data/foodDatabase";
+import { foodDatabase, saveFoodDatabase, guessCategory, addFoodItem, type FoodItem } from "@/data/foodDatabase";
 import ManualRecipeForm from "@/components/ManualRecipeForm";
 import {
   Dialog,
@@ -312,6 +312,30 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
       fiber: ps.fiber,
     };
     onAddEntry(entry);
+
+    // Rezept auch als Lebensmittel in der DB speichern (Kategorie "Eigene")
+    // Makros werden auf "pro 100g einer Portion" normalisiert
+    const portionWeight = recipe.ingredients.reduce((sum, ing) => {
+      const match = ing.amount.match(/[\d.,]+/);
+      return sum + (match ? parseFloat(match[0].replace(",", ".")) : 0);
+    }, 0) || 100; // Fallback 100g wenn keine Mengen erkennbar
+    const servingWeight = Math.round(portionWeight / recipe.servings);
+    const factor = 100 / servingWeight;
+    const foodItem: FoodItem = {
+      name: recipe.name,
+      baseUnit: "100g",
+      baseAmount: 100,
+      calories: Math.round(ps.calories * factor),
+      protein: Math.round(ps.protein * factor * 10) / 10,
+      fat: Math.round(ps.fat * factor * 10) / 10,
+      carbs: Math.round(ps.carbs * factor * 10) / 10,
+      fiber: Math.round(ps.fiber * factor * 10) / 10,
+      defaultAmount: servingWeight,
+      category: "Eigene",
+      isUserCreated: true,
+    };
+    addFoodItem(foodItem);
+
     toast({ title: "Übernommen!", description: `${recipe.name} wurde ins Tagesprotokoll eingetragen.` });
   };
 
