@@ -142,7 +142,7 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
     const stepsList = recipe.steps.map((s, i) => `${i + 1}. ${s.replace(/^\d+\.\s*/, "")}`).join("\n");
     const ps = recipe.perServing;
     return [
-      `🍽️ Mein Lieblingsrezept für dich:`,
+      `🍽️ Ein Lieblingsrezept für dich:`,
       ``,
       `*${recipe.name}*`,
       `👥 ${recipe.servings} Portionen · ⏱️ ${recipe.prepTime}`,
@@ -155,10 +155,7 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
       ``,
       `📊 Pro Portion: ${ps.calories} kcal · Protein ${ps.protein}g · Fett ${ps.fat}g · Kohlenhydrate ${ps.carbs}g · Ballaststoffe ${ps.fiber}g`,
       ``,
-      `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`,
-      `Erstellt mit der App für gesunde Ernährung auf`,
-      `*𝗠𝗮𝗺𝗽𝗳𝗟𝗼𝗴𝗴𝗲𝗿.𝗱𝗲*`,
-      `Keine Anmeldung · Keine Werbung · Keine Kosten`,
+      `• Erstellt mit der *𝗸𝗼𝘀𝘁𝗲𝗻𝗹𝗼𝘀𝗲𝗻* Ernährungs-App auf *𝗠𝗮𝗺𝗽𝗳𝗟𝗼𝗴𝗴𝗲𝗿.𝗱𝗲* !`,
     ].join("\n");
   };
 
