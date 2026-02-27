@@ -169,6 +169,11 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
     }
   };
 
+  const isAppleShareSurface = () => {
+    if (typeof navigator === "undefined") return false;
+    return /iPad|iPhone|iPod|Macintosh/i.test(navigator.userAgent);
+  };
+
   const handleShare = async (recipe: SavedRecipe) => {
     const text = buildShareText(recipe);
 
@@ -176,7 +181,9 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
       try {
         const shareData: ShareData = { text };
 
-        if (recipe.photoUrl) {
+        // On Apple share sheets, attaching files often hides WhatsApp as a target.
+        // Keep system share text-only there so WhatsApp stays selectable.
+        if (recipe.photoUrl && !isAppleShareSurface()) {
           const file = await dataUrlToFile(recipe.photoUrl, `${recipe.name.replace(/\s+/g, "_")}.jpg`);
           if (file && navigator.canShare?.({ files: [file] })) {
             shareData.files = [file];
