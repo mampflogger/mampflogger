@@ -164,9 +164,9 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
       `│  Ballaststoffe ${ps.fiber}g      │`,
       `└──────────────────┘`,
       ``,
-      `🥄 _Erstellt mit MampfLogger.de_`,
-      `    Die kostenlose Ernährungs-App`,
-      `    👉 https://mampflogger.de`,
+      `🥄 Erstellt mit MampfLogger – die kostenlose Ernährungs-App`,
+      ``,
+      `https://mampflogger.de`,
     ].join("\n");
   };
 
@@ -187,6 +187,7 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
 
   const handleShare = async (recipe: SavedRecipe) => {
     const text = buildShareText(recipe);
+    const subject = `🍽️ Ein Lieblingsrezept für dich: ${recipe.name}`;
 
     if (navigator.share) {
       try {
@@ -195,19 +196,17 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
           const file = await dataUrlToFile(recipe.photoUrl, `${recipe.name.replace(/\s+/g, "_")}.jpg`);
           if (file && navigator.canShare?.({ files: [file] })) {
             try {
-              await navigator.share({ title: `🍽️ Ein Lieblingsrezept für dich`, text, files: [file] });
+              await navigator.share({ title: subject, text, files: [file] });
               return;
             } catch (imgErr: any) {
-              // If user cancelled, stop entirely
               if (imgErr?.name === "AbortError") return;
-              // Otherwise fall through to text-only share
               console.warn("Share with image failed, falling back to text:", imgErr);
             }
           }
         }
 
         // Fallback: text-only share
-        await navigator.share({ title: `🍽️ Ein Lieblingsrezept für dich`, text });
+        await navigator.share({ title: subject, text });
       } catch (e: any) {
         if (e?.name !== "AbortError") {
           console.error("Share failed:", e);
