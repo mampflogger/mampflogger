@@ -438,7 +438,7 @@ const Index = () => {
             {todayEntries.length > 0 && (
               <div className="glass-card rounded-xl p-3 mb-3">
                 <h2 className="text-[10px] font-semibold text-muted-foreground mb-2 uppercase tracking-wider">
-                  Kalorien 24h
+                  Kalorienaufnahme 24 Stunden
                 </h2>
                 <DailyCalorieChart entries={todayEntries} />
               </div>
