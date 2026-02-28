@@ -942,7 +942,7 @@ const SettingsDialog = ({
                       </label>
                     ))}
                   </div>
-                  <div className="relative mb-8 flex items-center gap-1.5">
+                  <div className="relative z-20 mb-10 flex items-center gap-1.5">
                     <div className="relative flex-1">
                       <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground pointer-events-none" />
                       <Input
@@ -978,7 +978,7 @@ const SettingsDialog = ({
                   </div>
                 </div>
                 {/* Scrollable table with sticky header */}
-                <div className="max-h-[30vh] overflow-y-auto overflow-x-auto -mx-1 px-1">
+                <div className="mt-2 max-h-[30vh] overflow-y-auto overflow-x-auto -mx-1 px-1">
                   <table className="w-full text-[10px]">
                     <thead className="sticky top-0 bg-card z-10">
                       <tr className="border-b border-border">
