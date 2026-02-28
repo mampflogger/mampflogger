@@ -450,7 +450,7 @@ const Index = () => {
                 <h2 className="text-[10px] font-semibold text-muted-foreground mb-2 uppercase tracking-wider">
                   Fastenanalyse
                 </h2>
-                <FastingAnalysis entries={todayEntries} />
+                <FastingAnalysis entries={todayEntries} selectedDate={selectedDate} />
               </div>
             )}
 
