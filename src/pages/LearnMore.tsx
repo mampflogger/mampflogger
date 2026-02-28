@@ -63,7 +63,7 @@ const LearnMore = () => {
           </div>
           <div className="flex items-center gap-2">
             <Button size="sm" variant="outline" onClick={() => navigate("/")}>
-              Zurück
+              Learn more
             </Button>
             <Button size="sm" onClick={() => navigate("/app")}>
               App öffnen
