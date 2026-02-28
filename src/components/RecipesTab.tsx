@@ -188,11 +188,7 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
   };
 
   const buildWhatsAppShareText = (recipe: SavedRecipe) => {
-    const previewLink = `${SHARE_LINK}?share=${encodeURIComponent(recipe.id)}`;
-
     return [
-      previewLink,
-      ``,
       buildRecipeShareBody(recipe),
       ``,
       APP_SIGNATURE,
