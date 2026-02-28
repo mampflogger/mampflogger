@@ -23,6 +23,7 @@ import DeficitDisplay from "@/components/DeficitDisplay";
 import FluidDisplay from "@/components/FluidDisplay";
 import DailyCalorieChart from "@/components/DailyCalorieChart";
 import PhotoToLog from "@/components/PhotoToLog";
+import FastingAnalysis from "@/components/FastingAnalysis";
 
 import SettingsDialog, { ColorTheme } from "@/components/SettingsDialog";
 import { ChevronLeft, ChevronRight, BarChart3, List, Mic, MicOff, BookOpen } from "lucide-react";
@@ -441,6 +442,15 @@ const Index = () => {
                   Kalorienaufnahme 24 Stunden
                 </h2>
                 <DailyCalorieChart entries={todayEntries} />
+              </div>
+            )}
+
+            {todayEntries.length > 0 && (
+              <div className="glass-card rounded-xl p-3 mb-3">
+                <h2 className="text-[10px] font-semibold text-muted-foreground mb-2 uppercase tracking-wider">
+                  Fastenanalyse
+                </h2>
+                <FastingAnalysis entries={todayEntries} />
               </div>
             )}
 
