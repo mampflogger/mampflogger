@@ -21,6 +21,7 @@ import WeeklyOverview from "@/components/WeeklyOverview";
 import ActivityInput from "@/components/ActivityInput";
 import DeficitDisplay from "@/components/DeficitDisplay";
 import FluidDisplay from "@/components/FluidDisplay";
+import DailyCalorieChart from "@/components/DailyCalorieChart";
 import PhotoToLog from "@/components/PhotoToLog";
 
 import SettingsDialog, { ColorTheme } from "@/components/SettingsDialog";
@@ -433,6 +434,15 @@ const Index = () => {
               </h2>
               <NutritionTable entries={todayEntries} onDelete={handleDelete} onEntryClick={handleEntryClick} />
             </div>
+
+            {todayEntries.length > 0 && (
+              <div className="glass-card rounded-xl p-3 mb-3">
+                <h2 className="text-[10px] font-semibold text-muted-foreground mb-2 uppercase tracking-wider">
+                  Kalorien 24h
+                </h2>
+                <DailyCalorieChart entries={todayEntries} />
+              </div>
+            )}
 
             {profile && (
               <div className="glass-card rounded-xl p-3 mb-3">
