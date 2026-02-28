@@ -137,23 +137,36 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
 
   const buildShareText = (recipe: SavedRecipe) => {
     const ingredientsList = recipe.ingredients
-      .map((ing) => `${ing.amount ? ing.amount + " " : ""}${ing.name}`)
+      .map((ing) => `  • ${ing.amount ? ing.amount + " " : ""}${ing.name}`)
       .join("\n");
-    const stepsList = recipe.steps.map((s, i) => `${i + 1}. ${s.replace(/^\d+\.\s*/, "")}`).join("\n");
+    const stepsList = recipe.steps.map((s, i) => `  ${i + 1}. ${s.replace(/^\d+\.\s*/, "")}`).join("\n\n");
     const ps = recipe.perServing;
     return [
-      `*${recipe.name}*`,
-      `👥 ${recipe.servings} Portionen · ⏱️ ${recipe.prepTime}`,
+      `━━━━━━━━━━━━━━━━━━━━`,
+      `🍽️  *${recipe.name}*`,
+      `━━━━━━━━━━━━━━━━━━━━`,
+      `👥 ${recipe.servings} Portionen  ·  ⏱️ ${recipe.prepTime}`,
       ``,
-      `📋 Zutaten:`,
-      ingredientsList,
+      `┌─ 📋 *Zutaten:*`,
+      `│`,
+      ingredientsList.split("\n").map(l => `│ ${l.trim()}`).join("\n"),
+      `│`,
+      `└──────────────`,
       ``,
-      `👨‍🍳 Zubereitung:`,
+      `👨‍🍳 *Zubereitung:*`,
+      ``,
       stepsList,
       ``,
-      `📊 Pro Portion: ${ps.calories} kcal · Protein ${ps.protein}g · Fett ${ps.fat}g · Kohlenhydrate ${ps.carbs}g · Ballaststoffe ${ps.fiber}g`,
+      `┌──────────────────┐`,
+      `│  📊 *Pro Portion*           │`,
+      `│  ${ps.calories} kcal                    │`,
+      `│  P ${ps.protein}g · F ${ps.fat}g · KH ${ps.carbs}g  │`,
+      `│  Ballaststoffe ${ps.fiber}g      │`,
+      `└──────────────────┘`,
       ``,
-      `• Erstellt mit der *𝗸𝗼𝘀𝘁𝗲𝗻𝗹𝗼𝘀𝗲𝗻* Ernährungs-App auf *𝗠𝗮𝗺𝗽𝗳𝗟𝗼𝗴𝗴𝗲𝗿.𝗱𝗲* · (https://mampflogger.de)`,
+      `🥄 _Erstellt mit MampfLogger.de_`,
+      `    Die kostenlose Ernährungs-App`,
+      `    👉 https://mampflogger.de`,
     ].join("\n");
   };
 
