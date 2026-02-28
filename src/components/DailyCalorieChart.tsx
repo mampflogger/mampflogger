@@ -7,6 +7,7 @@ import {
   YAxis,
   ResponsiveContainer,
   Tooltip,
+  ReferenceLine,
 } from "recharts";
 
 interface DailyCalorieChartProps {
@@ -15,7 +16,6 @@ interface DailyCalorieChartProps {
 
 const DailyCalorieChart = ({ entries }: DailyCalorieChartProps) => {
   const data = useMemo(() => {
-    // Build 24 hourly buckets
     const buckets = Array.from({ length: 24 }, (_, i) => ({
       hour: i,
       label: `${String(i).padStart(2, "0")}`,
@@ -32,35 +32,37 @@ const DailyCalorieChart = ({ entries }: DailyCalorieChartProps) => {
     return buckets;
   }, [entries]);
 
-  const maxKcal = Math.max(...data.map((d) => d.kcal), 1);
-
   return (
     <div className="h-[140px] w-full">
       <ResponsiveContainer width="100%" height="100%">
-        <BarChart data={data} margin={{ top: 4, right: 0, bottom: 0, left: -20 }}>
+        <BarChart data={data} margin={{ top: 4, right: 4, bottom: 0, left: -10 }}>
           <XAxis
             dataKey="label"
-            tick={{ fontSize: 9, fill: "hsl(var(--muted-foreground))" }}
+            tick={{ fontSize: 8, fill: "hsl(var(--muted-foreground))" }}
             tickLine={false}
             axisLine={false}
-            interval={2}
+            interval={0}
           />
           <YAxis
-            tick={{ fontSize: 9, fill: "hsl(var(--muted-foreground))" }}
+            tick={{ fontSize: 8, fill: "hsl(var(--muted-foreground))" }}
             tickLine={false}
             axisLine={false}
-            width={40}
-            domain={[0, Math.ceil(maxKcal / 100) * 100 || 100]}
-            tickCount={4}
+            width={35}
+            ticks={[0, 500, 1000, 1500]}
+            domain={[0, 1500]}
           />
+          <ReferenceLine y={500} stroke="hsl(var(--border))" strokeDasharray="3 3" />
+          <ReferenceLine y={1000} stroke="hsl(var(--border))" strokeDasharray="3 3" />
+          <ReferenceLine y={1500} stroke="hsl(var(--border))" strokeDasharray="3 3" />
           <Tooltip
+            cursor={false}
             content={({ active, payload }) => {
               if (!active || !payload?.length) return null;
               const d = payload[0].payload;
+              if (d.kcal === 0) return null;
               return (
-                <div className="rounded-lg border border-border/50 bg-background px-2.5 py-1.5 text-xs shadow-xl">
-                  <p className="font-medium">{d.label}:00 – {d.label}:59</p>
-                  <p className="text-muted-foreground">{d.kcal} kcal</p>
+                <div className="rounded-lg border border-border/50 bg-background px-2 py-1 text-xs shadow-xl">
+                  <span className="font-medium">{d.kcal} kcal</span>
                 </div>
               );
             }}
@@ -75,7 +77,7 @@ const DailyCalorieChart = ({ entries }: DailyCalorieChartProps) => {
             dataKey="kcal"
             fill="url(#kcalGradient)"
             radius={[3, 3, 0, 0]}
-            maxBarSize={16}
+            maxBarSize={14}
           />
         </BarChart>
       </ResponsiveContainer>
