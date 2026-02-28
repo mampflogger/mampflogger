@@ -959,10 +959,10 @@ const SettingsDialog = ({
                             foodSearchSpeech.start();
                           }
                         }}
-                        className={`p-2 rounded-md transition-colors shrink-0 ${
+                        className={`p-2 rounded-md border transition-colors shrink-0 ${
                           foodSearchSpeech.isListening
-                            ? "bg-destructive/15 text-destructive animate-pulse"
-                            : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                            ? "bg-destructive/15 text-destructive border-destructive/30 animate-pulse"
+                            : "text-muted-foreground hover:text-foreground hover:bg-muted border-border"
                         }`}
                         title={foodSearchSpeech.isListening ? "Stoppen" : "Spracheingabe"}
                       >
