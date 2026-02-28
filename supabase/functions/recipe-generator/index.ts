@@ -32,8 +32,8 @@ Antworte NUR mit einem JSON-Objekt in diesem Format:
   "servings": 2,
   "prepTime": "20 Min.",
   "ingredients": [
-    { "name": "Zutat", "amount": "200g", "isMain": true, "category": "Fleisch&Wurst" },
-    { "name": "Ergänzung", "amount": "1 EL", "isMain": false, "category": "Öle&Fette" }
+    { "name": "Zutat", "amount": "200g", "isMain": true, "category": "Fleisch&Wurst", "per100g": { "calories": 150, "protein": 20, "fat": 5, "carbs": 2, "fiber": 0 } },
+    { "name": "Ergänzung", "amount": "1 EL", "isMain": false, "category": "Öle&Fette", "per100g": { "calories": 884, "protein": 0, "fat": 100, "carbs": 0, "fiber": 0 } }
   ],
   "steps": [
     "Schritt 1: ...",
@@ -61,6 +61,7 @@ Regeln:
 - Hauptzutaten mit isMain: true markieren
 - Jede Zutat bekommt eine passende category aus: Fleisch&Wurst, Fisch&Meeresfrüchte, Käse, Nüsse&Samen, Gemüse, Brot&Teigwaren, Öle&Fette, Getränke, Obst, Milchprodukte, Süßwaren, Sonstiges
 - Nur wenn keine Kategorie passt: "Eigene"
+- Jede Zutat MUSS ein per100g Objekt mit calories, protein, fat, carbs, fiber enthalten
 - 3-6 Zubereitungsschritte
 - Portionsgröße angeben
 - Kein zusätzlicher Text außerhalb des JSON`;

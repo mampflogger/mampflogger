@@ -470,6 +470,22 @@ const RecipeGenerator = ({
                 const parsed = extractNumber(ing.amount);
                 const hasNumber = !!parsed;
 
+                // Calculate per-ingredient kcal
+                let ingKcal: number | null = null;
+                if (parsed) {
+                  const val = parseFloat(parsed.num.replace(",", "."));
+                  if (val > 0) {
+                    if ((ing as any).per100g?.calories != null) {
+                      ingKcal = Math.round(((ing as any).per100g.calories / 100) * val);
+                    } else {
+                      const ingNameLower = ing.name.toLowerCase();
+                      const food = foodDatabase.find((f) => f.name.toLowerCase() === ingNameLower)
+                        || foodDatabase.find((f) => ingNameLower.includes(f.name.toLowerCase()) || f.name.toLowerCase().includes(ingNameLower));
+                      if (food) ingKcal = Math.round((food.calories / food.baseAmount) * val);
+                    }
+                  }
+                }
+
                 return (
                   <li key={i} className="text-[11px] text-foreground flex items-center gap-1.5">
                     {isEditing && (
@@ -496,6 +512,9 @@ const RecipeGenerator = ({
                       <span>
                         {ing.amount && <span className="font-medium">{ing.amount}</span>}
                         {ing.amount ? " " : ""}{ing.name}
+                        {ingKcal !== null && (
+                          <span className="font-medium text-muted-foreground"> ({ingKcal} kcal)</span>
+                        )}
                       </span>
                     )}
                   </li>
