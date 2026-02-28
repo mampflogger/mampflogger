@@ -151,7 +151,7 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
       `👨‍🍳 *Zubereitung:*`,
       stepsList,
       ``,
-      `📊 *Pro Portion:* ${ps.calories} kcal · P ${ps.protein}g · F ${ps.fat}g · KH ${ps.carbs}g · Ballaststoffe ${ps.fiber}g`,
+      `📊 *Pro Portion:* ${ps.calories} kcal · Protein ${ps.protein}g · Fett ${ps.fat}g · Kohlenhydrate ${ps.carbs}g · Ballaststoffe ${ps.fiber}g`,
       ``,
       `Erstellt mit der *kostenlosen* Ernährungs-App auf mampflogger.de`,
     ].join("\n");
@@ -172,9 +172,20 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
     return /iPad|iPhone|iPod|Macintosh/i.test(navigator.userAgent);
   };
 
+  const openEmailComposer = (subject: string, body: string) => {
+    const mailtoUrl = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    window.location.href = mailtoUrl;
+  };
+
   const handleShare = async (recipe: SavedRecipe) => {
     const text = buildShareText(recipe);
-    const subject = `🍽️ Ein Lieblingsrezept für dich: ${recipe.name}`;
+    const subject = "Ein Lieblingsrezept für dich";
+
+    // Apple-Mail-Betreff über navigator.share ist unzuverlässig → für Apple direkt mailto nutzen.
+    if (isAppleShareSurface()) {
+      openEmailComposer(subject, text);
+      return;
+    }
 
     if (navigator.share) {
       try {
