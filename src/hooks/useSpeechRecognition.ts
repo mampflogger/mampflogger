@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 
 interface UseSpeechRecognitionOptions {
   onResult: (transcript: string, isInterim: boolean) => void;
@@ -24,6 +24,7 @@ export function useSpeechRecognition({ onResult, onEnd, lang = "de-DE" }: UseSpe
   const start = useCallback(() => {
     const SR = getSpeechRecognition();
     if (!SR) return;
+    if (recognitionRef.current?._keepAlive || isListening) return;
 
     const recognition = new SR();
     recognition.lang = lang;
@@ -36,7 +37,6 @@ export function useSpeechRecognition({ onResult, onEnd, lang = "de-DE" }: UseSpe
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const result = (event.results as any)[i];
         if (result.isFinal) {
-          // Collect best transcript from all alternatives
           let best = "";
           for (let a = 0; a < result.length; a++) {
             const alt = result[a].transcript.trim();
@@ -45,7 +45,6 @@ export function useSpeechRecognition({ onResult, onEnd, lang = "de-DE" }: UseSpe
           processedIndexRef.current = i + 1;
           onResult(best, false);
         } else {
-          // Interim result — send for quick command detection
           const interim = result[0].transcript.trim();
           if (interim) onResult(interim, true);
         }
@@ -53,39 +52,69 @@ export function useSpeechRecognition({ onResult, onEnd, lang = "de-DE" }: UseSpe
     };
 
     recognition.onend = () => {
-      // If still supposed to be listening, restart (browser may stop after silence)
       if (recognitionRef.current && recognitionRef.current._keepAlive) {
         processedIndexRef.current = 0;
-        try { recognition.start(); } catch { /* ignore */ }
-        return;
+        try {
+          recognition.start();
+          return;
+        } catch {
+          recognitionRef.current._keepAlive = false;
+        }
       }
+      recognitionRef.current = null;
       setIsListening(false);
       onEnd?.();
     };
 
     recognition.onerror = (event: { error: string }) => {
       console.warn("[Speech] error:", event.error);
-      // Only stop on fatal errors, not on no-speech or aborted
       if (event.error === "not-allowed" || event.error === "service-not-allowed") {
         if (recognitionRef.current) recognitionRef.current._keepAlive = false;
+        recognitionRef.current = null;
         setIsListening(false);
       }
-      // For "no-speech", "aborted", "network" etc., onend will handle restart
     };
 
     recognitionRef.current = recognition;
     recognition._keepAlive = true;
     processedIndexRef.current = 0;
-    recognition.start();
-    setIsListening(true);
-  }, [lang, onResult, onEnd]);
+
+    try {
+      recognition.start();
+      setIsListening(true);
+    } catch (err) {
+      console.warn("[Speech] start failed:", err);
+      recognition._keepAlive = false;
+      recognitionRef.current = null;
+      setIsListening(false);
+    }
+  }, [isListening, lang, onResult, onEnd]);
 
   const stop = useCallback(() => {
     if (recognitionRef.current) {
       recognitionRef.current._keepAlive = false;
-      recognitionRef.current.stop();
+      try {
+        recognitionRef.current.stop();
+      } catch {
+        // ignore
+      }
+      recognitionRef.current = null;
     }
     setIsListening(false);
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (recognitionRef.current) {
+        recognitionRef.current._keepAlive = false;
+        try {
+          recognitionRef.current.stop();
+        } catch {
+          // ignore
+        }
+        recognitionRef.current = null;
+      }
+    };
   }, []);
 
   return { isListening, start, stop, isSupported };
