@@ -525,13 +525,17 @@ const RecipeGenerator = ({
                             </span>
                           </>
                         ) : (
-                          <span className="ml-[calc(5ch+3ch+2px+0.25rem)]">
-                            {ing.name}{ing.isMain ? " ⭐" : ""}
-                            {ing.amount ? <span className="text-muted-foreground italic text-[10px]"> {ing.amount}</span> : ""}
-                            {ingKcal !== null && (
+                          <>
+                            <span className="inline-block w-[5ch] shrink-0"></span>
+                            <span className="inline-block w-[3ch] shrink-0 ml-px"></span>
+                            <span className="ml-1">
+                              {ing.name}{ing.isMain ? " ⭐" : ""}
+                              {ing.amount ? <span className="text-muted-foreground italic text-[10px]"> {ing.amount}</span> : ""}
+                              {ingKcal !== null && (
                               <span className="font-medium text-muted-foreground"> ({ingKcal} kcal)</span>
                             )}
-                          </span>
+                            </span>
+                          </>
                         )}
                       </>
                     )}
