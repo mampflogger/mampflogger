@@ -346,7 +346,7 @@ const ActivityInput = ({
                 width: `${Math.min(100, Math.round((activityBonus / goalActivityBonus) * 100))}%`,
                 backgroundColor: activityBonus >= goalActivityBonus
                   ? "hsl(var(--success))"
-                  : "hsl(var(--warning, 38 92% 50%))",
+                  : "hsl(var(--primary))",
               }}
             />
           </div>

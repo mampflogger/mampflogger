@@ -109,7 +109,7 @@ const DeficitDisplay = ({ profile, activityBonus, consumedCalories, goalDeficit 
               className="absolute left-0 top-0 h-full transition-all duration-500"
               style={{
                 width: `${orangeBarPct}%`,
-                backgroundColor: "hsl(var(--warning, 38 92% 50%))",
+                backgroundColor: "hsl(var(--primary))",
                 borderRadius: orangeBarPct >= eatingBudgetPct ? "9999px 0 0 9999px" : "9999px",
               }}
             />

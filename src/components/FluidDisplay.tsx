@@ -50,7 +50,7 @@ const FluidDisplay = ({ entries, goalMl, onRecalculate }: FluidDisplayProps) => 
                 width: `${percentage}%`,
                 backgroundColor: isReached
                   ? "hsl(var(--success))"
-                  : "hsl(var(--warning, 38 92% 50%))",
+                  : "hsl(var(--primary))",
               }}
             />
           </div>
