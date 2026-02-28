@@ -137,9 +137,27 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
 
   const SHARE_LINK = "https://mampflogger.de";
 
+  const formatIngredientForShare = (ing: RecipeIngredient) => {
+    const base = `${ing.amount ? ing.amount + " " : ""}${ing.name}`;
+    const parsed = extractNumber(ing.amount);
+    if (!parsed) return base;
+
+    const val = parseFloat(parsed.num.replace(",", "."));
+    if (!Number.isFinite(val) || val <= 0) return base;
+
+    const ingNameLower = ing.name.toLowerCase();
+    const food = foodDatabase.find((f) => f.name.toLowerCase() === ingNameLower)
+      || foodDatabase.find((f) => ingNameLower.includes(f.name.toLowerCase()) || f.name.toLowerCase().includes(ingNameLower));
+
+    if (!food || !food.baseAmount) return base;
+
+    const kcal = Math.round((food.calories / food.baseAmount) * val);
+    return `${base} (${kcal} kcal)`;
+  };
+
   const buildRecipeShareBody = (recipe: SavedRecipe) => {
     const ingredientsList = recipe.ingredients
-      .map((ing) => `${ing.amount ? ing.amount + " " : ""}${ing.name}`)
+      .map((ing) => formatIngredientForShare(ing))
       .join("\n");
     const stepsList = recipe.steps.map((s, i) => `${i + 1}. ${s.replace(/^\d+\.\s*/, "")}`).join("\n");
     const ps = recipe.perServing;
@@ -168,12 +186,15 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
   };
 
   const buildWhatsAppShareText = (recipe: SavedRecipe) => {
+    const previewLink = `${SHARE_LINK}?share=${encodeURIComponent(recipe.id)}`;
+
     return [
-      SHARE_LINK,
+      previewLink,
       ``,
       buildRecipeShareBody(recipe),
       ``,
       `Erstellt mit der *kostenlosen* Ernährungs-App`,
+      `mampflogger.de`,
     ].join("\n");
   };
 
@@ -236,12 +257,10 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
     const text = buildWhatsAppShareText(recipe);
     const subject = "Ein Lieblingsrezept für dich";
 
-    if (recipe.photoUrl) {
-      const nativeResult = await tryNativeShare(recipe, subject, text);
-      if (nativeResult === "shared" || nativeResult === "cancelled") return;
-    }
+    const nativeResult = await tryNativeShare(recipe, subject, text);
+    if (nativeResult === "shared" || nativeResult === "cancelled") return;
 
-    const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
+    const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`;
     window.location.href = url;
   };
 
