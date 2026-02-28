@@ -526,8 +526,8 @@ const RecipeGenerator = ({
                           </>
                         ) : (
                           <>
-                            <span className="inline-block w-[5ch] shrink-0"></span>
-                            <span className="inline-block w-[3ch] shrink-0 ml-px"></span>
+                            <span className="inline-block w-[5ch] shrink-0 font-mono text-[10px]"></span>
+                            <span className="inline-block w-[3ch] shrink-0 font-mono text-[10px] ml-px"></span>
                             <span className="ml-1">
                               {ing.name}{ing.isMain ? " ⭐" : ""}
                               {ing.amount ? <span className="text-muted-foreground italic text-[10px]"> {ing.amount}</span> : ""}
