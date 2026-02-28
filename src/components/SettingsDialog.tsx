@@ -14,8 +14,9 @@ import { Label } from "@/components/ui/label";
 import {
   Settings, Sun, Moon, Trash2, Upload, Download, UserCircle, Save, Check,
   AlertCircle, FileSpreadsheet, UtensilsCrossed, Palette, BarChart3, FileUp,
-  ChevronLeft, ChevronRight, RefreshCw, List, Sparkles, Loader2, HardDrive, BookOpen, Search,
+  ChevronLeft, ChevronRight, RefreshCw, List, Sparkles, Loader2, HardDrive, BookOpen, Search, Mic, MicOff,
 } from "lucide-react";
+import { useSpeechRecognition } from "@/hooks/useSpeechRecognition";
 import CookIcon from "@/components/CookIcon";
 import { supabase } from "@/integrations/supabase/client";
 import { UserProfile, calculateBMR } from "@/types/profile";
@@ -143,6 +144,14 @@ const SettingsDialog = ({
 
   // Food list state
   const [foodSearch, setFoodSearch] = useState("");
+  const foodSearchSpeech = useSpeechRecognition({
+    onResult: (transcript, isInterim) => {
+      if (!isInterim) {
+        setFoodSearch(transcript);
+      }
+    },
+    lang: "de-DE",
+  });
   const [editingFood, setEditingFood] = useState<FoodItem | null>(null);
   const [editFoodName, setEditFoodName] = useState("");
   const [editFoodUnit, setEditFoodUnit] = useState("");
@@ -927,16 +936,39 @@ const SettingsDialog = ({
                       </label>
                     ))}
                   </div>
-                  <div className="relative mb-5">
-                    <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground pointer-events-none" />
-                    <Input
-                      placeholder="Lebensmittel suchen..."
-                      value={foodSearch}
-                      onChange={(e) => setFoodSearch(e.target.value)}
-                      className="h-9 text-xs pl-8"
-                      autoCorrect="off"
-                      spellCheck={false}
-                    />
+                  <div className="relative mb-5 flex items-center gap-1.5">
+                    <div className="relative flex-1">
+                      <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground pointer-events-none" />
+                      <Input
+                        placeholder="Lebensmittel suchen..."
+                        value={foodSearch}
+                        onChange={(e) => setFoodSearch(e.target.value)}
+                        className="h-9 text-xs pl-8"
+                        autoCorrect="off"
+                        spellCheck={false}
+                      />
+                    </div>
+                    {foodSearchSpeech.isSupported && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (foodSearchSpeech.isListening) {
+                            foodSearchSpeech.stop();
+                          } else {
+                            setFoodSearch("");
+                            foodSearchSpeech.start();
+                          }
+                        }}
+                        className={`p-2 rounded-md transition-colors shrink-0 ${
+                          foodSearchSpeech.isListening
+                            ? "bg-destructive/15 text-destructive animate-pulse"
+                            : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                        }`}
+                        title={foodSearchSpeech.isListening ? "Stoppen" : "Spracheingabe"}
+                      >
+                        {foodSearchSpeech.isListening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
+                      </button>
+                    )}
                   </div>
                 </div>
                 {/* Scrollable table with sticky header */}
