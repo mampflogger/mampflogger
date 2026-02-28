@@ -176,12 +176,14 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
     ].join("\n");
   };
 
+  const EMAIL_SUBJECT = "🍽️ Ein Lieblingsrezept für dich";
+  const APP_SIGNATURE = "Erstellt mit der *kostenlosen* Ernährungs-App · mampflogger.de";
+
   const buildShareText = (recipe: SavedRecipe) => {
     return [
       buildRecipeShareBody(recipe),
       ``,
-      `Erstellt mit der *kostenlosen* Ernährungs-App`,
-      SHARE_LINK,
+      APP_SIGNATURE,
     ].join("\n");
   };
 
@@ -193,19 +195,8 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
       ``,
       buildRecipeShareBody(recipe),
       ``,
-      `Erstellt mit der *kostenlosen* Ernährungs-App`,
-      `mampflogger.de`,
+      APP_SIGNATURE,
     ].join("\n");
-  };
-
-  const dataUrlToFile = async (dataUrl: string, fileName: string): Promise<File | null> => {
-    try {
-      const res = await fetch(dataUrl);
-      const blob = await res.blob();
-      return new File([blob], fileName, { type: blob.type || "image/jpeg" });
-    } catch {
-      return null;
-    }
   };
 
   const openEmailComposer = (subject: string, body: string) => {
@@ -213,53 +204,13 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
     window.location.href = mailtoUrl;
   };
 
-  const tryNativeShare = async (
-    recipe: SavedRecipe,
-    subject: string,
-    text: string
-  ): Promise<"shared" | "cancelled" | "failed"> => {
-    if (!navigator.share) return "failed";
-
-    try {
-      if (recipe.photoUrl) {
-        const file = await dataUrlToFile(recipe.photoUrl, `${recipe.name.replace(/\s+/g, "_")}.jpg`);
-        if (file && navigator.canShare?.({ files: [file] })) {
-          try {
-            await navigator.share({ title: subject, text, files: [file] });
-            return "shared";
-          } catch (imgErr: any) {
-            if (imgErr?.name === "AbortError") return "cancelled";
-            console.warn("Share with image failed, falling back to text:", imgErr);
-          }
-        }
-      }
-
-      await navigator.share({ title: subject, text });
-      return "shared";
-    } catch (e: any) {
-      if (e?.name === "AbortError") return "cancelled";
-      console.error("Share failed:", e);
-      return "failed";
-    }
-  };
-
-  const handleShare = async (recipe: SavedRecipe) => {
+  const handleShare = (recipe: SavedRecipe) => {
     const text = buildShareText(recipe);
-    const subject = "Ein Lieblingsrezept für dich";
-
-    const nativeResult = await tryNativeShare(recipe, subject, text);
-    if (nativeResult === "shared" || nativeResult === "cancelled") return;
-
-    openEmailComposer(subject, text);
+    openEmailComposer(EMAIL_SUBJECT, text);
   };
 
-  const handleWhatsAppShare = async (recipe: SavedRecipe) => {
+  const handleWhatsAppShare = (recipe: SavedRecipe) => {
     const text = buildWhatsAppShareText(recipe);
-    const subject = "Ein Lieblingsrezept für dich";
-
-    const nativeResult = await tryNativeShare(recipe, subject, text);
-    if (nativeResult === "shared" || nativeResult === "cancelled") return;
-
     const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`;
     window.location.href = url;
   };
