@@ -509,19 +509,30 @@ const RecipeGenerator = ({
                       </span>
                     ) : (
                       <>
-                        <span className="inline-block w-[5ch] text-right font-medium shrink-0 font-mono text-[10px]">
-                          {parsed ? parsed.num : ""}
-                        </span>
-                        <span className="inline-block w-[3ch] text-left shrink-0 font-mono text-[10px] ml-px">
-                          {parsed ? ` ${parsed.rest}` : ""}
-                        </span>
-                        <span className="ml-1">
-                          {!parsed && ing.amount ? <span className="text-muted-foreground italic text-[10px]">{ing.amount} </span> : ""}
-                          {ing.name}{ing.isMain ? " ⭐" : ""}
-                          {ingKcal !== null && (
-                            <span className="font-medium text-muted-foreground"> ({ingKcal} kcal)</span>
-                          )}
-                        </span>
+                        {parsed ? (
+                          <>
+                            <span className="inline-block w-[5ch] text-right font-medium shrink-0 font-mono text-[10px]">
+                              {parsed.num}
+                            </span>
+                            <span className="inline-block w-[3ch] text-left shrink-0 font-mono text-[10px] ml-px">
+                              {` ${parsed.rest}`}
+                            </span>
+                            <span className="ml-1">
+                              {ing.name}{ing.isMain ? " ⭐" : ""}
+                              {ingKcal !== null && (
+                                <span className="font-medium text-muted-foreground"> ({ingKcal} kcal)</span>
+                              )}
+                            </span>
+                          </>
+                        ) : (
+                          <span className="ml-[calc(5ch+3ch+2px+0.25rem)]">
+                            {ing.name}{ing.isMain ? " ⭐" : ""}
+                            {ing.amount ? <span className="text-muted-foreground italic text-[10px]"> {ing.amount}</span> : ""}
+                            {ingKcal !== null && (
+                              <span className="font-medium text-muted-foreground"> ({ingKcal} kcal)</span>
+                            )}
+                          </span>
+                        )}
                       </>
                     )}
                   </li>

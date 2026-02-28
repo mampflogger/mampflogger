@@ -811,8 +811,8 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
                                     </>
                                   ) : (
                                     <span className="ml-[calc(5ch+3ch+2px+0.25rem)]">
-                                      {ing.amount ? <span className="text-muted-foreground italic text-[10px]">{ing.amount} </span> : ""}
                                       {ing.name}{ing.isMain ? " ⭐" : ""}
+                                      {ing.amount ? <span className="text-muted-foreground italic text-[10px]"> {ing.amount}</span> : ""}
                                       {ingKcal !== null && (
                                         <span className="font-medium text-muted-foreground"> ({ingKcal} kcal)</span>
                                       )}
