@@ -61,11 +61,11 @@ const LearnMore = () => {
             </div>
             <span className="text-lg font-bold tracking-tight">MampfLogger</span>
           </div>
-          <div className="flex items-center gap-2">
-            <Button size="sm" variant="outline" onClick={() => navigate("/")}>
+          <div className="flex items-center gap-1.5">
+            <Button size="sm" variant="outline" className="px-2.5 text-xs" onClick={() => navigate("/")}>
               Learn more
             </Button>
-            <Button size="sm" onClick={() => navigate("/app")}>
+            <Button size="sm" className="px-2.5 text-xs" onClick={() => navigate("/app")}>
               App öffnen
             </Button>
           </div>
