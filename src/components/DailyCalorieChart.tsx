@@ -32,10 +32,14 @@ const DailyCalorieChart = ({ entries }: DailyCalorieChartProps) => {
     return buckets;
   }, [entries]);
 
+  const maxVal = Math.max(...data.map((d) => d.kcal), 0);
+  const yMax = maxVal > 1000 ? 1500 : 1000;
+  const yTicks = maxVal > 1000 ? [0, 500, 1000, 1500] : [0, 250, 500, 750, 1000];
+
   return (
     <div className="h-[140px] w-full">
       <ResponsiveContainer width="100%" height="100%">
-        <BarChart data={data} margin={{ top: 4, right: 4, bottom: 0, left: -10 }}>
+        <BarChart data={data} margin={{ top: 4, right: 4, bottom: 0, left: -4 }}>
           <XAxis
             dataKey="label"
             tick={{ fontSize: 8, fill: "hsl(var(--muted-foreground))" }}
@@ -47,13 +51,13 @@ const DailyCalorieChart = ({ entries }: DailyCalorieChartProps) => {
             tick={{ fontSize: 8, fill: "hsl(var(--muted-foreground))" }}
             tickLine={false}
             axisLine={false}
-            width={35}
-            ticks={[0, 500, 1000, 1500]}
-            domain={[0, 1500]}
+            width={38}
+            ticks={yTicks}
+            domain={[0, yMax]}
           />
-          <ReferenceLine y={500} stroke="hsl(var(--border))" strokeDasharray="3 3" />
-          <ReferenceLine y={1000} stroke="hsl(var(--border))" strokeDasharray="3 3" />
-          <ReferenceLine y={1500} stroke="hsl(var(--border))" strokeDasharray="3 3" />
+          {yTicks.filter((t) => t > 0).map((t) => (
+            <ReferenceLine key={t} y={t} stroke="hsl(var(--border))" strokeDasharray="3 3" />
+          ))}
           <Tooltip
             cursor={false}
             content={({ active, payload }) => {
