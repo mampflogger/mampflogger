@@ -27,7 +27,7 @@ const FastingAnalysis = ({ entries, allEntries, selectedDate }: Props) => {
   }, [selectedDate]);
 
   const yesterdayEntries = useMemo(
-    () => allEntries.filter((e) => e.date === yesterdayDate),
+    () => (allEntries ?? []).filter((e) => e.date === yesterdayDate),
     [allEntries, yesterdayDate]
   );
 
