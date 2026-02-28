@@ -75,40 +75,30 @@ const FastingAnalysis = ({ entries }: Props) => {
     return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
   };
 
-  // Ticks to show: 0, 6, 12, 18, 24
-  const ticks = [0, 6, 12, 18, 24];
+  const ticks = [0, 3, 6, 9, 12, 15, 18, 21];
 
   return (
     <div className="relative">
-      {/* Timeline bar */}
-      <div className="flex gap-[1px] mb-1">
+      {/* Timeline bar + labels */}
+      <div className="flex gap-[1px]">
         {fastingHours.map((isFasting, hour) => (
-          <div
-            key={hour}
-            className={`h-5 flex-1 rounded-[2px] transition-colors ${
-              isFasting ? "bg-primary/80" : "bg-muted"
-            }`}
-            title={`${String(hour).padStart(2, "0")}:00 – ${isFasting ? "Fasten" : "Nahrung"}`}
-          />
-        ))}
-      </div>
-
-      {/* Hour labels */}
-      <div className="relative h-3 mb-1">
-        {ticks.map((t) => (
-          <span
-            key={t}
-            className="absolute text-[9px] text-muted-foreground -translate-x-1/2"
-            style={{ left: `${(t / 24) * 100}%` }}
-          >
-            {t}
-          </span>
+          <div key={hour} className="flex-1 flex flex-col items-center">
+            <div
+              className={`w-full h-5 rounded-[2px] transition-colors ${
+                isFasting ? "bg-primary/80" : "bg-muted"
+              }`}
+              title={`${String(hour).padStart(2, "0")}:00 – ${isFasting ? "Fasten" : "Nahrung"}`}
+            />
+            {ticks.includes(hour) && (
+              <span className="text-[9px] text-muted-foreground mt-0.5 leading-none">{hour}</span>
+            )}
+          </div>
         ))}
       </div>
 
       {/* Longest fast info */}
       {longestFast && (
-        <p className="text-[11px] text-muted-foreground text-right mt-1">
+        <p className="text-[11px] text-muted-foreground text-left mt-1.5">
           Fastenzeit{" "}
           <span className="font-semibold text-foreground">
             {longestFast.hours > 0 && `${longestFast.hours} Std `}
