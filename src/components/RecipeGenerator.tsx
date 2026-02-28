@@ -487,16 +487,15 @@ const RecipeGenerator = ({
                 }
 
                 return (
-                  <li key={i} className="text-[11px] text-foreground flex items-center gap-1.5">
+                  <li key={i} className="text-[11px] text-foreground flex items-baseline gap-0">
                     {isEditing && (
                       <button
                         onClick={() => handleDeleteIngredient(i)}
-                        className="p-0.5 rounded text-muted-foreground hover:text-destructive transition-colors shrink-0"
+                        className="p-0.5 rounded text-muted-foreground hover:text-destructive transition-colors shrink-0 mr-1"
                       >
                         <Trash2 className="w-3 h-3" />
                       </button>
                     )}
-                    <span className="shrink-0">{ing.isMain ? "⭐" : "•"}</span>
                     {isEditing && hasNumber ? (
                       <span className="flex items-center gap-1">
                         <Input
@@ -509,13 +508,21 @@ const RecipeGenerator = ({
                         <span>{parsed!.rest} {ing.name}</span>
                       </span>
                     ) : (
-                      <span>
-                        {ing.amount && <span className="font-medium">{ing.amount}</span>}
-                        {ing.amount ? " " : ""}{ing.name}
-                        {ingKcal !== null && (
-                          <span className="font-medium text-muted-foreground"> ({ingKcal} kcal)</span>
-                        )}
-                      </span>
+                      <>
+                        <span className="inline-block w-[5ch] text-right font-medium shrink-0 font-mono text-[10px]">
+                          {parsed ? parsed.num : ""}
+                        </span>
+                        <span className="inline-block w-[3ch] text-left shrink-0 font-mono text-[10px] ml-px">
+                          {parsed ? ` ${parsed.rest}` : ""}
+                        </span>
+                        <span className="ml-1">
+                          {!parsed && ing.amount ? <span className="text-muted-foreground italic text-[10px]">{ing.amount} </span> : ""}
+                          {ing.name}{ing.isMain ? " ⭐" : ""}
+                          {ingKcal !== null && (
+                            <span className="font-medium text-muted-foreground"> ({ingKcal} kcal)</span>
+                          )}
+                        </span>
+                      </>
                     )}
                   </li>
                 );
