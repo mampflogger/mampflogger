@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { FoodItem, searchFood, addFoodItem, trackFoodUsage, getFoodUsageCount, guessCategory } from "@/data/foodDatabase";
 import { useSpeechRecognition } from "@/hooks/useSpeechRecognition";
 import { Mic, MicOff } from "lucide-react";
+import { toast } from "sonner";
 
 type FocusedField = "food" | "amount" | "submit" | null;
 
@@ -103,6 +104,13 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
         }
       }
     // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []),
+    onError: useCallback((error: string) => {
+      if (error === "not-allowed" || error === "service-not-allowed") {
+        toast.error("Mikrofon blockiert – bitte Browser-Zugriff für Mikrofon erlauben.");
+      } else if (error === "not-supported") {
+        toast.error("Spracherkennung wird auf diesem Gerät/Browser nicht unterstützt.");
+      }
     }, []),
   });
 

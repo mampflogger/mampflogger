@@ -145,8 +145,15 @@ const SettingsDialog = ({
   // Food list state
   const [foodSearch, setFoodSearch] = useState("");
   const foodSearchSpeech = useSpeechRecognition({
-    onResult: (transcript, isInterim) => {
+    onResult: (transcript) => {
       setFoodSearch(transcript);
+    },
+    onError: (error) => {
+      if (error === "not-allowed" || error === "service-not-allowed") {
+        toast.error("Mikrofon blockiert – bitte Browser-Zugriff für Mikrofon erlauben.");
+      } else if (error === "not-supported") {
+        toast.error("Spracherkennung wird auf diesem Gerät/Browser nicht unterstützt.");
+      }
     },
     lang: "de-DE",
   });
