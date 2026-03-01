@@ -146,9 +146,7 @@ const SettingsDialog = ({
   const [foodSearch, setFoodSearch] = useState("");
   const foodSearchSpeech = useSpeechRecognition({
     onResult: (transcript, isInterim) => {
-      if (!isInterim) {
-        setFoodSearch(transcript);
-      }
+      setFoodSearch(transcript);
     },
     lang: "de-DE",
   });
