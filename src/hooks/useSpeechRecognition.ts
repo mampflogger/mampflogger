@@ -22,6 +22,7 @@ interface SpeechRecognitionLike {
 type SpeechRecognitionConstructor = new () => SpeechRecognitionLike;
 
 const TERMINAL_ERRORS = new Set(["not-allowed", "service-not-allowed", "audio-capture"]);
+const NON_ACTIONABLE_ERRORS = new Set(["no-speech", "aborted"]);
 
 const getSpeechRecognition = (): SpeechRecognitionConstructor | null => {
   if (typeof window === "undefined") return null;
@@ -34,7 +35,6 @@ export function useSpeechRecognition({ onResult, onEnd, onError, lang = "de-DE" 
   const recognitionRef = useRef<SpeechRecognitionLike | null>(null);
   const processedIndexRef = useRef(0);
   const keepAliveRef = useRef(false);
-  const restartTimeoutRef = useRef<number | null>(null);
 
   const onResultRef = useRef(onResult);
   const onEndRef = useRef(onEnd);
@@ -46,16 +46,9 @@ export function useSpeechRecognition({ onResult, onEnd, onError, lang = "de-DE" 
 
   const isSupported = !!getSpeechRecognition();
 
-  const clearRestartTimeout = useCallback(() => {
-    if (restartTimeoutRef.current !== null) {
-      window.clearTimeout(restartTimeoutRef.current);
-      restartTimeoutRef.current = null;
-    }
-  }, []);
+  const initRecognition = useCallback(() => {
+    if (recognitionRef.current) return recognitionRef.current;
 
-  const startRecognitionRef = useRef<() => void>(() => {});
-
-  const startRecognition = useCallback(() => {
     const SR = getSpeechRecognition();
     if (!SR) {
       throw new Error("not-supported");
@@ -89,18 +82,20 @@ export function useSpeechRecognition({ onResult, onEnd, onError, lang = "de-DE" 
 
     recognition.onerror = (event) => {
       console.warn("[Speech] error:", event.error);
+
+      if (NON_ACTIONABLE_ERRORS.has(event.error)) {
+        return;
+      }
+
       onErrorRef.current?.(event.error);
 
       if (TERMINAL_ERRORS.has(event.error)) {
         keepAliveRef.current = false;
-        clearRestartTimeout();
         setIsListening(false);
       }
     };
 
     recognition.onend = () => {
-      recognitionRef.current = null;
-
       if (!keepAliveRef.current) {
         setIsListening(false);
         onEndRef.current?.();
@@ -108,26 +103,21 @@ export function useSpeechRecognition({ onResult, onEnd, onError, lang = "de-DE" 
       }
 
       processedIndexRef.current = 0;
-      clearRestartTimeout();
-      restartTimeoutRef.current = window.setTimeout(() => {
-        if (!keepAliveRef.current || recognitionRef.current) return;
-        try {
-          startRecognitionRef.current();
-        } catch (err) {
-          console.warn("[Speech] restart failed:", err);
-          keepAliveRef.current = false;
-          setIsListening(false);
-          onErrorRef.current?.("start-failed");
-        }
-      }, 250);
+
+      try {
+        recognition.start();
+      } catch (err) {
+        console.warn("[Speech] restart failed:", err);
+        keepAliveRef.current = false;
+        setIsListening(false);
+        onErrorRef.current?.("restart-requires-gesture");
+        onEndRef.current?.();
+      }
     };
 
     recognitionRef.current = recognition;
-    processedIndexRef.current = 0;
-    recognition.start();
-  }, [clearRestartTimeout, lang]);
-
-  startRecognitionRef.current = startRecognition;
+    return recognition;
+  }, [lang]);
 
   const start = useCallback(() => {
     if (!isSupported) {
@@ -139,40 +129,40 @@ export function useSpeechRecognition({ onResult, onEnd, onError, lang = "de-DE" 
 
     keepAliveRef.current = true;
     setIsListening(true);
-    clearRestartTimeout();
 
     try {
-      startRecognitionRef.current();
+      const recognition = initRecognition();
+      recognition.lang = lang;
+      processedIndexRef.current = 0;
+      recognition.start();
     } catch (err) {
       console.warn("[Speech] start failed:", err);
       keepAliveRef.current = false;
-      recognitionRef.current = null;
       setIsListening(false);
       onErrorRef.current?.("start-failed");
     }
-  }, [clearRestartTimeout, isSupported]);
+  }, [initRecognition, isSupported, lang]);
 
   const stop = useCallback(() => {
     keepAliveRef.current = false;
-    clearRestartTimeout();
+    processedIndexRef.current = 0;
 
     if (recognitionRef.current) {
-      const current = recognitionRef.current;
-      recognitionRef.current = null;
       try {
-        current.stop();
+        recognitionRef.current.stop();
       } catch {
         // ignore
       }
     }
 
     setIsListening(false);
-  }, [clearRestartTimeout]);
+  }, []);
 
   useEffect(() => {
     return () => {
       keepAliveRef.current = false;
-      clearRestartTimeout();
+      processedIndexRef.current = 0;
+
       if (recognitionRef.current) {
         try {
           recognitionRef.current.stop();
@@ -182,7 +172,8 @@ export function useSpeechRecognition({ onResult, onEnd, onError, lang = "de-DE" 
         recognitionRef.current = null;
       }
     };
-  }, [clearRestartTimeout]);
+  }, []);
 
   return { isListening, start, stop, isSupported };
 }
+

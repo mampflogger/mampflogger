@@ -112,6 +112,8 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
         toast.error("Spracherkennung wird auf diesem Gerät/Browser nicht unterstützt.");
       } else if (error === "audio-capture") {
         toast.error("Kein Mikrofon erkannt – bitte Mikrofon prüfen und erneut versuchen.");
+      } else if (error === "restart-requires-gesture") {
+        toast.error("Mikrofon pausiert – bitte erneut auf das Mic tippen.");
       } else if (error === "start-failed") {
         toast.error("Mikrofon konnte nicht gestartet werden – bitte erneut tippen.");
       }
