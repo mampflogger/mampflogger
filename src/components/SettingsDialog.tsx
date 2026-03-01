@@ -153,6 +153,10 @@ const SettingsDialog = ({
         toast.error("Mikrofon blockiert – bitte Browser-Zugriff für Mikrofon erlauben.");
       } else if (error === "not-supported") {
         toast.error("Spracherkennung wird auf diesem Gerät/Browser nicht unterstützt.");
+      } else if (error === "audio-capture") {
+        toast.error("Kein Mikrofon erkannt – bitte Mikrofon prüfen und erneut versuchen.");
+      } else if (error === "start-failed") {
+        toast.error("Mikrofon konnte nicht gestartet werden – bitte erneut tippen.");
       }
     },
     lang: "de-DE",
