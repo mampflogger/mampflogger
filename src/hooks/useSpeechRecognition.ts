@@ -7,28 +7,59 @@ interface UseSpeechRecognitionOptions {
   lang?: string;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const getSpeechRecognition = (): any | null => {
+interface SpeechRecognitionLike {
+  lang: string;
+  interimResults: boolean;
+  maxAlternatives: number;
+  continuous: boolean;
+  onresult: ((event: { resultIndex?: number; results: SpeechRecognitionResultList }) => void) | null;
+  onend: (() => void) | null;
+  onerror: ((event: { error: string }) => void) | null;
+  start: () => void;
+  stop: () => void;
+}
+
+type SpeechRecognitionConstructor = new () => SpeechRecognitionLike;
+
+const TERMINAL_ERRORS = new Set(["not-allowed", "service-not-allowed", "audio-capture"]);
+
+const getSpeechRecognition = (): SpeechRecognitionConstructor | null => {
   if (typeof window === "undefined") return null;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition || null;
+  return ((window as any).SpeechRecognition || (window as any).webkitSpeechRecognition || null) as SpeechRecognitionConstructor | null;
 };
 
 export function useSpeechRecognition({ onResult, onEnd, onError, lang = "de-DE" }: UseSpeechRecognitionOptions) {
   const [isListening, setIsListening] = useState(false);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const recognitionRef = useRef<any>(null);
+  const recognitionRef = useRef<SpeechRecognitionLike | null>(null);
   const processedIndexRef = useRef(0);
+  const keepAliveRef = useRef(false);
+  const restartTimeoutRef = useRef<number | null>(null);
+
+  const onResultRef = useRef(onResult);
+  const onEndRef = useRef(onEnd);
+  const onErrorRef = useRef(onError);
+
+  onResultRef.current = onResult;
+  onEndRef.current = onEnd;
+  onErrorRef.current = onError;
 
   const isSupported = !!getSpeechRecognition();
 
-  const start = useCallback(() => {
+  const clearRestartTimeout = useCallback(() => {
+    if (restartTimeoutRef.current !== null) {
+      window.clearTimeout(restartTimeoutRef.current);
+      restartTimeoutRef.current = null;
+    }
+  }, []);
+
+  const startRecognitionRef = useRef<() => void>(() => {});
+
+  const startRecognition = useCallback(() => {
     const SR = getSpeechRecognition();
     if (!SR) {
-      onError?.("not-supported");
-      return;
+      throw new Error("not-supported");
     }
-    if (recognitionRef.current?._keepAlive || isListening) return;
 
     const recognition = new SR();
     recognition.lang = lang;
@@ -36,8 +67,9 @@ export function useSpeechRecognition({ onResult, onEnd, onError, lang = "de-DE" 
     recognition.maxAlternatives = 3;
     recognition.continuous = true;
 
-    recognition.onresult = (event: { results: SpeechRecognitionResultList }) => {
-      for (let i = processedIndexRef.current; i < event.results.length; i++) {
+    recognition.onresult = (event) => {
+      const startIndex = typeof event.resultIndex === "number" ? event.resultIndex : processedIndexRef.current;
+      for (let i = startIndex; i < event.results.length; i++) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const result = (event.results as any)[i];
         if (result.isFinal) {
@@ -47,72 +79,101 @@ export function useSpeechRecognition({ onResult, onEnd, onError, lang = "de-DE" 
             if (alt.length > best.length) best = alt;
           }
           processedIndexRef.current = i + 1;
-          onResult(best, false);
+          onResultRef.current(best, false);
         } else {
           const interim = result[0].transcript.trim();
-          if (interim) onResult(interim, true);
+          if (interim) onResultRef.current(interim, true);
         }
       }
     };
 
-    recognition.onend = () => {
-      if (recognitionRef.current && recognitionRef.current._keepAlive) {
-        processedIndexRef.current = 0;
-        try {
-          recognition.start();
-          return;
-        } catch {
-          recognitionRef.current._keepAlive = false;
-        }
-      }
-      recognitionRef.current = null;
-      setIsListening(false);
-      onEnd?.();
-    };
-
-    recognition.onerror = (event: { error: string }) => {
+    recognition.onerror = (event) => {
       console.warn("[Speech] error:", event.error);
-      onError?.(event.error);
-      if (event.error === "not-allowed" || event.error === "service-not-allowed") {
-        if (recognitionRef.current) recognitionRef.current._keepAlive = false;
-        recognitionRef.current = null;
+      onErrorRef.current?.(event.error);
+
+      if (TERMINAL_ERRORS.has(event.error)) {
+        keepAliveRef.current = false;
+        clearRestartTimeout();
         setIsListening(false);
       }
     };
 
+    recognition.onend = () => {
+      recognitionRef.current = null;
+
+      if (!keepAliveRef.current) {
+        setIsListening(false);
+        onEndRef.current?.();
+        return;
+      }
+
+      processedIndexRef.current = 0;
+      clearRestartTimeout();
+      restartTimeoutRef.current = window.setTimeout(() => {
+        if (!keepAliveRef.current || recognitionRef.current) return;
+        try {
+          startRecognitionRef.current();
+        } catch (err) {
+          console.warn("[Speech] restart failed:", err);
+          keepAliveRef.current = false;
+          setIsListening(false);
+          onErrorRef.current?.("start-failed");
+        }
+      }, 250);
+    };
+
     recognitionRef.current = recognition;
-    recognition._keepAlive = true;
     processedIndexRef.current = 0;
+    recognition.start();
+  }, [clearRestartTimeout, lang]);
+
+  startRecognitionRef.current = startRecognition;
+
+  const start = useCallback(() => {
+    if (!isSupported) {
+      onErrorRef.current?.("not-supported");
+      return;
+    }
+
+    if (keepAliveRef.current) return;
+
+    keepAliveRef.current = true;
+    setIsListening(true);
+    clearRestartTimeout();
 
     try {
-      recognition.start();
-      setIsListening(true);
+      startRecognitionRef.current();
     } catch (err) {
       console.warn("[Speech] start failed:", err);
-      onError?.("start-failed");
-      recognition._keepAlive = false;
+      keepAliveRef.current = false;
       recognitionRef.current = null;
       setIsListening(false);
+      onErrorRef.current?.("start-failed");
     }
-  }, [isListening, lang, onResult, onEnd, onError]);
+  }, [clearRestartTimeout, isSupported]);
 
   const stop = useCallback(() => {
+    keepAliveRef.current = false;
+    clearRestartTimeout();
+
     if (recognitionRef.current) {
-      recognitionRef.current._keepAlive = false;
+      const current = recognitionRef.current;
+      recognitionRef.current = null;
       try {
-        recognitionRef.current.stop();
+        current.stop();
       } catch {
         // ignore
       }
-      recognitionRef.current = null;
     }
+
     setIsListening(false);
-  }, []);
+  }, [clearRestartTimeout]);
 
   useEffect(() => {
     return () => {
+      keepAliveRef.current = false;
+      clearRestartTimeout();
       if (recognitionRef.current) {
-        recognitionRef.current._keepAlive = false;
         try {
           recognitionRef.current.stop();
         } catch {
@@ -121,7 +182,7 @@ export function useSpeechRecognition({ onResult, onEnd, onError, lang = "de-DE" 
         recognitionRef.current = null;
       }
     };
-  }, []);
+  }, [clearRestartTimeout]);
 
   return { isListening, start, stop, isSupported };
 }
