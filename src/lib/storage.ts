@@ -21,7 +21,7 @@ export function loadEntries(): NutritionEntry[] {
         // Immer liquidMl anhand der aktuellen Lebensmittel-DB neu berechnen
         const food = db.find((f) => f.name.toLowerCase() === e.food.toLowerCase());
         if (food?.liquidMl && e.amount > 0) {
-          const base = food.defaultAmount || food.baseAmount;
+          const base = food.baseAmount;
           const factor = e.amount / base;
           const correctMl = Math.round(food.liquidMl * factor);
           if (e.liquidMl !== correctMl) {
