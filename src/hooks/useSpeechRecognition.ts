@@ -3,6 +3,7 @@ import { useState, useRef, useCallback, useEffect } from "react";
 interface UseSpeechRecognitionOptions {
   onResult: (transcript: string, isInterim: boolean) => void;
   onEnd?: () => void;
+  onError?: (error: string) => void;
   lang?: string;
 }
 
@@ -13,7 +14,7 @@ const getSpeechRecognition = (): any | null => {
   return (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition || null;
 };
 
-export function useSpeechRecognition({ onResult, onEnd, lang = "de-DE" }: UseSpeechRecognitionOptions) {
+export function useSpeechRecognition({ onResult, onEnd, onError, lang = "de-DE" }: UseSpeechRecognitionOptions) {
   const [isListening, setIsListening] = useState(false);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const recognitionRef = useRef<any>(null);
@@ -23,7 +24,10 @@ export function useSpeechRecognition({ onResult, onEnd, lang = "de-DE" }: UseSpe
 
   const start = useCallback(() => {
     const SR = getSpeechRecognition();
-    if (!SR) return;
+    if (!SR) {
+      onError?.("not-supported");
+      return;
+    }
     if (recognitionRef.current?._keepAlive || isListening) return;
 
     const recognition = new SR();
@@ -68,6 +72,7 @@ export function useSpeechRecognition({ onResult, onEnd, lang = "de-DE" }: UseSpe
 
     recognition.onerror = (event: { error: string }) => {
       console.warn("[Speech] error:", event.error);
+      onError?.(event.error);
       if (event.error === "not-allowed" || event.error === "service-not-allowed") {
         if (recognitionRef.current) recognitionRef.current._keepAlive = false;
         recognitionRef.current = null;
@@ -84,11 +89,12 @@ export function useSpeechRecognition({ onResult, onEnd, lang = "de-DE" }: UseSpe
       setIsListening(true);
     } catch (err) {
       console.warn("[Speech] start failed:", err);
+      onError?.("start-failed");
       recognition._keepAlive = false;
       recognitionRef.current = null;
       setIsListening(false);
     }
-  }, [isListening, lang, onResult, onEnd]);
+  }, [isListening, lang, onResult, onEnd, onError]);
 
   const stop = useCallback(() => {
     if (recognitionRef.current) {
