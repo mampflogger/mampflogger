@@ -845,7 +845,7 @@ const SettingsDialog = ({
                   <div className="grid grid-cols-5 gap-1.5">
                     <div className="col-span-4">
                       <Label className="text-[8px] text-muted-foreground leading-none block mb-0.5">Lebensmittel</Label>
-                      <Input value={editFoodName} onChange={(e) => setEditFoodName(e.target.value)} className="h-6 text-[6px] px-1 text-left" autoCorrect="off" spellCheck={false} />
+                      <Input value={editFoodName} onChange={(e) => setEditFoodName(e.target.value)} className="h-6 !text-[6px] px-1 text-left" autoCorrect="off" spellCheck={false} />
                     </div>
                     <div className="col-span-1">
                       <Label className="text-[8px] text-muted-foreground leading-none block mb-0.5">g/ml</Label>
@@ -857,23 +857,23 @@ const SettingsDialog = ({
                   <div className="grid grid-cols-5 gap-1.5">
                     <div>
                       <Label className="text-[8px] text-muted-foreground leading-none block mb-0.5">kcal</Label>
-                      <Input type="number" inputMode="decimal" value={editFoodCal} onChange={(e) => setEditFoodCal(e.target.value)} className="h-6 text-[6px] px-1 text-center" />
+                      <Input type="number" inputMode="decimal" value={editFoodCal} onChange={(e) => setEditFoodCal(e.target.value)} className="h-6 !text-[6px] px-1 text-center" />
                     </div>
                     <div>
                       <Label className="text-[8px] text-muted-foreground leading-none block mb-0.5">PRO</Label>
-                      <Input type="number" inputMode="decimal" value={editFoodPro} onChange={(e) => setEditFoodPro(e.target.value)} className="h-6 text-[6px] px-1 text-center" />
+                      <Input type="number" inputMode="decimal" value={editFoodPro} onChange={(e) => setEditFoodPro(e.target.value)} className="h-6 !text-[6px] px-1 text-center" />
                     </div>
                     <div>
                       <Label className="text-[8px] text-muted-foreground leading-none block mb-0.5">FAT</Label>
-                      <Input type="number" inputMode="decimal" value={editFoodFat} onChange={(e) => setEditFoodFat(e.target.value)} className="h-6 text-[6px] px-1 text-center" />
+                      <Input type="number" inputMode="decimal" value={editFoodFat} onChange={(e) => setEditFoodFat(e.target.value)} className="h-6 !text-[6px] px-1 text-center" />
                     </div>
                     <div>
                       <Label className="text-[8px] text-muted-foreground leading-none block mb-0.5">KH</Label>
-                      <Input type="number" inputMode="decimal" value={editFoodKh} onChange={(e) => setEditFoodKh(e.target.value)} className="h-6 text-[6px] px-1 text-center" />
+                      <Input type="number" inputMode="decimal" value={editFoodKh} onChange={(e) => setEditFoodKh(e.target.value)} className="h-6 !text-[6px] px-1 text-center" />
                     </div>
                     <div>
                       <Label className="text-[8px] text-muted-foreground leading-none block mb-0.5">FIB</Label>
-                      <Input type="number" inputMode="decimal" value={editFoodFib} onChange={(e) => setEditFoodFib(e.target.value)} className="h-6 text-[6px] px-1 text-center" />
+                      <Input type="number" inputMode="decimal" value={editFoodFib} onChange={(e) => setEditFoodFib(e.target.value)} className="h-6 !text-[6px] px-1 text-center" />
                     </div>
                   </div>
                   <div className="grid grid-cols-3 gap-1.5">
@@ -913,11 +913,11 @@ const SettingsDialog = ({
                     </div>
                     <div>
                       <Label className="text-[8px] text-muted-foreground leading-none block mb-0.5">Standardwert</Label>
-                      <Input type="number" inputMode="decimal" value={editFoodDefault} onChange={(e) => setEditFoodDefault(e.target.value)} placeholder="z.B. 125" className="h-6 text-[6px] px-1 text-center" />
+                      <Input type="number" inputMode="decimal" value={editFoodDefault} onChange={(e) => setEditFoodDefault(e.target.value)} placeholder="z.B. 125" className="h-6 !text-[6px] px-1 text-center" />
                     </div>
                     <div>
                       <Label className="text-[8px] text-muted-foreground leading-none block mb-0.5">Flüssigkeit (ml)</Label>
-                      <Input type="number" inputMode="decimal" value={editFoodLiquid} onChange={(e) => setEditFoodLiquid(e.target.value)} placeholder="z.B. 250" className="h-6 text-[6px] px-1 text-center" />
+                      <Input type="number" inputMode="decimal" value={editFoodLiquid} onChange={(e) => setEditFoodLiquid(e.target.value)} placeholder="z.B. 250" className="h-6 !text-[6px] px-1 text-center" />
                     </div>
                   </div>
                 </div>
@@ -973,7 +973,7 @@ const SettingsDialog = ({
                           inputMode="decimal"
                           value={editVitamins[key] !== undefined ? String(editVitamins[key]) : ""}
                           onChange={(e) => setEditVitamins(prev => ({ ...prev, [key]: e.target.value ? parseFloat(e.target.value) : undefined }))}
-                          className="h-6 text-[6px] px-1 text-center"
+                          className="h-6 !text-[6px] px-1 text-center"
                         />
                       </div>
                     ))}
@@ -1003,7 +1003,7 @@ const SettingsDialog = ({
                           inputMode="decimal"
                           value={editMinerals[key] !== undefined ? String(editMinerals[key]) : ""}
                           onChange={(e) => setEditMinerals(prev => ({ ...prev, [key]: e.target.value ? parseFloat(e.target.value) : undefined }))}
-                          className="h-6 text-[6px] px-1 text-center"
+                          className="h-6 !text-[6px] px-1 text-center"
                         />
                       </div>
                     ))}
@@ -1013,7 +1013,7 @@ const SettingsDialog = ({
                 {/* Zusatzinfo - ganz unten */}
                 <div>
                   <Label className="text-[8px] text-muted-foreground leading-none block mb-0.5">Zusatzinfo</Label>
-                  <Textarea value={editFoodNotes} onChange={(e) => { setEditFoodNotes(e.target.value); e.target.style.height = 'auto'; e.target.style.height = e.target.scrollHeight + 'px'; }} onFocus={(e) => { e.target.style.height = 'auto'; e.target.style.height = e.target.scrollHeight + 'px'; }} placeholder="z.B. vegan, Nutri Score, Haltungsform, Bio usw." className="min-h-[40px] text-[6px] px-1 py-1 leading-tight resize-none overflow-hidden" />
+                  <Textarea value={editFoodNotes} onChange={(e) => { setEditFoodNotes(e.target.value); e.target.style.height = 'auto'; e.target.style.height = e.target.scrollHeight + 'px'; }} onFocus={(e) => { e.target.style.height = 'auto'; e.target.style.height = e.target.scrollHeight + 'px'; }} placeholder="z.B. vegan, Nutri Score, Haltungsform, Bio usw." className="min-h-[40px] !text-[6px] px-1 py-1 leading-tight resize-none overflow-hidden" />
                 </div>
               </div>
             ) : (
