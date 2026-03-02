@@ -12,6 +12,7 @@ export const FOOD_CATEGORIES = [
   "Süßwaren",
   "Sonstiges",
   "Eigene",
+  "Fertiggerichte",
 ] as const;
 
 export type FoodCategory = typeof FOOD_CATEGORIES[number];
@@ -192,6 +193,7 @@ export function guessCategory(name: string, aiCategory?: string): FoodCategory {
     [["apfel", "birne", "banane", "orange", "zitrone", "limette", "kiwi", "mango", "ananas", "erdbeere", "himbeere", "blaubeere", "heidelbeere", "kirsche", "traube", "melone", "pflaume", "pfirsich", "aprikose", "obst", "beere"], "Obst"],
     [["joghurt", "quark", "milch", "sahne", "rahm", "skyr", "buttermilch", "kefir", "schmand", "crème fraîche", "molke"], "Milchprodukte"],
     [["schokolade", "gummibärchen", "bonbon", "keks", "kuchen", "eis", "zucker", "honig", "marmelade", "nutella", "süß"], "Süßwaren"],
+    [["tiefkühlpizza", "fertiggericht", "pizza tk", "lasagne tk", "tk-pizza", "mikrowelle", "fertig-", "convenience", "tk ", "tiefkühl"], "Fertiggerichte"],
   ];
   for (const [words, cat] of keywords) {
     if (words.some(w => lower.includes(w))) return cat;
@@ -552,6 +554,22 @@ export const DEFAULT_FOODS: FoodItem[] = [
   { name: "Kirschtomaten", baseUnit: "100g", baseAmount: 100, calories: 18, protein: 0.9, fat: 0.2, carbs: 2.6, fiber: 1.2, defaultAmount: 150 },
   { name: "Lachsfilet", baseUnit: "100g", baseAmount: 100, calories: 208, protein: 20, fat: 13, carbs: 0, fiber: 0, defaultAmount: 150 },
   { name: "Paprika gelb", baseUnit: "100g", baseAmount: 100, calories: 30, protein: 1, fat: 0.2, carbs: 6, fiber: 1.1, defaultAmount: 150 },
+  // --- Fertiggerichte ---
+  { name: "Tiefkühlpizza Margherita", baseUnit: "100g", baseAmount: 100, calories: 230, protein: 9, fat: 9, carbs: 28, fiber: 1.5, defaultAmount: 350, category: "Fertiggerichte" },
+  { name: "Tiefkühlpizza Salami", baseUnit: "100g", baseAmount: 100, calories: 260, protein: 10, fat: 12, carbs: 27, fiber: 1.5, defaultAmount: 350, category: "Fertiggerichte" },
+  { name: "Tiefkühlpizza Thunfisch", baseUnit: "100g", baseAmount: 100, calories: 235, protein: 11, fat: 8, carbs: 28, fiber: 1.5, defaultAmount: 350, category: "Fertiggerichte" },
+  { name: "Lasagne (Fertiggericht)", baseUnit: "100g", baseAmount: 100, calories: 140, protein: 7, fat: 6, carbs: 14, fiber: 1, defaultAmount: 400, category: "Fertiggerichte" },
+  { name: "Chicken Nuggets TK", baseUnit: "100g", baseAmount: 100, calories: 240, protein: 14, fat: 14, carbs: 16, fiber: 1, defaultAmount: 200, category: "Fertiggerichte" },
+  { name: "Fischstäbchen TK", baseUnit: "100g", baseAmount: 100, calories: 220, protein: 12, fat: 11, carbs: 18, fiber: 0.5, defaultAmount: 225, category: "Fertiggerichte" },
+  { name: "Pommes frites TK", baseUnit: "100g", baseAmount: 100, calories: 150, protein: 2, fat: 5, carbs: 24, fiber: 2, defaultAmount: 200, category: "Fertiggerichte" },
+  { name: "Ravioli (Dose)", baseUnit: "100g", baseAmount: 100, calories: 92, protein: 3.5, fat: 3, carbs: 12, fiber: 1, defaultAmount: 400, category: "Fertiggerichte" },
+  { name: "Currywurst mit Soße", baseUnit: "100g", baseAmount: 100, calories: 195, protein: 10, fat: 13, carbs: 9, fiber: 0.5, defaultAmount: 250, category: "Fertiggerichte" },
+  { name: "Frühlingsrollen TK", baseUnit: "100g", baseAmount: 100, calories: 195, protein: 5, fat: 9, carbs: 23, fiber: 1.5, defaultAmount: 150, category: "Fertiggerichte" },
+  { name: "Schnitzel paniert TK", baseUnit: "100g", baseAmount: 100, calories: 220, protein: 14, fat: 12, carbs: 14, fiber: 0.5, defaultAmount: 200, category: "Fertiggerichte" },
+  { name: "Tortellini (Kühlregal)", baseUnit: "100g", baseAmount: 100, calories: 250, protein: 10, fat: 8, carbs: 34, fiber: 1.5, defaultAmount: 250, category: "Fertiggerichte" },
+  { name: "Maultaschen", baseUnit: "100g", baseAmount: 100, calories: 195, protein: 9, fat: 8, carbs: 22, fiber: 1, defaultAmount: 300, category: "Fertiggerichte" },
+  { name: "Flammkuchen TK", baseUnit: "100g", baseAmount: 100, calories: 245, protein: 8, fat: 12, carbs: 26, fiber: 1, defaultAmount: 275, category: "Fertiggerichte" },
+  { name: "Gyoza TK", baseUnit: "100g", baseAmount: 100, calories: 185, protein: 7, fat: 6, carbs: 26, fiber: 1, defaultAmount: 200, category: "Fertiggerichte" },
 ];
 
 function loadFoodDatabase(): FoodItem[] {
