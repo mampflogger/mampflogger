@@ -797,7 +797,7 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
                                       <span className="inline-block w-[5ch] text-right font-medium shrink-0 font-mono text-[10px]">
                                         {parsed.num}
                                       </span>
-                                      <span className="inline-block w-[5ch] shrink-0 font-mono text-[10px] ml-px text-left">
+                                      <span className="inline-block w-[8ch] shrink-0 font-mono text-[10px] ml-px text-left">
                                         {` ${parsed.rest}`}
                                       </span>
                                       <span className="ml-1">
@@ -810,7 +810,7 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
                                   ) : (
                                     <>
                                       <span className="inline-block w-[5ch] shrink-0 font-mono text-[10px]"></span>
-                                      <span className="inline-block w-[5ch] shrink-0 font-mono text-[10px] ml-px"></span>
+                                      <span className="inline-block w-[8ch] shrink-0 font-mono text-[10px] ml-px"></span>
                                       <span className="ml-1">
                                         {ing.name}{ing.isMain ? " ⭐" : ""}
                                         {ing.amount ? <span className="text-muted-foreground italic text-[10px]"> {ing.amount}</span> : ""}
