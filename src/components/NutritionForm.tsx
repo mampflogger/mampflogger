@@ -153,8 +153,8 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
       if (isInterim) return;
 
       if (currentField === "food") {
-        // Ignore speech that arrives right after a booking command
-        if (justBookedRef.current) return;
+        // Ignore speech that arrives right after booking or is itself a booking command
+        if (justBookedRef.current || isBuchenCommand(transcript)) return;
 
         // Check for "Nummer X" / "Position X" command to pick from visible suggestions
         const pickIndex = parseVoicePickCommand(transcript);
