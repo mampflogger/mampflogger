@@ -841,47 +841,47 @@ const SettingsDialog = ({
                 </div>
                 {/* === BLOCK 1: Basis (Name, g/ml, Makros) === */}
                 <div className="space-y-0.5 rounded-lg border border-border p-1.5 pt-1 bg-card">
-                  <p className="text-[6px] font-semibold text-muted-foreground uppercase tracking-wide mb-0.5">Basis</p>
+                  <p className="text-[8px] font-semibold text-muted-foreground uppercase tracking-wide mb-0.5">Basis</p>
                   <div className="grid grid-cols-5 gap-1.5">
                     <div className="col-span-4">
-                      <Label className="text-[6px] text-muted-foreground leading-none block mb-0.5">Lebensmittel</Label>
+                      <Label className="text-[8px] text-muted-foreground leading-none block mb-0.5">Lebensmittel</Label>
                       <Input value={editFoodName} onChange={(e) => setEditFoodName(e.target.value)} className="h-6 text-[6px] px-1 text-left" autoCorrect="off" spellCheck={false} />
                     </div>
                     <div className="col-span-1">
-                      <Label className="text-[6px] text-muted-foreground leading-none block mb-0.5">g/ml</Label>
-                      <div className="h-6 flex items-center justify-center text-[6px] text-muted-foreground rounded-md border border-input bg-muted/30">
+                      <Label className="text-[8px] text-muted-foreground leading-none block mb-0.5">g/ml</Label>
+                      <div className="h-6 flex items-center justify-center text-[8px] text-muted-foreground rounded-md border border-input bg-muted/30">
                         100
                       </div>
                     </div>
                   </div>
                   <div className="grid grid-cols-5 gap-1.5">
                     <div>
-                      <Label className="text-[6px] text-muted-foreground leading-none block mb-0.5">kcal</Label>
+                      <Label className="text-[8px] text-muted-foreground leading-none block mb-0.5">kcal</Label>
                       <Input type="number" inputMode="decimal" value={editFoodCal} onChange={(e) => setEditFoodCal(e.target.value)} className="h-6 text-[6px] px-1 text-center" />
                     </div>
                     <div>
-                      <Label className="text-[6px] text-muted-foreground leading-none block mb-0.5">PRO</Label>
+                      <Label className="text-[8px] text-muted-foreground leading-none block mb-0.5">PRO</Label>
                       <Input type="number" inputMode="decimal" value={editFoodPro} onChange={(e) => setEditFoodPro(e.target.value)} className="h-6 text-[6px] px-1 text-center" />
                     </div>
                     <div>
-                      <Label className="text-[6px] text-muted-foreground leading-none block mb-0.5">FAT</Label>
+                      <Label className="text-[8px] text-muted-foreground leading-none block mb-0.5">FAT</Label>
                       <Input type="number" inputMode="decimal" value={editFoodFat} onChange={(e) => setEditFoodFat(e.target.value)} className="h-6 text-[6px] px-1 text-center" />
                     </div>
                     <div>
-                      <Label className="text-[6px] text-muted-foreground leading-none block mb-0.5">KH</Label>
+                      <Label className="text-[8px] text-muted-foreground leading-none block mb-0.5">KH</Label>
                       <Input type="number" inputMode="decimal" value={editFoodKh} onChange={(e) => setEditFoodKh(e.target.value)} className="h-6 text-[6px] px-1 text-center" />
                     </div>
                     <div>
-                      <Label className="text-[6px] text-muted-foreground leading-none block mb-0.5">FIB</Label>
+                      <Label className="text-[8px] text-muted-foreground leading-none block mb-0.5">FIB</Label>
                       <Input type="number" inputMode="decimal" value={editFoodFib} onChange={(e) => setEditFoodFib(e.target.value)} className="h-6 text-[6px] px-1 text-center" />
                     </div>
                   </div>
                   <div className="grid grid-cols-3 gap-1.5">
                     <div className="relative">
-                      <Label className="text-[6px] text-muted-foreground leading-none block mb-0.5">Kategorie</Label>
+                      <Label className="text-[8px] text-muted-foreground leading-none block mb-0.5">Kategorie</Label>
                       <button
                         type="button"
-                        className="w-full flex items-center justify-between h-6 px-1.5 text-[6px] rounded-md border border-input bg-background hover:bg-muted/60 transition-colors"
+                        className="w-full flex items-center justify-between h-6 px-1.5 text-[8px] rounded-md border border-input bg-background hover:bg-muted/60 transition-colors"
                         onClick={() => setShowCategoryDropdown(v => !v)}
                       >
                         <span className="truncate">{editFoodCategory || "–"}</span>
@@ -897,13 +897,13 @@ const SettingsDialog = ({
                           />
                           <div className="absolute left-0 right-0 top-full mt-0.5 z-[220] overflow-y-auto rounded-md border border-border bg-popover shadow-lg max-h-[55vh]">
                             <div
-                              className={`px-3 py-0.5 text-[6px] leading-4 cursor-pointer transition-colors ${!editFoodCategory ? "bg-primary/10 text-primary font-medium" : "hover:bg-muted/60"}`}
+                              className={`px-3 py-0.5 text-[8px] leading-4 cursor-pointer transition-colors ${!editFoodCategory ? "bg-primary/10 text-primary font-medium" : "hover:bg-muted/60"}`}
                               onPointerDown={(e) => { e.preventDefault(); setEditFoodCategory(""); setShowCategoryDropdown(false); }}
                             >–</div>
                             {FOOD_CATEGORIES.map(cat => (
                               <div
                                 key={cat}
-                                className={`px-3 py-0.5 text-[6px] leading-4 cursor-pointer transition-colors ${editFoodCategory === cat ? "bg-primary/10 text-primary font-medium" : "hover:bg-muted/60"}`}
+                                className={`px-3 py-0.5 text-[8px] leading-4 cursor-pointer transition-colors ${editFoodCategory === cat ? "bg-primary/10 text-primary font-medium" : "hover:bg-muted/60"}`}
                                 onPointerDown={(e) => { e.preventDefault(); setEditFoodCategory(cat); setShowCategoryDropdown(false); }}
                               >{cat}</div>
                             ))}
@@ -912,11 +912,11 @@ const SettingsDialog = ({
                       )}
                     </div>
                     <div>
-                      <Label className="text-[6px] text-muted-foreground leading-none block mb-0.5">Standardwert</Label>
+                      <Label className="text-[8px] text-muted-foreground leading-none block mb-0.5">Standardwert</Label>
                       <Input type="number" inputMode="decimal" value={editFoodDefault} onChange={(e) => setEditFoodDefault(e.target.value)} placeholder="z.B. 125" className="h-6 text-[6px] px-1 text-center" />
                     </div>
                     <div>
-                      <Label className="text-[6px] text-muted-foreground leading-none block mb-0.5">Flüssigkeit (ml)</Label>
+                      <Label className="text-[8px] text-muted-foreground leading-none block mb-0.5">Flüssigkeit (ml)</Label>
                       <Input type="number" inputMode="decimal" value={editFoodLiquid} onChange={(e) => setEditFoodLiquid(e.target.value)} placeholder="z.B. 250" className="h-6 text-[6px] px-1 text-center" />
                     </div>
                   </div>
@@ -927,7 +927,7 @@ const SettingsDialog = ({
                   variant="outline"
                   onClick={handleAiLookup}
                   disabled={aiLoading || !editFoodName.trim()}
-                  className="w-full h-6 text-[6px] gap-2"
+                  className="w-full h-6 text-[8px] gap-2"
                 >
                   {aiLoading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3 text-primary" />}
                   {aiLoading ? "KI sucht Nährwerte..." : <><Search className="w-3 h-3 text-muted-foreground" /> KI-Nährwerte suchen</>}
@@ -935,13 +935,13 @@ const SettingsDialog = ({
 
                 {/* Buttons */}
                 <div className="grid grid-cols-3 gap-1.5">
-                  <Button variant="outline" onClick={() => { handleSaveFood(); handleNewFood(); }} className="h-6 text-[6px]">
+                  <Button variant="outline" onClick={() => { handleSaveFood(); handleNewFood(); }} className="h-6 text-[8px]">
                     + Nächstes
                   </Button>
-                  <Button onClick={handleSaveFood} className="h-6 text-[6px] gap-1">
+                  <Button onClick={handleSaveFood} className="h-6 text-[8px] gap-1">
                     <Save className="w-3 h-3" /> Speichern
                   </Button>
-                  <Button variant="outline" onClick={() => { setEditingFood(null); setFoodNavIndex(null); }} className="h-6 text-[6px]">
+                  <Button variant="outline" onClick={() => { setEditingFood(null); setFoodNavIndex(null); }} className="h-6 text-[8px]">
                     ← Tabelle
                   </Button>
                 </div>
@@ -949,7 +949,7 @@ const SettingsDialog = ({
                 {/* === BLOCK 2: Mikronährstoffe (Vitamine + Spurenelemente) === */}
                 <div className="rounded-lg border border-border p-1.5 pt-1 bg-card">
                   {/* Vitamine */}
-                  <p className="text-[6px] font-semibold text-muted-foreground uppercase tracking-wide mb-0.5">Vitamine</p>
+                  <p className="text-[8px] font-semibold text-muted-foreground uppercase tracking-wide mb-0.5">Vitamine</p>
                   <div className="grid grid-cols-6 gap-x-1 gap-y-0">
                     {([
                       ["vitA", "A (µg)"],
@@ -967,7 +967,7 @@ const SettingsDialog = ({
                       ["vitK", "K (µg)"],
                     ] as [keyof FoodVitamins, string][]).map(([key, label]) => (
                       <div key={key} className="mb-0">
-                      <Label className="text-[6px] text-muted-foreground leading-none block mb-0.5">{label}</Label>
+                      <Label className="text-[8px] text-muted-foreground leading-none block mb-0.5">{label}</Label>
                         <Input
                           type="number"
                           inputMode="decimal"
@@ -980,7 +980,7 @@ const SettingsDialog = ({
                   </div>
 
                   {/* Spurenelemente */}
-                  <p className="text-[6px] font-semibold text-muted-foreground uppercase tracking-wide mt-2 mb-0.5">Spurenelemente</p>
+                  <p className="text-[8px] font-semibold text-muted-foreground uppercase tracking-wide mt-2 mb-0.5">Spurenelemente</p>
                   <div className="grid grid-cols-6 gap-x-1 gap-y-0">
                     {([
                       ["calcium", "Ca (mg)"],
@@ -997,7 +997,7 @@ const SettingsDialog = ({
                       ["zink", "Zn (mg)"],
                     ] as [keyof FoodMinerals, string][]).map(([key, label]) => (
                       <div key={key} className="mb-0">
-                      <Label className="text-[6px] text-muted-foreground leading-none block mb-0.5">{label}</Label>
+                      <Label className="text-[8px] text-muted-foreground leading-none block mb-0.5">{label}</Label>
                         <Input
                           type="number"
                           inputMode="decimal"
@@ -1012,8 +1012,8 @@ const SettingsDialog = ({
 
                 {/* Zusatzinfo - ganz unten */}
                 <div>
-                  <Label className="text-[6px] text-muted-foreground leading-none block mb-0.5">Zusatzinfo</Label>
-                  <Textarea value={editFoodNotes} onChange={(e) => setEditFoodNotes(e.target.value)} placeholder="z.B. vegan, Nutri Score, Haltungsform, Bio usw." className="min-h-[40px] text-[6px] px-1 py-1 leading-tight" />
+                  <Label className="text-[8px] text-muted-foreground leading-none block mb-0.5">Zusatzinfo</Label>
+                  <Textarea value={editFoodNotes} onChange={(e) => { setEditFoodNotes(e.target.value); e.target.style.height = 'auto'; e.target.style.height = e.target.scrollHeight + 'px'; }} onFocus={(e) => { e.target.style.height = 'auto'; e.target.style.height = e.target.scrollHeight + 'px'; }} placeholder="z.B. vegan, Nutri Score, Haltungsform, Bio usw." className="min-h-[40px] text-[6px] px-1 py-1 leading-tight resize-none overflow-hidden" />
                 </div>
               </div>
             ) : (
