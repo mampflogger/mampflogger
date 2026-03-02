@@ -193,7 +193,7 @@ export function guessCategory(name: string, aiCategory?: string): FoodCategory {
     [["apfel", "birne", "banane", "orange", "zitrone", "limette", "kiwi", "mango", "ananas", "erdbeere", "himbeere", "blaubeere", "heidelbeere", "kirsche", "traube", "melone", "pflaume", "pfirsich", "aprikose", "obst", "beere"], "Obst"],
     [["joghurt", "quark", "milch", "sahne", "rahm", "skyr", "buttermilch", "kefir", "schmand", "crème fraîche", "molke"], "Milchprodukte"],
     [["schokolade", "gummibärchen", "bonbon", "keks", "kuchen", "eis", "zucker", "honig", "marmelade", "nutella", "süß"], "Süßwaren"],
-    [["tiefkühlpizza", "fertiggericht", "pizza tk", "lasagne tk", "tk-pizza", "mikrowelle", "fertig-", "convenience", "tk ", "tiefkühl", "döner", "kebab", "burger", "asia-pfanne", "bami goreng", "nasi goreng", "cordon bleu", "cevapcici", "kroketten", "kartoffelpuffer"], "Fertiggerichte"],
+    [["tiefkühlpizza", "fertiggericht", "pizza tk", "lasagne tk", "tk-pizza", "mikrowelle", "fertig-", "convenience", "tk ", "tiefkühl", "döner", "kebab", "burger", "asia-pfanne", "bami goreng", "nasi goreng", "cordon bleu", "cevapcici", "kroketten", "kartoffelpuffer", "wrap", "burrito", "hot dog", "chicken wings", "wedges", "taquitos", "backfisch", "rösti", "frikadellen", "cannelloni", "mac and cheese"], "Fertiggerichte"],
   ];
   for (const [words, cat] of keywords) {
     if (words.some(w => lower.includes(w))) return cat;
@@ -584,6 +584,17 @@ export const DEFAULT_FOODS: FoodItem[] = [
   { name: "Bratwurst (Fertigpackung)", baseUnit: "100g", baseAmount: 100, calories: 280, protein: 12, fat: 25, carbs: 1, fiber: 0, defaultAmount: 150, category: "Fertiggerichte" },
   { name: "Gulaschsuppe (Dose)", baseUnit: "100g", baseAmount: 100, calories: 55, protein: 3.5, fat: 2, carbs: 5, fiber: 0.5, defaultAmount: 400, category: "Fertiggerichte" },
   { name: "Erbsensuppe (Dose)", baseUnit: "100g", baseAmount: 100, calories: 65, protein: 4, fat: 1.5, carbs: 9, fiber: 2, defaultAmount: 400, category: "Fertiggerichte" },
+  { name: "Wrap Hähnchen", baseUnit: "100g", baseAmount: 100, calories: 195, protein: 11, fat: 8, carbs: 20, fiber: 1.5, defaultAmount: 250, category: "Fertiggerichte" },
+  { name: "Burrito Bohnen & Reis", baseUnit: "100g", baseAmount: 100, calories: 170, protein: 6, fat: 5, carbs: 25, fiber: 3, defaultAmount: 300, category: "Fertiggerichte" },
+  { name: "Hot Dog", baseUnit: "100g", baseAmount: 100, calories: 250, protein: 10, fat: 15, carbs: 19, fiber: 1, defaultAmount: 150, category: "Fertiggerichte" },
+  { name: "Chicken Wings TK", baseUnit: "100g", baseAmount: 100, calories: 210, protein: 17, fat: 14, carbs: 5, fiber: 0, defaultAmount: 250, category: "Fertiggerichte" },
+  { name: "Potato Wedges TK", baseUnit: "100g", baseAmount: 100, calories: 165, protein: 2.5, fat: 6, carbs: 25, fiber: 2.5, defaultAmount: 250, category: "Fertiggerichte" },
+  { name: "Taquitos TK", baseUnit: "100g", baseAmount: 100, calories: 230, protein: 8, fat: 11, carbs: 25, fiber: 1.5, defaultAmount: 200, category: "Fertiggerichte" },
+  { name: "Backfisch TK", baseUnit: "100g", baseAmount: 100, calories: 200, protein: 11, fat: 10, carbs: 16, fiber: 0.5, defaultAmount: 200, category: "Fertiggerichte" },
+  { name: "Rösti TK", baseUnit: "100g", baseAmount: 100, calories: 170, protein: 2, fat: 8, carbs: 22, fiber: 2, defaultAmount: 200, category: "Fertiggerichte" },
+  { name: "Mini-Frikadellen TK", baseUnit: "100g", baseAmount: 100, calories: 215, protein: 13, fat: 14, carbs: 10, fiber: 0.5, defaultAmount: 200, category: "Fertiggerichte" },
+  { name: "Cannelloni (Fertiggericht)", baseUnit: "100g", baseAmount: 100, calories: 130, protein: 6, fat: 5, carbs: 14, fiber: 1, defaultAmount: 400, category: "Fertiggerichte" },
+  { name: "Mac and Cheese TK", baseUnit: "100g", baseAmount: 100, calories: 175, protein: 7, fat: 8, carbs: 19, fiber: 1, defaultAmount: 350, category: "Fertiggerichte" },
 ];
 
 function loadFoodDatabase(): FoodItem[] {
