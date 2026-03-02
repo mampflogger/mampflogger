@@ -29,8 +29,9 @@ export function loadEntries(): NutritionEntry[] {
           }
           return e;
         }
-        // Kein Liquid-Eintrag in der DB → liquidMl entfernen falls vorhanden
-        if (e.liquidMl !== undefined && !food?.liquidMl) {
+        // Lebensmittel gefunden, aber OHNE liquidMl → Eintrag-liquidMl entfernen
+        // Wenn kein passendes Lebensmittel gefunden → bestehenden liquidMl-Wert beibehalten
+        if (food && e.liquidMl !== undefined && !food.liquidMl) {
           const { liquidMl: _, ...rest } = e;
           return rest as NutritionEntry;
         }
