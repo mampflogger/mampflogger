@@ -14,7 +14,8 @@ import { Label } from "@/components/ui/label";
 import {
   Settings, Sun, Moon, Trash2, Upload, Download, UserCircle, Save, Check,
   AlertCircle, FileSpreadsheet, UtensilsCrossed, Palette, BarChart3, FileUp,
-  ChevronLeft, ChevronRight, RefreshCw, List, Sparkles, Loader2, HardDrive, BookOpen, Search, Mic, MicOff, X,
+  ChevronLeft, ChevronRight, RefreshCw, List, Sparkles, Loader2, HardDrive, BookOpen, Search, Mic, MicOff,
+  X,
 } from "lucide-react";
 import { useSpeechRecognition } from "@/hooks/useSpeechRecognition";
 import CookIcon from "@/components/CookIcon";
