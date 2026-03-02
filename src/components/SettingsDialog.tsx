@@ -1160,6 +1160,7 @@ const SettingsDialog = ({
                         <th className="text-right py-1 px-0.5 font-semibold" style={{ color: "hsl(var(--macro-fat))" }}>FAT</th>
                         <th className="text-right py-1 px-0.5 font-semibold" style={{ color: "hsl(var(--macro-kh))" }}>KH</th>
                         <th className="text-right py-1 px-0.5 font-semibold" style={{ color: "hsl(var(--macro-fib))" }}>FIB</th>
+                        <th className="text-right py-1 px-0.5 font-semibold text-foreground">GI</th>
                         <th className="w-5 pl-3"></th>
                       </tr>
                     </thead>
@@ -1171,7 +1172,7 @@ const SettingsDialog = ({
                             className="border-0 md:hidden hover:bg-muted/30 cursor-pointer transition-colors"
                             onClick={() => handleEditFood(f, idx)}
                           >
-                            <td colSpan={7} className="pt-1.5 pb-0 pr-1 font-medium text-[11px]">{f.name}</td>
+                            <td colSpan={8} className="pt-1.5 pb-0 pr-1 font-medium text-[11px]">{f.name}</td>
                             <td className="pt-1.5 pb-0 pl-3 pr-0 whitespace-nowrap">
                               <button
                                 onClick={(e) => { e.stopPropagation(); toggleRecipeFood(f); }}
@@ -1200,6 +1201,7 @@ const SettingsDialog = ({
                             <td className="pb-1.5 pt-0 px-0.5 text-right">{f.fat}</td>
                             <td className="pb-1.5 pt-0 px-0.5 text-right">{f.carbs}</td>
                             <td className="pb-1.5 pt-0 px-0.5 text-right">{f.fiber}</td>
+                            <td className="pb-1.5 pt-0 px-0.5 text-right text-foreground">{f.gi ?? "–"}</td>
                             <td className="pb-1.5 pt-0"></td>
                           </tr>
                           {/* Desktop: single row as before */}
@@ -1214,6 +1216,7 @@ const SettingsDialog = ({
                             <td className="py-1 px-0.5 text-right">{f.fat}</td>
                             <td className="py-1 px-0.5 text-right">{f.carbs}</td>
                             <td className="py-1 px-0.5 text-right">{f.fiber}</td>
+                            <td className="py-1 px-0.5 text-right text-foreground">{f.gi ?? "–"}</td>
                             <td className="py-1 pl-3 pr-0 whitespace-nowrap">
                               <button
                                 onClick={(e) => { e.stopPropagation(); toggleRecipeFood(f); }}
