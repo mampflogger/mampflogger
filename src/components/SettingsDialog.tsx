@@ -697,15 +697,15 @@ const SettingsDialog = ({
             <div className="glass-card rounded-xl p-3 space-y-2">
               <div>
                 <Label className="text-[10px] font-medium text-muted-foreground mb-0.5 block">Name</Label>
-                <Input id="settings-name" value={name} onChange={(e) => setName(e.target.value)} onKeyDown={(e) => handleProfileKeyDown(e, "settings-name")} placeholder="Dein Name" className="h-8 text-sm bg-muted/50" autoCorrect="off" spellCheck={false} autoFocus={initialOpen} />
+                <Input id="settings-name" value={name} onChange={(e) => setName(e.target.value)} onKeyDown={(e) => handleProfileKeyDown(e, "settings-name")} placeholder="Dein Name" className="h-8 text-sm" autoCorrect="off" spellCheck={false} autoFocus={initialOpen} />
               </div>
               <div>
                 <Label className="text-[10px] font-medium text-muted-foreground mb-0.5 block">Geschlecht</Label>
                 <div className="flex gap-2">
                   {(["male", "female"] as const).map((g) => (
                     <button key={g} type="button" onClick={() => setGender(g)}
-                      className={`flex-1 py-1 rounded-md border text-xs font-semibold transition-colors ${
-                        gender === g ? "bg-primary text-primary-foreground border-primary" : "bg-muted/50 text-muted-foreground border-input hover:text-foreground"
+                      className={`flex-1 py-1 rounded-full border text-xs font-semibold transition-colors ${
+                        gender === g ? "bg-primary text-primary-foreground border-primary" : "bg-accent text-muted-foreground border-border hover:text-foreground"
                       }`}
                     >
                       {g === "male" ? "Männlich" : "Weiblich"}
@@ -716,24 +716,24 @@ const SettingsDialog = ({
               <div className="grid grid-cols-3 gap-2">
                 <div>
                   <Label className="text-[10px] font-medium text-muted-foreground mb-0.5 block">Geburtsjahr</Label>
-                  <Input id="settings-birth" type="number" inputMode="numeric" value={birthYear} onChange={(e) => setBirthYear(e.target.value)} onKeyDown={(e) => handleProfileKeyDown(e, "settings-birth")} placeholder="1990" className="h-8 text-sm bg-muted/50" />
+                  <Input id="settings-birth" type="number" inputMode="numeric" value={birthYear} onChange={(e) => setBirthYear(e.target.value)} onKeyDown={(e) => handleProfileKeyDown(e, "settings-birth")} placeholder="1990" className="h-8 text-sm" />
                 </div>
                 <div>
                   <Label className="text-[10px] font-medium text-muted-foreground mb-0.5 block">Größe (cm)</Label>
-                  <Input id="settings-height" type="number" inputMode="numeric" value={heightCm} onChange={(e) => setHeightCm(e.target.value)} onKeyDown={(e) => handleProfileKeyDown(e, "settings-height")} placeholder="180" className="h-8 text-sm bg-muted/50" />
+                  <Input id="settings-height" type="number" inputMode="numeric" value={heightCm} onChange={(e) => setHeightCm(e.target.value)} onKeyDown={(e) => handleProfileKeyDown(e, "settings-height")} placeholder="180" className="h-8 text-sm" />
                 </div>
                 <div>
                   <Label className="text-[10px] font-medium text-muted-foreground mb-0.5 block">Gewicht (kg)</Label>
-                  <Input id="settings-weight" type="number" inputMode="decimal" step="0.1" value={weightKg} onChange={(e) => setWeightKg(e.target.value)} onKeyDown={(e) => handleProfileKeyDown(e, "settings-weight")} placeholder="80.0" className="h-8 text-sm bg-muted/50" />
+                  <Input id="settings-weight" type="number" inputMode="decimal" step="0.1" value={weightKg} onChange={(e) => setWeightKg(e.target.value)} onKeyDown={(e) => handleProfileKeyDown(e, "settings-weight")} placeholder="80.0" className="h-8 text-sm" />
                 </div>
               </div>
               {currentProfile && bmrPreview && (
                 <div className="grid grid-cols-3 gap-2">
-                  <div className="rounded-md border border-input bg-muted/50 px-2 py-1.5 flex items-center justify-between">
+                  <div className="rounded-full border border-border bg-accent px-2 py-1.5 flex items-center justify-between">
                     <span className="text-[10px] text-muted-foreground font-medium">BMI</span>
                     <span className="text-base font-bold text-foreground">{(currentProfile.weightKg / ((currentProfile.heightCm / 100) ** 2)).toFixed(1)} <span className="text-[10px] font-normal text-muted-foreground">kg/m²</span></span>
                   </div>
-                  <div className="col-span-2 rounded-md border border-input bg-muted/50 px-2 py-1.5 flex items-center justify-between">
+                  <div className="col-span-2 rounded-full border border-border bg-accent px-2 py-1.5 flex items-center justify-between">
                     <span className="text-[10px] text-muted-foreground font-medium">Grundumsatz (BMR)</span>
                     <span className="text-base font-bold text-foreground">{bmrPreview} <span className="text-[10px] font-normal text-muted-foreground">kcal/Tag</span></span>
                   </div>
@@ -747,19 +747,19 @@ const SettingsDialog = ({
               <div className="grid grid-cols-2 gap-2">
                 <div>
                   <Label className="text-[10px] font-medium text-muted-foreground mb-0.5 block">Zielgewicht (kg)</Label>
-                  <Input id="settings-goalweight" type="number" inputMode="decimal" step="0.1" value={goalWeightKg} onChange={(e) => setGoalWeightKg(e.target.value)} onKeyDown={(e) => handleProfileKeyDown(e, "settings-goalweight")} placeholder="75.0" className="h-8 text-sm bg-muted/50" />
+                  <Input id="settings-goalweight" type="number" inputMode="decimal" step="0.1" value={goalWeightKg} onChange={(e) => setGoalWeightKg(e.target.value)} onKeyDown={(e) => handleProfileKeyDown(e, "settings-goalweight")} placeholder="75.0" className="h-8 text-sm" />
                 </div>
                 <div>
                   <Label className="text-[10px] font-medium text-muted-foreground mb-0.5 block">Flüssigkeit pro Tag (ml)</Label>
-                  <Input id="settings-fluid" type="number" inputMode="numeric" value={goalFluidMl} onChange={(e) => setGoalFluidMl(e.target.value)} onKeyDown={(e) => handleProfileKeyDown(e, "settings-fluid")} placeholder="2500" className="h-8 text-sm bg-muted/50" />
+                  <Input id="settings-fluid" type="number" inputMode="numeric" value={goalFluidMl} onChange={(e) => setGoalFluidMl(e.target.value)} onKeyDown={(e) => handleProfileKeyDown(e, "settings-fluid")} placeholder="2500" className="h-8 text-sm" />
                 </div>
                 <div>
                   <Label className="text-[10px] font-medium text-muted-foreground mb-0.5 block">Defizit pro Tag (kcal)</Label>
-                  <Input id="settings-deficit" type="number" inputMode="numeric" value={goalDeficit} onChange={(e) => setGoalDeficit(e.target.value)} onKeyDown={(e) => handleProfileKeyDown(e, "settings-deficit")} placeholder="500" className="h-8 text-sm bg-muted/50" />
+                  <Input id="settings-deficit" type="number" inputMode="numeric" value={goalDeficit} onChange={(e) => setGoalDeficit(e.target.value)} onKeyDown={(e) => handleProfileKeyDown(e, "settings-deficit")} placeholder="500" className="h-8 text-sm" />
                 </div>
                 <div>
                   <Label className="text-[10px] font-medium text-muted-foreground mb-0.5 block">Activity Bonus pro Tag (kcal)</Label>
-                  <Input id="settings-activity" type="number" inputMode="numeric" value={goalActivityBonus} onChange={(e) => setGoalActivityBonus(e.target.value)} onKeyDown={(e) => handleProfileKeyDown(e, "settings-activity")} placeholder="300" className="h-8 text-sm bg-muted/50" />
+                  <Input id="settings-activity" type="number" inputMode="numeric" value={goalActivityBonus} onChange={(e) => setGoalActivityBonus(e.target.value)} onKeyDown={(e) => handleProfileKeyDown(e, "settings-activity")} placeholder="300" className="h-8 text-sm" />
                 </div>
               </div>
             </div>
@@ -780,7 +780,7 @@ const SettingsDialog = ({
                 <Label className="text-[10px] font-medium text-muted-foreground mb-1 block">Modus</Label>
                 <button
                   onClick={onToggleDarkMode}
-                  className="flex items-center gap-3 w-full p-2.5 rounded-lg bg-muted/50 hover:bg-muted transition-colors border border-input"
+                  className="flex items-center gap-3 w-full p-2.5 rounded-full bg-accent hover:bg-muted transition-colors border border-border"
                 >
                   {darkMode ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
                   <span className="text-xs font-medium">{darkMode ? "Dark Mode" : "Light Mode"}</span>
@@ -793,8 +793,8 @@ const SettingsDialog = ({
                     <button
                       key={key}
                       onClick={() => onChangeTheme(key)}
-                      className={`flex flex-col items-center gap-1 p-2.5 rounded-lg border transition-colors ${
-                        colorTheme === key ? "border-primary bg-accent/40" : "border-input bg-muted/50 hover:bg-muted"
+                      className={`flex flex-col items-center gap-1 p-2.5 rounded-xl border transition-colors ${
+                        colorTheme === key ? "border-primary bg-accent/40" : "border-border bg-accent hover:bg-muted"
                       }`}
                     >
                       <div className="w-6 h-6 rounded-full" style={{ backgroundColor: THEME_COLORS[key].swatch }} />
@@ -825,7 +825,7 @@ const SettingsDialog = ({
                         type="button"
                         onClick={() => handleNavFood(-1)}
                         disabled={foodNavIndex <= 0}
-                        className="h-6 w-6 flex items-center justify-center rounded-md border border-border bg-background hover:bg-muted disabled:opacity-30 transition-colors"
+                        className="h-6 w-6 flex items-center justify-center rounded-full border border-border bg-accent hover:bg-muted disabled:opacity-30 transition-colors"
                         title="Vorheriges Lebensmittel"
                       >
                         <ChevronLeft className="w-3.5 h-3.5" />
@@ -837,7 +837,7 @@ const SettingsDialog = ({
                         type="button"
                         onClick={() => handleNavFood(1)}
                         disabled={foodNavIndex >= filteredFoods.length - 1}
-                        className="h-6 w-6 flex items-center justify-center rounded-md border border-border bg-background hover:bg-muted disabled:opacity-30 transition-colors"
+                        className="h-6 w-6 flex items-center justify-center rounded-full border border-border bg-accent hover:bg-muted disabled:opacity-30 transition-colors"
                         title="Nächstes Lebensmittel"
                       >
                         <ChevronRight className="w-3.5 h-3.5" />
@@ -855,7 +855,7 @@ const SettingsDialog = ({
                     </div>
                     <div className="col-span-1">
                       <Label className="text-[8px] text-muted-foreground leading-none block mb-0.5">g/ml</Label>
-                      <div className="h-6 flex items-center justify-center text-[8px] text-muted-foreground rounded-md border border-input bg-muted/30">
+                      <div className="h-6 flex items-center justify-center text-[8px] text-muted-foreground rounded-full border border-border bg-accent">
                         100
                       </div>
                     </div>
@@ -865,7 +865,7 @@ const SettingsDialog = ({
                       <Label className="text-[8px] text-muted-foreground leading-none block mb-0.5">Kategorie</Label>
                       <button
                         type="button"
-                        className="w-full flex items-center justify-between h-6 px-1.5 text-[8px] rounded-md border border-input bg-background hover:bg-muted/60 transition-colors"
+                        className="w-full flex items-center justify-between h-6 px-1.5 text-[8px] rounded-full border border-border bg-accent hover:bg-muted/60 transition-colors"
                         onClick={() => setShowCategoryDropdown(v => !v)}
                       >
                         <span className="truncate">{editFoodCategory || "–"}</span>
@@ -1046,10 +1046,10 @@ const SettingsDialog = ({
                     <button
                       type="button"
                       onClick={() => { setSelectedCategories(new Set()); setSelectedAnimal(null); }}
-                      className={`px-2.5 py-1 rounded text-[10px] font-medium transition-colors border ${
+                      className={`px-2.5 py-1 rounded-full text-[10px] font-medium transition-colors border ${
                         selectedCategories.size === 0
                           ? "bg-primary text-primary-foreground border-primary"
-                          : "bg-muted/50 text-muted-foreground border-border hover:bg-muted"
+                          : "bg-accent text-muted-foreground border-border hover:bg-muted"
                       }`}
                     >
                       Alle
@@ -1070,10 +1070,10 @@ const SettingsDialog = ({
                             return next;
                           });
                         }}
-                        className={`px-2.5 py-1 rounded text-[10px] font-medium transition-colors border ${
+                        className={`px-2.5 py-1 rounded-full text-[10px] font-medium transition-colors border ${
                           selectedCategories.has(cat)
                             ? "bg-primary text-primary-foreground border-primary"
-                            : "bg-muted/50 text-muted-foreground border-border hover:bg-muted"
+                            : "bg-accent text-muted-foreground border-border hover:bg-muted"
                         }`}
                       >
                         {cat}
@@ -1090,10 +1090,10 @@ const SettingsDialog = ({
                             key={animal}
                             type="button"
                             onClick={() => setSelectedAnimal(prev => prev === animal ? null : animal)}
-                            className={`px-2 py-0.5 rounded-sm text-[9px] font-medium transition-colors border ${
+                            className={`px-2 py-0.5 rounded-full text-[9px] font-medium transition-colors border ${
                               selectedAnimal === animal
                                 ? "bg-accent text-accent-foreground border-accent"
-                                : "bg-background text-muted-foreground border-border/60 hover:bg-muted/60"
+                                : "bg-accent/50 text-muted-foreground border-border/60 hover:bg-muted/60"
                             }`}
                           >
                             {animal}
@@ -1136,10 +1136,10 @@ const SettingsDialog = ({
                             foodSearchSpeech.start();
                           }
                         }}
-                        className={`p-2 rounded-md border transition-colors shrink-0 ${
+                        className={`p-2 rounded-full border transition-colors shrink-0 ${
                           foodSearchSpeech.isListening
                             ? "bg-destructive/15 text-destructive border-destructive/30 animate-pulse"
-                            : "text-muted-foreground hover:text-foreground hover:bg-muted border-border"
+                            : "bg-accent text-muted-foreground hover:text-foreground hover:bg-muted border-border"
                         }`}
                         title={foodSearchSpeech.isListening ? "Stoppen" : "Spracheingabe"}
                       >

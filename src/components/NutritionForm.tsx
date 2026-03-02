@@ -437,10 +437,10 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
         <button
           type="button"
           onClick={() => voice.isListening ? voice.stop() : voice.start()}
-          className={`absolute -top-7 right-0 p-1 rounded-md transition-colors ${
+          className={`absolute -top-7 right-0 p-1 rounded-full transition-colors ${
             voice.isListening
               ? "bg-destructive/15 text-destructive animate-pulse"
-              : "bg-muted text-muted-foreground hover:text-foreground hover:bg-muted/80"
+              : "bg-accent text-muted-foreground hover:text-foreground hover:bg-muted/80"
           }`}
           title="Spracheingabe"
         >
@@ -460,7 +460,7 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
             placeholder="08:00"
             value={time}
             onChange={(e) => handleTimeChange(e.target.value)}
-            className="h-9 bg-muted/50 text-[10px] px-1 min-w-0 text-center"
+            className="h-9 text-[10px] px-1 min-w-0 text-center"
             autoCorrect="off"
             spellCheck={false}
           />
@@ -482,7 +482,7 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
                 if (suggestions.length > 0) setShowSuggestions(true);
               }}
               onKeyDown={handleKeyDown}
-              className={`h-9 bg-muted/50 text-xs px-2 pr-7 ${voice.isListening && focusedField === "food" ? "ring-2 ring-primary" : ""}`}
+              className={`h-9 text-xs px-2 pr-7 ${voice.isListening && focusedField === "food" ? "ring-2 ring-primary" : ""}`}
               autoComplete="off"
               autoCorrect="off"
               spellCheck={false}
@@ -571,7 +571,7 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
               value={amount}
               onChange={(e) => handleAmountChange(e.target.value)}
               onFocus={() => setFocusedField("amount")}
-              className={`h-9 bg-muted/50 text-xs px-2 ${voice.isListening && focusedField === "amount" ? "ring-2 ring-primary" : ""}`}
+              className={`h-9 text-xs px-2 ${voice.isListening && focusedField === "amount" ? "ring-2 ring-primary" : ""}`}
             />
           </div>
         </div>
@@ -581,23 +581,23 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
       <div className="grid grid-cols-5 gap-1.5 mb-2">
         <div>
           <Label htmlFor="calories" className="text-[10px] font-medium text-muted-foreground mb-1 block">kcal</Label>
-          <Input id="calories" type="number" inputMode="decimal" step="any" placeholder="0" value={calories} onChange={(e) => setCalories(e.target.value)} className="h-9 bg-muted/50 text-[10px] px-1 text-center tabular-nums" />
+          <Input id="calories" type="number" inputMode="decimal" step="any" placeholder="0" value={calories} onChange={(e) => setCalories(e.target.value)} className="h-9 text-[10px] px-1 text-center tabular-nums" />
         </div>
         <div>
           <Label htmlFor="protein" className="text-[10px] font-medium text-muted-foreground mb-1 block">PRO</Label>
-          <Input id="protein" type="number" inputMode="decimal" step="any" placeholder="0" value={protein} onChange={(e) => setProtein(e.target.value)} className="h-9 bg-muted/50 text-[10px] px-1 text-center tabular-nums" />
+          <Input id="protein" type="number" inputMode="decimal" step="any" placeholder="0" value={protein} onChange={(e) => setProtein(e.target.value)} className="h-9 text-[10px] px-1 text-center tabular-nums" />
         </div>
         <div>
           <Label htmlFor="fat" className="text-[10px] font-medium text-muted-foreground mb-1 block">FAT</Label>
-          <Input id="fat" type="number" inputMode="decimal" step="any" placeholder="0" value={fat} onChange={(e) => setFat(e.target.value)} className="h-9 bg-muted/50 text-[10px] px-1 text-center tabular-nums" />
+          <Input id="fat" type="number" inputMode="decimal" step="any" placeholder="0" value={fat} onChange={(e) => setFat(e.target.value)} className="h-9 text-[10px] px-1 text-center tabular-nums" />
         </div>
         <div>
           <Label htmlFor="carbs" className="text-[10px] font-medium text-muted-foreground mb-1 block">KH</Label>
-          <Input id="carbs" type="number" inputMode="decimal" step="any" placeholder="0" value={carbs} onChange={(e) => setCarbs(e.target.value)} className="h-9 bg-muted/50 text-[10px] px-1 text-center tabular-nums" />
+          <Input id="carbs" type="number" inputMode="decimal" step="any" placeholder="0" value={carbs} onChange={(e) => setCarbs(e.target.value)} className="h-9 text-[10px] px-1 text-center tabular-nums" />
         </div>
         <div>
           <Label htmlFor="fiber" className="text-[10px] font-medium text-muted-foreground mb-1 block">FIB</Label>
-          <Input id="fiber" type="number" inputMode="decimal" step="any" placeholder="0" value={fiber} onChange={(e) => setFiber(e.target.value)} className="h-9 bg-muted/50 text-[10px] px-1 text-center tabular-nums" />
+          <Input id="fiber" type="number" inputMode="decimal" step="any" placeholder="0" value={fiber} onChange={(e) => setFiber(e.target.value)} className="h-9 text-[10px] px-1 text-center tabular-nums" />
         </div>
       </div>
 
@@ -607,7 +607,7 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
           ref={submitButtonRef}
           type="submit"
           onFocus={() => setFocusedField("submit")}
-          className={`flex-1 h-9 rounded-md text-sm font-semibold transition-colors ${
+          className={`flex-1 h-9 rounded-full text-sm font-semibold transition-colors ${
             voice.isListening && focusedField === "submit"
               ? "bg-primary text-primary-foreground ring-2 ring-primary"
               : "bg-primary text-primary-foreground hover:bg-primary/90"
@@ -621,7 +621,7 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
           <button
             type="button"
             onClick={handleCancel}
-            className="h-9 px-4 rounded-md text-sm font-semibold text-muted-foreground bg-muted hover:bg-muted/80"
+            className="h-9 px-4 rounded-full text-sm font-semibold text-muted-foreground bg-accent hover:bg-muted/80"
           >
             Abbrechen
           </button>
