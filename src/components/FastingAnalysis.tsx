@@ -47,14 +47,14 @@ const FastingAnalysis = ({ entries, allEntries, selectedDate }: Props) => {
       // Mark food hours
       const todayFoodHours = new Set<number>();
       for (const e of entries) {
-        if (e.time) {
+        if (e.time && e.calories > 0) {
           const h = parseInt(e.time.split(":")[0], 10);
           if (!isNaN(h)) todayFoodHours.add(h);
         }
       }
       const yesterdayFoodHours = new Set<number>();
       for (const e of yesterdayEntries) {
-        if (e.time) {
+        if (e.time && e.calories > 0) {
           const h = parseInt(e.time.split(":")[0], 10);
           if (!isNaN(h)) yesterdayFoodHours.add(h);
         }
@@ -69,7 +69,7 @@ const FastingAnalysis = ({ entries, allEntries, selectedDate }: Props) => {
       // Collect all meal times as minutes-ago-from-now
       const mealMinutesFromNow: number[] = [];
       for (const e of entries) {
-        if (e.time) {
+        if (e.time && e.calories > 0) {
           const [hh, mm] = e.time.split(":").map(Number);
           if (!isNaN(hh) && !isNaN(mm)) {
             const mealMin = hh * 60 + mm;
@@ -80,7 +80,7 @@ const FastingAnalysis = ({ entries, allEntries, selectedDate }: Props) => {
         }
       }
       for (const e of yesterdayEntries) {
-        if (e.time) {
+        if (e.time && e.calories > 0) {
           const [hh, mm] = e.time.split(":").map(Number);
           if (!isNaN(hh) && !isNaN(mm)) {
             const mealMin = hh * 60 + mm;
@@ -104,7 +104,7 @@ const FastingAnalysis = ({ entries, allEntries, selectedDate }: Props) => {
 
       const hoursWithFood = new Set<number>();
       for (const e of entries) {
-        if (e.time) {
+        if (e.time && e.calories > 0) {
           const h = parseInt(e.time.split(":")[0], 10);
           if (!isNaN(h)) hoursWithFood.add(h);
         }
@@ -114,7 +114,7 @@ const FastingAnalysis = ({ entries, allEntries, selectedDate }: Props) => {
       // Largest gap including wrap-around
       const mealMinutes: number[] = [];
       for (const e of entries) {
-        if (e.time) {
+        if (e.time && e.calories > 0) {
           const [hh, mm] = e.time.split(":").map(Number);
           if (!isNaN(hh) && !isNaN(mm)) mealMinutes.push(hh * 60 + mm);
         }
