@@ -934,10 +934,10 @@ const SettingsDialog = ({
                 </Button>
 
                 {/* === BLOCK 2: Mikronährstoffe (Vitamine + Spurenelemente) === */}
-                <div className="space-y-0.5 rounded-lg border border-border p-2 bg-card">
+                <div className="rounded-lg border border-border p-1.5 pt-1 bg-card">
                   {/* Vitamine */}
-                  <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">Vitamine</p>
-                  <div className="grid grid-cols-4 gap-x-2 gap-y-0.5">
+                  <p className="text-[9px] font-semibold text-muted-foreground uppercase tracking-wide mb-0.5">Vitamine</p>
+                  <div className="grid grid-cols-4 gap-x-1.5 gap-y-0">
                     {([
                       ["vitA", "A (µg)"],
                       ["vitB1", "B1 (mg)"],
@@ -953,22 +953,22 @@ const SettingsDialog = ({
                       ["vitE", "E (mg)"],
                       ["vitK", "K (µg)"],
                     ] as [keyof FoodVitamins, string][]).map(([key, label]) => (
-                      <div key={key}>
-                        <Label className="text-[9px] text-muted-foreground leading-tight">{label}</Label>
+                      <div key={key} className="mb-0">
+                        <Label className="text-[8px] text-muted-foreground leading-none block mb-0">{label}</Label>
                         <Input
                           type="number"
                           inputMode="decimal"
                           value={editVitamins[key] !== undefined ? String(editVitamins[key]) : ""}
                           onChange={(e) => setEditVitamins(prev => ({ ...prev, [key]: e.target.value ? parseFloat(e.target.value) : undefined }))}
-                          className="h-7 text-[11px] px-1.5"
+                          className="h-6 text-[11px] px-1"
                         />
                       </div>
                     ))}
                   </div>
 
                   {/* Spurenelemente */}
-                  <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide mt-1">Spurenelemente</p>
-                  <div className="grid grid-cols-4 gap-x-2 gap-y-0.5">
+                  <p className="text-[9px] font-semibold text-muted-foreground uppercase tracking-wide mt-0.5 mb-0.5">Spurenelemente</p>
+                  <div className="grid grid-cols-4 gap-x-1.5 gap-y-0">
                     {([
                       ["calcium", "Ca (mg)"],
                       ["chlorid", "Cl (mg)"],
@@ -983,14 +983,14 @@ const SettingsDialog = ({
                       ["schwefel", "S (mg)"],
                       ["zink", "Zn (mg)"],
                     ] as [keyof FoodMinerals, string][]).map(([key, label]) => (
-                      <div key={key}>
-                        <Label className="text-[9px] text-muted-foreground leading-tight">{label}</Label>
+                      <div key={key} className="mb-0">
+                        <Label className="text-[8px] text-muted-foreground leading-none block mb-0">{label}</Label>
                         <Input
                           type="number"
                           inputMode="decimal"
                           value={editMinerals[key] !== undefined ? String(editMinerals[key]) : ""}
                           onChange={(e) => setEditMinerals(prev => ({ ...prev, [key]: e.target.value ? parseFloat(e.target.value) : undefined }))}
-                          className="h-7 text-[11px] px-1.5"
+                          className="h-6 text-[11px] px-1"
                         />
                       </div>
                     ))}
