@@ -1008,8 +1008,8 @@ const SettingsDialog = ({
                   <Button variant="outline" onClick={() => { handleSaveFood(); handleNewFood(); }} className="h-9 text-xs">
                     + Nächstes
                   </Button>
-                  <Button onClick={handleSaveFood} className="h-9 text-xs">
-                    <Save className="w-3.5 h-3.5 mr-1" /> Speichern
+                  <Button onClick={handleSaveFood} className="h-9 text-xs gap-1">
+                    <Save className="w-3.5 h-3.5" /> Speichern
                   </Button>
                   <Button variant="outline" onClick={() => { setEditingFood(null); setFoodNavIndex(null); }} className="h-9 text-xs">
                     ← Tabelle
@@ -1218,14 +1218,16 @@ const SettingsDialog = ({
               </div>
             )}
             </div>
-            <RecipeGenerator
-              selectedFoods={selectedRecipeFoods}
-              onRemoveFood={(name) => setSelectedRecipeFoods((prev) => prev.filter((f) => f.name !== name))}
-              onClearAll={() => setSelectedRecipeFoods([])}
-              entries={entries}
-              selectedDate={selectedDate}
-              onAddEntry={onAddEntry}
-            />
+            {!editingFood && (
+              <RecipeGenerator
+                selectedFoods={selectedRecipeFoods}
+                onRemoveFood={(name) => setSelectedRecipeFoods((prev) => prev.filter((f) => f.name !== name))}
+                onClearAll={() => setSelectedRecipeFoods([])}
+                entries={entries}
+                selectedDate={selectedDate}
+                onAddEntry={onAddEntry}
+              />
+            )}
           </div>
         )}
 
