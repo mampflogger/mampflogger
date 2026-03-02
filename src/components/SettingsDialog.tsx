@@ -14,7 +14,7 @@ import { Label } from "@/components/ui/label";
 import {
   Settings, Sun, Moon, Trash2, Upload, Download, UserCircle, Save, Check,
   AlertCircle, FileSpreadsheet, UtensilsCrossed, Palette, BarChart3, FileUp,
-  ChevronLeft, ChevronRight, RefreshCw, List, Sparkles, Loader2, HardDrive, BookOpen, Search, Mic, MicOff,
+  ChevronLeft, ChevronRight, RefreshCw, List, Sparkles, Loader2, HardDrive, BookOpen, Search, Mic, MicOff, X,
 } from "lucide-react";
 import { useSpeechRecognition } from "@/hooks/useSpeechRecognition";
 import CookIcon from "@/components/CookIcon";
@@ -839,8 +839,8 @@ const SettingsDialog = ({
                   )}
                 </div>
                 {/* === BLOCK 1: Basis (Name, g/ml, Makros) === */}
-                <div className="space-y-1 rounded-lg border border-border p-3 bg-card">
-                  <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide mb-1">Basis</p>
+                <div className="space-y-0.5 rounded-lg border border-border p-2 bg-card">
+                  <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide mb-0.5">Basis</p>
                   <div className="grid grid-cols-5 gap-2">
                     <div className="col-span-4">
                       <Label className="text-[10px] text-muted-foreground">Lebensmittel</Label>
@@ -933,7 +933,7 @@ const SettingsDialog = ({
                 </Button>
 
                 {/* === BLOCK 2: Mikronährstoffe (Vitamine + Spurenelemente) === */}
-                <div className="space-y-2 rounded-lg border border-border p-3 bg-card">
+                <div className="space-y-1 rounded-lg border border-border p-2 bg-card">
                   {/* Vitamine */}
                   <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">Vitamine</p>
                   <div className="grid grid-cols-4 gap-x-2 gap-y-0.5">
@@ -966,7 +966,7 @@ const SettingsDialog = ({
                   </div>
 
                   {/* Spurenelemente */}
-                  <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide mt-2">Spurenelemente</p>
+                  <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide mt-1">Spurenelemente</p>
                   <div className="grid grid-cols-4 gap-x-2 gap-y-0.5">
                     {([
                       ["calcium", "Ca (mg)"],
@@ -1087,10 +1087,21 @@ const SettingsDialog = ({
                         placeholder="Lebensmittel suchen..."
                         value={foodSearch}
                         onChange={(e) => setFoodSearch(e.target.value)}
-                        className="h-9 text-xs pl-8"
+                        className="h-9 text-xs pl-8 pr-7"
                         autoCorrect="off"
                         spellCheck={false}
                       />
+                      {foodSearch && (
+                        <button
+                          type="button"
+                          onClick={() => setFoodSearch("")}
+                          className="absolute right-1.5 top-1/2 -translate-y-1/2 p-0.5 rounded-full text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                          tabIndex={-1}
+                          title="Suche leeren"
+                        >
+                          <X className="w-3.5 h-3.5" />
+                        </button>
+                      )}
                     </div>
                     {foodSearchSpeech.isSupported && (
                       <button

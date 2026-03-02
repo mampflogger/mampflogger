@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { FoodItem, searchFood, addFoodItem, trackFoodUsage, getFoodUsageCount, guessCategory } from "@/data/foodDatabase";
 import { useSpeechRecognition } from "@/hooks/useSpeechRecognition";
-import { Mic, MicOff } from "lucide-react";
+import { Mic, MicOff, X } from "lucide-react";
 import { toast } from "sonner";
 
 type FocusedField = "food" | "amount" | "submit" | null;
@@ -61,10 +61,35 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
     return /\b(buchen|buche|buch|buchen\b|buchem|bucher|buchern|butchen|bu[ck]h?en?)\b/.test(lower);
   }, []);
 
+  // Helper: fuzzy match for "storno" command (clear current field)
+  const isStornoCommand = useCallback((text: string) => {
+    const lower = text.toLowerCase().trim();
+    return /\b(storno|leer|leerfeld|clear)\b/.test(lower);
+  }, []);
+
   // Single voice recognition instance for both fields
   const voice = useSpeechRecognition({
     onResult: useCallback((transcript: string, isInterim: boolean) => {
       const currentField = focusedFieldRef.current;
+
+      // "storno" command: clear current field and reset focus
+      if (isStornoCommand(transcript)) {
+        if (currentField === "food" || currentField === "amount" || currentField === "submit") {
+          setFood("");
+          setAmount("");
+          setCalories("");
+          setProtein("");
+          setCarbs("");
+          setFat("");
+          setFiber("");
+          setSelectedFood(null);
+          setSuggestions([]);
+          setShowSuggestions(false);
+          setFocusedField("food");
+          setTimeout(() => foodInputRef.current?.focus(), 0);
+        }
+        return;
+      }
 
       // "buchen" command works from both amount and submit fields
       if (currentField === "submit" || currentField === "amount") {
@@ -402,11 +427,22 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
                 if (suggestions.length > 0) setShowSuggestions(true);
               }}
               onKeyDown={handleKeyDown}
-              className={`h-9 bg-muted/50 text-xs px-2 ${voice.isListening && focusedField === "food" ? "ring-2 ring-primary" : ""}`}
+              className={`h-9 bg-muted/50 text-xs px-2 pr-7 ${voice.isListening && focusedField === "food" ? "ring-2 ring-primary" : ""}`}
               autoComplete="off"
               autoCorrect="off"
               spellCheck={false}
             />
+            {food && (
+              <button
+                type="button"
+                onClick={() => { setFood(""); setSelectedFood(null); setSuggestions([]); setShowSuggestions(false); foodInputRef.current?.focus(); }}
+                className="absolute right-1.5 top-1/2 -translate-y-1/2 p-0.5 rounded-full text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                tabIndex={-1}
+                title="Feld leeren"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            )}
           </div>
           {showSuggestions && dropdownRect && createPortal(
             <ul
