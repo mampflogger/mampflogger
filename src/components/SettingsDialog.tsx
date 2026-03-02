@@ -895,7 +895,7 @@ const SettingsDialog = ({
                             aria-label="Kategorieauswahl schließen"
                             onClick={() => setShowCategoryDropdown(false)}
                           />
-                          <div className="absolute left-0 right-0 bottom-[calc(100%-1.25rem)] mb-0 z-[220] overflow-y-auto rounded-md border border-border bg-popover shadow-lg max-h-[55vh]">
+                          <div className="absolute left-0 right-0 top-full mt-0.5 z-[220] overflow-y-auto rounded-md border border-border bg-popover shadow-lg max-h-[55vh]">
                             <div
                               className={`px-3 py-0.5 text-[8px] leading-4 cursor-pointer transition-colors ${!editFoodCategory ? "bg-primary/10 text-primary font-medium" : "hover:bg-muted/60"}`}
                               onPointerDown={(e) => { e.preventDefault(); setEditFoodCategory(""); setShowCategoryDropdown(false); }}
@@ -946,17 +946,11 @@ const SettingsDialog = ({
                   </Button>
                 </div>
 
-                {/* Zusatzinfo */}
-                <div>
-                  <Label className="text-[8px] text-muted-foreground leading-none block mb-0.5">Zusatzinfo</Label>
-                  <Textarea value={editFoodNotes} onChange={(e) => setEditFoodNotes(e.target.value)} placeholder="z.B. vegan, Nutri Score, Haltungsform, Bio usw." className="min-h-[40px] text-[8px] px-1 py-1 leading-tight" />
-                </div>
-
                 {/* === BLOCK 2: Mikronährstoffe (Vitamine + Spurenelemente) === */}
                 <div className="rounded-lg border border-border p-1.5 pt-1 bg-card">
                   {/* Vitamine */}
                   <p className="text-[8px] font-semibold text-muted-foreground uppercase tracking-wide mb-0.5">Vitamine</p>
-                  <div className="grid grid-cols-4 gap-x-1.5 gap-y-0">
+                  <div className="grid grid-cols-6 gap-x-1 gap-y-0">
                     {([
                       ["vitA", "A (µg)"],
                       ["vitB1", "B1 (mg)"],
@@ -986,8 +980,8 @@ const SettingsDialog = ({
                   </div>
 
                   {/* Spurenelemente */}
-                  <p className="text-[8px] font-semibold text-muted-foreground uppercase tracking-wide mt-0.5 mb-0.5">Spurenelemente</p>
-                  <div className="grid grid-cols-4 gap-x-1.5 gap-y-0">
+                  <p className="text-[8px] font-semibold text-muted-foreground uppercase tracking-wide mt-2 mb-0.5">Spurenelemente</p>
+                  <div className="grid grid-cols-6 gap-x-1 gap-y-0">
                     {([
                       ["calcium", "Ca (mg)"],
                       ["chlorid", "Cl (mg)"],
@@ -1014,6 +1008,12 @@ const SettingsDialog = ({
                       </div>
                     ))}
                   </div>
+                </div>
+
+                {/* Zusatzinfo - ganz unten */}
+                <div>
+                  <Label className="text-[8px] text-muted-foreground leading-none block mb-0.5">Zusatzinfo</Label>
+                  <Textarea value={editFoodNotes} onChange={(e) => setEditFoodNotes(e.target.value)} placeholder="z.B. vegan, Nutri Score, Haltungsform, Bio usw." className="min-h-[40px] text-[8px] px-1 py-1 leading-tight" />
                 </div>
               </div>
             ) : (
