@@ -193,7 +193,7 @@ export function guessCategory(name: string, aiCategory?: string): FoodCategory {
     [["apfel", "birne", "banane", "orange", "zitrone", "limette", "kiwi", "mango", "ananas", "erdbeere", "himbeere", "blaubeere", "heidelbeere", "kirsche", "traube", "melone", "pflaume", "pfirsich", "aprikose", "obst", "beere"], "Obst"],
     [["joghurt", "quark", "milch", "sahne", "rahm", "skyr", "buttermilch", "kefir", "schmand", "crème fraîche", "molke"], "Milchprodukte"],
     [["schokolade", "gummibärchen", "bonbon", "keks", "kuchen", "eis", "zucker", "honig", "marmelade", "nutella", "süß"], "Süßwaren"],
-    [["tiefkühlpizza", "fertiggericht", "pizza tk", "lasagne tk", "tk-pizza", "mikrowelle", "fertig-", "convenience", "tk ", "tiefkühl"], "Fertiggerichte"],
+    [["tiefkühlpizza", "fertiggericht", "pizza tk", "lasagne tk", "tk-pizza", "mikrowelle", "fertig-", "convenience", "tk ", "tiefkühl", "döner", "kebab", "burger", "asia-pfanne", "bami goreng", "nasi goreng", "cordon bleu", "cevapcici", "kroketten", "kartoffelpuffer"], "Fertiggerichte"],
   ];
   for (const [words, cat] of keywords) {
     if (words.some(w => lower.includes(w))) return cat;
@@ -570,6 +570,20 @@ export const DEFAULT_FOODS: FoodItem[] = [
   { name: "Maultaschen", baseUnit: "100g", baseAmount: 100, calories: 195, protein: 9, fat: 8, carbs: 22, fiber: 1, defaultAmount: 300, category: "Fertiggerichte" },
   { name: "Flammkuchen TK", baseUnit: "100g", baseAmount: 100, calories: 245, protein: 8, fat: 12, carbs: 26, fiber: 1, defaultAmount: 275, category: "Fertiggerichte" },
   { name: "Gyoza TK", baseUnit: "100g", baseAmount: 100, calories: 185, protein: 7, fat: 6, carbs: 26, fiber: 1, defaultAmount: 200, category: "Fertiggerichte" },
+  { name: "Döner Kebab", baseUnit: "100g", baseAmount: 100, calories: 215, protein: 13, fat: 12, carbs: 15, fiber: 1, defaultAmount: 350, category: "Fertiggerichte" },
+  { name: "Hamburger (Fertiggericht)", baseUnit: "100g", baseAmount: 100, calories: 250, protein: 13, fat: 13, carbs: 22, fiber: 1, defaultAmount: 200, category: "Fertiggerichte" },
+  { name: "Cheeseburger (Fertiggericht)", baseUnit: "100g", baseAmount: 100, calories: 265, protein: 14, fat: 14, carbs: 22, fiber: 1, defaultAmount: 220, category: "Fertiggerichte" },
+  { name: "Asia-Pfanne TK", baseUnit: "100g", baseAmount: 100, calories: 85, protein: 3, fat: 2, carbs: 13, fiber: 2, defaultAmount: 400, category: "Fertiggerichte" },
+  { name: "Bami Goreng TK", baseUnit: "100g", baseAmount: 100, calories: 135, protein: 5, fat: 5, carbs: 18, fiber: 1.5, defaultAmount: 400, category: "Fertiggerichte" },
+  { name: "Nasi Goreng TK", baseUnit: "100g", baseAmount: 100, calories: 140, protein: 4, fat: 5, carbs: 20, fiber: 1.5, defaultAmount: 400, category: "Fertiggerichte" },
+  { name: "Tiefkühlpizza Hawaii", baseUnit: "100g", baseAmount: 100, calories: 225, protein: 9, fat: 8, carbs: 28, fiber: 1.5, defaultAmount: 350, category: "Fertiggerichte" },
+  { name: "Cordon Bleu TK", baseUnit: "100g", baseAmount: 100, calories: 235, protein: 16, fat: 13, carbs: 14, fiber: 0.5, defaultAmount: 200, category: "Fertiggerichte" },
+  { name: "Kartoffelpuffer TK", baseUnit: "100g", baseAmount: 100, calories: 180, protein: 2.5, fat: 9, carbs: 22, fiber: 1.5, defaultAmount: 200, category: "Fertiggerichte" },
+  { name: "Kroketten TK", baseUnit: "100g", baseAmount: 100, calories: 210, protein: 3, fat: 10, carbs: 27, fiber: 1.5, defaultAmount: 200, category: "Fertiggerichte" },
+  { name: "Cevapcici TK", baseUnit: "100g", baseAmount: 100, calories: 230, protein: 15, fat: 17, carbs: 3, fiber: 0.5, defaultAmount: 200, category: "Fertiggerichte" },
+  { name: "Bratwurst (Fertigpackung)", baseUnit: "100g", baseAmount: 100, calories: 280, protein: 12, fat: 25, carbs: 1, fiber: 0, defaultAmount: 150, category: "Fertiggerichte" },
+  { name: "Gulaschsuppe (Dose)", baseUnit: "100g", baseAmount: 100, calories: 55, protein: 3.5, fat: 2, carbs: 5, fiber: 0.5, defaultAmount: 400, category: "Fertiggerichte" },
+  { name: "Erbsensuppe (Dose)", baseUnit: "100g", baseAmount: 100, calories: 65, protein: 4, fat: 1.5, carbs: 9, fiber: 2, defaultAmount: 400, category: "Fertiggerichte" },
 ];
 
 function loadFoodDatabase(): FoodItem[] {
