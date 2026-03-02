@@ -841,15 +841,15 @@ const SettingsDialog = ({
                 </div>
                 {/* === BLOCK 1: Basis (Name, g/ml, Makros) === */}
                 <div className="space-y-0.5 rounded-lg border border-border p-1.5 pt-1 bg-card">
-                  <p className="text-[9px] font-semibold text-muted-foreground uppercase tracking-wide mb-0.5">Basis</p>
+                  <p className="text-[8px] font-semibold text-muted-foreground uppercase tracking-wide mb-0.5">Basis</p>
                   <div className="grid grid-cols-5 gap-1.5">
                     <div className="col-span-4">
                       <Label className="text-[8px] text-muted-foreground leading-none block mb-0.5">Lebensmittel</Label>
-                      <Input value={editFoodName} onChange={(e) => setEditFoodName(e.target.value)} className="h-6 text-[10px] px-1" autoCorrect="off" spellCheck={false} />
+                      <Input value={editFoodName} onChange={(e) => setEditFoodName(e.target.value)} className="h-6 text-[8px] px-1 text-left" autoCorrect="off" spellCheck={false} />
                     </div>
                     <div className="col-span-1">
                       <Label className="text-[8px] text-muted-foreground leading-none block mb-0.5">g/ml</Label>
-                      <div className="h-6 flex items-center justify-center text-[10px] text-muted-foreground rounded-md border border-input bg-muted/30">
+                      <div className="h-6 flex items-center justify-center text-[8px] text-muted-foreground rounded-md border border-input bg-muted/30">
                         100
                       </div>
                     </div>
@@ -857,23 +857,23 @@ const SettingsDialog = ({
                   <div className="grid grid-cols-5 gap-1.5">
                     <div>
                       <Label className="text-[8px] text-muted-foreground leading-none block mb-0.5">kcal</Label>
-                      <Input type="number" inputMode="decimal" value={editFoodCal} onChange={(e) => setEditFoodCal(e.target.value)} className="h-6 text-[10px] px-1 text-left" />
+                      <Input type="number" inputMode="decimal" value={editFoodCal} onChange={(e) => setEditFoodCal(e.target.value)} className="h-6 text-[8px] px-1 text-center" />
                     </div>
                     <div>
                       <Label className="text-[8px] text-muted-foreground leading-none block mb-0.5">PRO</Label>
-                      <Input type="number" inputMode="decimal" value={editFoodPro} onChange={(e) => setEditFoodPro(e.target.value)} className="h-6 text-[10px] px-1 text-left" />
+                      <Input type="number" inputMode="decimal" value={editFoodPro} onChange={(e) => setEditFoodPro(e.target.value)} className="h-6 text-[8px] px-1 text-center" />
                     </div>
                     <div>
                       <Label className="text-[8px] text-muted-foreground leading-none block mb-0.5">FAT</Label>
-                      <Input type="number" inputMode="decimal" value={editFoodFat} onChange={(e) => setEditFoodFat(e.target.value)} className="h-6 text-[10px] px-1 text-left" />
+                      <Input type="number" inputMode="decimal" value={editFoodFat} onChange={(e) => setEditFoodFat(e.target.value)} className="h-6 text-[8px] px-1 text-center" />
                     </div>
                     <div>
                       <Label className="text-[8px] text-muted-foreground leading-none block mb-0.5">KH</Label>
-                      <Input type="number" inputMode="decimal" value={editFoodKh} onChange={(e) => setEditFoodKh(e.target.value)} className="h-6 text-[10px] px-1 text-left" />
+                      <Input type="number" inputMode="decimal" value={editFoodKh} onChange={(e) => setEditFoodKh(e.target.value)} className="h-6 text-[8px] px-1 text-center" />
                     </div>
                     <div>
                       <Label className="text-[8px] text-muted-foreground leading-none block mb-0.5">FIB</Label>
-                      <Input type="number" inputMode="decimal" value={editFoodFib} onChange={(e) => setEditFoodFib(e.target.value)} className="h-6 text-[10px] px-1 text-left" />
+                      <Input type="number" inputMode="decimal" value={editFoodFib} onChange={(e) => setEditFoodFib(e.target.value)} className="h-6 text-[8px] px-1 text-center" />
                     </div>
                   </div>
                   <div className="grid grid-cols-3 gap-1.5">
@@ -881,7 +881,7 @@ const SettingsDialog = ({
                       <Label className="text-[8px] text-muted-foreground leading-none block mb-0.5">Kategorie</Label>
                       <button
                         type="button"
-                        className="w-full flex items-center justify-between h-6 px-1.5 text-[10px] rounded-md border border-input bg-background hover:bg-muted/60 transition-colors"
+                        className="w-full flex items-center justify-between h-6 px-1.5 text-[8px] rounded-md border border-input bg-background hover:bg-muted/60 transition-colors"
                         onClick={() => setShowCategoryDropdown(v => !v)}
                       >
                         <span className="truncate">{editFoodCategory || "–"}</span>
@@ -897,13 +897,13 @@ const SettingsDialog = ({
                           />
                           <div className="absolute left-0 right-0 bottom-[calc(100%-1.25rem)] mb-0 z-[220] overflow-y-auto rounded-md border border-border bg-popover shadow-lg max-h-[55vh]">
                             <div
-                              className={`px-3 py-0.5 text-[10px] leading-4 cursor-pointer transition-colors ${!editFoodCategory ? "bg-primary/10 text-primary font-medium" : "hover:bg-muted/60"}`}
+                              className={`px-3 py-0.5 text-[8px] leading-4 cursor-pointer transition-colors ${!editFoodCategory ? "bg-primary/10 text-primary font-medium" : "hover:bg-muted/60"}`}
                               onPointerDown={(e) => { e.preventDefault(); setEditFoodCategory(""); setShowCategoryDropdown(false); }}
                             >–</div>
                             {FOOD_CATEGORIES.map(cat => (
                               <div
                                 key={cat}
-                                className={`px-3 py-0.5 text-[10px] leading-4 cursor-pointer transition-colors ${editFoodCategory === cat ? "bg-primary/10 text-primary font-medium" : "hover:bg-muted/60"}`}
+                                className={`px-3 py-0.5 text-[8px] leading-4 cursor-pointer transition-colors ${editFoodCategory === cat ? "bg-primary/10 text-primary font-medium" : "hover:bg-muted/60"}`}
                                 onPointerDown={(e) => { e.preventDefault(); setEditFoodCategory(cat); setShowCategoryDropdown(false); }}
                               >{cat}</div>
                             ))}
@@ -913,11 +913,11 @@ const SettingsDialog = ({
                     </div>
                     <div>
                       <Label className="text-[8px] text-muted-foreground leading-none block mb-0.5">Standardwert</Label>
-                      <Input type="number" inputMode="decimal" value={editFoodDefault} onChange={(e) => setEditFoodDefault(e.target.value)} placeholder="z.B. 125" className="h-6 text-[10px] px-1" />
+                      <Input type="number" inputMode="decimal" value={editFoodDefault} onChange={(e) => setEditFoodDefault(e.target.value)} placeholder="z.B. 125" className="h-6 text-[8px] px-1 text-center" />
                     </div>
                     <div>
                       <Label className="text-[8px] text-muted-foreground leading-none block mb-0.5">Flüssigkeit (ml)</Label>
-                      <Input type="number" inputMode="decimal" value={editFoodLiquid} onChange={(e) => setEditFoodLiquid(e.target.value)} placeholder="z.B. 250" className="h-6 text-[10px] px-1" />
+                      <Input type="number" inputMode="decimal" value={editFoodLiquid} onChange={(e) => setEditFoodLiquid(e.target.value)} placeholder="z.B. 250" className="h-6 text-[8px] px-1 text-center" />
                     </div>
                   </div>
                 </div>
@@ -927,7 +927,7 @@ const SettingsDialog = ({
                   variant="outline"
                   onClick={handleAiLookup}
                   disabled={aiLoading || !editFoodName.trim()}
-                  className="w-full h-6 text-[10px] gap-2"
+                  className="w-full h-6 text-[8px] gap-2"
                 >
                   {aiLoading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3 text-primary" />}
                   {aiLoading ? "KI sucht Nährwerte..." : <><Search className="w-3 h-3 text-muted-foreground" /> KI-Nährwerte suchen</>}
@@ -935,13 +935,13 @@ const SettingsDialog = ({
 
                 {/* Buttons */}
                 <div className="grid grid-cols-3 gap-1.5">
-                  <Button variant="outline" onClick={() => { handleSaveFood(); handleNewFood(); }} className="h-6 text-[10px]">
+                  <Button variant="outline" onClick={() => { handleSaveFood(); handleNewFood(); }} className="h-6 text-[8px]">
                     + Nächstes
                   </Button>
-                  <Button onClick={handleSaveFood} className="h-6 text-[10px] gap-1">
+                  <Button onClick={handleSaveFood} className="h-6 text-[8px] gap-1">
                     <Save className="w-3 h-3" /> Speichern
                   </Button>
-                  <Button variant="outline" onClick={() => { setEditingFood(null); setFoodNavIndex(null); }} className="h-6 text-[10px]">
+                  <Button variant="outline" onClick={() => { setEditingFood(null); setFoodNavIndex(null); }} className="h-6 text-[8px]">
                     ← Tabelle
                   </Button>
                 </div>
@@ -949,13 +949,13 @@ const SettingsDialog = ({
                 {/* Zusatzinfo */}
                 <div>
                   <Label className="text-[8px] text-muted-foreground leading-none block mb-0.5">Zusatzinfo</Label>
-                  <Textarea value={editFoodNotes} onChange={(e) => setEditFoodNotes(e.target.value)} placeholder="z.B. vegan, Nutri Score, Haltungsform, Bio usw." className="min-h-[40px] text-[10px] px-1 py-1" />
+                  <Textarea value={editFoodNotes} onChange={(e) => setEditFoodNotes(e.target.value)} placeholder="z.B. vegan, Nutri Score, Haltungsform, Bio usw." className="min-h-[40px] text-[8px] px-1 py-1 leading-tight" />
                 </div>
 
                 {/* === BLOCK 2: Mikronährstoffe (Vitamine + Spurenelemente) === */}
                 <div className="rounded-lg border border-border p-1.5 pt-1 bg-card">
                   {/* Vitamine */}
-                  <p className="text-[9px] font-semibold text-muted-foreground uppercase tracking-wide mb-0.5">Vitamine</p>
+                  <p className="text-[8px] font-semibold text-muted-foreground uppercase tracking-wide mb-0.5">Vitamine</p>
                   <div className="grid grid-cols-4 gap-x-1.5 gap-y-0">
                     {([
                       ["vitA", "A (µg)"],
@@ -979,14 +979,14 @@ const SettingsDialog = ({
                           inputMode="decimal"
                           value={editVitamins[key] !== undefined ? String(editVitamins[key]) : ""}
                           onChange={(e) => setEditVitamins(prev => ({ ...prev, [key]: e.target.value ? parseFloat(e.target.value) : undefined }))}
-                          className="h-6 text-[10px] px-1"
+                          className="h-6 text-[8px] px-1 text-center"
                         />
                       </div>
                     ))}
                   </div>
 
                   {/* Spurenelemente */}
-                  <p className="text-[9px] font-semibold text-muted-foreground uppercase tracking-wide mt-0.5 mb-0.5">Spurenelemente</p>
+                  <p className="text-[8px] font-semibold text-muted-foreground uppercase tracking-wide mt-0.5 mb-0.5">Spurenelemente</p>
                   <div className="grid grid-cols-4 gap-x-1.5 gap-y-0">
                     {([
                       ["calcium", "Ca (mg)"],
@@ -1009,7 +1009,7 @@ const SettingsDialog = ({
                           inputMode="decimal"
                           value={editMinerals[key] !== undefined ? String(editMinerals[key]) : ""}
                           onChange={(e) => setEditMinerals(prev => ({ ...prev, [key]: e.target.value ? parseFloat(e.target.value) : undefined }))}
-                          className="h-6 text-[10px] px-1"
+                          className="h-6 text-[8px] px-1 text-center"
                         />
                       </div>
                     ))}
