@@ -58,6 +58,43 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
     suggestionsRef.current = suggestions;
   }, [suggestions]);
 
+  // German word-to-number map for voice pick commands
+  const WORD_TO_NUM: Record<string, number> = {
+    "eins": 1, "ein": 1, "erste": 1, "erster": 1, "erstes": 1, "ersten": 1, "1": 1,
+    "zwei": 2, "zweite": 2, "zweiter": 2, "zweites": 2, "zweiten": 2, "2": 2,
+    "drei": 3, "dritte": 3, "dritter": 3, "drittes": 3, "dritten": 3, "3": 3,
+    "vier": 4, "vierte": 4, "vierter": 4, "viertes": 4, "vierten": 4, "4": 4,
+    "fünf": 5, "fünfte": 5, "5": 5,
+    "sechs": 6, "sechste": 6, "6": 6,
+    "sieben": 7, "siebte": 7, "7": 7,
+    "acht": 8, "achte": 8, "8": 8,
+    "neun": 9, "neunte": 9, "9": 9,
+    "zehn": 10, "zehnte": 10, "10": 10,
+  };
+
+  // Parse voice commands like "Nummer eins", "Position 3", "das Erste", "nimm zwei"
+  const parseVoicePickCommand = useCallback((text: string): number | null => {
+    const lower = text.toLowerCase().trim();
+    // Pattern: keyword + number word/digit
+    const match = lower.match(/\b(?:nummer|position|number|pos|nimm|nehme|das|die|der)\s+(\S+)/);
+    if (match) {
+      const num = WORD_TO_NUM[match[1]];
+      if (num !== undefined) return num - 1; // 0-based
+    }
+    // Fallback: just a number word alone (e.g. user says "eins")
+    // Only if suggestions are currently visible
+    if (suggestionsRef.current.length > 0) {
+      const words = lower.split(/\s+/);
+      if (words.length <= 2) {
+        for (const w of words) {
+          const num = WORD_TO_NUM[w];
+          if (num !== undefined) return num - 1;
+        }
+      }
+    }
+    return null;
+  }, []);
+
   // Helper: fuzzy match for "buchen" command
   const isBuchenCommand = useCallback((text: string) => {
     const lower = text.toLowerCase().trim();
@@ -110,13 +147,12 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
 
       if (currentField === "food") {
         // Check for "Nummer X" / "Position X" command to pick from visible suggestions
-        const numMatch = transcript.match(/\b(?:nummer|position|number|pos)\s*(\d{1,2})\b/i);
-        if (numMatch) {
-          const idx = parseInt(numMatch[1], 10) - 1; // 1-based to 0-based
+        const pickIndex = parseVoicePickCommand(transcript);
+        if (pickIndex !== null) {
           const currentSuggestions = suggestionsRef.current;
-          if (idx >= 0 && idx < currentSuggestions.length) {
-            handleSelectFoodRef.current(currentSuggestions[idx]);
-          } else {
+          if (pickIndex >= 0 && pickIndex < currentSuggestions.length) {
+            handleSelectFoodRef.current(currentSuggestions[pickIndex]);
+          } else if (currentSuggestions.length > 0) {
             toast.error(`Nur ${currentSuggestions.length} Vorschläge verfügbar.`);
           }
           return;
