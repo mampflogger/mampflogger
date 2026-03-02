@@ -933,6 +933,19 @@ const SettingsDialog = ({
                   {aiLoading ? "KI sucht Nährwerte..." : <><Search className="w-3.5 h-3.5 text-muted-foreground" /> KI-Nährwerte suchen</>}
                 </Button>
 
+                {/* Buttons */}
+                <div className="grid grid-cols-3 gap-2">
+                  <Button variant="outline" onClick={() => { handleSaveFood(); handleNewFood(); }} className="h-8 text-xs">
+                    + Nächstes
+                  </Button>
+                  <Button onClick={handleSaveFood} className="h-8 text-xs gap-1">
+                    <Save className="w-3.5 h-3.5" /> Speichern
+                  </Button>
+                  <Button variant="outline" onClick={() => { setEditingFood(null); setFoodNavIndex(null); }} className="h-8 text-xs">
+                    ← Tabelle
+                  </Button>
+                </div>
+
                 {/* === BLOCK 2: Mikronährstoffe (Vitamine + Spurenelemente) === */}
                 <div className="rounded-lg border border-border p-1.5 pt-1 bg-card">
                   {/* Vitamine */}
@@ -995,25 +1008,6 @@ const SettingsDialog = ({
                       </div>
                     ))}
                   </div>
-                </div>
-
-                {/* Zusatzinfo */}
-                <div>
-                  <Label className="text-[10px] text-muted-foreground">Zusatzinfo</Label>
-                  <Textarea value={editFoodNotes} onChange={(e) => setEditFoodNotes(e.target.value)} placeholder="z.B. vegan, Nutri Score, Haltungsform, Bio usw." className="min-h-[60px] text-xs" />
-                </div>
-
-                {/* Buttons */}
-                <div className="grid grid-cols-3 gap-2 !mt-4">
-                  <Button variant="outline" onClick={() => { handleSaveFood(); handleNewFood(); }} className="h-9 text-xs">
-                    + Nächstes
-                  </Button>
-                  <Button onClick={handleSaveFood} className="h-9 text-xs gap-1">
-                    <Save className="w-3.5 h-3.5" /> Speichern
-                  </Button>
-                  <Button variant="outline" onClick={() => { setEditingFood(null); setFoodNavIndex(null); }} className="h-9 text-xs">
-                    ← Tabelle
-                  </Button>
                 </div>
               </div>
             ) : (
