@@ -559,9 +559,9 @@ const SettingsDialog = ({
         "Schwein": ["schwein", "kasseler"],  // note: wildschwein handled separately below
         "Lamm": ["lamm"],
         "Kalb": ["kalb"],
-        "Geflügel": ["hähn", "huhn", "pute", "ente", "gans", "suppenhuhn", "brathähnchen"],
+        "Geflügel": ["hähn", "huhn", "pute", "ente", "gans", "suppenhuhn", "brathähnchen", "geflügel"],
         "Wild": ["reh", "hirsch", "wildschwein", "kaninchen"],
-        "Wurst": ["wurst", "salami", "schinken", "speck", "lyoner", "mortadella", "landjäger", "cabanossi", "chorizo", "sucuk", "bierschinken", "fleischwurst", "jagdwurst", "mettwurst", "teewurst", "cervelat", "bratwurst", "wiener", "weißwurst", "leberwurst", "blutwurst", "gelbwurst", "krakauer", "presssack", "nürnberger", "paprikalyoner", "frühstücksfleisch"],
+        "Wurst": ["wurst", "salami", "schinken", "speck", "lyoner", "mortadella", "landjäger", "cabanossi", "chorizo", "sucuk", "bierschinken", "fleischwurst", "jagdwurst", "mettwurst", "teewurst", "cervelat", "wiener", "weißwurst", "leberwurst", "blutwurst", "gelbwurst", "krakauer", "presssack", "paprikalyoner", "frühstücksfleisch"],
       };
       const keywords = animalKeywords[selectedAnimal];
       if (keywords) {
