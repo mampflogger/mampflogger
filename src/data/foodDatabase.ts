@@ -607,12 +607,12 @@ function loadFoodDatabase(): FoodItem[] {
       }
       const existing = storedMap.get(key);
       if (!existing) {
-        storedMap.set(key, { ...def, category: FOOD_CATEGORY_MAP[def.name] });
+        storedMap.set(key, { ...def, category: def.category || FOOD_CATEGORY_MAP[def.name] });
         changed = true;
       } else if (!existing.isUserCreated) {
         const updated: FoodItem = {
           ...def,
-          category: FOOD_CATEGORY_MAP[def.name] || existing.category,
+          category: def.category || FOOD_CATEGORY_MAP[def.name] || existing.category,
           ...(existing.defaultAmount !== undefined ? { defaultAmount: existing.defaultAmount } : {}),
           isUserCreated: false,
         };
