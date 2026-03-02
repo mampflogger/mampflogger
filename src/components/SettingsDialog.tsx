@@ -181,6 +181,7 @@ const SettingsDialog = ({
   const [, forceUpdate] = useState(0);
   const [foodNavIndex, setFoodNavIndex] = useState<number | null>(null);
   const [selectedCategories, setSelectedCategories] = useState<Set<string>>(new Set());
+  const [selectedAnimal, setSelectedAnimal] = useState<string | null>(null);
   const [selectedRecipeFoods, setSelectedRecipeFoods] = useState<FoodItem[]>([]);
 
 
@@ -550,6 +551,24 @@ const SettingsDialog = ({
       : [...foodDatabase].sort((a, b) => a.name.localeCompare(b.name));
     if (selectedCategories.size > 0) {
       list = list.filter((f) => f.category && selectedCategories.has(f.category));
+    }
+    // Animal sub-filter for Fleisch&Wurst
+    if (selectedAnimal && selectedCategories.has("Fleisch&Wurst")) {
+      const animalKeywords: Record<string, string[]> = {
+        "Rind": ["rind", "roastbeef", "tafelspitz", "sauerbraten"],
+        "Schwein": ["schwein", "kasseler"],
+        "Lamm": ["lamm"],
+        "Kalb": ["kalb"],
+        "Geflügel": ["hähn", "huhn", "pute", "ente", "gans", "suppenhuhn"],
+        "Wild": ["reh", "hirsch", "wildschwein", "kaninchen"],
+      };
+      const keywords = animalKeywords[selectedAnimal];
+      if (keywords) {
+        list = list.filter((f) => {
+          const lower = f.name.toLowerCase();
+          return keywords.some(k => lower.includes(k));
+        });
+      }
     }
     return list;
   })();
@@ -929,7 +948,7 @@ const SettingsDialog = ({
                       <input
                         type="checkbox"
                         checked={selectedCategories.size === 0}
-                        onChange={() => setSelectedCategories(new Set())}
+                        onChange={() => { setSelectedCategories(new Set()); setSelectedAnimal(null); }}
                         className="w-3.5 h-3.5 rounded border-border accent-primary"
                       />
                       <span className="text-[10px] font-medium text-foreground">alle</span>
@@ -942,8 +961,12 @@ const SettingsDialog = ({
                           onChange={() => {
                             setSelectedCategories(prev => {
                               const next = new Set(prev);
-                              if (next.has(cat)) next.delete(cat);
-                              else next.add(cat);
+                              if (next.has(cat)) {
+                                next.delete(cat);
+                                if (cat === "Fleisch&Wurst") setSelectedAnimal(null);
+                              } else {
+                                next.add(cat);
+                              }
                               return next;
                             });
                           }}
@@ -953,6 +976,25 @@ const SettingsDialog = ({
                       </label>
                     ))}
                   </div>
+                  {/* Animal sub-filter when Fleisch&Wurst is selected */}
+                  {selectedCategories.has("Fleisch&Wurst") && (
+                    <div className="flex flex-wrap gap-1 pb-1.5">
+                      {["Rind", "Schwein", "Lamm", "Kalb", "Geflügel", "Wild"].map(animal => (
+                        <button
+                          key={animal}
+                          type="button"
+                          onClick={() => setSelectedAnimal(prev => prev === animal ? null : animal)}
+                          className={`px-2 py-0.5 rounded text-[10px] font-medium transition-colors border ${
+                            selectedAnimal === animal
+                              ? "bg-primary text-primary-foreground border-primary"
+                              : "bg-muted/50 text-muted-foreground border-border hover:bg-muted"
+                          }`}
+                        >
+                          {animal}
+                        </button>
+                      ))}
+                    </div>
+                  )}
                   <div className="relative z-20 mb-10 flex items-center gap-1.5">
                     <div className="relative flex-1">
                       <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground pointer-events-none" />
