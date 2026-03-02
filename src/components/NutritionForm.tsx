@@ -47,6 +47,7 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
   const [fat, setFat] = useState("");
   const [fiber, setFiber] = useState("");
   const [gi, setGi] = useState("");
+  const justBookedRef = useRef(false);
 
   const [suggestions, setSuggestions] = useState<FoodItem[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -139,6 +140,8 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
       // "buchen" command works from both amount and submit fields
       if (currentField === "submit" || currentField === "amount") {
         if (isBuchenCommand(transcript)) {
+          justBookedRef.current = true;
+          setTimeout(() => { justBookedRef.current = false; }, 1500);
           submitButtonRef.current?.click();
           return;
         }
@@ -150,6 +153,9 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
       if (isInterim) return;
 
       if (currentField === "food") {
+        // Ignore speech that arrives right after a booking command
+        if (justBookedRef.current) return;
+
         // Check for "Nummer X" / "Position X" command to pick from visible suggestions
         const pickIndex = parseVoicePickCommand(transcript);
         if (pickIndex !== null) {
