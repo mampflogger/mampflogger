@@ -1,5 +1,5 @@
 import { NutritionEntry, calculateDailySummary, formatDate, generateId } from "@/types/nutrition";
-import { FoodItem, foodDatabase } from "@/data/foodDatabase";
+import { FoodItem, FoodVitamins, FoodMinerals, foodDatabase } from "@/data/foodDatabase";
 import {
   UserProfile,
   BookedActivity,
@@ -63,11 +63,20 @@ export function exportEntriesToCsv(entries: NutritionEntry[]): void {
   downloadCsv(csv, `mampflogger-protokoll-${new Date().toISOString().slice(0, 10)}.csv`);
 }
 
+const VITAMIN_KEYS = ["vitA","vitB1","vitB2","vitB3","vitB5","vitB6","vitB7","vitB9","vitB12","vitC","vitD","vitE","vitK"] as const;
+const MINERAL_KEYS = ["calcium","chlorid","eisen","fluorid","kalium","kupfer","magnesium","mangan","natrium","phosphor","schwefel","zink"] as const;
+
 /** Export food database */
 export function exportFoodDatabaseCsv(): void {
-  const header = "Lebensmittel;Einheit;kcal;PRO;FAT;KH;FIB;Standard;LiquidMl;Kategorie";
-  const rows = foodDatabase.map((f) =>
-    [
+  const header = [
+    "Lebensmittel","Einheit","kcal","PRO","FAT","KH","FIB","GI","Standard","LiquidMl","Kategorie","Zusatzinfo",
+    ...VITAMIN_KEYS, ...MINERAL_KEYS,
+  ].join(";");
+
+  const rows = foodDatabase.map((f) => {
+    const vitVals = VITAMIN_KEYS.map(k => f.vitamins?.[k] ?? "");
+    const minVals = MINERAL_KEYS.map(k => f.minerals?.[k] ?? "");
+    return [
       `"${f.name.replace(/"/g, '""')}"`,
       f.baseUnit,
       f.calories,
@@ -75,11 +84,15 @@ export function exportFoodDatabaseCsv(): void {
       f.fat,
       f.carbs,
       f.fiber,
+      f.gi ?? "",
       f.defaultAmount || "",
       f.liquidMl !== undefined ? f.liquidMl : "",
       f.category || "",
-    ].join(";")
-  );
+      f.notes ? `"${f.notes.replace(/"/g, '""').replace(/\n/g, '\\n')}"` : "",
+      ...vitVals,
+      ...minVals,
+    ].join(";");
+  });
 
   const csv = [header, ...rows].join("\n");
   downloadCsv(csv, `mampflogger-lebensmittel-${new Date().toISOString().slice(0, 10)}.csv`);
@@ -122,6 +135,10 @@ export function parseFoodDatabaseCsv(text: string): FoodItem[] {
   const lines = text.trim().split("\n");
   const items: FoodItem[] = [];
 
+  // Detect header to find column indices
+  const headerLine = lines[0]?.toLowerCase() ?? "";
+  const isExtended = headerLine.includes("gi") || headerLine.includes("zusatzinfo") || headerLine.includes("vita");
+
   for (const line of lines) {
     const cols = line.split(";").map((c) => c.trim().replace(/^"|"$/g, ""));
     if (cols.length < 7) continue;
@@ -130,21 +147,66 @@ export function parseFoodDatabaseCsv(text: string): FoodItem[] {
 
     const baseUnit = cols[1] || "100g";
     const baseAmount = baseUnit.includes("Stk") ? 1 : 100;
-    const defaultAmountRaw = cols[7] ? parseFloat(cols[7]) : undefined;
-    const liquidMlRaw = cols[8] ? parseFloat(cols[8]) : undefined;
 
-    items.push({
-      name,
-      baseUnit,
-      baseAmount,
-      calories: parseFloat(cols[2]) || 0,
-      protein: parseFloat(cols[3]) || 0,
-      fat: parseFloat(cols[4]) || 0,
-      carbs: parseFloat(cols[5]) || 0,
-      fiber: parseFloat(cols[6]) || 0,
-      defaultAmount: defaultAmountRaw && !isNaN(defaultAmountRaw) ? defaultAmountRaw : undefined,
-      liquidMl: liquidMlRaw && !isNaN(liquidMlRaw) ? liquidMlRaw : undefined,
-    });
+    if (isExtended) {
+      // Extended format: Name;Einheit;kcal;PRO;FAT;KH;FIB;GI;Standard;LiquidMl;Kategorie;Zusatzinfo;13 vitamins;12 minerals
+      const gi = cols[7] ? parseFloat(cols[7]) : undefined;
+      const defaultAmountRaw = cols[8] ? parseFloat(cols[8]) : undefined;
+      const liquidMlRaw = cols[9] ? parseFloat(cols[9]) : undefined;
+      const category = cols[10] || undefined;
+      const notes = cols[11] ? cols[11].replace(/\\n/g, "\n") : undefined;
+
+      // Parse vitamins (cols 12-24)
+      const vitamins: FoodVitamins = {};
+      let hasVitamins = false;
+      VITAMIN_KEYS.forEach((k, i) => {
+        const v = cols[12 + i] ? parseFloat(cols[12 + i]) : undefined;
+        if (v !== undefined && !isNaN(v) && v > 0) { (vitamins as any)[k] = v; hasVitamins = true; }
+      });
+
+      // Parse minerals (cols 25-36)
+      const minerals: FoodMinerals = {};
+      let hasMinerals = false;
+      MINERAL_KEYS.forEach((k, i) => {
+        const v = cols[25 + i] ? parseFloat(cols[25 + i]) : undefined;
+        if (v !== undefined && !isNaN(v) && v > 0) { (minerals as any)[k] = v; hasMinerals = true; }
+      });
+
+      items.push({
+        name,
+        baseUnit,
+        baseAmount,
+        calories: parseFloat(cols[2]) || 0,
+        protein: parseFloat(cols[3]) || 0,
+        fat: parseFloat(cols[4]) || 0,
+        carbs: parseFloat(cols[5]) || 0,
+        fiber: parseFloat(cols[6]) || 0,
+        ...(gi !== undefined && !isNaN(gi) && gi > 0 ? { gi } : {}),
+        defaultAmount: defaultAmountRaw && !isNaN(defaultAmountRaw) ? defaultAmountRaw : undefined,
+        liquidMl: liquidMlRaw && !isNaN(liquidMlRaw) ? liquidMlRaw : undefined,
+        ...(category ? { category: category as FoodItem["category"] } : {}),
+        ...(notes ? { notes } : {}),
+        ...(hasVitamins ? { vitamins } : {}),
+        ...(hasMinerals ? { minerals } : {}),
+      });
+    } else {
+      // Legacy format: Name;Einheit;kcal;PRO;FAT;KH;FIB;Standard;LiquidMl;Kategorie
+      const defaultAmountRaw = cols[7] ? parseFloat(cols[7]) : undefined;
+      const liquidMlRaw = cols[8] ? parseFloat(cols[8]) : undefined;
+
+      items.push({
+        name,
+        baseUnit,
+        baseAmount,
+        calories: parseFloat(cols[2]) || 0,
+        protein: parseFloat(cols[3]) || 0,
+        fat: parseFloat(cols[4]) || 0,
+        carbs: parseFloat(cols[5]) || 0,
+        fiber: parseFloat(cols[6]) || 0,
+        defaultAmount: defaultAmountRaw && !isNaN(defaultAmountRaw) ? defaultAmountRaw : undefined,
+        liquidMl: liquidMlRaw && !isNaN(liquidMlRaw) ? liquidMlRaw : undefined,
+      });
+    }
   }
 
   return items;
