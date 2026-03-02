@@ -32,15 +32,18 @@ serve(async (req) => {
         messages: [
           {
             role: "system",
-            content: `Du bist ein Ernährungsdaten-Assistent. Der Nutzer nennt dir ein Lebensmittel und du lieferst die Nährwerte PRO 100g (oder 100ml bei Getränken) zurück. Antworte ausschließlich mit einem JSON-Objekt in exakt diesem Format – keine weiteren Erklärungen:
-{"name":"<Name des Lebensmittels>","calories":<number>,"protein":<number>,"fat":<number>,"carbs":<number>,"fiber":<number>,"liquidMl":<number oder 0>,"category":"<passende Kategorie>","defaultAmount":<number oder null>}
+            content: `Du bist ein Ernährungsdaten-Assistent. Der Nutzer nennt dir ein Lebensmittel und du lieferst die Nährwerte PRO 100g (oder 100ml bei Getränken) zurück. Antworte ausschließlich mit einem JSON-Objekt – keine weiteren Erklärungen.
 
 Regeln:
-- Alle Werte pro 100g/100ml, gerundet auf 1 Dezimalstelle
+- Alle Werte pro 100g/100ml
+- Makros gerundet auf 1 Dezimalstelle
+- Vitamine und Spurenelemente: Werte so genau wie möglich
 - liquidMl: Setze auf 100 wenn es ein Getränk ist, sonst 0
-- category: Wähle EXAKT eine dieser Kategorien (keine anderen!): Fleisch&Wurst, Fisch&Meeresfrüchte, Käse, Nüsse&Samen, Gemüse, Brot&Teigwaren, Öle&Fette, Getränke, Obst, Milchprodukte, Süßwaren, Sonstiges, Eigene
-- defaultAmount: Typische Portionsgröße in g/ml (z.B. 250 für eine Tasse Kaffee, 30 für eine Scheibe Brot), oder null wenn 100 passt
-- name: Deutsch, Großbuchstabe am Anfang`,
+- category: Wähle EXAKT eine dieser Kategorien: Fleisch&Wurst, Fisch&Meeresfrüchte, Käse, Nüsse&Samen, Gemüse, Brot&Teigwaren, Öle&Fette, Getränke, Obst, Milchprodukte, Süßwaren, Sonstiges, Eigene
+- defaultAmount: Typische Portionsgröße in g/ml oder null
+- name: Deutsch, Großbuchstabe am Anfang
+- Vitamine: vitA (µg), vitB1 (mg), vitB2 (mg), vitB3 (mg), vitB5 (mg), vitB6 (mg), vitB7 (µg), vitB9 (µg), vitB12 (µg), vitC (mg), vitD (µg), vitE (mg), vitK (µg)
+- Spurenelemente: calcium (mg), chlorid (mg), eisen (mg), fluorid (mg), kalium (mg), kupfer (mg), magnesium (mg), mangan (mg), natrium (mg), phosphor (mg), schwefel (mg), zink (mg)`,
           },
           {
             role: "user",
@@ -52,7 +55,7 @@ Regeln:
             type: "function",
             function: {
               name: "return_nutrition_data",
-              description: "Return nutritional data for a food item per 100g/100ml",
+              description: "Return nutritional data for a food item per 100g/100ml including vitamins and minerals",
               parameters: {
                 type: "object",
                 properties: {
@@ -63,8 +66,44 @@ Regeln:
                   carbs: { type: "number", description: "Carbs in g per 100g/100ml" },
                   fiber: { type: "number", description: "Fiber in g per 100g/100ml" },
                   liquidMl: { type: "number", description: "100 if beverage, 0 otherwise" },
-                  category: { type: "string", enum: ["Fleisch&Wurst","Fisch&Meeresfrüchte","Käse","Nüsse&Samen","Gemüse","Brot&Teigwaren","Öle&Fette","Getränke","Obst","Milchprodukte","Süßwaren","Sonstiges","Eigene"], description: "Food category in German" },
+                  category: { type: "string", enum: ["Fleisch&Wurst","Fisch&Meeresfrüchte","Käse","Nüsse&Samen","Gemüse","Brot&Teigwaren","Öle&Fette","Getränke","Obst","Milchprodukte","Süßwaren","Sonstiges","Eigene"], description: "Food category" },
                   defaultAmount: { type: ["number", "null"], description: "Typical portion size in g/ml or null" },
+                  vitamins: {
+                    type: "object",
+                    properties: {
+                      vitA: { type: "number", description: "Vitamin A (Retinol) in µg" },
+                      vitB1: { type: "number", description: "Vitamin B1 (Thiamin) in mg" },
+                      vitB2: { type: "number", description: "Vitamin B2 (Riboflavin) in mg" },
+                      vitB3: { type: "number", description: "Vitamin B3 (Niacin) in mg" },
+                      vitB5: { type: "number", description: "Vitamin B5 (Pantothensäure) in mg" },
+                      vitB6: { type: "number", description: "Vitamin B6 (Pyridoxin) in mg" },
+                      vitB7: { type: "number", description: "Vitamin B7 (Biotin) in µg" },
+                      vitB9: { type: "number", description: "Vitamin B9 (Folsäure) in µg" },
+                      vitB12: { type: "number", description: "Vitamin B12 (Cobalamin) in µg" },
+                      vitC: { type: "number", description: "Vitamin C in mg" },
+                      vitD: { type: "number", description: "Vitamin D in µg" },
+                      vitE: { type: "number", description: "Vitamin E in mg" },
+                      vitK: { type: "number", description: "Vitamin K in µg" },
+                    },
+                  },
+                  minerals: {
+                    type: "object",
+                    properties: {
+                      calcium: { type: "number", description: "Calcium in mg" },
+                      chlorid: { type: "number", description: "Chlorid in mg" },
+                      eisen: { type: "number", description: "Eisen in mg" },
+                      fluorid: { type: "number", description: "Fluorid in mg" },
+                      kalium: { type: "number", description: "Kalium in mg" },
+                      kupfer: { type: "number", description: "Kupfer in mg" },
+                      magnesium: { type: "number", description: "Magnesium in mg" },
+                      mangan: { type: "number", description: "Mangan in mg" },
+                      natrium: { type: "number", description: "Natrium in mg" },
+                      phosphor: { type: "number", description: "Phosphor in mg" },
+                      schwefel: { type: "number", description: "Schwefel in mg" },
+                      zink: { type: "number", description: "Zink in mg" },
+                    },
+                  },
+                  notes: { type: "string", description: "Additional notes about the food" },
                 },
                 required: ["name", "calories", "protein", "fat", "carbs", "fiber", "liquidMl", "category"],
                 additionalProperties: false,

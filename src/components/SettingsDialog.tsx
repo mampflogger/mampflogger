@@ -21,7 +21,7 @@ import CookIcon from "@/components/CookIcon";
 import { supabase } from "@/integrations/supabase/client";
 import { UserProfile, calculateBMR } from "@/types/profile";
 import { NutritionEntry } from "@/types/nutrition";
-import { foodDatabase, addFoodItem, removeFoodItem, updateFoodItem, clearFoodDatabase, reloadFoodDatabase, resetFoodDatabase, DEFAULT_FOODS, FoodItem, FOOD_CATEGORIES, FoodCategory } from "@/data/foodDatabase";
+import { foodDatabase, addFoodItem, removeFoodItem, updateFoodItem, clearFoodDatabase, reloadFoodDatabase, resetFoodDatabase, DEFAULT_FOODS, FoodItem, FoodVitamins, FoodMinerals, FOOD_CATEGORIES, FoodCategory } from "@/data/foodDatabase";
 import {
   exportEntriesToCsv, exportFoodDatabaseCsv, exportCalorieBalanceCsv, exportActivitiesCsv,
 } from "@/lib/csvExport";
@@ -175,6 +175,8 @@ const SettingsDialog = ({
    const [editFoodLiquid, setEditFoodLiquid] = useState("");
    const [editFoodCategory, setEditFoodCategory] = useState<FoodCategory | "">("");
    const [editFoodNotes, setEditFoodNotes] = useState("");
+  const [editVitamins, setEditVitamins] = useState<FoodVitamins>({});
+  const [editMinerals, setEditMinerals] = useState<FoodMinerals>({});
   
   const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
   const [aiLoading, setAiLoading] = useState(false);
@@ -227,6 +229,8 @@ const SettingsDialog = ({
      setEditFoodLiquid("");
      setEditFoodCategory("");
      setEditFoodNotes("");
+    setEditVitamins({});
+    setEditMinerals({});
   };
 
   const handleAiLookup = async () => {
@@ -254,6 +258,8 @@ const SettingsDialog = ({
        const validCategory = (FOOD_CATEGORIES as readonly string[]).includes(n.category) ? n.category as FoodCategory : "Eigene";
       setEditFoodCategory(validCategory);
       setEditFoodDefault(n.defaultAmount ? String(n.defaultAmount) : "");
+      if (n.vitamins) setEditVitamins(n.vitamins);
+      if (n.minerals) setEditMinerals(n.minerals);
       toast.success("KI-Werte übernommen – bitte prüfen & speichern!");
     } catch (err: any) {
       console.error("AI lookup error:", err);
@@ -347,6 +353,8 @@ const SettingsDialog = ({
      setEditFoodLiquid(food.liquidMl ? String(food.liquidMl) : "");
      setEditFoodCategory(food.category || "");
      setEditFoodNotes(food.notes || "");
+    setEditVitamins(food.vitamins || {});
+    setEditMinerals(food.minerals || {});
     if (index !== undefined) setFoodNavIndex(index);
   };
 
@@ -360,6 +368,9 @@ const SettingsDialog = ({
   const handleSaveFood = () => {
     if (!editingFood || !editFoodName.trim()) return;
     const hasLiquid = editFoodLiquid && parseFloat(editFoodLiquid) > 0;
+    // Only include vitamins/minerals if they have at least one non-zero value
+    const hasVitamins = Object.values(editVitamins).some(v => v !== undefined && v > 0);
+    const hasMinerals = Object.values(editMinerals).some(v => v !== undefined && v > 0);
     const updated: FoodItem = {
       name: editFoodName.trim(),
       baseUnit: hasLiquid ? "100ml" : "100g",
@@ -373,10 +384,11 @@ const SettingsDialog = ({
        liquidMl: hasLiquid ? parseFloat(editFoodLiquid) || undefined : undefined,
        category: editFoodCategory || "Eigene",
        notes: editFoodNotes.trim() || undefined,
+      vitamins: hasVitamins ? editVitamins : undefined,
+      minerals: hasMinerals ? editMinerals : undefined,
     };
     updateFoodItem(editingFood.name, updated);
     const isNew = !editingFood.name;
-    // Stay in editor – update editingFood to reflect saved name
     setEditingFood(updated);
     forceUpdate((n) => n + 1);
     toast.success(isNew ? "Lebensmittel hinzugefügt!" : "Lebensmittel aktualisiert!");
@@ -826,19 +838,89 @@ const SettingsDialog = ({
                     </div>
                   )}
                 </div>
-                {/* Zeile 1: Lebensmittel + Einheit (fest g/ml) */}
-                <div className="grid grid-cols-5 gap-2">
-                  <div className="col-span-4">
-                    <Label className="text-[10px] text-muted-foreground">Lebensmittel</Label>
-                    <Input value={editFoodName} onChange={(e) => setEditFoodName(e.target.value)} className="h-9 text-xs" autoCorrect="off" spellCheck={false} />
+                {/* === BLOCK 1: Basis (Name, g/ml, Makros) === */}
+                <div className="space-y-1 rounded-lg border border-border p-3 bg-card">
+                  <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide mb-1">Basis</p>
+                  <div className="grid grid-cols-5 gap-2">
+                    <div className="col-span-4">
+                      <Label className="text-[10px] text-muted-foreground">Lebensmittel</Label>
+                      <Input value={editFoodName} onChange={(e) => setEditFoodName(e.target.value)} className="h-9 text-xs" autoCorrect="off" spellCheck={false} />
+                    </div>
+                    <div className="col-span-1">
+                      <Label className="text-[10px] text-muted-foreground">g/ml</Label>
+                      <div className="h-9 flex items-center justify-center text-xs text-muted-foreground rounded-md border border-input bg-muted/30">
+                        100
+                      </div>
+                    </div>
                   </div>
-                  <div className="col-span-1">
-                    <Label className="text-[10px] text-muted-foreground">g/ml</Label>
-                    <div className="h-9 flex items-center justify-center text-xs text-muted-foreground rounded-md border border-input bg-muted/30">
-                      100
+                  <div className="grid grid-cols-5 gap-2">
+                    <div>
+                      <Label className="text-[10px] text-muted-foreground">kcal</Label>
+                      <Input type="number" inputMode="decimal" value={editFoodCal} onChange={(e) => setEditFoodCal(e.target.value)} className="h-9 text-xs" />
+                    </div>
+                    <div>
+                      <Label className="text-[10px] text-muted-foreground">PRO</Label>
+                      <Input type="number" inputMode="decimal" value={editFoodPro} onChange={(e) => setEditFoodPro(e.target.value)} className="h-9 text-xs" />
+                    </div>
+                    <div>
+                      <Label className="text-[10px] text-muted-foreground">FAT</Label>
+                      <Input type="number" inputMode="decimal" value={editFoodFat} onChange={(e) => setEditFoodFat(e.target.value)} className="h-9 text-xs" />
+                    </div>
+                    <div>
+                      <Label className="text-[10px] text-muted-foreground">KH</Label>
+                      <Input type="number" inputMode="decimal" value={editFoodKh} onChange={(e) => setEditFoodKh(e.target.value)} className="h-9 text-xs" />
+                    </div>
+                    <div>
+                      <Label className="text-[10px] text-muted-foreground">FIB</Label>
+                      <Input type="number" inputMode="decimal" value={editFoodFib} onChange={(e) => setEditFoodFib(e.target.value)} className="h-9 text-xs" />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-3 gap-2">
+                    <div className="relative">
+                      <Label className="text-[10px] text-muted-foreground">Kategorie</Label>
+                      <button
+                        type="button"
+                        className="w-full flex items-center justify-between h-9 px-3 text-xs rounded-md border border-input bg-background hover:bg-muted/60 transition-colors"
+                        onClick={() => setShowCategoryDropdown(v => !v)}
+                      >
+                        <span className="truncate">{editFoodCategory || "–"}</span>
+                        <ChevronRight className={`w-3.5 h-3.5 text-muted-foreground transition-transform shrink-0 ml-1 ${showCategoryDropdown ? "rotate-90" : ""}`} />
+                      </button>
+                      {showCategoryDropdown && (
+                        <>
+                          <button
+                            type="button"
+                            className="fixed inset-0 z-[210] bg-transparent"
+                            aria-label="Kategorieauswahl schließen"
+                            onClick={() => setShowCategoryDropdown(false)}
+                          />
+                          <div className="absolute left-0 right-0 bottom-[calc(100%-1.25rem)] mb-0 z-[220] overflow-y-auto rounded-md border border-border bg-popover shadow-lg max-h-[55vh]">
+                            <div
+                              className={`px-3 py-0.5 text-xs leading-4 cursor-pointer transition-colors ${!editFoodCategory ? "bg-primary/10 text-primary font-medium" : "hover:bg-muted/60"}`}
+                              onPointerDown={(e) => { e.preventDefault(); setEditFoodCategory(""); setShowCategoryDropdown(false); }}
+                            >–</div>
+                            {FOOD_CATEGORIES.map(cat => (
+                              <div
+                                key={cat}
+                                className={`px-3 py-0.5 text-xs leading-4 cursor-pointer transition-colors ${editFoodCategory === cat ? "bg-primary/10 text-primary font-medium" : "hover:bg-muted/60"}`}
+                                onPointerDown={(e) => { e.preventDefault(); setEditFoodCategory(cat); setShowCategoryDropdown(false); }}
+                              >{cat}</div>
+                            ))}
+                          </div>
+                        </>
+                      )}
+                    </div>
+                    <div>
+                      <Label className="text-[10px] text-muted-foreground">Standardwert</Label>
+                      <Input type="number" inputMode="decimal" value={editFoodDefault} onChange={(e) => setEditFoodDefault(e.target.value)} placeholder="z.B. 125" className="h-9 text-xs" />
+                    </div>
+                    <div>
+                      <Label className="text-[10px] text-muted-foreground">Flüssigkeit (ml)</Label>
+                      <Input type="number" inputMode="decimal" value={editFoodLiquid} onChange={(e) => setEditFoodLiquid(e.target.value)} placeholder="z.B. 250" className="h-9 text-xs" />
                     </div>
                   </div>
                 </div>
+
                 {/* KI-Suche Button */}
                 <Button
                   variant="outline"
@@ -849,80 +931,79 @@ const SettingsDialog = ({
                   {aiLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5 text-primary" />}
                   {aiLoading ? "KI sucht Nährwerte..." : <><Search className="w-3.5 h-3.5 text-muted-foreground" /> KI-Nährwerte suchen</>}
                 </Button>
-                {/* Artikelblock: Makros, Kategorie, Zusatzinfo */}
-                <div className="space-y-0.5">
-                <div className="grid grid-cols-5 gap-2">
-                  <div>
-                    <Label className="text-[10px] text-muted-foreground">kcal</Label>
-                    <Input type="number" inputMode="decimal" value={editFoodCal} onChange={(e) => setEditFoodCal(e.target.value)} className="h-9 text-xs" />
+
+                {/* === BLOCK 2: Mikronährstoffe (Vitamine + Spurenelemente) === */}
+                <div className="space-y-2 rounded-lg border border-border p-3 bg-card">
+                  {/* Vitamine */}
+                  <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">Vitamine</p>
+                  <div className="grid grid-cols-4 gap-x-2 gap-y-0.5">
+                    {([
+                      ["vitA", "A (µg)"],
+                      ["vitB1", "B1 (mg)"],
+                      ["vitB2", "B2 (mg)"],
+                      ["vitB3", "B3 (mg)"],
+                      ["vitB5", "B5 (mg)"],
+                      ["vitB6", "B6 (mg)"],
+                      ["vitB7", "B7 (µg)"],
+                      ["vitB9", "B9 (µg)"],
+                      ["vitB12", "B12 (µg)"],
+                      ["vitC", "C (mg)"],
+                      ["vitD", "D (µg)"],
+                      ["vitE", "E (mg)"],
+                      ["vitK", "K (µg)"],
+                    ] as [keyof FoodVitamins, string][]).map(([key, label]) => (
+                      <div key={key}>
+                        <Label className="text-[9px] text-muted-foreground leading-tight">{label}</Label>
+                        <Input
+                          type="number"
+                          inputMode="decimal"
+                          value={editVitamins[key] !== undefined ? String(editVitamins[key]) : ""}
+                          onChange={(e) => setEditVitamins(prev => ({ ...prev, [key]: e.target.value ? parseFloat(e.target.value) : undefined }))}
+                          className="h-7 text-[11px] px-1.5"
+                        />
+                      </div>
+                    ))}
                   </div>
-                  <div>
-                    <Label className="text-[10px] text-muted-foreground">PRO</Label>
-                    <Input type="number" inputMode="decimal" value={editFoodPro} onChange={(e) => setEditFoodPro(e.target.value)} className="h-9 text-xs" />
-                  </div>
-                  <div>
-                    <Label className="text-[10px] text-muted-foreground">FAT</Label>
-                    <Input type="number" inputMode="decimal" value={editFoodFat} onChange={(e) => setEditFoodFat(e.target.value)} className="h-9 text-xs" />
-                  </div>
-                  <div>
-                    <Label className="text-[10px] text-muted-foreground">KH</Label>
-                    <Input type="number" inputMode="decimal" value={editFoodKh} onChange={(e) => setEditFoodKh(e.target.value)} className="h-9 text-xs" />
-                  </div>
-                  <div>
-                    <Label className="text-[10px] text-muted-foreground">FIB</Label>
-                    <Input type="number" inputMode="decimal" value={editFoodFib} onChange={(e) => setEditFoodFib(e.target.value)} className="h-9 text-xs" />
+
+                  {/* Spurenelemente */}
+                  <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide mt-2">Spurenelemente</p>
+                  <div className="grid grid-cols-4 gap-x-2 gap-y-0.5">
+                    {([
+                      ["calcium", "Ca (mg)"],
+                      ["chlorid", "Cl (mg)"],
+                      ["eisen", "Fe (mg)"],
+                      ["fluorid", "F (mg)"],
+                      ["kalium", "K (mg)"],
+                      ["kupfer", "Cu (mg)"],
+                      ["magnesium", "Mg (mg)"],
+                      ["mangan", "Mn (mg)"],
+                      ["natrium", "Na (mg)"],
+                      ["phosphor", "P (mg)"],
+                      ["schwefel", "S (mg)"],
+                      ["zink", "Zn (mg)"],
+                    ] as [keyof FoodMinerals, string][]).map(([key, label]) => (
+                      <div key={key}>
+                        <Label className="text-[9px] text-muted-foreground leading-tight">{label}</Label>
+                        <Input
+                          type="number"
+                          inputMode="decimal"
+                          value={editMinerals[key] !== undefined ? String(editMinerals[key]) : ""}
+                          onChange={(e) => setEditMinerals(prev => ({ ...prev, [key]: e.target.value ? parseFloat(e.target.value) : undefined }))}
+                          className="h-7 text-[11px] px-1.5"
+                        />
+                      </div>
+                    ))}
                   </div>
                 </div>
-                <div className="grid grid-cols-3 gap-2">
-                  <div className="relative">
-                    <Label className="text-[10px] text-muted-foreground">Kategorie</Label>
-                    <button
-                      type="button"
-                      className="w-full flex items-center justify-between h-9 px-3 text-xs rounded-md border border-input bg-background hover:bg-muted/60 transition-colors"
-                      onClick={() => setShowCategoryDropdown(v => !v)}
-                    >
-                      <span className="truncate">{editFoodCategory || "–"}</span>
-                      <ChevronRight className={`w-3.5 h-3.5 text-muted-foreground transition-transform shrink-0 ml-1 ${showCategoryDropdown ? "rotate-90" : ""}`} />
-                    </button>
-                    {showCategoryDropdown && (
-                      <>
-                        <button
-                          type="button"
-                          className="fixed inset-0 z-[210] bg-transparent"
-                          aria-label="Kategorieauswahl schließen"
-                          onClick={() => setShowCategoryDropdown(false)}
-                        />
-                        <div className="absolute left-0 right-0 bottom-[calc(100%-1.25rem)] mb-0 z-[220] overflow-y-auto rounded-md border border-border bg-popover shadow-lg max-h-[55vh]">
-                          <div
-                            className={`px-3 py-0.5 text-xs leading-4 cursor-pointer transition-colors ${!editFoodCategory ? "bg-primary/10 text-primary font-medium" : "hover:bg-muted/60"}`}
-                            onPointerDown={(e) => { e.preventDefault(); setEditFoodCategory(""); setShowCategoryDropdown(false); }}
-                          >–</div>
-                          {FOOD_CATEGORIES.map(cat => (
-                            <div
-                              key={cat}
-                              className={`px-3 py-0.5 text-xs leading-4 cursor-pointer transition-colors ${editFoodCategory === cat ? "bg-primary/10 text-primary font-medium" : "hover:bg-muted/60"}`}
-                              onPointerDown={(e) => { e.preventDefault(); setEditFoodCategory(cat); setShowCategoryDropdown(false); }}
-                            >{cat}</div>
-                          ))}
-                        </div>
-                      </>
-                    )}
-                  </div>
-                  <div>
-                    <Label className="text-[10px] text-muted-foreground">Standardwert</Label>
-                    <Input type="number" inputMode="decimal" value={editFoodDefault} onChange={(e) => setEditFoodDefault(e.target.value)} placeholder="z.B. 125" className="h-9 text-xs" />
-                  </div>
-                  <div>
-                    <Label className="text-[10px] text-muted-foreground">Flüssigkeit (ml)</Label>
-                    <Input type="number" inputMode="decimal" value={editFoodLiquid} onChange={(e) => setEditFoodLiquid(e.target.value)} placeholder="z.B. 250" className="h-9 text-xs" />
-                  </div>
-                 </div>
+
+                {/* Zusatzinfo */}
                 <div>
                   <Label className="text-[10px] text-muted-foreground">Zusatzinfo</Label>
                   <Textarea value={editFoodNotes} onChange={(e) => setEditFoodNotes(e.target.value)} placeholder="z.B. vegan, Nutri Score, Haltungsform, Bio usw." className="min-h-[60px] text-xs" />
                 </div>
-                </div>
-                <div className="grid grid-cols-3 gap-2 !mt-6">
+
+                {/* Buttons */}
+                <div className="grid grid-cols-3 gap-2 !mt-4">
                   <Button variant="outline" onClick={() => { handleSaveFood(); handleNewFood(); }} className="h-9 text-xs">
                     + Nächstes
                   </Button>
