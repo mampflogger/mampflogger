@@ -39,6 +39,7 @@ Regeln:
 - Makros gerundet auf 1 Dezimalstelle
 - Vitamine und Spurenelemente: Werte so genau wie möglich
 - liquidMl: Setze auf 100 wenn es ein Getränk ist, sonst 0
+- gi: Glykämischer Index (0-100). Nur für kohlenhydrathaltige Lebensmittel relevant. Setze auf 0 bei Ölen, Fleisch, Fisch ohne Kohlenhydrate.
 - category: Wähle EXAKT eine dieser Kategorien: Fleisch&Wurst, Fisch&Meeresfrüchte, Käse, Nüsse&Samen, Gemüse, Brot&Teigwaren, Öle&Fette, Getränke, Obst, Milchprodukte, Süßwaren, Sonstiges, Eigene
 - defaultAmount: Typische Portionsgröße in g/ml oder null
 - name: Deutsch, Großbuchstabe am Anfang
@@ -65,6 +66,7 @@ Regeln:
                   fat: { type: "number", description: "Fat in g per 100g/100ml" },
                   carbs: { type: "number", description: "Carbs in g per 100g/100ml" },
                   fiber: { type: "number", description: "Fiber in g per 100g/100ml" },
+                  gi: { type: "number", description: "Glycemic Index (0-100)" },
                   liquidMl: { type: "number", description: "100 if beverage, 0 otherwise" },
                   category: { type: "string", enum: ["Fleisch&Wurst","Fisch&Meeresfrüchte","Käse","Nüsse&Samen","Gemüse","Brot&Teigwaren","Öle&Fette","Getränke","Obst","Milchprodukte","Süßwaren","Sonstiges","Eigene"], description: "Food category" },
                   defaultAmount: { type: ["number", "null"], description: "Typical portion size in g/ml or null" },
@@ -105,7 +107,7 @@ Regeln:
                   },
                   notes: { type: "string", description: "Additional notes about the food" },
                 },
-                required: ["name", "calories", "protein", "fat", "carbs", "fiber", "liquidMl", "category"],
+                required: ["name", "calories", "protein", "fat", "carbs", "fiber", "gi", "liquidMl", "category"],
                 additionalProperties: false,
               },
             },

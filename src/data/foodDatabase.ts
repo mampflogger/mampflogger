@@ -57,6 +57,7 @@ export interface FoodItem {
   fat: number;
   carbs: number;
   fiber: number;
+  gi?: number; // Glykämischer Index (0-100)
   defaultAmount?: number; // Standardmenge, z.B. 125g für eine Avocado
   liquidMl?: number; // Flüssigkeit in ml pro baseAmount (z.B. 100 bei 100ml-Basis)
   category?: FoodCategory;
