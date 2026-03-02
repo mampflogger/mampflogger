@@ -1041,57 +1041,65 @@ const SettingsDialog = ({
                       + New Food
                     </button>
                   </div>
-                  {/* Category filter checkboxes */}
-                  <div className="flex flex-wrap gap-x-3 gap-y-1.5 py-1.5">
-                    <label className="flex items-center gap-1 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={selectedCategories.size === 0}
-                        onChange={() => { setSelectedCategories(new Set()); setSelectedAnimal(null); }}
-                        className="w-3.5 h-3.5 rounded border-border accent-primary"
-                      />
-                      <span className="text-[10px] font-medium text-foreground">alle</span>
-                    </label>
+                  {/* Category filter buttons */}
+                  <div className="flex flex-wrap gap-1 py-1.5">
+                    <button
+                      type="button"
+                      onClick={() => { setSelectedCategories(new Set()); setSelectedAnimal(null); }}
+                      className={`px-2.5 py-1 rounded text-[10px] font-medium transition-colors border ${
+                        selectedCategories.size === 0
+                          ? "bg-primary text-primary-foreground border-primary"
+                          : "bg-muted/50 text-muted-foreground border-border hover:bg-muted"
+                      }`}
+                    >
+                      Alle
+                    </button>
                     {FOOD_CATEGORIES.map(cat => (
-                      <label key={cat} className="flex items-center gap-1 cursor-pointer">
-                        <input
-                          type="checkbox"
-                          checked={selectedCategories.has(cat)}
-                          onChange={() => {
-                            setSelectedCategories(prev => {
-                              const next = new Set(prev);
-                              if (next.has(cat)) {
-                                next.delete(cat);
-                                if (cat === "Fleisch&Wurst") setSelectedAnimal(null);
-                              } else {
-                                next.add(cat);
-                              }
-                              return next;
-                            });
-                          }}
-                          className="w-3.5 h-3.5 rounded border-border accent-primary"
-                        />
-                        <span className="text-[10px] font-medium text-foreground">{cat}</span>
-                      </label>
+                      <button
+                        key={cat}
+                        type="button"
+                        onClick={() => {
+                          setSelectedCategories(prev => {
+                            const next = new Set(prev);
+                            if (next.has(cat)) {
+                              next.delete(cat);
+                              if (cat === "Fleisch&Wurst") setSelectedAnimal(null);
+                            } else {
+                              next.add(cat);
+                            }
+                            return next;
+                          });
+                        }}
+                        className={`px-2.5 py-1 rounded text-[10px] font-medium transition-colors border ${
+                          selectedCategories.has(cat)
+                            ? "bg-primary text-primary-foreground border-primary"
+                            : "bg-muted/50 text-muted-foreground border-border hover:bg-muted"
+                        }`}
+                      >
+                        {cat}
+                      </button>
                     ))}
                   </div>
                   {/* Animal sub-filter when Fleisch&Wurst is selected */}
                   {selectedCategories.has("Fleisch&Wurst") && (
-                    <div className="flex flex-wrap gap-1 pb-1.5">
-                      {["Rind", "Schwein", "Lamm", "Kalb", "Geflügel", "Wild", "Wurst"].map(animal => (
-                        <button
-                          key={animal}
-                          type="button"
-                          onClick={() => setSelectedAnimal(prev => prev === animal ? null : animal)}
-                          className={`px-2 py-0.5 rounded text-[10px] font-medium transition-colors border ${
-                            selectedAnimal === animal
-                              ? "bg-primary text-primary-foreground border-primary"
-                              : "bg-muted/50 text-muted-foreground border-border hover:bg-muted"
-                          }`}
-                        >
-                          {animal}
-                        </button>
-                      ))}
+                    <div className="pb-1.5">
+                      <div className="text-[8px] text-muted-foreground font-medium uppercase tracking-wider mb-1 ml-0.5">Unterkategorie</div>
+                      <div className="flex flex-wrap gap-1">
+                        {["Rind", "Schwein", "Lamm", "Kalb", "Geflügel", "Wild", "Wurst"].map(animal => (
+                          <button
+                            key={animal}
+                            type="button"
+                            onClick={() => setSelectedAnimal(prev => prev === animal ? null : animal)}
+                            className={`px-2 py-0.5 rounded-sm text-[9px] font-medium transition-colors border ${
+                              selectedAnimal === animal
+                                ? "bg-accent text-accent-foreground border-accent"
+                                : "bg-background text-muted-foreground border-border/60 hover:bg-muted/60"
+                            }`}
+                          >
+                            {animal}
+                          </button>
+                        ))}
+                      </div>
                     </div>
                   )}
                   <div className="relative z-20 mb-10 flex items-center gap-1.5">
