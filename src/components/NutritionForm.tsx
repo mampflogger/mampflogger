@@ -8,6 +8,20 @@ import { useSpeechRecognition } from "@/hooks/useSpeechRecognition";
 import { Mic, MicOff, X } from "lucide-react";
 import { toast } from "sonner";
 
+// German word-to-number map for voice pick commands (module-level constant)
+const WORD_TO_NUM: Record<string, number> = {
+  "eins": 1, "ein": 1, "erste": 1, "erster": 1, "erstes": 1, "ersten": 1, "1": 1,
+  "zwei": 2, "zweite": 2, "zweiter": 2, "zweites": 2, "zweiten": 2, "2": 2,
+  "drei": 3, "dritte": 3, "dritter": 3, "drittes": 3, "dritten": 3, "3": 3,
+  "vier": 4, "vierte": 4, "vierter": 4, "viertes": 4, "vierten": 4, "4": 4,
+  "fünf": 5, "fünfte": 5, "5": 5,
+  "sechs": 6, "sechste": 6, "6": 6,
+  "sieben": 7, "siebte": 7, "7": 7,
+  "acht": 8, "achte": 8, "8": 8,
+  "neun": 9, "neunte": 9, "9": 9,
+  "zehn": 10, "zehnte": 10, "10": 10,
+};
+
 type FocusedField = "food" | "amount" | "submit" | null;
 
 interface NutritionFormProps {
@@ -58,19 +72,7 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
     suggestionsRef.current = suggestions;
   }, [suggestions]);
 
-  // German word-to-number map for voice pick commands
-  const WORD_TO_NUM: Record<string, number> = {
-    "eins": 1, "ein": 1, "erste": 1, "erster": 1, "erstes": 1, "ersten": 1, "1": 1,
-    "zwei": 2, "zweite": 2, "zweiter": 2, "zweites": 2, "zweiten": 2, "2": 2,
-    "drei": 3, "dritte": 3, "dritter": 3, "drittes": 3, "dritten": 3, "3": 3,
-    "vier": 4, "vierte": 4, "vierter": 4, "viertes": 4, "vierten": 4, "4": 4,
-    "fünf": 5, "fünfte": 5, "5": 5,
-    "sechs": 6, "sechste": 6, "6": 6,
-    "sieben": 7, "siebte": 7, "7": 7,
-    "acht": 8, "achte": 8, "8": 8,
-    "neun": 9, "neunte": 9, "9": 9,
-    "zehn": 10, "zehnte": 10, "10": 10,
-  };
+  // WORD_TO_NUM is defined at module level above
 
   // Parse voice commands like "Nummer eins", "Position 3", "das Erste", "nimm zwei"
   const parseVoicePickCommand = useCallback((text: string): number | null => {
