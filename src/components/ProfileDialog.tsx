@@ -102,7 +102,7 @@ const ProfileDialog = ({ profile, onSave }: ProfileDialogProps) => {
               onChange={(e) => setName(e.target.value)}
               onKeyDown={(e) => handleKeyDown(e, "profile-name")}
               placeholder="Dein Name"
-              className="h-11 bg-muted/50"
+              className="h-11"
             />
           </div>
 
@@ -151,7 +151,7 @@ const ProfileDialog = ({ profile, onSave }: ProfileDialogProps) => {
                 placeholder="1990"
                 min={1900}
                 max={2025}
-                className="h-11 bg-muted/50"
+                className="h-11"
               />
             </div>
             <div>
@@ -166,7 +166,7 @@ const ProfileDialog = ({ profile, onSave }: ProfileDialogProps) => {
                 onChange={(e) => setHeightCm(e.target.value)}
                 onKeyDown={(e) => handleKeyDown(e, "profile-height")}
                 placeholder="180"
-                className="h-11 bg-muted/50"
+                className="h-11"
               />
             </div>
             <div>
@@ -182,7 +182,7 @@ const ProfileDialog = ({ profile, onSave }: ProfileDialogProps) => {
                 onChange={(e) => setWeightKg(e.target.value)}
                 onKeyDown={(e) => handleKeyDown(e, "profile-weight")}
                 placeholder="80.0"
-                className="h-11 bg-muted/50"
+                className="h-11"
               />
             </div>
           </div>
@@ -191,12 +191,12 @@ const ProfileDialog = ({ profile, onSave }: ProfileDialogProps) => {
             <div className="grid grid-cols-2 gap-2">
               <div className="rounded-xl bg-background p-3 text-center">
                 <p className="text-xs text-muted-foreground font-medium">Grundumsatz (BMR)</p>
-                <p className="text-2xl font-bold text-foreground mt-0.5">{bmrPreview}</p>
+                <p className="text-2xl font-semibold text-foreground mt-0.5">{bmrPreview}</p>
                 <p className="text-xs text-muted-foreground">kcal / Tag</p>
               </div>
               <div className="rounded-xl bg-background p-3 text-center">
                 <p className="text-xs text-muted-foreground font-medium">BMI</p>
-                <p className="text-2xl font-bold text-foreground mt-0.5">
+                <p className="text-2xl font-semibold text-foreground mt-0.5">
                   {(currentProfile.weightKg / ((currentProfile.heightCm / 100) ** 2)).toFixed(1)}
                 </p>
                 <p className="text-xs text-muted-foreground">kg/m²</p>
