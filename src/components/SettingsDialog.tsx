@@ -172,6 +172,7 @@ const SettingsDialog = ({
   const [editFoodFat, setEditFoodFat] = useState("");
   const [editFoodKh, setEditFoodKh] = useState("");
   const [editFoodFib, setEditFoodFib] = useState("");
+  const [editFoodGi, setEditFoodGi] = useState("");
   const [editFoodDefault, setEditFoodDefault] = useState("");
    const [editFoodLiquid, setEditFoodLiquid] = useState("");
    const [editFoodCategory, setEditFoodCategory] = useState<FoodCategory | "">("");
@@ -226,6 +227,7 @@ const SettingsDialog = ({
     setEditFoodFat("");
     setEditFoodKh("");
     setEditFoodFib("");
+    setEditFoodGi("");
     setEditFoodDefault("");
      setEditFoodLiquid("");
      setEditFoodCategory("");
@@ -254,6 +256,7 @@ const SettingsDialog = ({
       setEditFoodFat(String(n.fat ?? ""));
       setEditFoodKh(String(n.carbs ?? ""));
       setEditFoodFib(String(n.fiber ?? ""));
+      setEditFoodGi(n.gi !== undefined && n.gi !== null ? String(n.gi) : "");
        setEditFoodLiquid(n.liquidMl && n.liquidMl > 0 ? String(n.liquidMl) : "");
        setEditFoodNotes(n.notes || "");
        const validCategory = (FOOD_CATEGORIES as readonly string[]).includes(n.category) ? n.category as FoodCategory : "Eigene";
@@ -350,6 +353,7 @@ const SettingsDialog = ({
     setEditFoodFat(String(food.fat));
     setEditFoodKh(String(food.carbs));
     setEditFoodFib(String(food.fiber));
+    setEditFoodGi(food.gi !== undefined ? String(food.gi) : "");
     setEditFoodDefault(food.defaultAmount ? String(food.defaultAmount) : "");
      setEditFoodLiquid(food.liquidMl ? String(food.liquidMl) : "");
      setEditFoodCategory(food.category || "");
@@ -372,6 +376,7 @@ const SettingsDialog = ({
     // Only include vitamins/minerals if they have at least one non-zero value
     const hasVitamins = Object.values(editVitamins).some(v => v !== undefined && v > 0);
     const hasMinerals = Object.values(editMinerals).some(v => v !== undefined && v > 0);
+    const hasGi = editFoodGi && parseFloat(editFoodGi) >= 0;
     const updated: FoodItem = {
       name: editFoodName.trim(),
       baseUnit: hasLiquid ? "100ml" : "100g",
@@ -381,6 +386,7 @@ const SettingsDialog = ({
       fat: parseFloat(editFoodFat) || 0,
       carbs: parseFloat(editFoodKh) || 0,
       fiber: parseFloat(editFoodFib) || 0,
+      gi: hasGi ? parseFloat(editFoodGi) : undefined,
       defaultAmount: editFoodDefault ? parseFloat(editFoodDefault) || undefined : undefined,
        liquidMl: hasLiquid ? parseFloat(editFoodLiquid) || undefined : undefined,
        category: editFoodCategory || "Eigene",
@@ -839,7 +845,7 @@ const SettingsDialog = ({
                     </div>
                   )}
                 </div>
-                {/* === BLOCK 1: Basis (Name, g/ml, Makros) === */}
+                {/* === BLOCK 1: Basis (Name, g/ml, Kategorie, Standardwert, Flüssigkeit) === */}
                 <div className="space-y-0.5 rounded-lg border border-border p-1.5 pt-1 bg-card">
                   <p className="text-[8px] font-semibold text-muted-foreground uppercase tracking-wide mb-0.5">Basis</p>
                   <div className="grid grid-cols-5 gap-1.5">
@@ -852,28 +858,6 @@ const SettingsDialog = ({
                       <div className="h-6 flex items-center justify-center text-[8px] text-muted-foreground rounded-md border border-input bg-muted/30">
                         100
                       </div>
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-5 gap-1.5">
-                    <div>
-                      <Label className="text-[8px] text-muted-foreground leading-none block mb-0.5">kcal</Label>
-                      <Input type="number" inputMode="decimal" value={editFoodCal} onChange={(e) => setEditFoodCal(e.target.value)} className="h-6 !text-[10px] px-1 text-center" />
-                    </div>
-                    <div>
-                      <Label className="text-[8px] text-muted-foreground leading-none block mb-0.5">PRO</Label>
-                      <Input type="number" inputMode="decimal" value={editFoodPro} onChange={(e) => setEditFoodPro(e.target.value)} className="h-6 !text-[10px] px-1 text-center" />
-                    </div>
-                    <div>
-                      <Label className="text-[8px] text-muted-foreground leading-none block mb-0.5">FAT</Label>
-                      <Input type="number" inputMode="decimal" value={editFoodFat} onChange={(e) => setEditFoodFat(e.target.value)} className="h-6 !text-[10px] px-1 text-center" />
-                    </div>
-                    <div>
-                      <Label className="text-[8px] text-muted-foreground leading-none block mb-0.5">KH</Label>
-                      <Input type="number" inputMode="decimal" value={editFoodKh} onChange={(e) => setEditFoodKh(e.target.value)} className="h-6 !text-[10px] px-1 text-center" />
-                    </div>
-                    <div>
-                      <Label className="text-[8px] text-muted-foreground leading-none block mb-0.5">FIB</Label>
-                      <Input type="number" inputMode="decimal" value={editFoodFib} onChange={(e) => setEditFoodFib(e.target.value)} className="h-6 !text-[10px] px-1 text-center" />
                     </div>
                   </div>
                   <div className="grid grid-cols-3 gap-1.5">
@@ -946,10 +930,39 @@ const SettingsDialog = ({
                   </Button>
                 </div>
 
-                {/* === BLOCK 2: Mikronährstoffe (Vitamine + Spurenelemente) === */}
+                {/* === BLOCK 2: Nährstoffe (Makros + Vitamine + Spurenelemente) === */}
                 <div className="rounded-lg border border-border p-1.5 pt-1 bg-card">
+                  {/* Makronährstoffe */}
+                  <p className="text-[8px] font-semibold text-muted-foreground uppercase tracking-wide mb-0.5">Makronährstoffe</p>
+                  <div className="grid grid-cols-6 gap-1.5">
+                    <div>
+                      <Label className="text-[8px] text-muted-foreground leading-none block mb-0.5">kcal</Label>
+                      <Input type="number" inputMode="decimal" value={editFoodCal} onChange={(e) => setEditFoodCal(e.target.value)} className="h-6 !text-[10px] px-1 text-center" />
+                    </div>
+                    <div>
+                      <Label className="text-[8px] text-muted-foreground leading-none block mb-0.5">PRO</Label>
+                      <Input type="number" inputMode="decimal" value={editFoodPro} onChange={(e) => setEditFoodPro(e.target.value)} className="h-6 !text-[10px] px-1 text-center" />
+                    </div>
+                    <div>
+                      <Label className="text-[8px] text-muted-foreground leading-none block mb-0.5">FAT</Label>
+                      <Input type="number" inputMode="decimal" value={editFoodFat} onChange={(e) => setEditFoodFat(e.target.value)} className="h-6 !text-[10px] px-1 text-center" />
+                    </div>
+                    <div>
+                      <Label className="text-[8px] text-muted-foreground leading-none block mb-0.5">KH</Label>
+                      <Input type="number" inputMode="decimal" value={editFoodKh} onChange={(e) => setEditFoodKh(e.target.value)} className="h-6 !text-[10px] px-1 text-center" />
+                    </div>
+                    <div>
+                      <Label className="text-[8px] text-muted-foreground leading-none block mb-0.5">FIB</Label>
+                      <Input type="number" inputMode="decimal" value={editFoodFib} onChange={(e) => setEditFoodFib(e.target.value)} className="h-6 !text-[10px] px-1 text-center" />
+                    </div>
+                    <div>
+                      <Label className="text-[8px] text-muted-foreground leading-none block mb-0.5">GI</Label>
+                      <Input type="number" inputMode="decimal" value={editFoodGi} onChange={(e) => setEditFoodGi(e.target.value)} placeholder="0-100" className="h-6 !text-[10px] px-1 text-center" />
+                    </div>
+                  </div>
+
                   {/* Vitamine */}
-                  <p className="text-[8px] font-semibold text-muted-foreground uppercase tracking-wide mb-0.5">Vitamine</p>
+                  <p className="text-[8px] font-semibold text-muted-foreground uppercase tracking-wide mt-2 mb-0.5">Vitamine</p>
                   <div className="grid grid-cols-6 gap-x-1 gap-y-0">
                     {([
                       ["vitA", "A (µg)"],
