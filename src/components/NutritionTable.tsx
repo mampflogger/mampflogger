@@ -65,7 +65,7 @@ const NutritionTable = ({ entries, onDelete, onEntryClick }: NutritionTableProps
                       e.stopPropagation();
                       onDelete(entry.id);
                     }}
-                    className="p-0.5 rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+                    className="p-0.5 rounded-full text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
                     aria-label="Eintrag löschen"
                   >
                     <Trash2 className="w-3 h-3" />

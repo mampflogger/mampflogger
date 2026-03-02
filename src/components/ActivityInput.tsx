@@ -165,7 +165,7 @@ const ActivityInput = ({
             value={value}
             onChange={(e) => setValue(e.target.value)}
             onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); submitButtonRef.current?.focus(); } }}
-            className="h-9 bg-muted/50 text-xs px-2"
+            className="h-9 text-xs px-2"
           />
         </div>
         <div className="flex-1 min-w-0">
@@ -188,7 +188,7 @@ const ActivityInput = ({
         <button
           ref={submitButtonRef}
           onClick={handleSubmit}
-          className="h-9 px-3 rounded-md text-xs font-semibold bg-primary text-primary-foreground shrink-0"
+          className="h-9 px-3 rounded-full text-xs font-semibold bg-primary text-primary-foreground shrink-0"
         >
           {isEditing ? "Speichern" : "Buchen"}
         </button>
