@@ -556,17 +556,21 @@ const SettingsDialog = ({
     if (selectedAnimal && selectedCategories.has("Fleisch&Wurst")) {
       const animalKeywords: Record<string, string[]> = {
         "Rind": ["rind", "roastbeef", "tafelspitz", "sauerbraten"],
-        "Schwein": ["schwein", "kasseler"],
+        "Schwein": ["schwein", "kasseler"],  // note: wildschwein handled separately below
         "Lamm": ["lamm"],
         "Kalb": ["kalb"],
-        "Geflügel": ["hähn", "huhn", "pute", "ente", "gans", "suppenhuhn"],
+        "Geflügel": ["hähn", "huhn", "pute", "ente", "gans", "suppenhuhn", "brathähnchen"],
         "Wild": ["reh", "hirsch", "wildschwein", "kaninchen"],
+        "Wurst": ["wurst", "salami", "schinken", "speck", "lyoner", "mortadella", "landjäger", "cabanossi", "chorizo", "sucuk", "bierschinken", "fleischwurst", "jagdwurst", "mettwurst", "teewurst", "cervelat", "bratwurst", "wiener", "weißwurst", "leberwurst", "blutwurst", "gelbwurst", "krakauer", "presssack", "nürnberger", "paprikalyoner", "frühstücksfleisch"],
       };
       const keywords = animalKeywords[selectedAnimal];
       if (keywords) {
         list = list.filter((f) => {
           const lower = f.name.toLowerCase();
-          return keywords.some(k => lower.includes(k));
+          const matches = keywords.some(k => lower.includes(k));
+          // "Schwein" should not match "Wildschwein"
+          if (selectedAnimal === "Schwein" && lower.includes("wildschwein")) return false;
+          return matches;
         });
       }
     }
@@ -979,7 +983,7 @@ const SettingsDialog = ({
                   {/* Animal sub-filter when Fleisch&Wurst is selected */}
                   {selectedCategories.has("Fleisch&Wurst") && (
                     <div className="flex flex-wrap gap-1 pb-1.5">
-                      {["Rind", "Schwein", "Lamm", "Kalb", "Geflügel", "Wild"].map(animal => (
+                      {["Rind", "Schwein", "Lamm", "Kalb", "Geflügel", "Wild", "Wurst"].map(animal => (
                         <button
                           key={animal}
                           type="button"
