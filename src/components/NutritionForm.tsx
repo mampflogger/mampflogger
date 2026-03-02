@@ -38,6 +38,7 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
   const [selectedFood, setSelectedFood] = useState<FoodItem | null>(null);
   const [highlightIndex, setHighlightIndex] = useState(-1);
   const [dropdownRect, setDropdownRect] = useState<DOMRect | null>(null);
+  const suggestionsRef = useRef<FoodItem[]>([]);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLUListElement>(null);
   const foodInputRef = useRef<HTMLInputElement>(null);
@@ -49,10 +50,13 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
   const handleSelectFoodRef = useRef<(item: FoodItem) => void>(() => {});
   const handleAmountChangeRef = useRef<(value: string) => void>(() => {});
 
-  // Keep ref in sync with state
+  // Keep refs in sync with state
   useEffect(() => {
     focusedFieldRef.current = focusedField;
   }, [focusedField]);
+  useEffect(() => {
+    suggestionsRef.current = suggestions;
+  }, [suggestions]);
 
   // Helper: fuzzy match for "buchen" command
   const isBuchenCommand = useCallback((text: string) => {
@@ -105,6 +109,19 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
       if (isInterim) return;
 
       if (currentField === "food") {
+        // Check for "Nummer X" / "Position X" command to pick from visible suggestions
+        const numMatch = transcript.match(/\b(?:nummer|position|number|pos)\s*(\d{1,2})\b/i);
+        if (numMatch) {
+          const idx = parseInt(numMatch[1], 10) - 1; // 1-based to 0-based
+          const currentSuggestions = suggestionsRef.current;
+          if (idx >= 0 && idx < currentSuggestions.length) {
+            handleSelectFoodRef.current(currentSuggestions[idx]);
+          } else {
+            toast.error(`Nur ${currentSuggestions.length} Vorschläge verfügbar.`);
+          }
+          return;
+        }
+
         const results = searchFood(transcript);
         if (results.length === 0) {
           setFood("Nichts gefunden");
@@ -487,7 +504,10 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
                     }}
                     onMouseEnter={() => setHighlightIndex(index)}
                   >
-                    <span className="font-medium">{item.name}</span>
+                    <span className="flex items-center gap-1.5">
+                      <span className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-muted text-[9px] font-bold text-muted-foreground shrink-0">{index + 1}</span>
+                      <span className="font-medium">{item.name}</span>
+                    </span>
                     {isFavorite && (
                       <span className="text-yellow-500 ml-2 shrink-0" title={`${usageCount}× gebucht`}>★</span>
                     )}
