@@ -17,6 +17,37 @@ export const FOOD_CATEGORIES = [
 
 export type FoodCategory = typeof FOOD_CATEGORIES[number];
 
+export interface FoodVitamins {
+  vitA?: number;   // Retinol, µg
+  vitB1?: number;  // Thiamin, mg
+  vitB2?: number;  // Riboflavin, mg
+  vitB3?: number;  // Niacin, mg
+  vitB5?: number;  // Pantothensäure, mg
+  vitB6?: number;  // Pyridoxin, mg
+  vitB7?: number;  // Biotin, µg
+  vitB9?: number;  // Folsäure, µg
+  vitB12?: number; // Cobalamin, µg
+  vitC?: number;   // mg
+  vitD?: number;   // µg
+  vitE?: number;   // mg
+  vitK?: number;   // µg
+}
+
+export interface FoodMinerals {
+  calcium?: number;   // mg
+  chlorid?: number;   // mg
+  eisen?: number;     // mg
+  fluorid?: number;   // mg
+  kalium?: number;    // mg
+  kupfer?: number;    // mg
+  magnesium?: number; // mg
+  mangan?: number;    // mg
+  natrium?: number;   // mg
+  phosphor?: number;  // mg
+  schwefel?: number;  // mg
+  zink?: number;      // mg
+}
+
 export interface FoodItem {
   name: string;
   baseUnit: string; // "100g", "100ml", "1 Stk"
@@ -32,6 +63,8 @@ export interface FoodItem {
   isUserCreated?: boolean; // Vom User selbst angelegt (niemals durch Remote überschreiben)
   isRemote?: boolean;      // Vom Remote-Server geladen
   notes?: string;          // Freitext-Zusatzinfos zum Lebensmittel
+  vitamins?: FoodVitamins;
+  minerals?: FoodMinerals;
 }
 
 // Category mapping for default foods
