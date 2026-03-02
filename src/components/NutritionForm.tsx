@@ -46,6 +46,7 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
   const [carbs, setCarbs] = useState("");
   const [fat, setFat] = useState("");
   const [fiber, setFiber] = useState("");
+  const [gi, setGi] = useState("");
 
   const [suggestions, setSuggestions] = useState<FoodItem[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -125,6 +126,7 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
           setCarbs("");
           setFat("");
           setFiber("");
+          setGi("");
           setSelectedFood(null);
           setSuggestions([]);
           setShowSuggestions(false);
@@ -223,6 +225,7 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
       setCarbs(String(editingEntry.carbs));
       setFat(String(editingEntry.fat));
       setFiber(String(editingEntry.fiber));
+      setGi(editingEntry.gi !== undefined ? String(editingEntry.gi) : "");
       // Try to find the food in the database so amount changes recalculate macros
       const results = searchFood(editingEntry.food);
       const match = results.find((f) => f.name.toLowerCase() === editingEntry.food.toLowerCase());
@@ -267,6 +270,7 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
     setCarbs(String(Math.round(item.carbs * factor)));
     setFat(String(Math.round(item.fat * factor)));
     setFiber(String(Math.round(item.fiber * factor)));
+    setGi(item.gi !== undefined ? String(item.gi) : "");
   }, []);
 
   const handleFoodChange = (value: string) => {
@@ -294,6 +298,7 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
       setCarbs("");
       setFat("");
       setFiber("");
+      setGi("");
     }
     // Auto-focus to amount field
     setTimeout(() => amountInputRef.current?.focus(), 0);
@@ -362,6 +367,7 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
     const parsedFat = Math.round(parseFloat(fat) || 0);
     const parsedCarbs = Math.round(parseFloat(carbs) || 0);
     const parsedFiber = Math.round(parseFloat(fiber) || 0);
+    const parsedGi = gi ? Math.round(parseFloat(gi)) : undefined;
 
     // Flüssigkeit direkt berechnen wenn das Food einen liquidMl-Wert hat
     let liquidMl: number | undefined = undefined;
@@ -381,6 +387,7 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
       carbs: parsedCarbs,
       fat: parsedFat,
       fiber: parsedFiber,
+      ...(parsedGi !== undefined ? { gi: parsedGi } : {}),
       ...(liquidMl !== undefined ? { liquidMl } : {}),
     };
 
@@ -418,6 +425,7 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
     setCarbs("");
     setFat("");
     setFiber("");
+    setGi("");
     setSelectedFood(null);
     setSuggestions([]);
     setShowSuggestions(false);
@@ -578,7 +586,7 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
       </div>
 
       {/* Row 2: Calories + Macros */}
-      <div className="grid grid-cols-5 gap-1.5 mb-2">
+      <div className="grid grid-cols-6 gap-1.5 mb-2">
         <div>
           <Label htmlFor="calories" className="text-[10px] font-medium text-muted-foreground mb-1 block">kcal</Label>
           <Input id="calories" type="number" inputMode="decimal" step="any" placeholder="0" value={calories} onChange={(e) => setCalories(e.target.value)} className="h-9 text-[10px] px-1 text-center tabular-nums" />
@@ -598,6 +606,10 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
         <div>
           <Label htmlFor="fiber" className="text-[10px] font-medium text-muted-foreground mb-1 block">FIB</Label>
           <Input id="fiber" type="number" inputMode="decimal" step="any" placeholder="0" value={fiber} onChange={(e) => setFiber(e.target.value)} className="h-9 text-[10px] px-1 text-center tabular-nums" />
+        </div>
+        <div>
+          <Label htmlFor="gi" className="text-[10px] font-medium text-muted-foreground mb-1 block">GI</Label>
+          <Input id="gi" type="number" inputMode="decimal" step="any" placeholder="0" value={gi} onChange={(e) => setGi(e.target.value)} className="h-9 text-[10px] px-1 text-center tabular-nums" />
         </div>
       </div>
 
