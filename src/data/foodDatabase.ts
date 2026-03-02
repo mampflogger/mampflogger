@@ -41,9 +41,9 @@ const FOOD_CATEGORY_MAP: Record<string, FoodCategory> = {
   "Avocado": "Gemüse", "Backpulver": "Sonstiges", "Banane": "Obst",
   "Beinscheibe (Rind)": "Fleisch&Wurst", "Bergkäse 45 % Fett i. Tr.": "Käse", "Bierschinken": "Fleisch&Wurst",
   "Bionade Holunder": "Getränke", "Birne": "Obst", "Bitter Lemon": "Getränke", "Blattspinat": "Gemüse",
-  "Blumenkohl": "Gemüse", "Blutwurst": "Fleisch&Wurst",
-  "Bratwurst Geflügel": "Fleisch&Wurst", "Bratwurst Lamm": "Fleisch&Wurst", "Bratwurst Rind": "Fleisch&Wurst", "Bratwurst Schwein": "Fleisch&Wurst",
-  "Brie 50 % Fett i. Tr.": "Käse", "Brokkoli": "Gemüse", "Brombeeren": "Obst",
+  "Blumenkohl": "Gemüse", "Blutwurst": "Fleisch&Wurst", "Bockwurst": "Fleisch&Wurst",
+  "Bratwurst (Geflügel)": "Fleisch&Wurst", "Bratwurst (Lamm)": "Fleisch&Wurst", "Bratwurst (Rind)": "Fleisch&Wurst", "Bratwurst (Schwein)": "Fleisch&Wurst",
+  "Brie 50 % Fett i. Tr.": "Käse", "Brokkoli": "Gemüse", "Brombeeren": "Obst", "Burrata": "Käse",
   "Bulgur": "Brot&Teigwaren", "Butter": "Öle&Fette", "Cabanossi": "Fleisch&Wurst",
   "Camembert 30 % Fett i. Tr.": "Käse", "Camembert 45 % Fett i. Tr.": "Käse", "Camembert 60 % Fett i. Tr.": "Käse",
   "Cashewkerne": "Nüsse&Samen", "Cervelatwurst": "Fleisch&Wurst", "Champignons": "Gemüse",
@@ -57,7 +57,7 @@ const FOOD_CATEGORY_MAP: Record<string, FoodCategory> = {
   "Entrecôte (Rind)": "Fleisch&Wurst", "Erdbeeren": "Obst", "Erdnüsse": "Nüsse&Samen",
   "Erdnussöl": "Öle&Fette", "Fanta": "Getränke", "Fassbrause": "Getränke", "Feige": "Obst",
   "Feldsalat": "Gemüse", "Fenchel": "Gemüse", "Feta 45 % Fett i. Tr.": "Käse",
-  "Fleischwurst": "Fleisch&Wurst", "Flussbarsch": "Fisch&Meeresfrüchte",
+  "Fleischwurst": "Fleisch&Wurst", "Frankfurter Würstchen": "Fleisch&Wurst", "Flussbarsch": "Fisch&Meeresfrüchte",
   "Frischkäse 0,2 %": "Käse", "Frischkäse 20 %": "Milchprodukte",
   "Frischkäse 60 % Fett i. Tr.": "Käse", "Fritz-Kola": "Getränke", "Fritz-Limo (Zitrone/Orange)": "Getränke",
   "Frühkartoffeln": "Gemüse", "Frühstücksfleisch": "Fleisch&Wurst",
@@ -67,7 +67,7 @@ const FOOD_CATEGORY_MAP: Record<string, FoodCategory> = {
   "Ginger Ale": "Getränke", "Gemüsezwiebeln": "Gemüse", "Gorgonzola 48 %": "Käse",
   "Gouda 30 % Fett i. Tr.": "Käse", "Gouda 45% Fett i.Tr.": "Käse", "Granatapfel": "Obst",
   "Granatapfelsaft": "Getränke", "Grapefruit": "Obst", "Griech. Joghurt (2%)": "Milchprodukte",
-  "Grünkohl": "Gemüse", "Gurke": "Gemüse", "Hähnchenbrustfilet": "Fleisch&Wurst",
+  "Grünkohl": "Gemüse", "Gruyère": "Käse", "Gurke": "Gemüse", "Hähnchenbrustfilet": "Fleisch&Wurst",
   "Brathähnchen (halbes)": "Fleisch&Wurst", "Hähnchenflügel": "Fleisch&Wurst", "Hähnchenkeule (mit Haut)": "Fleisch&Wurst",
   "Hähnchenschenkel (ohne Haut)": "Fleisch&Wurst",
   "Halloumi 43% Fett i.Tr.": "Käse", "Hanföl": "Öle&Fette", "Hanfsamen (geschält)": "Nüsse&Samen",
@@ -94,13 +94,13 @@ const FOOD_CATEGORY_MAP: Record<string, FoodCategory> = {
   "Lammfilet": "Fleisch&Wurst", "Lammhack": "Fleisch&Wurst", "Lammhaxe": "Fleisch&Wurst", "Lammkeule": "Fleisch&Wurst",
   "Lammkarree": "Fleisch&Wurst", "Lammkotelett": "Fleisch&Wurst", "Lammrücken": "Fleisch&Wurst", "Lammschulter": "Fleisch&Wurst",
   "Landjäger": "Fleisch&Wurst", "Lauchzwiebel": "Gemüse",
-  "Leberwurst (fein)": "Fleisch&Wurst", "Leerdammer 45 % Fett i. Tr.": "Käse", "Leinsamenöl": "Öle&Fette",
+  "Leberkäse": "Fleisch&Wurst", "Leberwurst (fein)": "Fleisch&Wurst", "Leerdammer 45 % Fett i. Tr.": "Käse", "Leinsamenöl": "Öle&Fette",
   "Limette": "Obst", "Litschi": "Obst", "Lupinenschrot": "Gemüse",
   "Lyoner": "Fleisch&Wurst", "Macadamianüsse": "Nüsse&Samen",
   "Magerquark 0,2 %": "Milchprodukte", "Makrele (frisch)": "Fisch&Meeresfrüchte",
-  "Malzbier": "Getränke", "Mandarine": "Obst", "Mandeln": "Nüsse&Samen", "Mango": "Obst",
+  "Malzbier": "Getränke", "Mandarine": "Obst", "Mandeln": "Nüsse&Samen", "Manchego": "Käse", "Mango": "Obst",
   "Maracuja": "Obst", "Matjesfilet": "Fisch&Meeresfrüchte", "Cantaloupe Melone": "Obst",
-  "Mezzo Mix": "Getränke", "Wassermelone": "Obst", "Mettwurst": "Fleisch&Wurst",
+  "Mezzo Mix": "Getränke", "Wassermelone": "Obst", "Merguez": "Fleisch&Wurst", "Mettwurst": "Fleisch&Wurst",
   "Milch 0,1% Fett": "Milchprodukte", "Miesmuscheln": "Fisch&Meeresfrüchte",
   "Mineralwasser": "Getränke", "Milch 1,5 % Fett": "Milchprodukte",
   "Milch 3,5 %": "Milchprodukte", "Milchkaffee": "Getränke", "Mini Harzer": "Käse",
@@ -113,7 +113,7 @@ const FOOD_CATEGORY_MAP: Record<string, FoodCategory> = {
   "Paprika (grün/gelb)": "Gemüse", "Paprika (rot)": "Gemüse",
   "Paprikalyoner": "Fleisch&Wurst", "Paranüsse": "Nüsse&Samen", "Parmesan 32 % Fett i. Tr.": "Käse",
   "Pastinaken": "Gemüse", "Paulaner Spezi": "Getränke", "Pekannüsse": "Nüsse&Samen",
-  "Pepsi Cola": "Getränke", "Pfirsich": "Obst", "Pflaume": "Obst", "Physalis": "Obst",
+  "Pepsi Cola": "Getränke", "Pecorino Romano 32 % Fett i. Tr.": "Käse", "Pfirsich": "Obst", "Pflaume": "Obst", "Physalis": "Obst",
   "Pinienkerne": "Nüsse&Samen", "Pistazien": "Nüsse&Samen",
   "Presssack (rot)": "Fleisch&Wurst", "Proteinpulver": "Sonstiges",
   "Putenbrust": "Fleisch&Wurst", "Putenfleisch": "Fleisch&Wurst",
@@ -125,7 +125,7 @@ const FOOD_CATEGORY_MAP: Record<string, FoodCategory> = {
   "Red Bull": "Getränke",
   "Regenbogen-Forelle": "Fisch&Meeresfrüchte", "Reis (roh)": "Brot&Teigwaren",
   "Rhabarber": "Gemüse", "Rotbarsch": "Fisch&Meeresfrüchte", "Ricotta 13 %": "Käse",
-  "Rehkeule": "Fleisch&Wurst", "Rehrücken": "Fleisch&Wurst", "Rinderbraten": "Fleisch&Wurst", "Rinderbrust (Tafelspitz)": "Fleisch&Wurst",
+  "Rehkeule": "Fleisch&Wurst", "Rehrücken": "Fleisch&Wurst", "Rinderbraten": "Fleisch&Wurst",
   "Rinderfilet": "Fleisch&Wurst", "Rindergulasch": "Fleisch&Wurst",
   "Rinderhackfleisch": "Fleisch&Wurst", "Rinderhüfte": "Fleisch&Wurst",
   "Rinderroulade": "Fleisch&Wurst", "Rindersalami": "Fleisch&Wurst",
@@ -270,13 +270,15 @@ export const DEFAULT_FOODS: FoodItem[] = [
   { name: "Blattspinat", baseUnit: "100g", baseAmount: 100, calories: 23, protein: 2.8, fat: 0.3, carbs: 0.5, fiber: 2.6, defaultAmount: 200 },
   { name: "Blumenkohl", baseUnit: "100g", baseAmount: 100, calories: 25, protein: 1.9, fat: 0.3, carbs: 2.3, fiber: 2.3, defaultAmount: 200 },
   { name: "Blutwurst", baseUnit: "100g", baseAmount: 100, calories: 378, protein: 14.6, fat: 34.5, carbs: 1.5, fiber: 0, defaultAmount: 80 },
-  { name: "Bratwurst Geflügel", baseUnit: "100g", baseAmount: 100, calories: 220, protein: 16, fat: 17, carbs: 1, fiber: 0, defaultAmount: 100 },
-  { name: "Bratwurst Lamm", baseUnit: "100g", baseAmount: 100, calories: 305, protein: 14, fat: 27, carbs: 1, fiber: 0, defaultAmount: 100 },
-  { name: "Bratwurst Rind", baseUnit: "100g", baseAmount: 100, calories: 280, protein: 15, fat: 24, carbs: 1, fiber: 0, defaultAmount: 100 },
-  { name: "Bratwurst Schwein", baseUnit: "100g", baseAmount: 100, calories: 312, protein: 13.5, fat: 28.5, carbs: 0.5, fiber: 0, defaultAmount: 100 },
+  { name: "Bockwurst", baseUnit: "100g", baseAmount: 100, calories: 290, protein: 12, fat: 26, carbs: 1.2, fiber: 0, defaultAmount: 100 },
+  { name: "Bratwurst (Geflügel)", baseUnit: "100g", baseAmount: 100, calories: 220, protein: 16, fat: 17, carbs: 1, fiber: 0, defaultAmount: 100 },
+  { name: "Bratwurst (Lamm)", baseUnit: "100g", baseAmount: 100, calories: 305, protein: 14, fat: 27, carbs: 1, fiber: 0, defaultAmount: 100 },
+  { name: "Bratwurst (Rind)", baseUnit: "100g", baseAmount: 100, calories: 280, protein: 15, fat: 24, carbs: 1, fiber: 0, defaultAmount: 100 },
+  { name: "Bratwurst (Schwein)", baseUnit: "100g", baseAmount: 100, calories: 312, protein: 13.5, fat: 28.5, carbs: 0.5, fiber: 0, defaultAmount: 100 },
   { name: "Brie 50 % Fett i. Tr.", baseUnit: "100g", baseAmount: 100, calories: 334, protein: 20.5, fat: 28, carbs: 0.1, fiber: 0, defaultAmount: 30 },
   { name: "Brokkoli", baseUnit: "100g", baseAmount: 100, calories: 34, protein: 2.8, fat: 0.4, carbs: 2.7, fiber: 3, defaultAmount: 200 },
   { name: "Brombeeren", baseUnit: "100g", baseAmount: 100, calories: 43, protein: 1.4, fat: 0.5, carbs: 4.9, fiber: 5.3, defaultAmount: 125 },
+  { name: "Burrata", baseUnit: "100g", baseAmount: 100, calories: 300, protein: 13, fat: 25, carbs: 2, fiber: 0, defaultAmount: 80 },
   { name: "Bulgur", baseUnit: "100g", baseAmount: 100, calories: 342, protein: 12.3, fat: 1.3, carbs: 63.4, fiber: 12.5, defaultAmount: 75 },
   { name: "Butter", baseUnit: "100g", baseAmount: 100, calories: 741, protein: 0.7, fat: 83.2, carbs: 0.6, fiber: 0, defaultAmount: 10 },
   { name: "Cabanossi", baseUnit: "100g", baseAmount: 100, calories: 448, protein: 19, fat: 41, carbs: 1, fiber: 0, defaultAmount: 100 },
@@ -317,6 +319,7 @@ export const DEFAULT_FOODS: FoodItem[] = [
   { name: "Fenchel", baseUnit: "100g", baseAmount: 100, calories: 31, protein: 1.2, fat: 0.2, carbs: 2.8, fiber: 3.1, defaultAmount: 150 },
   { name: "Feta 45 % Fett i. Tr.", baseUnit: "100g", baseAmount: 100, calories: 270, protein: 17, fat: 22, carbs: 0.5, fiber: 0, defaultAmount: 30 },
   { name: "Fleischwurst", baseUnit: "100g", baseAmount: 100, calories: 286, protein: 12.1, fat: 26.4, carbs: 0.5, fiber: 0, defaultAmount: 30 },
+  { name: "Frankfurter Würstchen", baseUnit: "100g", baseAmount: 100, calories: 282, protein: 12.5, fat: 25, carbs: 1, fiber: 0, defaultAmount: 80 },
   { name: "Flussbarsch", baseUnit: "100g", baseAmount: 100, calories: 91, protein: 19.4, fat: 0.9, carbs: 0, fiber: 0, defaultAmount: 150 },
   { name: "Frischkäse 0,2 %", baseUnit: "100g", baseAmount: 100, calories: 63, protein: 11, fat: 0.2, carbs: 3.8, fiber: 0, defaultAmount: 30 },
   { name: "Frischkäse 20 %", baseUnit: "100g", baseAmount: 100, calories: 145, protein: 9, fat: 10, carbs: 3, fiber: 0 },
@@ -341,9 +344,9 @@ export const DEFAULT_FOODS: FoodItem[] = [
   { name: "Grapefruit", baseUnit: "100g", baseAmount: 100, calories: 42, protein: 0.8, fat: 0.1, carbs: 9.2, fiber: 1.6, defaultAmount: 200 },
   { name: "Griech. Joghurt (2%)", baseUnit: "100g", baseAmount: 100, calories: 58, protein: 8, fat: 1, carbs: 4, fiber: 0 },
   { name: "Grünkohl", baseUnit: "100g", baseAmount: 100, calories: 49, protein: 4.3, fat: 0.9, carbs: 9, fiber: 4, defaultAmount: 150 },
+  { name: "Gruyère", baseUnit: "100g", baseAmount: 100, calories: 413, protein: 29.8, fat: 32.3, carbs: 0.4, fiber: 0, defaultAmount: 30 },
   { name: "Gurke", baseUnit: "100g", baseAmount: 100, calories: 12, protein: 0.6, fat: 0.2, carbs: 1.8, fiber: 0.5 },
   { name: "Brathähnchen (halbes)", baseUnit: "100g", baseAmount: 100, calories: 220, protein: 19, fat: 16, carbs: 0, fiber: 0, defaultAmount: 400 },
-  { name: "Hähnchenbrustfilet", baseUnit: "100g", baseAmount: 100, calories: 110, protein: 23.5, fat: 1.2, carbs: 0, fiber: 0, defaultAmount: 150 },
   { name: "Hähnchenflügel", baseUnit: "100g", baseAmount: 100, calories: 222, protein: 18.3, fat: 16, carbs: 0, fiber: 0, defaultAmount: 200 },
   { name: "Hähnchenkeule (mit Haut)", baseUnit: "100g", baseAmount: 100, calories: 214, protein: 20.6, fat: 14.6, carbs: 0, fiber: 0, defaultAmount: 200 },
   { name: "Hähnchenschenkel (ohne Haut)", baseUnit: "100g", baseAmount: 100, calories: 140, protein: 21, fat: 6, carbs: 0, fiber: 0, defaultAmount: 200 },
@@ -407,6 +410,7 @@ export const DEFAULT_FOODS: FoodItem[] = [
   { name: "Lammschulter", baseUnit: "100g", baseAmount: 100, calories: 220, protein: 19, fat: 16, carbs: 0, fiber: 0, defaultAmount: 200 },
   { name: "Landjäger", baseUnit: "100g", baseAmount: 100, calories: 476, protein: 23.5, fat: 42, carbs: 1, fiber: 0, defaultAmount: 40 },
   { name: "Lauchzwiebel", baseUnit: "100g", baseAmount: 100, calories: 32, protein: 1.8, fat: 0.2, carbs: 3.3, fiber: 2.6, defaultAmount: 15 },
+  { name: "Leberkäse", baseUnit: "100g", baseAmount: 100, calories: 280, protein: 14, fat: 24, carbs: 2, fiber: 0, defaultAmount: 120 },
   { name: "Leberwurst (fein)", baseUnit: "100g", baseAmount: 100, calories: 324, protein: 12, fat: 30, carbs: 1, fiber: 0, defaultAmount: 20 },
   { name: "Leerdammer 45 % Fett i. Tr.", baseUnit: "100g", baseAmount: 100, calories: 353, protein: 26.5, fat: 27.5, carbs: 0.1, fiber: 0, defaultAmount: 30 },
   { name: "Leinsamenöl", baseUnit: "100g", baseAmount: 100, calories: 884, protein: 0, fat: 100, carbs: 0, fiber: 0, defaultAmount: 10 },
@@ -420,12 +424,14 @@ export const DEFAULT_FOODS: FoodItem[] = [
   { name: "Malzbier", baseUnit: "100ml", baseAmount: 100, calories: 42, protein: 0.4, fat: 0, carbs: 10.2, fiber: 0, defaultAmount: 330, liquidMl: 100 },
   { name: "Mandarine", baseUnit: "100g", baseAmount: 100, calories: 47, protein: 0.7, fat: 0.3, carbs: 10.1, fiber: 1.7, defaultAmount: 70 },
   { name: "Mandeln", baseUnit: "100g", baseAmount: 100, calories: 589, protein: 24, fat: 52.5, carbs: 5.7, fiber: 13.5, defaultAmount: 30 },
+  { name: "Manchego", baseUnit: "100g", baseAmount: 100, calories: 404, protein: 24, fat: 33, carbs: 1.3, fiber: 0, defaultAmount: 30 },
   { name: "Mango", baseUnit: "100g", baseAmount: 100, calories: 60, protein: 0.6, fat: 0.4, carbs: 13.4, fiber: 1.6, defaultAmount: 200 },
   { name: "Maracuja", baseUnit: "100g", baseAmount: 100, calories: 97, protein: 2.2, fat: 0.7, carbs: 23.4, fiber: 10.4, defaultAmount: 60 },
   { name: "Matjesfilet", baseUnit: "100g", baseAmount: 100, calories: 267, protein: 18.4, fat: 21.5, carbs: 0, fiber: 0, defaultAmount: 150 },
   { name: "Cantaloupe Melone", baseUnit: "100g", baseAmount: 100, calories: 34, protein: 0.8, fat: 0.2, carbs: 8.2, fiber: 0.9, defaultAmount: 150 },
   { name: "Mezzo Mix", baseUnit: "100ml", baseAmount: 100, calories: 43, protein: 0, fat: 0, carbs: 10.1, fiber: 0, defaultAmount: 250, liquidMl: 100 },
   { name: "Wassermelone", baseUnit: "100g", baseAmount: 100, calories: 30, protein: 0.6, fat: 0.2, carbs: 7.5, fiber: 0.4, defaultAmount: 200 },
+  { name: "Merguez", baseUnit: "100g", baseAmount: 100, calories: 320, protein: 17.5, fat: 27, carbs: 1.2, fiber: 0, defaultAmount: 100 },
   { name: "Mettwurst", baseUnit: "100g", baseAmount: 100, calories: 335, protein: 15.8, fat: 30.2, carbs: 0.5, fiber: 0, defaultAmount: 30 },
   { name: "Milch 0,1% Fett", baseUnit: "100ml", baseAmount: 100, calories: 35, protein: 3.4, fat: 0.1, carbs: 4.9, fiber: 0, defaultAmount: 200, liquidMl: 100 },
   { name: "Miesmuscheln", baseUnit: "100g", baseAmount: 100, calories: 82, protein: 13.3, fat: 1.8, carbs: 2.3, fiber: 0, defaultAmount: 250 },
@@ -460,6 +466,7 @@ export const DEFAULT_FOODS: FoodItem[] = [
   { name: "Paulaner Spezi", baseUnit: "100ml", baseAmount: 100, calories: 37, protein: 0, fat: 0, carbs: 9.1, fiber: 0, defaultAmount: 330, liquidMl: 100 },
   { name: "Pekannüsse", baseUnit: "100g", baseAmount: 100, calories: 691, protein: 9.2, fat: 72, carbs: 13.9, fiber: 9.6, defaultAmount: 30 },
   { name: "Pepsi Cola", baseUnit: "100ml", baseAmount: 100, calories: 42, protein: 0, fat: 0, carbs: 10.7, fiber: 0, defaultAmount: 250, liquidMl: 100 },
+  { name: "Pecorino Romano 32 % Fett i. Tr.", baseUnit: "100g", baseAmount: 100, calories: 387, protein: 31.8, fat: 26.9, carbs: 0, fiber: 0, defaultAmount: 25 },
   { name: "Pfirsich", baseUnit: "100g", baseAmount: 100, calories: 39, protein: 0.8, fat: 0.3, carbs: 8.3, fiber: 1.9, defaultAmount: 150 },
   { name: "Pflaume", baseUnit: "100g", baseAmount: 100, calories: 46, protein: 0.7, fat: 0.2, carbs: 10.2, fiber: 1.6, defaultAmount: 150 },
   { name: "Physalis", baseUnit: "100g", baseAmount: 100, calories: 71, protein: 2.3, fat: 0.7, carbs: 13.3, fiber: 0.8, defaultAmount: 100 },
@@ -489,7 +496,6 @@ export const DEFAULT_FOODS: FoodItem[] = [
   { name: "Rehkeule", baseUnit: "100g", baseAmount: 100, calories: 115, protein: 22, fat: 3, carbs: 0, fiber: 0, defaultAmount: 200 },
   { name: "Rehrücken", baseUnit: "100g", baseAmount: 100, calories: 112, protein: 22.5, fat: 2.5, carbs: 0, fiber: 0, defaultAmount: 200 },
   { name: "Rinderbraten", baseUnit: "100g", baseAmount: 100, calories: 155, protein: 22, fat: 7.5, carbs: 0, fiber: 0, defaultAmount: 200 },
-  { name: "Rinderbrust (Tafelspitz)", baseUnit: "100g", baseAmount: 100, calories: 170, protein: 21, fat: 9.5, carbs: 0, fiber: 0, defaultAmount: 250 },
   { name: "Rinderfilet", baseUnit: "100g", baseAmount: 100, calories: 121, protein: 21.2, fat: 4, carbs: 0, fiber: 0, defaultAmount: 200 },
   { name: "Rindergulasch", baseUnit: "100g", baseAmount: 100, calories: 155, protein: 21.8, fat: 7.5, carbs: 0, fiber: 0, defaultAmount: 200 },
   { name: "Rinderhackfleisch", baseUnit: "100g", baseAmount: 100, calories: 232, protein: 20.2, fat: 16.8, carbs: 0, fiber: 0, defaultAmount: 150 },
@@ -637,10 +643,23 @@ export const DEFAULT_FOODS: FoodItem[] = [
   { name: "Rösti TK", baseUnit: "100g", baseAmount: 100, calories: 170, protein: 2, fat: 8, carbs: 22, fiber: 2, defaultAmount: 200, category: "Fertiggerichte" },
   { name: "Mini-Frikadellen TK", baseUnit: "100g", baseAmount: 100, calories: 215, protein: 13, fat: 14, carbs: 10, fiber: 0.5, defaultAmount: 200, category: "Fertiggerichte" },
   { name: "Cannelloni (Fertiggericht)", baseUnit: "100g", baseAmount: 100, calories: 130, protein: 6, fat: 5, carbs: 14, fiber: 1, defaultAmount: 400, category: "Fertiggerichte" },
-  { name: "Mac and Cheese TK", baseUnit: "100g", baseAmount: 100, calories: 175, protein: 7, fat: 8, carbs: 19, fiber: 1, defaultAmount: 350, category: "Fertiggerichte" },
 ];
 
+const LEGACY_FOOD_RENAMES: Record<string, string> = {
+  "Bratwurst Geflügel": "Bratwurst (Geflügel)",
+  "Bratwurst Lamm": "Bratwurst (Lamm)",
+  "Bratwurst Rind": "Bratwurst (Rind)",
+  "Bratwurst Schwein": "Bratwurst (Schwein)",
+  "Appenzeller 50 %": "Appenzeller 50 % i. Tr.",
+};
+
+const REMOVED_FOOD_NAMES = new Set([
+  "tafelspitz (rind)",
+  "rinderbrust (tafelspitz)",
+]);
+
 function loadFoodDatabase(): FoodItem[] {
+
   try {
     const raw = localStorage.getItem(FOOD_DB_KEY);
     const deletedFoods = loadDeletedFoods();
@@ -658,11 +677,39 @@ function loadFoodDatabase(): FoodItem[] {
     // Build a map of stored items by name (lowercase)
     const storedMap = new Map(stored.map((f) => [f.name.toLowerCase(), f]));
 
+    let changed = false;
+
+    // Migrate legacy names (rename + merge)
+    for (const [legacyName, newName] of Object.entries(LEGACY_FOOD_RENAMES)) {
+      const legacyKey = legacyName.toLowerCase();
+      const newKey = newName.toLowerCase();
+      const legacyItem = storedMap.get(legacyKey);
+      if (!legacyItem) continue;
+
+      if (!storedMap.has(newKey)) {
+        storedMap.set(newKey, {
+          ...legacyItem,
+          name: newName,
+          category: legacyItem.category || FOOD_CATEGORY_MAP[newName],
+        });
+      }
+
+      storedMap.delete(legacyKey);
+      changed = true;
+    }
+
+    // Remove deprecated defaults that should no longer appear
+    for (const removedName of REMOVED_FOOD_NAMES) {
+      if (storedMap.has(removedName)) {
+        storedMap.delete(removedName);
+        changed = true;
+      }
+    }
+
     // For each DEFAULT_FOOD:
     // - if deleted by user → skip entirely
     // - if not in stored → add it
     // - if in stored but NOT user-created → overwrite with updated DEFAULT values
-    let changed = false;
     for (const def of DEFAULT_FOODS) {
       const key = def.name.toLowerCase();
       if (deletedFoods.has(key)) {

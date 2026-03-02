@@ -555,13 +555,13 @@ const SettingsDialog = ({
     // Animal sub-filter for Fleisch&Wurst
     if (selectedAnimal && selectedCategories.has("Fleisch&Wurst")) {
       const animalKeywords: Record<string, string[]> = {
-        "Rind": ["rind", "roastbeef", "tafelspitz", "sauerbraten"],
+        "Rind": ["rind", "roastbeef", "sauerbraten"],
         "Schwein": ["schwein", "kasseler"],  // note: wildschwein handled separately below
         "Lamm": ["lamm"],
         "Kalb": ["kalb"],
         "Geflügel": ["hähn", "huhn", "pute", "ente", "gans", "suppenhuhn", "brathähnchen", "geflügel"],
         "Wild": ["reh", "hirsch", "wildschwein", "kaninchen"],
-        "Wurst": ["wurst", "salami", "schinken", "speck", "lyoner", "mortadella", "landjäger", "cabanossi", "chorizo", "sucuk", "bierschinken", "fleischwurst", "jagdwurst", "mettwurst", "teewurst", "cervelat", "wiener", "weißwurst", "leberwurst", "blutwurst", "gelbwurst", "krakauer", "presssack", "paprikalyoner", "frühstücksfleisch"],
+        "Wurst": ["wurst", "würst", "salami", "schinken", "speck", "lyoner", "mortadella", "landjäger", "cabanossi", "chorizo", "sucuk", "bierschinken", "fleischwurst", "jagdwurst", "mettwurst", "teewurst", "cervelat", "wiener", "weißwurst", "leberwurst", "blutwurst", "gelbwurst", "krakauer", "presssack", "paprikalyoner", "frühstücksfleisch", "frankfurter", "leberkäse", "bockwurst"],
       };
       const keywords = animalKeywords[selectedAnimal];
       if (keywords) {
