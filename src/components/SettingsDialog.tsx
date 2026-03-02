@@ -840,52 +840,52 @@ const SettingsDialog = ({
                   )}
                 </div>
                 {/* === BLOCK 1: Basis (Name, g/ml, Makros) === */}
-                <div className="space-y-0.5 rounded-lg border border-border p-2 bg-card">
-                  <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide mb-0.5">Basis</p>
+                <div className="space-y-0.5 rounded-lg border border-border p-1.5 pt-1 bg-card">
+                  <p className="text-[9px] font-semibold text-muted-foreground uppercase tracking-wide mb-0.5">Basis</p>
                   <div className="grid grid-cols-5 gap-1.5">
                     <div className="col-span-4">
-                      <Label className="text-[10px] text-muted-foreground">Lebensmittel</Label>
-                      <Input value={editFoodName} onChange={(e) => setEditFoodName(e.target.value)} className="h-8 text-xs" autoCorrect="off" spellCheck={false} />
+                      <Label className="text-[8px] text-muted-foreground leading-none block mb-0.5">Lebensmittel</Label>
+                      <Input value={editFoodName} onChange={(e) => setEditFoodName(e.target.value)} className="h-6 text-[10px] px-1" autoCorrect="off" spellCheck={false} />
                     </div>
                     <div className="col-span-1">
-                      <Label className="text-[10px] text-muted-foreground">g/ml</Label>
-                      <div className="h-8 flex items-center justify-center text-xs text-muted-foreground rounded-md border border-input bg-muted/30">
+                      <Label className="text-[8px] text-muted-foreground leading-none block mb-0.5">g/ml</Label>
+                      <div className="h-6 flex items-center justify-center text-[10px] text-muted-foreground rounded-md border border-input bg-muted/30">
                         100
                       </div>
                     </div>
                   </div>
                   <div className="grid grid-cols-5 gap-1.5">
                     <div>
-                      <Label className="text-[10px] text-muted-foreground">kcal</Label>
-                      <Input type="number" inputMode="decimal" value={editFoodCal} onChange={(e) => setEditFoodCal(e.target.value)} className="h-8 text-[11px] px-1 text-left" />
+                      <Label className="text-[8px] text-muted-foreground leading-none block mb-0.5">kcal</Label>
+                      <Input type="number" inputMode="decimal" value={editFoodCal} onChange={(e) => setEditFoodCal(e.target.value)} className="h-6 text-[10px] px-1 text-left" />
                     </div>
                     <div>
-                      <Label className="text-[10px] text-muted-foreground">PRO</Label>
-                      <Input type="number" inputMode="decimal" value={editFoodPro} onChange={(e) => setEditFoodPro(e.target.value)} className="h-8 text-[11px] px-1 text-left" />
+                      <Label className="text-[8px] text-muted-foreground leading-none block mb-0.5">PRO</Label>
+                      <Input type="number" inputMode="decimal" value={editFoodPro} onChange={(e) => setEditFoodPro(e.target.value)} className="h-6 text-[10px] px-1 text-left" />
                     </div>
                     <div>
-                      <Label className="text-[10px] text-muted-foreground">FAT</Label>
-                      <Input type="number" inputMode="decimal" value={editFoodFat} onChange={(e) => setEditFoodFat(e.target.value)} className="h-8 text-[11px] px-1 text-left" />
+                      <Label className="text-[8px] text-muted-foreground leading-none block mb-0.5">FAT</Label>
+                      <Input type="number" inputMode="decimal" value={editFoodFat} onChange={(e) => setEditFoodFat(e.target.value)} className="h-6 text-[10px] px-1 text-left" />
                     </div>
                     <div>
-                      <Label className="text-[10px] text-muted-foreground">KH</Label>
-                      <Input type="number" inputMode="decimal" value={editFoodKh} onChange={(e) => setEditFoodKh(e.target.value)} className="h-8 text-[11px] px-1 text-left" />
+                      <Label className="text-[8px] text-muted-foreground leading-none block mb-0.5">KH</Label>
+                      <Input type="number" inputMode="decimal" value={editFoodKh} onChange={(e) => setEditFoodKh(e.target.value)} className="h-6 text-[10px] px-1 text-left" />
                     </div>
                     <div>
-                      <Label className="text-[10px] text-muted-foreground">FIB</Label>
-                      <Input type="number" inputMode="decimal" value={editFoodFib} onChange={(e) => setEditFoodFib(e.target.value)} className="h-8 text-[11px] px-1 text-left" />
+                      <Label className="text-[8px] text-muted-foreground leading-none block mb-0.5">FIB</Label>
+                      <Input type="number" inputMode="decimal" value={editFoodFib} onChange={(e) => setEditFoodFib(e.target.value)} className="h-6 text-[10px] px-1 text-left" />
                     </div>
                   </div>
                   <div className="grid grid-cols-3 gap-1.5">
                     <div className="relative">
-                      <Label className="text-[10px] text-muted-foreground">Kategorie</Label>
+                      <Label className="text-[8px] text-muted-foreground leading-none block mb-0.5">Kategorie</Label>
                       <button
                         type="button"
-                        className="w-full flex items-center justify-between h-8 px-2 text-xs rounded-md border border-input bg-background hover:bg-muted/60 transition-colors"
+                        className="w-full flex items-center justify-between h-6 px-1.5 text-[10px] rounded-md border border-input bg-background hover:bg-muted/60 transition-colors"
                         onClick={() => setShowCategoryDropdown(v => !v)}
                       >
                         <span className="truncate">{editFoodCategory || "–"}</span>
-                        <ChevronRight className={`w-3.5 h-3.5 text-muted-foreground transition-transform shrink-0 ml-1 ${showCategoryDropdown ? "rotate-90" : ""}`} />
+                        <ChevronRight className={`w-3 h-3 text-muted-foreground transition-transform shrink-0 ml-1 ${showCategoryDropdown ? "rotate-90" : ""}`} />
                       </button>
                       {showCategoryDropdown && (
                         <>
@@ -897,13 +897,13 @@ const SettingsDialog = ({
                           />
                           <div className="absolute left-0 right-0 bottom-[calc(100%-1.25rem)] mb-0 z-[220] overflow-y-auto rounded-md border border-border bg-popover shadow-lg max-h-[55vh]">
                             <div
-                              className={`px-3 py-0.5 text-xs leading-4 cursor-pointer transition-colors ${!editFoodCategory ? "bg-primary/10 text-primary font-medium" : "hover:bg-muted/60"}`}
+                              className={`px-3 py-0.5 text-[10px] leading-4 cursor-pointer transition-colors ${!editFoodCategory ? "bg-primary/10 text-primary font-medium" : "hover:bg-muted/60"}`}
                               onPointerDown={(e) => { e.preventDefault(); setEditFoodCategory(""); setShowCategoryDropdown(false); }}
                             >–</div>
                             {FOOD_CATEGORIES.map(cat => (
                               <div
                                 key={cat}
-                                className={`px-3 py-0.5 text-xs leading-4 cursor-pointer transition-colors ${editFoodCategory === cat ? "bg-primary/10 text-primary font-medium" : "hover:bg-muted/60"}`}
+                                className={`px-3 py-0.5 text-[10px] leading-4 cursor-pointer transition-colors ${editFoodCategory === cat ? "bg-primary/10 text-primary font-medium" : "hover:bg-muted/60"}`}
                                 onPointerDown={(e) => { e.preventDefault(); setEditFoodCategory(cat); setShowCategoryDropdown(false); }}
                               >{cat}</div>
                             ))}
@@ -912,12 +912,12 @@ const SettingsDialog = ({
                       )}
                     </div>
                     <div>
-                      <Label className="text-[10px] text-muted-foreground">Standardwert</Label>
-                      <Input type="number" inputMode="decimal" value={editFoodDefault} onChange={(e) => setEditFoodDefault(e.target.value)} placeholder="z.B. 125" className="h-8 text-xs" />
+                      <Label className="text-[8px] text-muted-foreground leading-none block mb-0.5">Standardwert</Label>
+                      <Input type="number" inputMode="decimal" value={editFoodDefault} onChange={(e) => setEditFoodDefault(e.target.value)} placeholder="z.B. 125" className="h-6 text-[10px] px-1" />
                     </div>
                     <div>
-                      <Label className="text-[10px] text-muted-foreground">Flüssigkeit (ml)</Label>
-                      <Input type="number" inputMode="decimal" value={editFoodLiquid} onChange={(e) => setEditFoodLiquid(e.target.value)} placeholder="z.B. 250" className="h-8 text-xs" />
+                      <Label className="text-[8px] text-muted-foreground leading-none block mb-0.5">Flüssigkeit (ml)</Label>
+                      <Input type="number" inputMode="decimal" value={editFoodLiquid} onChange={(e) => setEditFoodLiquid(e.target.value)} placeholder="z.B. 250" className="h-6 text-[10px] px-1" />
                     </div>
                   </div>
                 </div>
@@ -927,23 +927,29 @@ const SettingsDialog = ({
                   variant="outline"
                   onClick={handleAiLookup}
                   disabled={aiLoading || !editFoodName.trim()}
-                  className="w-full h-8 text-xs gap-2"
+                  className="w-full h-6 text-[10px] gap-2"
                 >
-                  {aiLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5 text-primary" />}
-                  {aiLoading ? "KI sucht Nährwerte..." : <><Search className="w-3.5 h-3.5 text-muted-foreground" /> KI-Nährwerte suchen</>}
+                  {aiLoading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3 text-primary" />}
+                  {aiLoading ? "KI sucht Nährwerte..." : <><Search className="w-3 h-3 text-muted-foreground" /> KI-Nährwerte suchen</>}
                 </Button>
 
                 {/* Buttons */}
-                <div className="grid grid-cols-3 gap-2">
-                  <Button variant="outline" onClick={() => { handleSaveFood(); handleNewFood(); }} className="h-8 text-xs">
+                <div className="grid grid-cols-3 gap-1.5">
+                  <Button variant="outline" onClick={() => { handleSaveFood(); handleNewFood(); }} className="h-6 text-[10px]">
                     + Nächstes
                   </Button>
-                  <Button onClick={handleSaveFood} className="h-8 text-xs gap-1">
-                    <Save className="w-3.5 h-3.5" /> Speichern
+                  <Button onClick={handleSaveFood} className="h-6 text-[10px] gap-1">
+                    <Save className="w-3 h-3" /> Speichern
                   </Button>
-                  <Button variant="outline" onClick={() => { setEditingFood(null); setFoodNavIndex(null); }} className="h-8 text-xs">
+                  <Button variant="outline" onClick={() => { setEditingFood(null); setFoodNavIndex(null); }} className="h-6 text-[10px]">
                     ← Tabelle
                   </Button>
+                </div>
+
+                {/* Zusatzinfo */}
+                <div>
+                  <Label className="text-[8px] text-muted-foreground leading-none block mb-0.5">Zusatzinfo</Label>
+                  <Textarea value={editFoodNotes} onChange={(e) => setEditFoodNotes(e.target.value)} placeholder="z.B. vegan, Nutri Score, Haltungsform, Bio usw." className="min-h-[40px] text-[10px] px-1 py-1" />
                 </div>
 
                 {/* === BLOCK 2: Mikronährstoffe (Vitamine + Spurenelemente) === */}
@@ -967,13 +973,13 @@ const SettingsDialog = ({
                       ["vitK", "K (µg)"],
                     ] as [keyof FoodVitamins, string][]).map(([key, label]) => (
                       <div key={key} className="mb-0">
-                        <Label className="text-[8px] text-muted-foreground leading-none block mb-0">{label}</Label>
+                      <Label className="text-[8px] text-muted-foreground leading-none block mb-0.5">{label}</Label>
                         <Input
                           type="number"
                           inputMode="decimal"
                           value={editVitamins[key] !== undefined ? String(editVitamins[key]) : ""}
                           onChange={(e) => setEditVitamins(prev => ({ ...prev, [key]: e.target.value ? parseFloat(e.target.value) : undefined }))}
-                          className="h-6 text-[11px] px-1"
+                          className="h-6 text-[10px] px-1"
                         />
                       </div>
                     ))}
@@ -997,13 +1003,13 @@ const SettingsDialog = ({
                       ["zink", "Zn (mg)"],
                     ] as [keyof FoodMinerals, string][]).map(([key, label]) => (
                       <div key={key} className="mb-0">
-                        <Label className="text-[8px] text-muted-foreground leading-none block mb-0">{label}</Label>
+                      <Label className="text-[8px] text-muted-foreground leading-none block mb-0.5">{label}</Label>
                         <Input
                           type="number"
                           inputMode="decimal"
                           value={editMinerals[key] !== undefined ? String(editMinerals[key]) : ""}
                           onChange={(e) => setEditMinerals(prev => ({ ...prev, [key]: e.target.value ? parseFloat(e.target.value) : undefined }))}
-                          className="h-6 text-[11px] px-1"
+                          className="h-6 text-[10px] px-1"
                         />
                       </div>
                     ))}
