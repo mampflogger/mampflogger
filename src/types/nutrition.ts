@@ -9,6 +9,7 @@ export interface NutritionEntry {
   carbs: number;
   fat: number;
   fiber: number;
+  gi?: number; // Glykämischer Index
   liquidMl?: number; // Tatsächliche Flüssigkeitsmenge in ml für diesen Eintrag
 }
 
