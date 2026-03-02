@@ -66,12 +66,14 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
     onResult: useCallback((transcript: string, isInterim: boolean) => {
       const currentField = focusedFieldRef.current;
 
-      // For "buchen" command: react on interim results too for speed
-      if (currentField === "submit") {
+      // "buchen" command works from both amount and submit fields
+      if (currentField === "submit" || currentField === "amount") {
         if (isBuchenCommand(transcript)) {
           submitButtonRef.current?.click();
+          return;
         }
-        return;
+        // If we're on submit, ignore non-buchen speech
+        if (currentField === "submit") return;
       }
 
       // For food/amount fields: only act on final results
@@ -517,7 +519,7 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
               : "bg-primary text-primary-foreground hover:bg-primary/90"
           }`}
         >
-          {voice.isListening && focusedField === "submit"
+          {voice.isListening && (focusedField === "submit" || focusedField === "amount")
             ? <span className="italic">Sag „buchen"</span>
             : (editingEntry ? "Speichern" : "Hinzufügen")}
         </button>
