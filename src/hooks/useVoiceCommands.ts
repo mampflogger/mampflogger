@@ -38,8 +38,8 @@ const COMMANDS: VoiceCommand[] = [
   { patterns: [/\blöschen\b/i], action: "section:loeschen" },
 
   // Scroll up/down
-  { patterns: [/\brunter\b/i, /\bscroll\s*runter\b/i], action: "scroll:down" },
-  { patterns: [/\bhoch\b/i, /\bscroll\s*hoch\b/i], action: "scroll:up" },
+  { patterns: [/\brunter\b/i, /\bnach\s*unten\b/i, /\bunten\b/i, /\bscroll\s*runter\b/i], action: "scroll:down" },
+  { patterns: [/\bhoch\b/i, /\brauf\b/i, /\bnach\s*oben\b/i, /\boben\b/i, /\bscroll\s*hoch\b/i], action: "scroll:up" },
 
   // Navigation
   { patterns: [/\beingabe\b/i, /\blog\b/i], action: "nav:log" },
