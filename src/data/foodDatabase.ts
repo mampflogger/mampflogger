@@ -50,6 +50,30 @@ export interface FoodMinerals {
   zink?: number;
 }
 
+export interface FoodDietaryFlags {
+  vgn?: boolean; // Vegan
+  vgt?: boolean; // Vegetarisch
+  lc?: boolean;  // Low Carb
+  hp?: boolean;  // High Protein
+  ket?: boolean; // Keto
+  gf?: boolean;  // Glutenfrei
+  lf?: boolean;  // Laktosefrei
+  zf?: boolean;  // Zuckerfrei
+}
+
+export const DIETARY_FLAG_LABELS: Record<keyof FoodDietaryFlags, string> = {
+  vgn: "Vegan",
+  vgt: "Vegetarisch",
+  lc: "Low Carb",
+  hp: "High Protein",
+  ket: "Keto",
+  gf: "Glutenfrei",
+  lf: "Laktosefrei",
+  zf: "Zuckerfrei",
+};
+
+export const DIETARY_FLAG_KEYS = ["vgn","vgt","lc","hp","ket","gf","lf","zf"] as const;
+
 export interface FoodItem {
   name: string;
   baseUnit: string;
@@ -68,6 +92,7 @@ export interface FoodItem {
   notes?: string;
   vitamins?: FoodVitamins;
   minerals?: FoodMinerals;
+  dietary?: FoodDietaryFlags;
 }
 
 const VITAMIN_KEYS = ["vitA","vitB1","vitB2","vitB3","vitB5","vitB6","vitB7","vitB9","vitB12","vitC","vitD","vitE","vitK"] as const;
@@ -105,6 +130,17 @@ function parseDefaultFoodsCsv(csv: string): FoodItem[] {
       if (v !== undefined && !isNaN(v) && v > 0) { (minerals as any)[k] = v; hasMinerals = true; }
     });
 
+    // Dietary flags start at column 37 (after 12 mineral cols starting at 25)
+    const dietary: FoodDietaryFlags = {};
+    let hasDietary = false;
+    DIETARY_FLAG_KEYS.forEach((k, idx) => {
+      const val = cols[37 + idx]?.toUpperCase();
+      if (val === "J" || val === "N") {
+        (dietary as any)[k] = val === "J";
+        hasDietary = true;
+      }
+    });
+
     items.push({
       name,
       baseUnit,
@@ -121,6 +157,7 @@ function parseDefaultFoodsCsv(csv: string): FoodItem[] {
       ...(notes ? { notes } : {}),
       ...(hasVitamins ? { vitamins } : {}),
       ...(hasMinerals ? { minerals } : {}),
+      ...(hasDietary ? { dietary } : {}),
     });
   }
   return items;
