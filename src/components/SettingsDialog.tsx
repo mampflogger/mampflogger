@@ -187,6 +187,7 @@ const SettingsDialog = ({
   const [foodNavIndex, setFoodNavIndex] = useState<number | null>(null);
   const [selectedCategories, setSelectedCategories] = useState<Set<string>>(new Set());
   const [selectedAnimal, setSelectedAnimal] = useState<string | null>(null);
+  const [selectedDietaryFilters, setSelectedDietaryFilters] = useState<Set<keyof FoodDietaryFlags>>(new Set());
   const [selectedRecipeFoods, setSelectedRecipeFoods] = useState<FoodItem[]>([]);
 
 
@@ -581,7 +582,7 @@ const SettingsDialog = ({
     if (selectedAnimal && selectedCategories.has("Fleisch&Wurst")) {
       const animalKeywords: Record<string, string[]> = {
         "Rind": ["rind", "roastbeef", "sauerbraten"],
-        "Schwein": ["schwein", "kasseler"],  // note: wildschwein handled separately below
+        "Schwein": ["schwein", "kasseler"],
         "Lamm": ["lamm"],
         "Kalb": ["kalb"],
         "Geflügel": ["hähn", "huhn", "pute", "ente", "gans", "suppenhuhn", "brathähnchen", "geflügel"],
@@ -593,11 +594,20 @@ const SettingsDialog = ({
         list = list.filter((f) => {
           const lower = f.name.toLowerCase();
           const matches = keywords.some(k => lower.includes(k));
-          // "Schwein" should not match "Wildschwein"
           if (selectedAnimal === "Schwein" && lower.includes("wildschwein")) return false;
           return matches;
         });
       }
+    }
+    // Dietary filters
+    if (selectedDietaryFilters.size > 0) {
+      list = list.filter((f) => {
+        if (!f.dietary) return false;
+        for (const key of selectedDietaryFilters) {
+          if (!f.dietary[key]) return false;
+        }
+        return true;
+      });
     }
     return list;
   })();
@@ -1086,10 +1096,33 @@ const SettingsDialog = ({
                       </button>
                     ))}
                   </div>
+                  {/* Dietary filter buttons – always visible */}
+                  <div className="pb-1">
+                    <div className="text-[8px] text-muted-foreground font-medium uppercase tracking-wider mb-1 ml-0.5">Filter</div>
+                    <div className="flex flex-wrap gap-1">
+                      {DIETARY_FLAG_KEYS.map(key => (
+                        <button
+                          key={key}
+                          type="button"
+                          onClick={() => setSelectedDietaryFilters(prev => {
+                            const next = new Set(prev);
+                            if (next.has(key)) next.delete(key); else next.add(key);
+                            return next;
+                          })}
+                          className={`px-2 py-0.5 rounded-full text-[9px] font-medium transition-colors border ${
+                            selectedDietaryFilters.has(key)
+                              ? "bg-accent text-accent-foreground border-accent"
+                              : "bg-accent/50 text-muted-foreground border-border/60 hover:bg-muted/60"
+                          }`}
+                        >
+                          {DIETARY_FLAG_LABELS[key]}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
                   {/* Animal sub-filter when Fleisch&Wurst is selected */}
                   {selectedCategories.has("Fleisch&Wurst") && (
                     <div className="pb-1.5">
-                      <div className="text-[8px] text-muted-foreground font-medium uppercase tracking-wider mb-1 ml-0.5">Unterkategorie</div>
                       <div className="flex flex-wrap gap-1">
                         {["Rind", "Schwein", "Lamm", "Kalb", "Geflügel", "Wild", "Wurst"].map(animal => (
                           <button
