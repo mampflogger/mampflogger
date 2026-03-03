@@ -265,10 +265,29 @@ function loadFoodDatabase(): FoodItem[] {
     }
     const stored: FoodItem[] = JSON.parse(raw);
 
-    // Build a map of stored items by name (lowercase)
-    const storedMap = new Map(stored.map((f) => [f.name.toLowerCase(), f]));
-
     let changed = false;
+    const remoteSyncEnabled = !!(localStorage.getItem("mampflogger-remote-url")?.trim());
+
+    // Cleanup: remove stale remote items when remote sync is not configured,
+    // and dedupe by case-insensitive name to avoid inflated base counts.
+    const cleanedStored: FoodItem[] = [];
+    const seenStoredNames = new Set<string>();
+    for (const item of stored) {
+      const key = item.name.toLowerCase();
+      if (!remoteSyncEnabled && item.isRemote) {
+        changed = true;
+        continue;
+      }
+      if (seenStoredNames.has(key)) {
+        changed = true;
+        continue;
+      }
+      seenStoredNames.add(key);
+      cleanedStored.push(item);
+    }
+
+    // Build a map of stored items by name (lowercase)
+    const storedMap = new Map(cleanedStored.map((f) => [f.name.toLowerCase(), f]));
 
     // Migrate legacy names (rename + merge)
     for (const [legacyName, newName] of Object.entries(LEGACY_FOOD_RENAMES)) {
@@ -487,6 +506,7 @@ export function clearFoodDatabase(): number {
 export function resetFoodDatabase(): void {
   localStorage.removeItem(FOOD_DB_KEY);
   localStorage.removeItem(DELETED_FOODS_KEY);
+  localStorage.removeItem("mampflogger-remote-url");
   localStorage.removeItem("mampflogger-remote-sync");
   foodDatabase.splice(0, foodDatabase.length);
   const defaults = loadFoodDatabase();
