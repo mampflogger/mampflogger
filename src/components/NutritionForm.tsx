@@ -4,8 +4,7 @@ import { NutritionEntry, generateId } from "@/types/nutrition";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { FoodItem, searchFood, addFoodItem, trackFoodUsage, getFoodUsageCount, guessCategory } from "@/data/foodDatabase";
-import { useSpeechRecognition } from "@/hooks/useSpeechRecognition";
-import { Mic, MicOff, X } from "lucide-react";
+import { X } from "lucide-react";
 import { toast } from "sonner";
 
 // German word-to-number map for voice pick commands (module-level constant)
@@ -30,11 +29,11 @@ interface NutritionFormProps {
   editingEntry?: NutritionEntry | null;
   onCancelEdit?: () => void;
   onNewFood?: () => void;
-  externalMicButton?: boolean; // If true, don't render internal mic button
-  onVoiceStateChange?: (isListening: boolean, isSupported: boolean, toggle: () => void) => void;
+  voiceInputRef?: React.MutableRefObject<((transcript: string, isInterim: boolean) => void) | undefined>;
+  isVoiceActive?: boolean;
 }
 
-const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewFood, externalMicButton, onVoiceStateChange }: NutritionFormProps) => {
+const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewFood, voiceInputRef, isVoiceActive = false }: NutritionFormProps) => {
   const now = new Date();
   const currentTime = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
 
@@ -112,113 +111,100 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
     return /\b(storno|leer|leerfeld|clear)\b/.test(lower);
   }, []);
 
-  // Single voice recognition instance for both fields
-  const voice = useSpeechRecognition({
-    onResult: useCallback((transcript: string, isInterim: boolean) => {
-      const currentField = focusedFieldRef.current;
+  // Voice input handler – receives transcripts from global voice command system
+  const handleVoiceInput = useCallback((transcript: string, isInterim: boolean) => {
+    const currentField = focusedFieldRef.current;
 
-      // "storno" command: clear current field and reset focus
-      if (isStornoCommand(transcript)) {
-        if (currentField === "food" || currentField === "amount" || currentField === "submit") {
-          setFood("");
-          setAmount("");
-          setCalories("");
-          setProtein("");
-          setCarbs("");
-          setFat("");
-          setFiber("");
-          setGi("");
-          setSelectedFood(null);
-          setSuggestions([]);
-          setShowSuggestions(false);
-          setFocusedField("food");
-          setTimeout(() => foodInputRef.current?.focus(), 0);
+    // "storno" command: clear current field and reset focus
+    if (isStornoCommand(transcript)) {
+      if (currentField === "food" || currentField === "amount" || currentField === "submit") {
+        setFood("");
+        setAmount("");
+        setCalories("");
+        setProtein("");
+        setCarbs("");
+        setFat("");
+        setFiber("");
+        setGi("");
+        setSelectedFood(null);
+        setSuggestions([]);
+        setShowSuggestions(false);
+        setFocusedField("food");
+        setTimeout(() => foodInputRef.current?.focus(), 0);
+      }
+      return;
+    }
+
+    // "buchen" command works from both amount and submit fields
+    if (currentField === "submit" || currentField === "amount") {
+      if (isBuchenCommand(transcript)) {
+        justBookedRef.current = true;
+        setTimeout(() => { justBookedRef.current = false; }, 1500);
+        submitButtonRef.current?.click();
+        return;
+      }
+      // If we're on submit, ignore non-buchen speech
+      if (currentField === "submit") return;
+    }
+
+    // For food/amount fields: only act on final results
+    if (isInterim) return;
+
+    if (currentField === "food") {
+      // Ignore speech that arrives right after booking or is itself a booking command
+      if (justBookedRef.current || isBuchenCommand(transcript)) return;
+
+      // Check for "Nummer X" / "Position X" command to pick from visible suggestions
+      const pickIndex = parseVoicePickCommand(transcript);
+      if (pickIndex !== null) {
+        const currentSuggestions = suggestionsRef.current;
+        if (pickIndex >= 0 && pickIndex < currentSuggestions.length) {
+          handleSelectFoodRef.current(currentSuggestions[pickIndex]);
+        } else if (currentSuggestions.length > 0) {
+          toast.error(`Nur ${currentSuggestions.length} Vorschläge verfügbar.`);
         }
         return;
       }
 
-      // "buchen" command works from both amount and submit fields
-      if (currentField === "submit" || currentField === "amount") {
-        if (isBuchenCommand(transcript)) {
-          justBookedRef.current = true;
-          setTimeout(() => { justBookedRef.current = false; }, 1500);
-          submitButtonRef.current?.click();
-          return;
-        }
-        // If we're on submit, ignore non-buchen speech
-        if (currentField === "submit") return;
-      }
-
-      // For food/amount fields: only act on final results
-      if (isInterim) return;
-
-      if (currentField === "food") {
-        // Ignore speech that arrives right after booking or is itself a booking command
-        if (justBookedRef.current || isBuchenCommand(transcript)) return;
-
-        // Check for "Nummer X" / "Position X" command to pick from visible suggestions
-        const pickIndex = parseVoicePickCommand(transcript);
-        if (pickIndex !== null) {
-          const currentSuggestions = suggestionsRef.current;
-          if (pickIndex >= 0 && pickIndex < currentSuggestions.length) {
-            handleSelectFoodRef.current(currentSuggestions[pickIndex]);
-          } else if (currentSuggestions.length > 0) {
-            toast.error(`Nur ${currentSuggestions.length} Vorschläge verfügbar.`);
-          }
-          return;
-        }
-
-        const results = searchFood(transcript);
-        if (results.length === 0) {
-          setFood("Nichts gefunden");
-          setTimeout(() => {
-            setFood("");
-            foodInputRef.current?.focus();
-          }, 1500);
-        } else if (results.length === 1) {
-          handleSelectFoodRef.current(results[0]);
-        } else {
+      const results = searchFood(transcript);
+      if (results.length === 0) {
+        setFood("Nichts gefunden");
+        setTimeout(() => {
           setFood("");
-          setSuggestions(results);
-          setShowSuggestions(true);
-          setHighlightIndex(-1);
-        }
-      } else if (currentField === "amount") {
-        const num = transcript.replace(/[^\d.,]/g, "").replace(",", ".");
-        if (num) {
-          handleAmountChangeRef.current(num);
-          setTimeout(() => {
-            submitButtonRef.current?.focus();
-            setFocusedField("submit");
-          }, 0);
-        }
+          foodInputRef.current?.focus();
+        }, 1500);
+      } else if (results.length === 1) {
+        handleSelectFoodRef.current(results[0]);
+      } else {
+        setFood("");
+        setSuggestions(results);
+        setShowSuggestions(true);
+        setHighlightIndex(-1);
       }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []),
-    onError: useCallback((error: string) => {
-      if (error === "not-allowed" || error === "service-not-allowed") {
-        toast.error("Mikrofon blockiert – bitte Browser-Zugriff für Mikrofon erlauben.");
-      } else if (error === "not-supported") {
-        toast.error("Spracherkennung wird auf diesem Gerät/Browser nicht unterstützt.");
-      } else if (error === "audio-capture") {
-        toast.error("Kein Mikrofon erkannt – bitte Mikrofon prüfen und erneut versuchen.");
-      } else if (error === "restart-requires-gesture") {
-        toast.error("Mikrofon pausiert – bitte erneut auf das Mic tippen.");
-      } else if (error === "start-failed") {
-        toast.error("Mikrofon konnte nicht gestartet werden – bitte erneut tippen.");
+    } else if (currentField === "amount") {
+      const num = transcript.replace(/[^\d.,]/g, "").replace(",", ".");
+      if (num) {
+        handleAmountChangeRef.current(num);
+        setTimeout(() => {
+          submitButtonRef.current?.focus();
+          setFocusedField("submit");
+        }, 0);
       }
-    }, []),
-  });
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  // Expose voice state to parent – use ref to avoid infinite re-render loop
-  const onVoiceStateChangeRef = useRef(onVoiceStateChange);
-  onVoiceStateChangeRef.current = onVoiceStateChange;
-  const voiceToggle = useCallback(() => {
-    voice.isListening ? voice.stop() : voice.start();
-  }, [voice.isListening, voice.stop, voice.start]);
+  // Expose voice handler to parent via ref
   useEffect(() => {
-    onVoiceStateChangeRef.current?.(voice.isListening, voice.isSupported, voiceToggle);
-  }, [voice.isListening, voice.isSupported, voiceToggle]);
+    if (voiceInputRef) {
+      voiceInputRef.current = handleVoiceInput;
+    }
+    return () => {
+      if (voiceInputRef) {
+        voiceInputRef.current = undefined;
+      }
+    };
+  }, [voiceInputRef, handleVoiceInput]);
 
   // Load editing entry into form
   useEffect(() => {
@@ -446,21 +432,6 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
 
   return (
     <form onSubmit={handleSubmit} className="animate-fade-in relative">
-      {/* Mic button top-right, absolutely positioned (only if not externally rendered) */}
-      {!externalMicButton && voice.isSupported && (
-        <button
-          type="button"
-          onClick={() => voice.isListening ? voice.stop() : voice.start()}
-          className={`absolute -top-7 right-0 p-1 rounded-full transition-colors ${
-            voice.isListening
-              ? "bg-destructive/15 text-destructive animate-pulse"
-              : "bg-accent text-muted-foreground hover:text-foreground hover:bg-muted/80"
-          }`}
-          title="Spracheingabe"
-        >
-          {voice.isListening ? <MicOff className="w-3.5 h-3.5" /> : <Mic className="w-3.5 h-3.5" />}
-        </button>
-      )}
       {/* Row 1: Time (1), Food (3), Amount (1) → 5 cols total */}
       <div className="grid grid-cols-5 gap-2 mb-2">
         <div className="col-span-1">
@@ -496,7 +467,7 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
                 if (suggestions.length > 0) setShowSuggestions(true);
               }}
               onKeyDown={handleKeyDown}
-              className={`h-9 text-xs px-2 pr-7 ${voice.isListening && focusedField === "food" ? "ring-2 ring-primary" : ""}`}
+              className={`h-9 text-xs px-2 pr-7 ${isVoiceActive && focusedField === "food" ? "ring-2 ring-primary" : ""}`}
               autoComplete="off"
               autoCorrect="off"
               spellCheck={false}
@@ -585,7 +556,7 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
               value={amount}
               onChange={(e) => handleAmountChange(e.target.value)}
               onFocus={() => setFocusedField("amount")}
-              className={`h-9 text-xs px-2 ${voice.isListening && focusedField === "amount" ? "ring-2 ring-primary" : ""}`}
+              className={`h-9 text-xs px-2 ${isVoiceActive && focusedField === "amount" ? "ring-2 ring-primary" : ""}`}
             />
           </div>
         </div>
@@ -626,12 +597,12 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
           type="submit"
           onFocus={() => setFocusedField("submit")}
           className={`flex-1 h-9 rounded-full text-sm font-semibold transition-colors ${
-            voice.isListening && focusedField === "submit"
+            isVoiceActive && focusedField === "submit"
               ? "bg-primary text-primary-foreground ring-2 ring-primary"
               : "bg-primary text-primary-foreground hover:bg-primary/90"
           }`}
         >
-          {voice.isListening && (focusedField === "submit" || focusedField === "amount")
+          {isVoiceActive && (focusedField === "submit" || focusedField === "amount")
             ? <span className="italic">Sag „ja" oder „copy"</span>
             : (editingEntry ? "Speichern" : "Hinzufügen")}
         </button>
