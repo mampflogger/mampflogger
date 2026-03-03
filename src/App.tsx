@@ -11,6 +11,12 @@ import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
+const isLovablePreviewHost = () => {
+  if (typeof window === "undefined") return false;
+  const host = window.location.hostname;
+  return host.endsWith("lovableproject.com") || (host.endsWith(".lovable.app") && host.includes("--"));
+};
+
 const PwaUpdateBanner = () => {
   const { needsUpdate, applyUpdate } = usePwaUpdate();
   if (!needsUpdate) return null;
@@ -35,23 +41,27 @@ const PwaUpdateBanner = () => {
   );
 };
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <PwaUpdateBanner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Landing />} />
-          <Route path="/more" element={<LearnMore />} />
-          <Route path="/app" element={<Index />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+const App = () => {
+  const pwaEnabled = !isLovablePreviewHost();
+
+  return (
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        {pwaEnabled && <PwaUpdateBanner />}
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Landing />} />
+            <Route path="/more" element={<LearnMore />} />
+            <Route path="/app" element={<Index />} />
+            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </TooltipProvider>
+    </QueryClientProvider>
+  );
+};
 
 export default App;
