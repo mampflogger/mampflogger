@@ -71,6 +71,10 @@ interface SettingsDialogProps {
   onAddEntry: (entry: NutritionEntry) => void;
   voiceOpenTab?: string | null;
   onVoiceOpenTabHandled?: () => void;
+  voiceCloseRequest?: boolean;
+  onVoiceCloseHandled?: () => void;
+  onOpenChange?: (open: boolean) => void;
+  onTabChange?: (tab: SettingsTab) => void;
 }
 
 type ImportType = "csv-entries" | "csv-balance" | "csv-food";
@@ -100,6 +104,8 @@ const SettingsDialog = ({
   onImport, onImportActivities, onCount, onDelete, onDeleteAll, onDeleteAllActivities, openToNewFood, onOpenToNewFoodHandled, openToRecipes, onOpenToRecipesHandled,
   activeTab, onSetActiveTab, initialOpen, initialTab, selectedDate, onAddEntry,
   voiceOpenTab, onVoiceOpenTabHandled,
+  voiceCloseRequest, onVoiceCloseHandled,
+  onOpenChange: onOpenChangeProp, onTabChange,
 }: SettingsDialogProps) => {
   const [open, setOpen] = useState(initialOpen ?? false);
   const [tab, setTab] = useState<SettingsTab>(initialTab ?? "profile");
@@ -474,6 +480,7 @@ const SettingsDialog = ({
 
   const handleOpen = (isOpen: boolean) => {
     setOpen(isOpen);
+    onOpenChangeProp?.(isOpen);
     if (isOpen && profile) {
       setName(profile.name);
       setBirthYear(String(profile.birthYear));
@@ -497,6 +504,12 @@ const SettingsDialog = ({
       setBalanceHint(false);
       setSelectedRecipeFoods([]);
     }
+  };
+
+  // Handle tab changes and notify parent
+  const handleTabChange = (newTab: SettingsTab) => {
+    setTab(newTab);
+    onTabChange?.(newTab);
   };
 
   const currentProfile: UserProfile | null =
@@ -811,10 +824,23 @@ const SettingsDialog = ({
   useEffect(() => {
     if (voiceOpenTab) {
       setOpen(true);
-      setTab(voiceOpenTab as SettingsTab);
+      onOpenChangeProp?.(true);
+      const newTab = voiceOpenTab as SettingsTab;
+      setTab(newTab);
+      onTabChange?.(newTab);
       onVoiceOpenTabHandled?.();
     }
   }, [voiceOpenTab]);
+
+  // Voice-triggered settings close
+  useEffect(() => {
+    if (voiceCloseRequest && open) {
+      handleOpen(false);
+      onVoiceCloseHandled?.();
+    } else if (voiceCloseRequest) {
+      onVoiceCloseHandled?.();
+    }
+  }, [voiceCloseRequest]);
 
   const hasImportResults = (preview && preview.length > 0) || (foodPreview && foodPreview.length > 0) || (activityPreview && activityPreview.length > 0);
   const importResultCount = preview?.length || foodPreview?.length || activityPreview?.length || 0;
@@ -889,7 +915,7 @@ const SettingsDialog = ({
                   {tabs.map((t) => (
                     <button
                       key={t.id}
-                      onClick={() => setTab(t.id)}
+                      onClick={() => handleTabChange(t.id)}
                       className={`h-10 flex flex-col items-center justify-center gap-0.5 rounded-lg px-1 text-[10px] leading-none font-semibold transition-colors ${
                         tab === t.id
                           ? "bg-background text-foreground shadow-sm"
