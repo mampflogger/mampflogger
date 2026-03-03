@@ -241,96 +241,157 @@ const SettingsDialog = ({
     setEditDietary({});
   };
 
-  // Batch dietary enrichment for all foods
+  // Determine which enrichable fields are missing for a food item
+  const getMissingFields = (food: FoodItem): string[] => {
+    const missing: string[] = [];
+    // Dietary flags
+    const dietaryKeys = ["vgn","vgt","lc","hp","ket","gf","lf","zf"] as const;
+    for (const k of dietaryKeys) {
+      if (food.dietary?.[k] === undefined) missing.push(k);
+    }
+    // GI
+    if (food.gi === undefined || food.gi === null) missing.push("gi");
+    // Category
+    if (!food.category) missing.push("category");
+    // Notes
+    if (!food.notes) missing.push("notes");
+    // Vitamins
+    const vitKeys = ["vitA","vitB1","vitB2","vitB3","vitB5","vitB6","vitB7","vitB9","vitB12","vitC","vitD","vitE","vitK"] as const;
+    for (const k of vitKeys) {
+      if (food.vitamins?.[k] === undefined) missing.push(k);
+    }
+    // Minerals
+    const minKeys = ["calcium","chlorid","eisen","fluorid","kalium","kupfer","magnesium","mangan","natrium","phosphor","schwefel","zink"] as const;
+    for (const k of minKeys) {
+      if (food.minerals?.[k] === undefined) missing.push(k);
+    }
+    return missing;
+  };
+
+  // Batch enrichment: only fill missing fields
   const handleBatchDietary = async () => {
     setBatchEnriching(true);
-    setBatchProgress("Starte...");
+    setBatchProgress("Prüfe Lebensmittel...");
     try {
-      const allFoods = [...foodDatabase];
-      const BATCH_SIZE = 50;
-      const results: Record<string, { vgn: string; vgt: string; lc: string; hp: string; ket: string; gf: string; lf: string; zf: string }> = {};
-      
-      for (let start = 0; start < allFoods.length; start += BATCH_SIZE) {
-        const batch = allFoods.slice(start, start + BATCH_SIZE);
-        setBatchProgress(`Batch ${Math.floor(start / BATCH_SIZE) + 1}/${Math.ceil(allFoods.length / BATCH_SIZE)} (${start}/${allFoods.length})`);
-        
-        const foods = batch.map(f => ({
-          name: f.name,
-          calories: f.calories,
-          protein: f.protein,
-          fat: f.fat,
-          carbs: f.carbs,
-          fiber: f.fiber,
-          category: f.category || "",
+      // Find foods with missing fields
+      const foodsWithGaps: { food: FoodItem; missing: string[] }[] = [];
+      for (const food of foodDatabase) {
+        const missing = getMissingFields(food);
+        if (missing.length > 0) {
+          foodsWithGaps.push({ food, missing });
+        }
+      }
+
+      if (foodsWithGaps.length === 0) {
+        setBatchProgress("Alle Lebensmittel sind vollständig!");
+        toast.success("Alle Lebensmittel sind bereits vollständig ausgefüllt!");
+        return;
+      }
+
+      setBatchProgress(`${foodsWithGaps.length} Lebensmittel mit Lücken gefunden...`);
+      const BATCH_SIZE = 25; // smaller batches due to larger response
+      const totalBatches = Math.ceil(foodsWithGaps.length / BATCH_SIZE);
+      let updated = 0;
+
+      for (let start = 0; start < foodsWithGaps.length; start += BATCH_SIZE) {
+        const batch = foodsWithGaps.slice(start, start + BATCH_SIZE);
+        const batchNum = Math.floor(start / BATCH_SIZE) + 1;
+        setBatchProgress(`Batch ${batchNum}/${totalBatches} (${Math.min(start + BATCH_SIZE, foodsWithGaps.length)}/${foodsWithGaps.length})`);
+
+        const foods = batch.map(({ food, missing }) => ({
+          name: food.name,
+          calories: food.calories,
+          protein: food.protein,
+          fat: food.fat,
+          carbs: food.carbs,
+          fiber: food.fiber,
+          category: food.category || "",
+          missingFields: missing,
         }));
-        
+
         const { data, error } = await supabase.functions.invoke("food-batch-dietary", {
           body: { foods },
         });
-        
+
         if (error || !data?.success) {
           console.error("Batch error at", start, error, data);
-          toast.error(`Fehler bei Batch ab Position ${start}`);
+          toast.error(`Fehler bei Batch ${batchNum}`);
           continue;
         }
-        
+
+        // Apply results – only write back fields that were missing
         for (const r of data.results) {
-          const food = batch[r.i];
-          if (food) {
-            results[food.name] = r;
+          const entry = batch[r.i];
+          if (!entry) continue;
+          const { food, missing } = entry;
+          const missingSet = new Set(missing);
+          let changed = false;
+
+          // Dietary flags
+          const dietaryKeys = ["vgn","vgt","lc","hp","ket","gf","lf","zf"] as const;
+          for (const k of dietaryKeys) {
+            if (missingSet.has(k) && (r[k] === "J" || r[k] === "N")) {
+              if (!food.dietary) food.dietary = {};
+              (food.dietary as any)[k] = r[k] === "J";
+              changed = true;
+            }
           }
+
+          // GI
+          if (missingSet.has("gi") && r.gi !== undefined) {
+            food.gi = typeof r.gi === "number" ? r.gi : parseInt(r.gi);
+            if (isNaN(food.gi)) food.gi = undefined;
+            changed = true;
+          }
+
+          // Category
+          if (missingSet.has("category") && r.category) {
+            food.category = r.category as FoodCategory;
+            changed = true;
+          }
+
+          // Notes
+          if (missingSet.has("notes") && r.notes) {
+            food.notes = r.notes;
+            changed = true;
+          }
+
+          // Vitamins
+          const vitKeys = ["vitA","vitB1","vitB2","vitB3","vitB5","vitB6","vitB7","vitB9","vitB12","vitC","vitD","vitE","vitK"] as const;
+          for (const k of vitKeys) {
+            if (missingSet.has(k) && r[k] !== undefined) {
+              if (!food.vitamins) food.vitamins = {};
+              const val = typeof r[k] === "number" ? r[k] : parseFloat(r[k]);
+              if (!isNaN(val)) { (food.vitamins as any)[k] = val; changed = true; }
+            }
+          }
+
+          // Minerals
+          const minKeys = ["calcium","chlorid","eisen","fluorid","kalium","kupfer","magnesium","mangan","natrium","phosphor","schwefel","zink"] as const;
+          for (const k of minKeys) {
+            if (missingSet.has(k) && r[k] !== undefined) {
+              if (!food.minerals) food.minerals = {};
+              const val = typeof r[k] === "number" ? r[k] : parseFloat(r[k]);
+              if (!isNaN(val)) { (food.minerals as any)[k] = val; changed = true; }
+            }
+          }
+
+          if (changed) updated++;
         }
-        
+
         // Small delay to avoid rate limiting
-        if (start + BATCH_SIZE < allFoods.length) {
-          await new Promise(res => setTimeout(res, 1500));
+        if (start + BATCH_SIZE < foodsWithGaps.length) {
+          await new Promise(res => setTimeout(res, 2000));
         }
       }
-      
-      // Apply results to foodDatabase
-      let updated = 0;
-      for (const food of foodDatabase) {
-        const r = results[food.name];
-        if (r) {
-          food.dietary = {
-            vgn: r.vgn === "J",
-            vgt: r.vgt === "J",
-            lc: r.lc === "J",
-            hp: r.hp === "J",
-            ket: r.ket === "J",
-            gf: r.gf === "J",
-            lf: r.lf === "J",
-            zf: r.zf === "J",
-          };
-          updated++;
-        }
-      }
+
       saveFoodDatabase(foodDatabase);
       forceUpdate(n => n + 1);
-      
-      // Log CSV output for hardcoding
-      console.log("=== DIETARY FLAGS CSV OUTPUT ===");
-      for (const food of foodDatabase) {
-        const d = food.dietary;
-        const flags = d ? [
-          d.vgn ? "J" : "N",
-          d.vgt ? "J" : "N", 
-          d.lc ? "J" : "N",
-          d.hp ? "J" : "N",
-          d.ket ? "J" : "N",
-          d.gf ? "J" : "N",
-          d.lf ? "J" : "N",
-          d.zf ? "J" : "N",
-        ].join(";") : ";;;;;;;";
-        console.log(`${food.name};${flags}`);
-      }
-      console.log("=== END DIETARY FLAGS ===");
-      
-      setBatchProgress(`Fertig! ${updated} Lebensmittel aktualisiert.`);
-      toast.success(`${updated} Lebensmittel mit Eigenschaften angereichert!`);
+      setBatchProgress(`Fertig! ${updated} Lebensmittel ergänzt.`);
+      toast.success(`${updated} Lebensmittel mit fehlenden Details ergänzt!`);
     } catch (e) {
       console.error("Batch enrichment error:", e);
-      toast.error("Fehler bei der Batch-Anreicherung");
+      toast.error("Fehler bei der Aktualisierung");
     } finally {
       setBatchEnriching(false);
     }
@@ -1496,7 +1557,7 @@ const SettingsDialog = ({
                     className="w-full h-7 text-[11px] gap-1.5"
                   >
                     {batchEnriching ? <Loader2 className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3" />}
-                    {batchEnriching ? batchProgress : "KI: Eigenschaften aktualisieren"}
+                    {batchEnriching ? batchProgress : "Lebensmitteldetails aktualisieren"}
                   </Button>
                 </div>
               ) : (
