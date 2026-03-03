@@ -1,4 +1,5 @@
 import defaultFoodsCsv from "@/data/defaultFoods.csv?raw";
+import { supabase } from "@/integrations/supabase/client";
 
 export const FOOD_CATEGORIES = [
   "Fleisch&Wurst",
@@ -396,7 +397,7 @@ function findSimilarFood(item: FoodItem): FoodItem | undefined {
   return undefined;
 }
 
-export function addFoodItem(item: FoodItem): void {
+export function addFoodItem(item: FoodItem, skipAiEnrich = false): void {
   // Exact name match → skip
   if (foodDatabase.find((f) => f.name.toLowerCase() === item.name.toLowerCase())) {
     return;
@@ -410,6 +411,45 @@ export function addFoodItem(item: FoodItem): void {
   unmarkFoodDeleted(item.name);
   foodDatabase.push(item);
   saveFoodDatabase(foodDatabase);
+
+  // Auto-enrich via AI in background (vitamins, minerals, dietary flags)
+  if (!skipAiEnrich && !item.dietary && !item.vitamins && !item.minerals) {
+    enrichFoodViaAi(item.name).catch(() => {});
+  }
+}
+
+/** Background AI enrichment: fetches full nutrient data and updates the stored item. */
+async function enrichFoodViaAi(foodName: string): Promise<void> {
+  try {
+    const { data, error } = await supabase.functions.invoke("food-lookup", {
+      body: { foodName },
+    });
+    if (error || !data?.success || !data?.data) return;
+    const n = data.data;
+
+    const idx = foodDatabase.findIndex(f => f.name.toLowerCase() === foodName.toLowerCase());
+    if (idx < 0) return;
+
+    const existing = foodDatabase[idx];
+    foodDatabase[idx] = {
+      ...existing,
+      // Only overwrite nutrient fields if they were empty
+      calories: existing.calories || n.calories || 0,
+      protein: existing.protein || n.protein || 0,
+      fat: existing.fat || n.fat || 0,
+      carbs: existing.carbs || n.carbs || 0,
+      fiber: existing.fiber || n.fiber || 0,
+      gi: existing.gi ?? n.gi,
+      vitamins: existing.vitamins || n.vitamins,
+      minerals: existing.minerals || n.minerals,
+      dietary: existing.dietary || n.dietary,
+      notes: existing.notes || n.notes,
+      category: existing.category !== "Eigene" ? existing.category : (n.category || existing.category),
+    };
+    saveFoodDatabase(foodDatabase);
+  } catch {
+    // Silent fail – background enrichment is best-effort
+  }
 }
 
 export function removeFoodItem(name: string): void {
