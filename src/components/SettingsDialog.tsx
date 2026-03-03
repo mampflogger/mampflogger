@@ -22,7 +22,7 @@ import CookIcon from "@/components/CookIcon";
 import { supabase } from "@/integrations/supabase/client";
 import { UserProfile, calculateBMR } from "@/types/profile";
 import { NutritionEntry } from "@/types/nutrition";
-import { foodDatabase, addFoodItem, removeFoodItem, updateFoodItem, clearFoodDatabase, reloadFoodDatabase, resetFoodDatabase, DEFAULT_FOODS, FoodItem, FoodVitamins, FoodMinerals, FoodDietaryFlags, DIETARY_FLAG_KEYS, DIETARY_FLAG_LABELS, FOOD_CATEGORIES, FoodCategory } from "@/data/foodDatabase";
+import { foodDatabase, addFoodItem, removeFoodItem, updateFoodItem, clearFoodDatabase, reloadFoodDatabase, resetFoodDatabase, saveFoodDatabase, DEFAULT_FOODS, FoodItem, FoodVitamins, FoodMinerals, FoodDietaryFlags, DIETARY_FLAG_KEYS, DIETARY_FLAG_LABELS, FOOD_CATEGORIES, FoodCategory } from "@/data/foodDatabase";
 import {
   exportEntriesToCsv, exportFoodDatabaseCsv, exportCalorieBalanceCsv, exportActivitiesCsv,
 } from "@/lib/csvExport";
@@ -189,6 +189,8 @@ const SettingsDialog = ({
   const [selectedAnimal, setSelectedAnimal] = useState<string | null>(null);
   const [selectedDietaryFilters, setSelectedDietaryFilters] = useState<Set<keyof FoodDietaryFlags>>(new Set());
   const [selectedRecipeFoods, setSelectedRecipeFoods] = useState<FoodItem[]>([]);
+  const [batchEnriching, setBatchEnriching] = useState(false);
+  const [batchProgress, setBatchProgress] = useState("");
 
 
   // Handle external "New Food" trigger
@@ -237,6 +239,101 @@ const SettingsDialog = ({
     setEditVitamins({});
     setEditMinerals({});
     setEditDietary({});
+  };
+
+  // Batch dietary enrichment for all foods
+  const handleBatchDietary = async () => {
+    setBatchEnriching(true);
+    setBatchProgress("Starte...");
+    try {
+      const allFoods = [...foodDatabase];
+      const BATCH_SIZE = 50;
+      const results: Record<string, { vgn: string; vgt: string; lc: string; hp: string; ket: string; gf: string; lf: string; zf: string }> = {};
+      
+      for (let start = 0; start < allFoods.length; start += BATCH_SIZE) {
+        const batch = allFoods.slice(start, start + BATCH_SIZE);
+        setBatchProgress(`Batch ${Math.floor(start / BATCH_SIZE) + 1}/${Math.ceil(allFoods.length / BATCH_SIZE)} (${start}/${allFoods.length})`);
+        
+        const foods = batch.map(f => ({
+          name: f.name,
+          calories: f.calories,
+          protein: f.protein,
+          fat: f.fat,
+          carbs: f.carbs,
+          fiber: f.fiber,
+          category: f.category || "",
+        }));
+        
+        const { data, error } = await supabase.functions.invoke("food-batch-dietary", {
+          body: { foods },
+        });
+        
+        if (error || !data?.success) {
+          console.error("Batch error at", start, error, data);
+          toast.error(`Fehler bei Batch ab Position ${start}`);
+          continue;
+        }
+        
+        for (const r of data.results) {
+          const food = batch[r.i];
+          if (food) {
+            results[food.name] = r;
+          }
+        }
+        
+        // Small delay to avoid rate limiting
+        if (start + BATCH_SIZE < allFoods.length) {
+          await new Promise(res => setTimeout(res, 1500));
+        }
+      }
+      
+      // Apply results to foodDatabase
+      let updated = 0;
+      for (const food of foodDatabase) {
+        const r = results[food.name];
+        if (r) {
+          food.dietary = {
+            vgn: r.vgn === "J",
+            vgt: r.vgt === "J",
+            lc: r.lc === "J",
+            hp: r.hp === "J",
+            ket: r.ket === "J",
+            gf: r.gf === "J",
+            lf: r.lf === "J",
+            zf: r.zf === "J",
+          };
+          updated++;
+        }
+      }
+      saveFoodDatabase(foodDatabase);
+      forceUpdate(n => n + 1);
+      
+      // Log CSV output for hardcoding
+      console.log("=== DIETARY FLAGS CSV OUTPUT ===");
+      for (const food of foodDatabase) {
+        const d = food.dietary;
+        const flags = d ? [
+          d.vgn ? "J" : "N",
+          d.vgt ? "J" : "N", 
+          d.lc ? "J" : "N",
+          d.hp ? "J" : "N",
+          d.ket ? "J" : "N",
+          d.gf ? "J" : "N",
+          d.lf ? "J" : "N",
+          d.zf ? "J" : "N",
+        ].join(";") : ";;;;;;;";
+        console.log(`${food.name};${flags}`);
+      }
+      console.log("=== END DIETARY FLAGS ===");
+      
+      setBatchProgress(`Fertig! ${updated} Lebensmittel aktualisiert.`);
+      toast.success(`${updated} Lebensmittel mit Eigenschaften angereichert!`);
+    } catch (e) {
+      console.error("Batch enrichment error:", e);
+      toast.error("Fehler bei der Batch-Anreicherung");
+    } finally {
+      setBatchEnriching(false);
+    }
   };
 
   const handleAiLookup = async () => {
@@ -1391,6 +1488,16 @@ const SettingsDialog = ({
                       </div>
                     </div>
                   )}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleBatchDietary}
+                    disabled={batchEnriching}
+                    className="w-full h-7 text-[11px] gap-1.5"
+                  >
+                    {batchEnriching ? <Loader2 className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3" />}
+                    {batchEnriching ? batchProgress : "KI: Alle Eigenschaften ermitteln"}
+                  </Button>
                 </div>
               ) : (
                 <div className="rounded-lg bg-background border border-border p-2.5 space-y-2">
