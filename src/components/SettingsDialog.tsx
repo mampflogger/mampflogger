@@ -759,7 +759,7 @@ const SettingsDialog = ({
 
             {/* Goals Card */}
             <div className="glass-card rounded-xl p-3 space-y-2">
-              <Label className="text-[10px] font-semibold text-muted-foreground mb-1 block uppercase tracking-wider">YOUR GOALS</Label>
+              <Label className="text-[10px] font-semibold text-muted-foreground mb-1 block uppercase tracking-wider pl-0">YOUR GOALS</Label>
               <div className="grid grid-cols-2 gap-2">
                 <div>
                   <Label className="text-[10px] font-medium text-muted-foreground mb-0.5 block">Zielgewicht (kg)</Label>
