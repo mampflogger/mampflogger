@@ -1037,6 +1037,22 @@ const SettingsDialog = ({
                       </div>
                     ))}
                   </div>
+
+                  {/* Eigenschaften (Dietary Flags) */}
+                  <p className="text-[8px] font-semibold text-muted-foreground uppercase tracking-wide mt-2 mb-0.5">Eigenschaften</p>
+                  <div className="grid grid-cols-4 gap-x-1 gap-y-0">
+                    {DIETARY_FLAG_KEYS.map(key => (
+                      <label key={key} className="flex items-center gap-1 cursor-pointer py-0.5">
+                        <input
+                          type="checkbox"
+                          checked={!!editDietary[key]}
+                          onChange={(e) => setEditDietary(prev => ({ ...prev, [key]: e.target.checked }))}
+                          className="h-3 w-3 rounded border-border accent-primary"
+                        />
+                        <span className="text-[9px] text-muted-foreground select-none">{key.toUpperCase()}</span>
+                      </label>
+                    ))}
+                  </div>
                 </div>
 
                 {/* Zusatzinfo - ganz unten */}
