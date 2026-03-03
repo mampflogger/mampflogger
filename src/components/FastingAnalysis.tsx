@@ -191,8 +191,10 @@ const FastingAnalysis = ({ entries, allEntries, selectedDate }: Props) => {
           {!currentFast && entries.length > 0 && (
             <p className="text-[11px] text-muted-foreground">Gerade gegessen</p>
           )}
-          {entries.length === 0 && !isToday && (
-            <p className="text-[11px] text-muted-foreground">Keine Einträge</p>
+          {!currentFast && entries.length === 0 && (
+            <p className="text-[11px] text-muted-foreground">
+              {isToday ? "Noch keine Mahlzeit heute" : "Keine Einträge"}
+            </p>
           )}
         </div>
         <span className="text-[11px] font-semibold text-primary tabular-nums w-12 text-right">

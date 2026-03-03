@@ -436,23 +436,19 @@ const Index = () => {
               <NutritionTable entries={todayEntries} onDelete={handleDelete} onEntryClick={handleEntryClick} />
             </div>
 
-            {todayEntries.length > 0 && (
-              <div className="glass-card rounded-xl p-3 mb-3">
-                <h2 className="text-[10px] font-semibold text-muted-foreground mb-2 uppercase tracking-wider">
-                  Kalorienaufnahme 24 Stunden
-                </h2>
-                <DailyCalorieChart entries={todayEntries} />
-              </div>
-            )}
+            <div className="glass-card rounded-xl p-3 mb-3">
+              <h2 className="text-[10px] font-semibold text-muted-foreground mb-2 uppercase tracking-wider">
+                Kalorienaufnahme 24 Stunden
+              </h2>
+              <DailyCalorieChart entries={todayEntries} />
+            </div>
 
-            {todayEntries.length > 0 && (
-              <div className="glass-card rounded-xl p-3 mb-3">
-                <h2 className="text-[10px] font-semibold text-muted-foreground mb-2 uppercase tracking-wider">
-                  Fastenanalyse
-                </h2>
-                <FastingAnalysis entries={todayEntries} allEntries={entries} selectedDate={selectedDate} />
-              </div>
-            )}
+            <div className="glass-card rounded-xl p-3 mb-3">
+              <h2 className="text-[10px] font-semibold text-muted-foreground mb-2 uppercase tracking-wider">
+                Fastenanalyse
+              </h2>
+              <FastingAnalysis entries={todayEntries} allEntries={entries} selectedDate={selectedDate} />
+            </div>
 
             {profile && (
               <div className="glass-card rounded-xl p-3 mb-3">
