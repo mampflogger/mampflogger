@@ -1040,17 +1040,22 @@ const SettingsDialog = ({
 
                   {/* Eigenschaften (Dietary Flags) */}
                   <p className="text-[8px] font-semibold text-muted-foreground uppercase tracking-wide mt-2 mb-0.5">Eigenschaften</p>
-                  <div className="grid grid-cols-4 gap-x-1 gap-y-0">
+                  <div className="grid grid-cols-8 gap-x-1 gap-y-0">
                     {DIETARY_FLAG_KEYS.map(key => (
-                      <label key={key} className="flex items-center gap-1 cursor-pointer py-0.5">
-                        <input
-                          type="checkbox"
-                          checked={!!editDietary[key]}
-                          onChange={(e) => setEditDietary(prev => ({ ...prev, [key]: e.target.checked }))}
-                          className="h-3 w-3 rounded border-border accent-primary"
-                        />
-                        <span className="text-[9px] text-muted-foreground select-none">{key.toUpperCase()}</span>
-                      </label>
+                      <div key={key} className="mb-0">
+                        <Label className="text-[8px] text-muted-foreground leading-none block mb-0.5">{key.toUpperCase()}</Label>
+                        <button
+                          type="button"
+                          onClick={() => setEditDietary(prev => ({ ...prev, [key]: !prev[key] }))}
+                          className={`h-6 w-full rounded-full text-[10px] font-medium text-center border transition-colors ${
+                            editDietary[key]
+                              ? "bg-primary text-primary-foreground border-primary"
+                              : "bg-accent text-muted-foreground border-border"
+                          }`}
+                        >
+                          {editDietary[key] ? "J" : "N"}
+                        </button>
+                      </div>
                     ))}
                   </div>
                 </div>
