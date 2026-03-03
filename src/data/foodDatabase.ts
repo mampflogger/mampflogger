@@ -204,6 +204,24 @@ export function getFoodCategory(name: string): FoodCategory | undefined {
 
 const FOOD_DB_KEY = "mampflogger-food-database";
 const DELETED_FOODS_KEY = "mampflogger-deleted-foods";
+const REMOTE_URL_KEY = "mampflogger-remote-url";
+const LEGACY_AUTO_REMOTE_URL = "/lebensmittelliste.json";
+
+function isRemoteSyncEnabled(): boolean {
+  const stored = localStorage.getItem(REMOTE_URL_KEY)?.trim() || "";
+  const isLegacyAutoUrl =
+    !stored ||
+    stored === LEGACY_AUTO_REMOTE_URL ||
+    stored.includes("raw.githubusercontent.com/mampflogger") ||
+    stored.includes("mampflogger.lovable.app");
+
+  if (isLegacyAutoUrl) {
+    // Migration cleanup: disable old auto-sync defaults
+    localStorage.removeItem(REMOTE_URL_KEY);
+    return false;
+  }
+  return true;
+}
 
 function loadDeletedFoods(): Set<string> {
   try {
@@ -266,7 +284,7 @@ function loadFoodDatabase(): FoodItem[] {
     const stored: FoodItem[] = JSON.parse(raw);
 
     let changed = false;
-    const remoteSyncEnabled = !!(localStorage.getItem("mampflogger-remote-url")?.trim());
+    const remoteSyncEnabled = isRemoteSyncEnabled();
 
     // Cleanup: remove stale remote items when remote sync is not configured,
     // and dedupe by case-insensitive name to avoid inflated base counts.
