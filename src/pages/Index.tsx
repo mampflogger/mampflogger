@@ -28,6 +28,7 @@ import FastingAnalysis from "@/components/FastingAnalysis";
 import SettingsDialog, { ColorTheme } from "@/components/SettingsDialog";
 import { ChevronLeft, ChevronRight, BarChart3, List, Mic, MicOff, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useVoiceCommands } from "@/hooks/useVoiceCommands";
 
 const Index = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -49,7 +50,36 @@ const Index = () => {
   const [editingActivity, setEditingActivity] = useState<BookedActivity | null>(null);
   const [openNewFood, setOpenNewFood] = useState(false);
   const [openRecipes, setOpenRecipes] = useState(false);
-  const [voiceState, setVoiceState] = useState<{ isListening: boolean; isSupported: boolean; toggle: () => void }>({ isListening: false, isSupported: false, toggle: () => {} });
+  const [settingsVoiceTab, setSettingsVoiceTab] = useState<string | null>(null);
+  const nutritionVoiceRef = useRef<((transcript: string, isInterim: boolean) => void) | undefined>();
+  const foodInputRef = useRef<HTMLInputElement>(null);
+
+  // Global voice command system
+  const voiceCommands = useVoiceCommands({
+    onCommand: useCallback((action: string) => {
+      if (action === "nav:log") setActiveTab("log");
+      else if (action === "nav:weekly") setActiveTab("weekly");
+      else if (action === "settings:open") setSettingsVoiceTab("profile");
+      else if (action === "settings:profile") setSettingsVoiceTab("profile");
+      else if (action === "settings:design") setSettingsVoiceTab("design");
+      else if (action === "settings:food") setSettingsVoiceTab("food");
+      else if (action === "settings:recipes") setSettingsVoiceTab("recipes");
+      else if (action === "settings:data") setSettingsVoiceTab("data");
+      else if (action === "theme:dark") setDarkMode(true);
+      else if (action === "theme:light") setDarkMode(false);
+      else if (action === "theme:blue") setColorTheme("blue");
+      else if (action === "theme:yellow") setColorTheme("yellow");
+      else if (action === "theme:pink") setColorTheme("pink");
+      else if (action === "theme:green") setColorTheme("green");
+      else if (action === "focus:food") {
+        setActiveTab("log");
+        setTimeout(() => foodInputRef.current?.focus(), 100);
+      }
+    }, []),
+    onUnhandledSpeech: useCallback((transcript: string, isInterim: boolean) => {
+      nutritionVoiceRef.current?.(transcript, isInterim);
+    }, []),
+  });
   const [darkMode, setDarkMode] = useState(() => {
     const saved = localStorage.getItem("mampflogger-dark-mode");
     if (saved !== null) return saved === "true";
@@ -294,6 +324,17 @@ const Index = () => {
               <h1 className="text-lg font-bold tracking-tight">MampfLogger</h1>
             </a>
             <div className="flex items-center gap-1">
+              {voiceCommands.isSupported && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={voiceCommands.toggle}
+                  className={`h-8 w-8 ${voiceCommands.isListening ? "bg-destructive/15 text-destructive animate-pulse" : ""}`}
+                  title={voiceCommands.isListening ? "Mikrofon aus" : "Sprachsteuerung"}
+                >
+                  {voiceCommands.isListening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
+                </Button>
+              )}
               <SettingsDialog
                 profile={profile}
                 onSaveProfile={handleSaveProfile}
@@ -319,6 +360,8 @@ const Index = () => {
                 initialTab={settingsParam === "profile" ? "profile" : undefined}
                 selectedDate={selectedDate}
                 onAddEntry={handleAdd}
+                voiceOpenTab={settingsVoiceTab}
+                onVoiceOpenTabHandled={() => setSettingsVoiceTab(null)}
               />
               <Button
                 variant="ghost"
@@ -389,18 +432,6 @@ const Index = () => {
                   {editingEntry ? "Eintrag bearbeiten" : "Neuer Eintrag"}
                 </h2>
                 <div className="flex items-center gap-1">
-                  {voiceState.isSupported && (
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="icon"
-                      onClick={voiceState.toggle}
-                      className={`h-9 w-9 shrink-0 ${voiceState.isListening ? "bg-destructive/15 text-destructive border-destructive/30 animate-pulse" : ""}`}
-                      title="Spracheingabe"
-                    >
-                      {voiceState.isListening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
-                    </Button>
-                  )}
                   <PhotoToLog selectedDate={selectedDate} onAddEntries={handleAddMultiple} />
                 </div>
               </div>
@@ -410,8 +441,8 @@ const Index = () => {
                 editingEntry={editingEntry}
                 onCancelEdit={() => setEditingEntry(null)}
                 onNewFood={() => setOpenNewFood(true)}
-                externalMicButton
-                onVoiceStateChange={(isListening, isSupported, toggle) => setVoiceState({ isListening, isSupported, toggle })}
+                voiceInputRef={nutritionVoiceRef}
+                isVoiceActive={voiceCommands.isListening}
               />
             </div>
 

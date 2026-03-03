@@ -14,10 +14,9 @@ import { Label } from "@/components/ui/label";
 import {
   Settings, Sun, Moon, Trash2, Upload, Download, UserCircle, Save, Check,
   AlertCircle, FileSpreadsheet, UtensilsCrossed, Palette, BarChart3, FileUp,
-  ChevronLeft, ChevronRight, RefreshCw, List, Sparkles, Loader2, HardDrive, BookOpen, Search, Mic, MicOff,
+  ChevronLeft, ChevronRight, RefreshCw, List, Sparkles, Loader2, HardDrive, BookOpen, Search,
   X,
 } from "lucide-react";
-import { useSpeechRecognition } from "@/hooks/useSpeechRecognition";
 import CookIcon from "@/components/CookIcon";
 import { supabase } from "@/integrations/supabase/client";
 import { UserProfile, calculateBMR } from "@/types/profile";
@@ -70,6 +69,8 @@ interface SettingsDialogProps {
   initialTab?: SettingsTab;
   selectedDate: string;
   onAddEntry: (entry: NutritionEntry) => void;
+  voiceOpenTab?: string | null;
+  onVoiceOpenTabHandled?: () => void;
 }
 
 type ImportType = "csv-entries" | "csv-balance" | "csv-food";
@@ -98,6 +99,7 @@ const SettingsDialog = ({
   colorTheme, onChangeTheme, entries, bookedActivities,
   onImport, onImportActivities, onCount, onDelete, onDeleteAll, onDeleteAllActivities, openToNewFood, onOpenToNewFoodHandled, openToRecipes, onOpenToRecipesHandled,
   activeTab, onSetActiveTab, initialOpen, initialTab, selectedDate, onAddEntry,
+  voiceOpenTab, onVoiceOpenTabHandled,
 }: SettingsDialogProps) => {
   const [open, setOpen] = useState(initialOpen ?? false);
   const [tab, setTab] = useState<SettingsTab>(initialTab ?? "profile");
@@ -145,25 +147,6 @@ const SettingsDialog = ({
 
   // Food list state
   const [foodSearch, setFoodSearch] = useState("");
-  const foodSearchSpeech = useSpeechRecognition({
-    onResult: (transcript) => {
-      setFoodSearch(transcript);
-    },
-    onError: (error) => {
-      if (error === "not-allowed" || error === "service-not-allowed") {
-        toast.error("Mikrofon blockiert – bitte Browser-Zugriff für Mikrofon erlauben.");
-      } else if (error === "not-supported") {
-        toast.error("Spracherkennung wird auf diesem Gerät/Browser nicht unterstützt.");
-      } else if (error === "audio-capture") {
-        toast.error("Kein Mikrofon erkannt – bitte Mikrofon prüfen und erneut versuchen.");
-      } else if (error === "restart-requires-gesture") {
-        toast.error("Mikrofon pausiert – bitte erneut auf das Mic tippen.");
-      } else if (error === "start-failed") {
-        toast.error("Mikrofon konnte nicht gestartet werden – bitte erneut tippen.");
-      }
-    },
-    lang: "de-DE",
-  });
   const [editingFood, setEditingFood] = useState<FoodItem | null>(null);
   const [editFoodName, setEditFoodName] = useState("");
   const [editFoodUnit, setEditFoodUnit] = useState("");
@@ -824,11 +807,14 @@ const SettingsDialog = ({
     return list;
   })();
 
+  // Voice-triggered settings open
   useEffect(() => {
-    if ((!open || tab !== "food") && foodSearchSpeech.isListening) {
-      foodSearchSpeech.stop();
+    if (voiceOpenTab) {
+      setOpen(true);
+      setTab(voiceOpenTab as SettingsTab);
+      onVoiceOpenTabHandled?.();
     }
-  }, [open, tab, foodSearchSpeech.isListening, foodSearchSpeech.stop]);
+  }, [voiceOpenTab]);
 
   const hasImportResults = (preview && preview.length > 0) || (foodPreview && foodPreview.length > 0) || (activityPreview && activityPreview.length > 0);
   const importResultCount = preview?.length || foodPreview?.length || activityPreview?.length || 0;
@@ -1406,27 +1392,6 @@ const SettingsDialog = ({
                         </button>
                       )}
                     </div>
-                    {foodSearchSpeech.isSupported && (
-                      <button
-                        type="button"
-                        onClick={() => {
-                          if (foodSearchSpeech.isListening) {
-                            foodSearchSpeech.stop();
-                          } else {
-                            setFoodSearch("");
-                            foodSearchSpeech.start();
-                          }
-                        }}
-                        className={`p-2 rounded-full border transition-colors shrink-0 ${
-                          foodSearchSpeech.isListening
-                            ? "bg-destructive/15 text-destructive border-destructive/30 animate-pulse"
-                            : "bg-accent text-muted-foreground hover:text-foreground hover:bg-muted border-border"
-                        }`}
-                        title={foodSearchSpeech.isListening ? "Stoppen" : "Spracheingabe"}
-                      >
-                        {foodSearchSpeech.isListening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
-                      </button>
-                    )}
                   </div>
                 </div>
                 {/* Scrollable table with sticky header */}
