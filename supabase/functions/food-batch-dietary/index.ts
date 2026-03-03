@@ -14,6 +14,7 @@ interface FoodInput {
   carbs: number;
   fiber: number;
   category?: string;
+  missingFields: string[]; // which fields need to be filled
 }
 
 serve(async (req) => {
@@ -33,7 +34,7 @@ serve(async (req) => {
 
     // Build a compact table for the AI
     const foodTable = foods.map((f, i) =>
-      `${i}|${f.name}|${f.calories}|${f.protein}|${f.fat}|${f.carbs}|${f.fiber}|${f.category || ""}`
+      `${i}|${f.name}|${f.calories}|${f.protein}|${f.fat}|${f.carbs}|${f.fiber}|${f.category || ""}|${f.missingFields.join(",")}`
     ).join("\n");
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
@@ -47,35 +48,49 @@ serve(async (req) => {
         messages: [
           {
             role: "system",
-            content: `Du bist ein Ernährungs-Klassifikator. Du erhältst eine Liste von Lebensmitteln mit Nährwerten (pro 100g/100ml) im Format:
-INDEX|NAME|KCAL|PRO|FAT|KH|FIB|KATEGORIE
+            content: `Du bist ein Ernährungs-Datenbank-Experte. Du erhältst Lebensmittel mit Nährwerten (pro 100g/100ml) im Format:
+INDEX|NAME|KCAL|PRO|FAT|KH|FIB|KATEGORIE|FEHLENDE_FELDER
 
-Bestimme für JEDES Lebensmittel diese 8 Eigenschaften als J (Ja) oder N (Nein):
-- VGN: Vegan (rein pflanzlich, KEINE tierischen Bestandteile wie Fleisch, Fisch, Milch, Eier, Honig, Gelatine)
-- VGT: Vegetarisch (kein Fleisch/Fisch, aber Milch/Eier/Honig erlaubt)
-- LC: Low Carb (≤10g KH pro 100g)
-- HP: High Protein (≥15g PRO pro 100g)
-- KET: Keto (≤5g KH pro 100g)
-- GF: Glutenfrei (kein Weizen, Roggen, Gerste, Dinkel, Hafer)
-- LF: Laktosefrei (keine Laktose – hart gereifte Käse wie Parmesan, Emmentaler, Gouda, Bergkäse SIND laktosefrei)
-- ZF: Zuckerfrei (max 1g Zucker pro 100g, natürlich oder zugesetzt)
+Die FEHLENDE_FELDER-Spalte listet kommagetrennt auf, welche Felder du ergänzen sollst. Gib NUR die angeforderten Felder zurück.
 
-Antworte NUR mit einem JSON-Array. Jedes Element: { "i": INDEX, "vgn": "J"|"N", "vgt": "J"|"N", "lc": "J"|"N", "hp": "J"|"N", "ket": "J"|"N", "gf": "J"|"N", "lf": "J"|"N", "zf": "J"|"N" }
+Mögliche Felder und ihre Bedeutung:
+
+DIÄT-FLAGS (Wert: "J" oder "N"):
+- vgn: Vegan (rein pflanzlich, KEINE tierischen Bestandteile)
+- vgt: Vegetarisch (kein Fleisch/Fisch, Milch/Eier/Honig erlaubt)
+- lc: Low Carb (≤10g KH pro 100g)
+- hp: High Protein (≥15g PRO pro 100g)
+- ket: Keto (≤5g KH pro 100g)
+- gf: Glutenfrei (kein Weizen, Roggen, Gerste, Dinkel, Hafer)
+- lf: Laktosefrei (keine Laktose – hart gereifte Käse wie Parmesan, Emmentaler, Gouda, Bergkäse SIND laktosefrei)
+- zf: Zuckerfrei (max 1g Zucker pro 100g)
+
+NÄHRWERTE:
+- gi: Glykämischer Index (0-100, ganzzahlig). 0 für Lebensmittel ohne KH.
+- category: Eine von: Fleisch&Wurst, Fisch&Meeresfrüchte, Käse, Nüsse&Samen, Gemüse, Brot&Teigwaren, Öle&Fette, Getränke, Obst, Milchprodukte, Süßwaren, Sonstiges, Fertiggerichte
+- notes: Kurze Zusatzinfo (max 80 Zeichen), z.B. "Reich an Omega-3" oder "Enthält Laktose". Leer lassen wenn nichts Relevantes.
+
+VITAMINE (Wert: mg pro 100g, Dezimalzahl, 0 wenn nicht vorhanden):
+- vitA, vitB1, vitB2, vitB3, vitB5, vitB6, vitB7, vitB9, vitB12, vitC, vitD, vitE, vitK
+
+MINERALSTOFFE (Wert: mg pro 100g, Dezimalzahl, 0 wenn nicht vorhanden):
+- calcium, chlorid, eisen, fluorid, kalium, kupfer, magnesium, mangan, natrium, phosphor, schwefel, zink
 
 Wichtige Regeln:
 - Fleisch & Wurst → IMMER vgn=N, vgt=N
 - Fisch & Meeresfrüchte → IMMER vgn=N, vgt=N
-- Käse → IMMER vgn=N, vgt=J (außer mit Lab aus Tier)
+- Käse → IMMER vgn=N, vgt=J
 - Milchprodukte → IMMER vgn=N, vgt=J
 - Eier → vgn=N, vgt=J
-- Getränke: Cola/Limo/Saft = vgn=J, vgt=J. Milchkaffee/Kakao mit Milch = vgn=N
 - Butter, Schmalz = vgn=N, vgt=J
 - Pflanzenöle = vgn=J, vgt=J
-- Nudeln/Brot/Teigwaren mit Weizenmehl = gf=N
+- Nudeln/Brot mit Weizenmehl = gf=N
 - Reis, Kartoffel, Mais = gf=J
 - Obst hat natürlichen Zucker → zf=N (außer Zitrone/Limette)
-- Getränke mit Zucker (Cola, Fanta, Saft) → zf=N
-- Zero/Light-Getränke → zf=J`,
+- Zero/Light-Getränke → zf=J
+
+Antworte NUR mit einem JSON-Array. Jedes Element hat "i" (Index) und NUR die angeforderten Felder.
+Beispiel: [{"i":0,"vgn":"J","gi":35,"vitC":12.5},{"i":1,"category":"Gemüse","calcium":40}]`,
           },
           {
             role: "user",
@@ -89,6 +104,18 @@ Wichtige Regeln:
     if (!response.ok) {
       const t = await response.text();
       console.error("AI error:", response.status, t);
+      if (response.status === 429) {
+        return new Response(JSON.stringify({ error: "Rate limit – bitte warte kurz und versuche es erneut." }), {
+          status: 429,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      if (response.status === 402) {
+        return new Response(JSON.stringify({ error: "KI-Kontingent aufgebraucht." }), {
+          status: 402,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
       return new Response(JSON.stringify({ error: `AI error ${response.status}` }), {
         status: response.status,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
