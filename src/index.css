@@ -263,3 +263,14 @@
     @apply bg-card/80 backdrop-blur-sm border border-border shadow-sm;
   }
 }
+
+/* Section heading highlight animation */
+@keyframes section-pulse {
+  0% { opacity: 0.5; transform: scale(0.95); }
+  50% { opacity: 1; transform: scale(1.03); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+.section-heading-highlight {
+  animation: section-pulse 0.5s ease-out;
+}

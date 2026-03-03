@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import { NutritionEntry, calculateDailySummary, formatDate } from "@/types/nutrition";
+import SectionHeading from "@/components/SectionHeading";
 import {
   UserProfile,
   BookedActivity,
@@ -24,6 +25,7 @@ interface WeeklyOverviewProps {
   selectedDate: string;
   profile?: UserProfile | null;
   bookedActivities?: BookedActivity[];
+  highlightedSection?: string | null;
 }
 
 interface DayData {
@@ -58,7 +60,7 @@ const COLORS = {
   caloriesMuted: "hsl(var(--primary) / 0.85)",
 };
 
-const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [] }: WeeklyOverviewProps) => {
+const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [], highlightedSection }: WeeklyOverviewProps) => {
   const bmr = profile ? calculateBMR(profile) : null;
 
   const weekData = useMemo(() => {
@@ -260,11 +262,13 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [] 
     );
   };
 
+  const hl = highlightedSection;
+
   return (
     <div className="space-y-3 animate-fade-in">
       {/* Stats Row */}
-      <div className="glass-card rounded-xl p-3">
-        <h2 className="text-[10px] font-semibold text-muted-foreground mb-2 uppercase tracking-wider">Übersicht</h2>
+      <div id="section-uebersicht" data-section className="glass-card rounded-xl p-3">
+        <SectionHeading highlighted={hl === "section-uebersicht"} className="mb-2">Übersicht</SectionHeading>
         <div className={`grid gap-3 w-full ${daysToGoal !== null ? "grid-cols-2" : avgDeficit7 !== null ? "grid-cols-3" : "grid-cols-2"}`}>
           <div className="rounded-xl bg-background p-3 text-center">
             <p className="text-xs text-muted-foreground font-medium">Woche</p>
@@ -308,10 +312,10 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [] 
       </div>
 
       {/* Calories per Day */}
-      <div className="glass-card rounded-xl p-3">
-        <h2 className="text-[10px] font-semibold text-muted-foreground mb-2 uppercase tracking-wider">
+      <div id="section-kalorien-pro-tag" data-section className="glass-card rounded-xl p-3">
+        <SectionHeading highlighted={hl === "section-kalorien-pro-tag"} className="mb-2">
           Kalorien pro Tag
-        </h2>
+        </SectionHeading>
         <div className="h-44">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={weekData} margin={{ top: 4, right: 0, left: -20, bottom: 0 }}>
@@ -358,10 +362,10 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [] 
 
       {/* Deficit Bar Chart */}
       {deficitData && (
-        <div className="glass-card rounded-xl p-3">
-          <h2 className="text-[10px] font-semibold text-muted-foreground mb-2 uppercase tracking-wider">
+        <div id="section-defizit-pro-tag" data-section className="glass-card rounded-xl p-3">
+          <SectionHeading highlighted={hl === "section-defizit-pro-tag"} className="mb-2">
             Defizit pro Tag
-          </h2>
+          </SectionHeading>
           <div className="h-44">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={deficitData} margin={{ top: 4, right: 0, left: -20, bottom: 0 }}>
@@ -409,10 +413,10 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [] 
       )}
 
       {/* Daily macro stacked bars */}
-      <div className="glass-card rounded-xl p-3">
-        <h2 className="text-[10px] font-semibold text-muted-foreground mb-2 uppercase tracking-wider">
+      <div id="section-makros-pro-tag" data-section className="glass-card rounded-xl p-3">
+        <SectionHeading highlighted={hl === "section-makros-pro-tag"} className="mb-2">
           Makros pro Tag (g)
-        </h2>
+        </SectionHeading>
         <div className="h-40">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={weekData} margin={{ top: 4, right: 0, left: -20, bottom: 0 }}>
@@ -454,10 +458,10 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [] 
       </div>
 
       {/* Macro Distribution */}
-      <div className="glass-card rounded-xl p-3">
-        <h2 className="text-[10px] font-semibold text-muted-foreground mb-2 uppercase tracking-wider">
+      <div id="section-makro-verteilung" data-section className="glass-card rounded-xl p-3">
+        <SectionHeading highlighted={hl === "section-makro-verteilung"} className="mb-2">
           Makro-Verteilung (7 Tage)
-        </h2>
+        </SectionHeading>
         <div className="flex gap-1 h-4 rounded-full overflow-hidden bg-background">
           {weekTotals.proteinPercent > 0 && <div className="rounded-full transition-all duration-500" style={{ width: `${weekTotals.proteinPercent}%`, backgroundColor: MACRO_COLORS.pro }} />}
           {weekTotals.fatPercent > 0 && <div className="rounded-full transition-all duration-500" style={{ width: `${weekTotals.fatPercent}%`, backgroundColor: MACRO_COLORS.fat }} />}
@@ -484,12 +488,15 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [] 
       </div>
 
       {/* AI Nutrition Coach */}
-      <NutritionCoach
-        entries={entries}
-        selectedDate={selectedDate}
-        profile={profile}
-        bookedActivities={bookedActivities}
-      />
+      <div id="section-ki-coach" data-section>
+        <NutritionCoach
+          entries={entries}
+          selectedDate={selectedDate}
+          profile={profile}
+          bookedActivities={bookedActivities}
+          highlightedSection={hl}
+        />
+      </div>
     </div>
   );
 };

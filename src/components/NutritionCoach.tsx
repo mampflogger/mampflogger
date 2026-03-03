@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Sparkles, Loader2, Search } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import SectionHeading from "@/components/SectionHeading";
 
 interface CoachTip {
   icon: string;
@@ -22,9 +23,10 @@ interface NutritionCoachProps {
   selectedDate: string;
   profile?: UserProfile | null;
   bookedActivities?: BookedActivity[];
+  highlightedSection?: string | null;
 }
 
-const NutritionCoach = ({ entries, selectedDate, profile, bookedActivities = [] }: NutritionCoachProps) => {
+const NutritionCoach = ({ entries, selectedDate, profile, bookedActivities = [], highlightedSection }: NutritionCoachProps) => {
   const [result, setResult] = useState<CoachResult | null>(null);
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
@@ -90,9 +92,9 @@ const NutritionCoach = ({ entries, selectedDate, profile, bookedActivities = [] 
   return (
     <div className="glass-card rounded-xl p-3">
       <div className="flex items-center justify-between mb-2">
-        <h2 className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
+        <SectionHeading highlighted={highlightedSection === "section-ki-coach"}>
           KI-Ernährungscoach
-        </h2>
+        </SectionHeading>
         <Button
           size="sm"
           onClick={handleAnalyze}
