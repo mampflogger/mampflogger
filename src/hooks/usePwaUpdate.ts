@@ -31,20 +31,45 @@ function restoreLocalStorage(json: string) {
   }
 }
 
+const UPDATE_CHECK_INTERVAL = 60 * 1000; // Check every 60s
+
 export function usePwaUpdate() {
   const {
     needRefresh: [needsUpdate, setNeedsUpdate],
     updateServiceWorker,
   } = useRegisterSW({
-    onRegistered(r) {
-      console.log("[PWA] SW registered", r);
-      // On every SW registration (= after reload too), check if there's a backup to restore
+    onRegistered(registration) {
+      console.log("[PWA] SW registered");
+
+      // Restore backup after reload
       const pending = sessionStorage.getItem(BACKUP_KEY);
       if (pending) {
         restoreLocalStorage(pending);
         sessionStorage.removeItem(BACKUP_KEY);
         console.log("[PWA] localStorage restored from pre-update backup");
       }
+
+      if (!registration) return;
+
+      // Periodic update check
+      setInterval(() => {
+        console.log("[PWA] Periodic update check");
+        registration.update();
+      }, UPDATE_CHECK_INTERVAL);
+
+      // Check on tab focus (user comes back to the app)
+      const onFocus = () => {
+        console.log("[PWA] Focus update check");
+        registration.update();
+      };
+      window.addEventListener("focus", onFocus);
+
+      // Check on online (device reconnects)
+      const onOnline = () => {
+        console.log("[PWA] Online update check");
+        registration.update();
+      };
+      window.addEventListener("online", onOnline);
     },
     onRegisterError(error) {
       console.error("[PWA] SW registration error", error);
@@ -52,13 +77,9 @@ export function usePwaUpdate() {
   });
 
   const applyUpdate = () => {
-    // 1. Snapshot all app data BEFORE the reload
     const backup = snapshotLocalStorage();
-    // sessionStorage survives a same-tab reload (unlike localStorage which *should* too,
-    // but some SW cache-clearing strategies wipe it)
     sessionStorage.setItem(BACKUP_KEY, backup);
     console.log("[PWA] Backup saved before update", Object.keys(JSON.parse(backup)).length, "keys");
-    // 2. Now activate the new SW + reload
     updateServiceWorker(true);
   };
 
