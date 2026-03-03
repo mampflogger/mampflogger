@@ -52,10 +52,29 @@ const Index = () => {
   const [openNewFood, setOpenNewFood] = useState(false);
   const [openRecipes, setOpenRecipes] = useState(false);
   const [settingsVoiceTab, setSettingsVoiceTab] = useState<string | null>(null);
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [settingsCurrentTab, setSettingsCurrentTab] = useState<string>("profile");
+  const [settingsCloseRequest, setSettingsCloseRequest] = useState(false);
   const nutritionVoiceRef = useRef<((transcript: string, isInterim: boolean) => void) | undefined>();
   const foodInputRef = useRef<HTMLInputElement>(null);
 
   const sectionNav = useSectionNavigation();
+
+  // Refs for use inside callbacks
+  const settingsOpenRef = useRef(false);
+  settingsOpenRef.current = settingsOpen;
+  const settingsTabRef = useRef("profile");
+  settingsTabRef.current = settingsCurrentTab;
+
+  // Helper to close settings before navigating
+  const closeSettingsAndDo = useCallback((fn: () => void) => {
+    if (settingsOpenRef.current) {
+      setSettingsCloseRequest(true);
+      setTimeout(fn, 100);
+    } else {
+      fn();
+    }
+  }, []);
 
   // Global voice command system
   const voiceCommands = useVoiceCommands({
@@ -71,20 +90,20 @@ const Index = () => {
           return;
         }
 
-        // Check if it's a page section
+        // Check if it's a page section — close settings first
         const page = SECTION_PAGE_MAP[sectionId];
         if (page) {
-          if (page !== activeTabRef.current) {
-            setActiveTab(page);
-            // Delay scroll to let tab render
-            setTimeout(() => sectionNav.scrollToSection(sectionId), 200);
-          } else {
-            sectionNav.scrollToSection(sectionId);
-          }
-          // Special: focus food input when jumping to neuer-eintrag
-          if (sectionId === "section-neuer-eintrag") {
-            setTimeout(() => foodInputRef.current?.focus(), 300);
-          }
+          closeSettingsAndDo(() => {
+            if (page !== activeTabRef.current) {
+              setActiveTab(page);
+              setTimeout(() => sectionNav.scrollToSection(sectionId), 200);
+            } else {
+              sectionNav.scrollToSection(sectionId);
+            }
+            if (sectionId === "section-neuer-eintrag") {
+              setTimeout(() => foodInputRef.current?.focus(), 300);
+            }
+          });
         }
         return;
       }
@@ -99,27 +118,48 @@ const Index = () => {
         return;
       }
 
-      // Navigation
-      if (action === "nav:log") setActiveTab("log");
-      else if (action === "nav:weekly") setActiveTab("weekly");
+      // Navigation — close settings first
+      if (action === "nav:log") closeSettingsAndDo(() => setActiveTab("log"));
+      else if (action === "nav:weekly") closeSettingsAndDo(() => setActiveTab("weekly"));
       else if (action === "settings:open") setSettingsVoiceTab("profile");
       else if (action === "settings:profile") setSettingsVoiceTab("profile");
       else if (action === "settings:design") setSettingsVoiceTab("design");
       else if (action === "settings:food") setSettingsVoiceTab("food");
       else if (action === "settings:recipes") setSettingsVoiceTab("recipes");
       else if (action === "settings:data") setSettingsVoiceTab("data");
+      // Theme commands — context-aware: if in design tab, always apply theme
       else if (action === "theme:dark") setDarkMode(true);
       else if (action === "theme:light") setDarkMode(false);
       else if (action === "theme:blue") setColorTheme("blue");
       else if (action === "theme:yellow") setColorTheme("yellow");
       else if (action === "theme:pink") setColorTheme("pink");
       else if (action === "theme:green") setColorTheme("green");
-      else if (action === "focus:food") {
-        setActiveTab("log");
-        setTimeout(() => foodInputRef.current?.focus(), 100);
+      else if (action === "action:camera") {
+        closeSettingsAndDo(() => {
+          setActiveTab("log");
+        });
       }
-    }, []),
+      else if (action === "focus:food") {
+        closeSettingsAndDo(() => {
+          setActiveTab("log");
+          setTimeout(() => foodInputRef.current?.focus(), 100);
+        });
+      }
+    }, [closeSettingsAndDo]),
     onUnhandledSpeech: useCallback((transcript: string, isInterim: boolean) => {
+      // If settings is open on design tab, check for color keywords
+      if (settingsOpenRef.current && settingsTabRef.current === "design") {
+        if (!isInterim) {
+          const lower = transcript.toLowerCase();
+          if (/\bblau\b/.test(lower)) { setColorTheme("blue"); return; }
+          if (/\bgelb\b/.test(lower)) { setColorTheme("yellow"); return; }
+          if (/\bpink\b/.test(lower)) { setColorTheme("pink"); return; }
+          if (/\bgrün\b/.test(lower)) { setColorTheme("green"); return; }
+          if (/\bdark\b|\bdunkel/.test(lower)) { setDarkMode(true); return; }
+          if (/\blight\b|\bhell/.test(lower)) { setDarkMode(false); return; }
+        }
+        return; // Don't pass to food input when in design tab
+      }
       nutritionVoiceRef.current?.(transcript, isInterim);
     }, []),
   });
@@ -404,6 +444,10 @@ const Index = () => {
                 onAddEntry={handleAdd}
                 voiceOpenTab={settingsVoiceTab}
                 onVoiceOpenTabHandled={() => setSettingsVoiceTab(null)}
+                voiceCloseRequest={settingsCloseRequest}
+                onVoiceCloseHandled={() => setSettingsCloseRequest(false)}
+                onOpenChange={setSettingsOpen}
+                onTabChange={setSettingsCurrentTab}
               />
               <Button
                 variant="ghost"
