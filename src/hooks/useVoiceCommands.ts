@@ -8,9 +8,42 @@ interface VoiceCommand {
 }
 
 const COMMANDS: VoiceCommand[] = [
+  // === Section navigation (most specific first) ===
+  // Log page sections
+  { patterns: [/\bneue[rn]?\s+eintrag\b/i, /\bneue\s+eingabe\b/i], action: "section:neuer-eintrag" },
+  { patterns: [/\bnährstoff/i], action: "section:makro-naehrstoffe" },
+  { patterns: [/\btagesübersicht\b/i], action: "section:tagesuebersicht" },
+  { patterns: [/\bkalorienaufnahme\b/i], action: "section:kalorienaufnahme" },
+  { patterns: [/\bfasten/i], action: "section:fastenanalyse" },
+  { patterns: [/\bactivit/i, /\baktivität/i, /\baktivitäten\b/i], action: "section:activity" },
+  { patterns: [/\bkalorienbilanz\b/i, /\bbilanz\b/i], action: "section:kalorienbilanz" },
+  { patterns: [/\bflüssigkeit\b/i], action: "section:fluessigkeit" },
+
+  // Stats page sections (specific before generic)
+  { patterns: [/\bkalorien\s+pro\s+tag\b/i], action: "section:kalorien-pro-tag" },
+  { patterns: [/\bdefizit/i], action: "section:defizit-pro-tag" },
+  { patterns: [/\bmakros?\s+pro\s+tag\b/i], action: "section:makros-pro-tag" },
+  { patterns: [/\bmakro.?verteilung\b/i, /\bverteilung\b/i], action: "section:makro-verteilung" },
+  { patterns: [/\bernährungscoach\b/i, /\bcoach\b/i], action: "section:ki-coach" },
+  { patterns: [/\bübersicht\b/i], action: "section:uebersicht" },
+
+  // Settings sections
+  { patterns: [/\bpersönliche\s+daten\b/i], action: "section:persoenliche-daten" },
+  { patterns: [/\bgoals?\b/i, /\bziele?\b/i], action: "section:goals" },
+  { patterns: [/\brezeptgenerator\b/i, /\bgenerator\b/i], action: "section:rezeptgenerator" },
+  { patterns: [/\bgespeicherte\s+rezepte?\b/i], action: "section:gespeicherte-rezepte" },
+  { patterns: [/\bimport\b/i], action: "section:import" },
+  { patterns: [/\bexport\b/i], action: "section:export" },
+  { patterns: [/\bbackup\b/i, /\bsicherung\b/i], action: "section:backup" },
+  { patterns: [/\blöschen\b/i], action: "section:loeschen" },
+
+  // Scroll up/down
+  { patterns: [/\brunter\b/i, /\bscroll\s*runter\b/i], action: "scroll:down" },
+  { patterns: [/\bhoch\b/i, /\bscroll\s*hoch\b/i], action: "scroll:up" },
+
   // Navigation
   { patterns: [/\beingabe\b/i, /\blog\b/i], action: "nav:log" },
-  { patterns: [/\bstatistik\b/i, /\bübersicht\b/i, /\bwoche\b/i], action: "nav:weekly" },
+  { patterns: [/\bstatistik\b/i, /\bwoche\b/i], action: "nav:weekly" },
 
   // Settings tabs
   { patterns: [/\beinstellung/i, /\bsettings?\b/i], action: "settings:open" },
@@ -30,14 +63,38 @@ const COMMANDS: VoiceCommand[] = [
   // Generic design → settings design tab (after specific theme commands)
   { patterns: [/\bdesign\b/i], action: "settings:design" },
 
-  // Deep-link focus
-  { patterns: [/\bneue[rn]?\s+eintrag\b/i, /\bneue\s+eingabe\b/i], action: "focus:food" },
-  { patterns: [/\baktivität/i, /\bactivity\b/i], action: "focus:activity" },
-
   // Actions
-  { patterns: [/\bbackup\b/i, /\bsicherung\b/i], action: "action:backup" },
   { patterns: [/\bkamera\b/i, /\bfoto\b/i, /\bphoto\b/i], action: "action:camera" },
 ];
+
+// Map section IDs to the page they belong to
+export const SECTION_PAGE_MAP: Record<string, "log" | "weekly"> = {
+  "section-neuer-eintrag": "log",
+  "section-makro-naehrstoffe": "log",
+  "section-tagesuebersicht": "log",
+  "section-kalorienaufnahme": "log",
+  "section-fastenanalyse": "log",
+  "section-activity": "log",
+  "section-kalorienbilanz": "log",
+  "section-fluessigkeit": "log",
+  "section-uebersicht": "weekly",
+  "section-kalorien-pro-tag": "weekly",
+  "section-defizit-pro-tag": "weekly",
+  "section-makros-pro-tag": "weekly",
+  "section-makro-verteilung": "weekly",
+  "section-ki-coach": "weekly",
+};
+
+export const SECTION_SETTINGS_TAB: Record<string, string> = {
+  "section-persoenliche-daten": "profile",
+  "section-goals": "profile",
+  "section-rezeptgenerator": "recipes",
+  "section-gespeicherte-rezepte": "recipes",
+  "section-import": "data",
+  "section-export": "data",
+  "section-backup": "data",
+  "section-loeschen": "data",
+};
 
 const INACTIVITY_TIMEOUT_MS = 60_000;
 

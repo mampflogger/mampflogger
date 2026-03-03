@@ -909,6 +909,7 @@ const SettingsDialog = ({
           <div className="space-y-3">
             {/* Profile Card */}
             <div className="glass-card rounded-xl p-3 space-y-2">
+              <h2 className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Persönliche Daten</h2>
               <div>
                 <Label className="text-[10px] font-medium text-muted-foreground mb-0.5 block">Name</Label>
                 <Input id="settings-name" value={name} onChange={(e) => setName(e.target.value)} onKeyDown={(e) => handleProfileKeyDown(e, "settings-name")} placeholder="Dein Name" className="h-8 text-sm" autoCorrect="off" spellCheck={false} autoFocus={initialOpen} />
@@ -957,7 +958,7 @@ const SettingsDialog = ({
 
             {/* Goals Card */}
             <div className="glass-card rounded-xl p-3 space-y-2">
-              <Label className="text-[10px] font-semibold text-muted-foreground mb-1 block uppercase tracking-wider pl-0">YOUR GOALS</Label>
+              <Label className="text-[10px] font-semibold text-muted-foreground mb-1 block uppercase tracking-wider pl-0">GOALS</Label>
               <div className="grid grid-cols-2 gap-2">
                 <div>
                   <Label className="text-[10px] font-medium text-muted-foreground mb-0.5 block">Zielgewicht (kg)</Label>
@@ -1513,7 +1514,7 @@ const SettingsDialog = ({
           <div className="space-y-3">
 
             {/* IMPORT Section */}
-            <div className="glass-card rounded-xl p-3 space-y-1.5">
+            <div id="section-import" className="glass-card rounded-xl p-3 space-y-1.5">
               <div className="flex items-center gap-1.5">
                 <Download className="w-3.5 h-3.5 text-primary" />
                 <h3 className="text-[11px] font-bold uppercase tracking-wider text-foreground">Import</h3>
@@ -1625,7 +1626,7 @@ const SettingsDialog = ({
             </div>
 
             {/* EXPORT Section */}
-            <div className="glass-card rounded-xl p-3 space-y-1.5">
+            <div id="section-export" className="glass-card rounded-xl p-3 space-y-1.5">
               <div className="flex items-center gap-1.5">
                 <Upload className="w-3.5 h-3.5 text-primary" />
                 <h3 className="text-[11px] font-bold uppercase tracking-wider text-foreground">Export</h3>
@@ -1653,7 +1654,7 @@ const SettingsDialog = ({
 
 
             {/* BACKUP Section */}
-            <div className="glass-card rounded-xl p-3 space-y-1.5">
+            <div id="section-backup" className="glass-card rounded-xl p-3 space-y-1.5">
               <div className="flex items-center gap-1.5">
                 <HardDrive className="w-3.5 h-3.5 text-primary" />
                 <h3 className="text-[11px] font-bold uppercase tracking-wider text-foreground">Backup</h3>
@@ -1743,7 +1744,7 @@ const SettingsDialog = ({
             </div>
 
             {/* DELETE Section */}
-            <div className="glass-card rounded-xl p-3 space-y-1.5">
+            <div id="section-loeschen" className="glass-card rounded-xl p-3 space-y-1.5">
               <div className="flex items-center gap-1.5">
                 <Trash2 className="w-3.5 h-3.5 text-primary" />
                 <h3 className="text-[11px] font-bold uppercase tracking-wider text-foreground">Löschen</h3>

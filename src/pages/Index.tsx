@@ -24,17 +24,18 @@ import FluidDisplay from "@/components/FluidDisplay";
 import DailyCalorieChart from "@/components/DailyCalorieChart";
 import PhotoToLog from "@/components/PhotoToLog";
 import FastingAnalysis from "@/components/FastingAnalysis";
+import SectionHeading from "@/components/SectionHeading";
 
 import SettingsDialog, { ColorTheme } from "@/components/SettingsDialog";
-import { ChevronLeft, ChevronRight, BarChart3, List, Mic, MicOff, BookOpen } from "lucide-react";
+import { ChevronLeft, ChevronRight, BarChart3, List, Mic, MicOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useVoiceCommands } from "@/hooks/useVoiceCommands";
+import { useVoiceCommands, SECTION_PAGE_MAP, SECTION_SETTINGS_TAB } from "@/hooks/useVoiceCommands";
+import { useSectionNavigation } from "@/hooks/useSectionNavigation";
 
 const Index = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const settingsParam = searchParams.get("settings");
 
-  // Clear the URL param after consuming it
   useEffect(() => {
     if (settingsParam) {
       setSearchParams({}, { replace: true });
@@ -54,9 +55,51 @@ const Index = () => {
   const nutritionVoiceRef = useRef<((transcript: string, isInterim: boolean) => void) | undefined>();
   const foodInputRef = useRef<HTMLInputElement>(null);
 
+  const sectionNav = useSectionNavigation();
+
   // Global voice command system
   const voiceCommands = useVoiceCommands({
     onCommand: useCallback((action: string) => {
+      // Section navigation
+      if (action.startsWith("section:")) {
+        const sectionId = action.replace("section:", "section-");
+        
+        // Check if it's a settings section
+        const settingsTab = SECTION_SETTINGS_TAB[sectionId];
+        if (settingsTab) {
+          setSettingsVoiceTab(settingsTab);
+          return;
+        }
+
+        // Check if it's a page section
+        const page = SECTION_PAGE_MAP[sectionId];
+        if (page) {
+          if (page !== activeTabRef.current) {
+            setActiveTab(page);
+            // Delay scroll to let tab render
+            setTimeout(() => sectionNav.scrollToSection(sectionId), 200);
+          } else {
+            sectionNav.scrollToSection(sectionId);
+          }
+          // Special: focus food input when jumping to neuer-eintrag
+          if (sectionId === "section-neuer-eintrag") {
+            setTimeout(() => foodInputRef.current?.focus(), 300);
+          }
+        }
+        return;
+      }
+
+      // Scroll commands
+      if (action === "scroll:down") {
+        sectionNav.scrollDirection("down");
+        return;
+      }
+      if (action === "scroll:up") {
+        sectionNav.scrollDirection("up");
+        return;
+      }
+
+      // Navigation
       if (action === "nav:log") setActiveTab("log");
       else if (action === "nav:weekly") setActiveTab("weekly");
       else if (action === "settings:open") setSettingsVoiceTab("profile");
@@ -80,10 +123,15 @@ const Index = () => {
       nutritionVoiceRef.current?.(transcript, isInterim);
     }, []),
   });
+
+  // Keep a ref to activeTab for use in callbacks
+  const activeTabRef = useRef(activeTab);
+  activeTabRef.current = activeTab;
+
   const [darkMode, setDarkMode] = useState(() => {
     const saved = localStorage.getItem("mampflogger-dark-mode");
     if (saved !== null) return saved === "true";
-    return false; // Default: Light Mode
+    return false;
   });
   const [colorTheme, setColorTheme] = useState<ColorTheme>(() => {
     return (localStorage.getItem("mampflogger-color-theme") as ColorTheme) || "yellow";
@@ -108,7 +156,6 @@ const Index = () => {
     setProfile(loadProfile());
     setBookedActivities(loadBookedActivities());
 
-    // Remote Food Sync beim App-Start
     const remoteUrl = loadRemoteUrl();
     if (remoteUrl) {
       syncRemoteFoodDatabase(remoteUrl).then(({ added, error }) => {
@@ -168,7 +215,6 @@ const Index = () => {
   };
 
   const handleImport = (newEntries: NutritionEntry[]) => {
-    // Deduplicate by composite key: date + time + food + amount
     const existingKeys = new Set(
       entries.map((e) => `${e.date}|${e.time}|${e.food}|${e.amount}`)
     );
@@ -299,12 +345,8 @@ const Index = () => {
     month: "long",
     year: "numeric",
   });
-  const displayDateWithWeekday = dateObj.toLocaleDateString("de-DE", {
-    weekday: "short",
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
+
+  const hl = sectionNav.highlightedSection;
 
   return (
     <div className="min-h-screen bg-background">
@@ -426,11 +468,11 @@ const Index = () => {
 
         {activeTab === "log" ? (
           <>
-            <div className="glass-card rounded-xl p-3 mb-3">
+            <div id="section-neuer-eintrag" data-section className="glass-card rounded-xl p-3 mb-3">
               <div className="flex items-center justify-between mb-2">
-                <h2 className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
+                <SectionHeading highlighted={hl === "section-neuer-eintrag"}>
                   {editingEntry ? "Eintrag bearbeiten" : "Neuer Eintrag"}
-                </h2>
+                </SectionHeading>
                 <div className="flex items-center gap-1">
                   <PhotoToLog selectedDate={selectedDate} onAddEntries={handleAddMultiple} />
                 </div>
@@ -447,45 +489,45 @@ const Index = () => {
             </div>
 
             {todayEntries.length > 0 && (
-              <div className="glass-card rounded-xl p-3 mb-3">
-                <h2 className="text-[10px] font-semibold text-muted-foreground mb-2 uppercase tracking-wider">
+              <div id="section-makro-naehrstoffe" data-section className="glass-card rounded-xl p-3 mb-3">
+                <SectionHeading highlighted={hl === "section-makro-naehrstoffe"} className="mb-2">
                   Makro Nährstoffverteilung
-                </h2>
+                </SectionHeading>
                 <MacroBar summary={todaySummary} />
               </div>
             )}
 
-            <div className="glass-card rounded-xl p-3 mb-3">
-              <h2 className="text-[10px] font-semibold text-muted-foreground mb-2 uppercase tracking-wider">
+            <div id="section-tagesuebersicht" data-section className="glass-card rounded-xl p-3 mb-3">
+              <SectionHeading highlighted={hl === "section-tagesuebersicht"} className="mb-2">
                 Tagesübersicht
                 {todayEntries.length > 0 && (
                   <span className="ml-2 inline-flex items-center justify-center w-4 h-4 rounded-full bg-primary text-primary-foreground text-[10px] font-bold">
                     {todayEntries.length}
                   </span>
                 )}
-              </h2>
+              </SectionHeading>
               <NutritionTable entries={todayEntries} onDelete={handleDelete} onEntryClick={handleEntryClick} />
             </div>
 
-            <div className="glass-card rounded-xl p-3 mb-3">
-              <h2 className="text-[10px] font-semibold text-muted-foreground mb-2 uppercase tracking-wider">
+            <div id="section-kalorienaufnahme" data-section className="glass-card rounded-xl p-3 mb-3">
+              <SectionHeading highlighted={hl === "section-kalorienaufnahme"} className="mb-2">
                 Kalorienaufnahme 24 Stunden
-              </h2>
+              </SectionHeading>
               <DailyCalorieChart entries={todayEntries} />
             </div>
 
-            <div className="glass-card rounded-xl p-3 mb-3">
-              <h2 className="text-[10px] font-semibold text-muted-foreground mb-2 uppercase tracking-wider">
+            <div id="section-fastenanalyse" data-section className="glass-card rounded-xl p-3 mb-3">
+              <SectionHeading highlighted={hl === "section-fastenanalyse"} className="mb-2">
                 Fastenanalyse
-              </h2>
+              </SectionHeading>
               <FastingAnalysis entries={todayEntries} allEntries={entries} selectedDate={selectedDate} />
             </div>
 
             {profile && (
-              <div className="glass-card rounded-xl p-3 mb-3">
-                <h2 className="text-[10px] font-semibold text-muted-foreground mb-2 uppercase tracking-wider">
+              <div id="section-activity" data-section className="glass-card rounded-xl p-3 mb-3">
+                <SectionHeading highlighted={hl === "section-activity"} className="mb-2">
                   Activity
-                </h2>
+                </SectionHeading>
                 <ActivityInput
                   bookedActivities={bookedActivities}
                   selectedDate={selectedDate}
@@ -501,19 +543,19 @@ const Index = () => {
             )}
 
             {profile && (
-              <div className="glass-card rounded-xl p-3 mb-3">
-                <h2 className="text-[10px] font-semibold text-muted-foreground mb-2 uppercase tracking-wider">
+              <div id="section-kalorienbilanz" data-section className="glass-card rounded-xl p-3 mb-3">
+                <SectionHeading highlighted={hl === "section-kalorienbilanz"} className="mb-2">
                   Kalorienbilanz
-                </h2>
+                </SectionHeading>
                 <DeficitDisplay profile={profile} activityBonus={activityBonus} consumedCalories={todaySummary.totalCalories} goalDeficit={profile.goalDeficit} />
               </div>
             )}
 
             {profile && (
-              <div className="glass-card rounded-xl p-3">
-                <h2 className="text-[10px] font-semibold text-muted-foreground mb-2 uppercase tracking-wider">
+              <div id="section-fluessigkeit" data-section className="glass-card rounded-xl p-3 mb-3">
+                <SectionHeading highlighted={hl === "section-fluessigkeit"} className="mb-2">
                   Flüssigkeit
-                </h2>
+                </SectionHeading>
                 <FluidDisplay
                   entries={todayEntries}
                   goalMl={profile.goalFluidMl}
@@ -524,9 +566,22 @@ const Index = () => {
                 />
               </div>
             )}
+
+            {/* Spacer so last sections can scroll to top */}
+            <div style={{ height: "calc(100vh - 14rem)" }} />
           </>
         ) : (
-          <WeeklyOverview entries={entries} selectedDate={selectedDate} profile={profile} bookedActivities={bookedActivities} />
+          <>
+            <WeeklyOverview
+              entries={entries}
+              selectedDate={selectedDate}
+              profile={profile}
+              bookedActivities={bookedActivities}
+              highlightedSection={hl}
+            />
+            {/* Spacer so last sections can scroll to top */}
+            <div style={{ height: "calc(100vh - 14rem)" }} />
+          </>
         )}
       </main>
     </div>
