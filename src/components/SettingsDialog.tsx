@@ -1496,7 +1496,7 @@ const SettingsDialog = ({
                     className="w-full h-7 text-[11px] gap-1.5"
                   >
                     {batchEnriching ? <Loader2 className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3" />}
-                    {batchEnriching ? batchProgress : "KI: Alle Eigenschaften ermitteln"}
+                    {batchEnriching ? batchProgress : "KI: Eigenschaften aktualisieren"}
                   </Button>
                 </div>
               ) : (

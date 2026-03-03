@@ -206,29 +206,36 @@ export function getRemoteSyncMeta(): SyncMeta | null {
 
 /**
  * Speichert/liest die Remote-URL aus localStorage.
- * Fallback: öffentliches GitHub-Repository
+ * Standardmäßig deaktiviert – nur bei expliziter URL wird synchronisiert.
  */
 const REMOTE_URL_KEY = "mampflogger-remote-url";
-// Relativer Pfad: funktioniert automatisch in Preview UND Produktion
-const DEFAULT_REMOTE_URL = "/lebensmittelliste.json";
+const LEGACY_AUTO_REMOTE_URL = "/lebensmittelliste.json";
 
 export function loadRemoteUrl(): string {
-  const stored = localStorage.getItem(REMOTE_URL_KEY);
-  // Migrate: alte absolute URLs durch relativen Pfad ersetzen
+  const stored = localStorage.getItem(REMOTE_URL_KEY)?.trim() || "";
+
+  // Migration: alte Auto-Remote-Defaults vollständig deaktivieren
   if (
     !stored ||
+    stored === LEGACY_AUTO_REMOTE_URL ||
     stored.includes("raw.githubusercontent.com/mampflogger") ||
     stored.includes("mampflogger.lovable.app")
   ) {
-    localStorage.setItem(REMOTE_URL_KEY, DEFAULT_REMOTE_URL);
-    return DEFAULT_REMOTE_URL;
+    localStorage.removeItem(REMOTE_URL_KEY);
+    return "";
   }
+
   return stored;
 }
 
 export function saveRemoteUrl(url: string): boolean {
-  if (!isValidRemoteUrl(url)) return false;
-  localStorage.setItem(REMOTE_URL_KEY, url);
+  const normalized = url.trim();
+  if (!normalized) {
+    localStorage.removeItem(REMOTE_URL_KEY);
+    return true;
+  }
+  if (!isValidRemoteUrl(normalized)) return false;
+  localStorage.setItem(REMOTE_URL_KEY, normalized);
   return true;
 }
 
