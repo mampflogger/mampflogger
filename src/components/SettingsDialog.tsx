@@ -1046,14 +1046,23 @@ const SettingsDialog = ({
                         <Label className="text-[8px] text-muted-foreground leading-none block mb-0.5">{key.toUpperCase()}</Label>
                         <button
                           type="button"
-                          onClick={() => setEditDietary(prev => ({ ...prev, [key]: !prev[key] }))}
+                          onClick={() => setEditDietary(prev => {
+                            const cur = prev[key];
+                            if (cur === undefined) return { ...prev, [key]: true };
+                            if (cur === true) return { ...prev, [key]: false };
+                            const next = { ...prev };
+                            delete next[key];
+                            return next;
+                          })}
                           className={`h-6 w-full rounded-full text-[10px] font-medium text-center border transition-colors ${
-                            editDietary[key]
+                            editDietary[key] === true
                               ? "bg-primary text-primary-foreground border-primary"
-                              : "bg-accent text-muted-foreground border-border"
+                              : editDietary[key] === false
+                                ? "bg-accent text-muted-foreground border-border"
+                                : "bg-background text-muted-foreground/40 border-border/50"
                           }`}
                         >
-                          {editDietary[key] ? "J" : "N"}
+                          {editDietary[key] === true ? "J" : editDietary[key] === false ? "N" : "–"}
                         </button>
                       </div>
                     ))}
