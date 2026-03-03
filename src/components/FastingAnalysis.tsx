@@ -2,8 +2,8 @@ import { useMemo, useState, useEffect } from "react";
 import { NutritionEntry, formatDate } from "@/types/nutrition";
 
 interface Props {
-  entries: NutritionEntry[]; // today's entries
-  allEntries: NutritionEntry[]; // all entries (needed for yesterday)
+  entries: NutritionEntry[]; // selected day's entries
+  allEntries: NutritionEntry[]; // all entries (needed for adjacent days)
   selectedDate: string;
 }
 
@@ -15,60 +15,80 @@ const FastingAnalysis = ({ entries, allEntries, selectedDate }: Props) => {
     return () => clearInterval(id);
   }, []);
 
-  const isToday = selectedDate === formatDate(new Date());
+  const todayStr = formatDate(now);
   const currentHour = now.getHours();
   const nowMinutes = currentHour * 60 + now.getMinutes();
 
-  // Get yesterday's date string
-  const yesterdayDate = useMemo(() => {
+  // Get yesterday's date relative to selectedDate
+  const dayBeforeSelected = useMemo(() => {
     const d = new Date(selectedDate + "T00:00:00");
     d.setDate(d.getDate() - 1);
     return formatDate(d);
   }, [selectedDate]);
 
-  const yesterdayEntries = useMemo(
-    () => (allEntries ?? []).filter((e) => e.date === yesterdayDate),
-    [allEntries, yesterdayDate]
+  // Get yesterday relative to *today* (for "isYesterdayLive" check)
+  const realYesterday = useMemo(() => {
+    const d = new Date();
+    d.setDate(d.getDate() - 1);
+    return formatDate(d);
+  }, [todayStr]);
+
+  const isToday = selectedDate === todayStr;
+  // When viewing yesterday and it's currently past midnight, show live fasting time
+  const isYesterdayLive = !isToday && selectedDate === realYesterday;
+  const isLive = isToday || isYesterdayLive;
+
+  const dayBeforeEntries = useMemo(
+    () => (allEntries ?? []).filter((e) => e.date === dayBeforeSelected),
+    [allEntries, dayBeforeSelected]
+  );
+
+  // For live yesterday view, we also need today's entries (the few after midnight)
+  const todayEntries = useMemo(
+    () => isYesterdayLive ? (allEntries ?? []).filter((e) => e.date === todayStr) : [],
+    [allEntries, todayStr, isYesterdayLive]
   );
 
   const { displayHours, fastingFlags, currentFast } = useMemo(() => {
-    if (isToday) {
-      // ROLLING 24h: rightmost box = current hour, leftmost = same hour yesterday
-      // We show 24 boxes representing the last 24 hours ending at currentHour
+    if (isLive) {
+      // ROLLING 24h view ending at current hour
       const hours: { hour: number; isYesterday: boolean }[] = [];
       for (let i = 0; i < 24; i++) {
         const h = (currentHour + 1 + i) % 24;
-        // If h > currentHour, it's yesterday's hour; if h <= currentHour, it's today
-        const isYest = h > currentHour || (i < 23 && h === currentHour + 1);
-        // Simpler: first (23 - currentHour) boxes are yesterday, rest are today
         hours.push({ hour: h, isYesterday: i < (23 - currentHour) });
       }
 
+      // For "isToday": entries = today, dayBeforeEntries = yesterday
+      // For "isYesterdayLive": entries = yesterday (selectedDate), 
+      //   but we need today's entries too for the hours after midnight
+      const recentDayEntries = isToday ? entries : todayEntries; // today's entries
+      const olderDayEntries = isToday ? dayBeforeEntries : entries; // yesterday's entries
+
       // Mark food hours
-      const todayFoodHours = new Set<number>();
-      for (const e of entries) {
+      const recentFoodHours = new Set<number>();
+      for (const e of recentDayEntries) {
         if (e.time && e.calories > 0) {
           const h = parseInt(e.time.split(":")[0], 10);
-          if (!isNaN(h)) todayFoodHours.add(h);
+          if (!isNaN(h)) recentFoodHours.add(h);
         }
       }
-      const yesterdayFoodHours = new Set<number>();
-      for (const e of yesterdayEntries) {
+      const olderFoodHours = new Set<number>();
+      for (const e of olderDayEntries) {
         if (e.time && e.calories > 0) {
           const h = parseInt(e.time.split(":")[0], 10);
-          if (!isNaN(h)) yesterdayFoodHours.add(h);
+          if (!isNaN(h)) olderFoodHours.add(h);
         }
       }
 
       const flags = hours.map(({ hour, isYesterday }) => {
-        const foodSet = isYesterday ? yesterdayFoodHours : todayFoodHours;
+        const foodSet = isYesterday ? olderFoodHours : recentFoodHours;
         return !foodSet.has(hour); // true = fasting
       });
 
-      // Calculate current fasting: time since last meal (across both days)
-      // Collect all meal times as minutes-ago-from-now
+      // Calculate current fasting: minutes since last meal across both days
       const mealMinutesFromNow: number[] = [];
-      for (const e of entries) {
+      // Today's meals (recent day)
+      for (const e of recentDayEntries) {
         if (e.time && e.calories > 0) {
           const [hh, mm] = e.time.split(":").map(Number);
           if (!isNaN(hh) && !isNaN(mm)) {
@@ -79,7 +99,8 @@ const FastingAnalysis = ({ entries, allEntries, selectedDate }: Props) => {
           }
         }
       }
-      for (const e of yesterdayEntries) {
+      // Yesterday's meals (older day)
+      for (const e of olderDayEntries) {
         if (e.time && e.calories > 0) {
           const [hh, mm] = e.time.split(":").map(Number);
           if (!isNaN(hh) && !isNaN(mm)) {
@@ -99,7 +120,7 @@ const FastingAnalysis = ({ entries, allEntries, selectedDate }: Props) => {
 
       return { displayHours: hours, fastingFlags: flags, currentFast: fast };
     } else {
-      // Past day: standard 0-23 view
+      // Past day (older than yesterday): standard 0-23 view
       const hours = Array.from({ length: 24 }, (_, i) => ({ hour: i, isYesterday: false }));
 
       const hoursWithFood = new Set<number>();
@@ -137,7 +158,7 @@ const FastingAnalysis = ({ entries, allEntries, selectedDate }: Props) => {
 
       return { displayHours: hours, fastingFlags: flags, currentFast: fast };
     }
-  }, [entries, yesterdayEntries, isToday, currentHour, nowMinutes]);
+  }, [entries, dayBeforeEntries, todayEntries, isLive, isToday, isYesterdayLive, currentHour, nowMinutes]);
 
   // Tick labels every 3 hours
   const tickSet = new Set([0, 3, 6, 9, 12, 15, 18, 21]);
@@ -163,15 +184,15 @@ const FastingAnalysis = ({ entries, allEntries, selectedDate }: Props) => {
         ))}
       </div>
 
-      {/* Info row: "Gestern" left, fasting center, clock right */}
+      {/* Info row */}
       <div className="flex items-baseline justify-between mt-1.5">
         <span className="text-[9px] text-muted-foreground opacity-70 w-12">
-          {isToday ? "Gestern" : ""}
+          {isLive ? (isYesterdayLive ? "Vorgestern" : "Gestern") : ""}
         </span>
         <div className="text-center">
           {currentFast && (
             <p className="text-[11px] text-muted-foreground">
-              Aktuelle Fastenzeit{" "}
+              {isLive ? "Aktuelle Fastenzeit" : "Längste Fastenperiode"}{" "}
               <span className="font-semibold text-foreground">
                 {currentFast.hours > 0 && `${currentFast.hours} Std `}
                 {currentFast.minutes > 0 && `${currentFast.minutes} Min`}
@@ -182,12 +203,12 @@ const FastingAnalysis = ({ entries, allEntries, selectedDate }: Props) => {
           {!currentFast && entries.length > 0 && (
             <p className="text-[11px] text-muted-foreground">Gerade gegessen</p>
           )}
-          {entries.length === 0 && !isToday && (
+          {entries.length === 0 && !isLive && (
             <p className="text-[11px] text-muted-foreground">Keine Einträge</p>
           )}
         </div>
         <span className="text-[11px] font-semibold text-primary tabular-nums w-12 text-right">
-          {isToday ? clockStr : ""}
+          {isLive ? clockStr : ""}
         </span>
       </div>
     </div>
