@@ -22,7 +22,7 @@ import CookIcon from "@/components/CookIcon";
 import { supabase } from "@/integrations/supabase/client";
 import { UserProfile, calculateBMR } from "@/types/profile";
 import { NutritionEntry } from "@/types/nutrition";
-import { foodDatabase, addFoodItem, removeFoodItem, updateFoodItem, clearFoodDatabase, reloadFoodDatabase, resetFoodDatabase, DEFAULT_FOODS, FoodItem, FoodVitamins, FoodMinerals, FOOD_CATEGORIES, FoodCategory } from "@/data/foodDatabase";
+import { foodDatabase, addFoodItem, removeFoodItem, updateFoodItem, clearFoodDatabase, reloadFoodDatabase, resetFoodDatabase, DEFAULT_FOODS, FoodItem, FoodVitamins, FoodMinerals, FoodDietaryFlags, DIETARY_FLAG_KEYS, DIETARY_FLAG_LABELS, FOOD_CATEGORIES, FoodCategory } from "@/data/foodDatabase";
 import {
   exportEntriesToCsv, exportFoodDatabaseCsv, exportCalorieBalanceCsv, exportActivitiesCsv,
 } from "@/lib/csvExport";
@@ -179,6 +179,7 @@ const SettingsDialog = ({
    const [editFoodNotes, setEditFoodNotes] = useState("");
   const [editVitamins, setEditVitamins] = useState<FoodVitamins>({});
   const [editMinerals, setEditMinerals] = useState<FoodMinerals>({});
+  const [editDietary, setEditDietary] = useState<FoodDietaryFlags>({});
   
   const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
   const [aiLoading, setAiLoading] = useState(false);
@@ -234,6 +235,7 @@ const SettingsDialog = ({
      setEditFoodNotes("");
     setEditVitamins({});
     setEditMinerals({});
+    setEditDietary({});
   };
 
   const handleAiLookup = async () => {
@@ -264,6 +266,7 @@ const SettingsDialog = ({
       setEditFoodDefault(n.defaultAmount ? String(n.defaultAmount) : "");
       if (n.vitamins) setEditVitamins(n.vitamins);
       if (n.minerals) setEditMinerals(n.minerals);
+      if (n.dietary) setEditDietary(n.dietary);
       toast.success("KI-Werte übernommen – bitte prüfen & speichern!");
     } catch (err: any) {
       console.error("AI lookup error:", err);
@@ -360,6 +363,7 @@ const SettingsDialog = ({
      setEditFoodNotes(food.notes || "");
     setEditVitamins(food.vitamins || {});
     setEditMinerals(food.minerals || {});
+    setEditDietary(food.dietary || {});
     if (index !== undefined) setFoodNavIndex(index);
   };
 
@@ -376,6 +380,7 @@ const SettingsDialog = ({
     // Only include vitamins/minerals if they have at least one non-zero value
     const hasVitamins = Object.values(editVitamins).some(v => v !== undefined && v > 0);
     const hasMinerals = Object.values(editMinerals).some(v => v !== undefined && v > 0);
+    const hasDietary = Object.values(editDietary).some(v => v !== undefined);
     const hasGi = editFoodGi && parseFloat(editFoodGi) >= 0;
     const updated: FoodItem = {
       name: editFoodName.trim(),
@@ -393,6 +398,7 @@ const SettingsDialog = ({
        notes: editFoodNotes.trim() || undefined,
       vitamins: hasVitamins ? editVitamins : undefined,
       minerals: hasMinerals ? editMinerals : undefined,
+      dietary: hasDietary ? editDietary : undefined,
     };
     updateFoodItem(editingFood.name, updated);
     const isNew = !editingFood.name;
