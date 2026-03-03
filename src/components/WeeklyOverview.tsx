@@ -408,36 +408,6 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [] 
         </div>
       )}
 
-      {/* Macro Distribution */}
-      <div className="glass-card rounded-xl p-3">
-        <h2 className="text-[10px] font-semibold text-muted-foreground mb-2 uppercase tracking-wider">
-          Makro-Verteilung (7 Tage)
-        </h2>
-        <div className="flex gap-1 h-4 rounded-full overflow-hidden bg-background">
-          {weekTotals.proteinPercent > 0 && <div className="rounded-full transition-all duration-500" style={{ width: `${weekTotals.proteinPercent}%`, backgroundColor: MACRO_COLORS.pro }} />}
-          {weekTotals.fatPercent > 0 && <div className="rounded-full transition-all duration-500" style={{ width: `${weekTotals.fatPercent}%`, backgroundColor: MACRO_COLORS.fat }} />}
-          {weekTotals.carbsPercent > 0 && <div className="rounded-full transition-all duration-500" style={{ width: `${weekTotals.carbsPercent}%`, backgroundColor: MACRO_COLORS.kh }} />}
-          {weekTotals.fiberPercent > 0 && <div className="rounded-full transition-all duration-500" style={{ width: `${weekTotals.fiberPercent}%`, backgroundColor: MACRO_COLORS.fib }} />}
-        </div>
-        <div className="grid grid-cols-4 gap-2 mt-3">
-          {[
-            { key: "pro", label: "PRO", percent: weekTotals.proteinPercent, grams: weekTotals.protein },
-            { key: "fat", label: "FAT", percent: weekTotals.fatPercent, grams: weekTotals.fat },
-            { key: "kh", label: "KH", percent: weekTotals.carbsPercent, grams: weekTotals.carbs },
-            { key: "fib", label: "FIB", percent: weekTotals.fiberPercent, grams: weekTotals.fiber },
-          ].map((m) => (
-            <div key={m.key} className="flex items-center gap-2 text-xs">
-              <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: MACRO_COLORS[m.key as keyof typeof MACRO_COLORS] }} />
-              <div>
-                <span className="font-semibold">{m.percent}%</span>
-                <span className="text-muted-foreground ml-1">{m.label}</span>
-                <p className="text-muted-foreground">{m.grams}g</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
       {/* Daily macro stacked bars */}
       <div className="glass-card rounded-xl p-3">
         <h2 className="text-[10px] font-semibold text-muted-foreground mb-2 uppercase tracking-wider">
@@ -480,6 +450,36 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [] 
               <Bar dataKey="fiber" stackId="macros" fill={MACRO_COLORS.fib} radius={[6, 6, 0, 0]} maxBarSize={36} name="FIB" />
             </BarChart>
           </ResponsiveContainer>
+        </div>
+      </div>
+
+      {/* Macro Distribution */}
+      <div className="glass-card rounded-xl p-3">
+        <h2 className="text-[10px] font-semibold text-muted-foreground mb-2 uppercase tracking-wider">
+          Makro-Verteilung (7 Tage)
+        </h2>
+        <div className="flex gap-1 h-4 rounded-full overflow-hidden bg-background">
+          {weekTotals.proteinPercent > 0 && <div className="rounded-full transition-all duration-500" style={{ width: `${weekTotals.proteinPercent}%`, backgroundColor: MACRO_COLORS.pro }} />}
+          {weekTotals.fatPercent > 0 && <div className="rounded-full transition-all duration-500" style={{ width: `${weekTotals.fatPercent}%`, backgroundColor: MACRO_COLORS.fat }} />}
+          {weekTotals.carbsPercent > 0 && <div className="rounded-full transition-all duration-500" style={{ width: `${weekTotals.carbsPercent}%`, backgroundColor: MACRO_COLORS.kh }} />}
+          {weekTotals.fiberPercent > 0 && <div className="rounded-full transition-all duration-500" style={{ width: `${weekTotals.fiberPercent}%`, backgroundColor: MACRO_COLORS.fib }} />}
+        </div>
+        <div className="grid grid-cols-4 gap-2 mt-3">
+          {[
+            { key: "pro", label: "PRO", percent: weekTotals.proteinPercent, grams: weekTotals.protein },
+            { key: "fat", label: "FAT", percent: weekTotals.fatPercent, grams: weekTotals.fat },
+            { key: "kh", label: "KH", percent: weekTotals.carbsPercent, grams: weekTotals.carbs },
+            { key: "fib", label: "FIB", percent: weekTotals.fiberPercent, grams: weekTotals.fiber },
+          ].map((m) => (
+            <div key={m.key} className="flex items-center gap-2 text-xs">
+              <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: MACRO_COLORS[m.key as keyof typeof MACRO_COLORS] }} />
+              <div>
+                <span className="font-semibold">{m.percent}%</span>
+                <span className="text-muted-foreground ml-1">{m.label}</span>
+                <p className="text-muted-foreground">{m.grams}g</p>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
 
