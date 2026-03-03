@@ -1056,10 +1056,10 @@ const SettingsDialog = ({
                           })}
                           className={`h-6 w-full rounded-full text-[10px] font-medium text-center border transition-colors ${
                             editDietary[key] === true
-                              ? "bg-primary text-primary-foreground border-primary"
+                              ? "bg-accent/80 text-foreground border-border"
                               : editDietary[key] === false
                                 ? "bg-accent text-muted-foreground border-border"
-                                : "bg-background text-muted-foreground/40 border-border/50"
+                                : "bg-accent text-muted-foreground/40 border-border"
                           }`}
                         >
                           {editDietary[key] === true ? "J" : editDietary[key] === false ? "N" : "–"}
