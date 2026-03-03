@@ -44,7 +44,16 @@ Regeln:
 - defaultAmount: Typische Portionsgröße in g/ml oder null
 - name: Deutsch, Großbuchstabe am Anfang
 - Vitamine: vitA (µg), vitB1 (mg), vitB2 (mg), vitB3 (mg), vitB5 (mg), vitB6 (mg), vitB7 (µg), vitB9 (µg), vitB12 (µg), vitC (mg), vitD (µg), vitE (mg), vitK (µg)
-- Spurenelemente: calcium (mg), chlorid (mg), eisen (mg), fluorid (mg), kalium (mg), kupfer (mg), magnesium (mg), mangan (mg), natrium (mg), phosphor (mg), schwefel (mg), zink (mg)`,
+- Spurenelemente: calcium (mg), chlorid (mg), eisen (mg), fluorid (mg), kalium (mg), kupfer (mg), magnesium (mg), mangan (mg), natrium (mg), phosphor (mg), schwefel (mg), zink (mg)
+- Ernährungsflags (dietary): Bestimme für jedes Lebensmittel diese 8 Flags als boolean (true/false):
+  - vgn: Vegan (rein pflanzlich, keine tierischen Bestandteile)
+  - vgt: Vegetarisch (kein Fleisch/Fisch, aber Milch/Eier erlaubt)
+  - lc: Low Carb (maximal ~10g KH pro 100g)
+  - hp: High Protein (mindestens ~15g Protein pro 100g)
+  - ket: Keto (maximal ~5g KH pro 100g, hoher Fettanteil)
+  - gf: Glutenfrei (kein Weizen/Roggen/Gerste/Dinkel)
+  - lf: Laktosefrei (keine Laktose)
+  - zf: Zuckerfrei (kein zugesetzter Zucker, max. ~1g pro 100g)`,
           },
           {
             role: "user",
@@ -106,6 +115,20 @@ Regeln:
                     },
                   },
                   notes: { type: "string", description: "Additional notes about the food" },
+                  dietary: {
+                    type: "object",
+                    description: "Dietary classification flags",
+                    properties: {
+                      vgn: { type: "boolean", description: "Vegan" },
+                      vgt: { type: "boolean", description: "Vegetarisch" },
+                      lc: { type: "boolean", description: "Low Carb (≤10g KH/100g)" },
+                      hp: { type: "boolean", description: "High Protein (≥15g PRO/100g)" },
+                      ket: { type: "boolean", description: "Keto (≤5g KH/100g, hoher Fettanteil)" },
+                      gf: { type: "boolean", description: "Glutenfrei" },
+                      lf: { type: "boolean", description: "Laktosefrei" },
+                      zf: { type: "boolean", description: "Zuckerfrei (≤1g Zucker/100g)" },
+                    },
+                  },
                 },
                 required: ["name", "calories", "protein", "fat", "carbs", "fiber", "gi", "liquidMl", "category"],
                 additionalProperties: false,

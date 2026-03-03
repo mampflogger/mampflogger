@@ -1,5 +1,5 @@
 import { NutritionEntry, calculateDailySummary, formatDate, generateId } from "@/types/nutrition";
-import { FoodItem, FoodVitamins, FoodMinerals, foodDatabase } from "@/data/foodDatabase";
+import { FoodItem, FoodVitamins, FoodMinerals, FoodDietaryFlags, DIETARY_FLAG_KEYS, foodDatabase } from "@/data/foodDatabase";
 import {
   UserProfile,
   BookedActivity,
@@ -65,17 +65,19 @@ export function exportEntriesToCsv(entries: NutritionEntry[]): void {
 
 const VITAMIN_KEYS = ["vitA","vitB1","vitB2","vitB3","vitB5","vitB6","vitB7","vitB9","vitB12","vitC","vitD","vitE","vitK"] as const;
 const MINERAL_KEYS = ["calcium","chlorid","eisen","fluorid","kalium","kupfer","magnesium","mangan","natrium","phosphor","schwefel","zink"] as const;
+const DIETARY_KEYS = DIETARY_FLAG_KEYS;
 
 /** Export food database */
 export function exportFoodDatabaseCsv(): void {
   const header = [
     "Lebensmittel","Einheit","kcal","PRO","FAT","KH","FIB","GI","Standard","LiquidMl","Kategorie","Zusatzinfo",
-    ...VITAMIN_KEYS, ...MINERAL_KEYS,
+    ...VITAMIN_KEYS, ...MINERAL_KEYS, ...DIETARY_KEYS.map(k => k.toUpperCase()),
   ].join(";");
 
   const rows = foodDatabase.map((f) => {
     const vitVals = VITAMIN_KEYS.map(k => f.vitamins?.[k] ?? "");
     const minVals = MINERAL_KEYS.map(k => f.minerals?.[k] ?? "");
+    const dietVals = DIETARY_KEYS.map(k => f.dietary?.[k] !== undefined ? (f.dietary[k] ? "J" : "N") : "");
     return [
       `"${f.name.replace(/"/g, '""')}"`,
       f.baseUnit,
@@ -91,6 +93,7 @@ export function exportFoodDatabaseCsv(): void {
       f.notes ? `"${f.notes.replace(/"/g, '""').replace(/\n/g, '\\n')}"` : "",
       ...vitVals,
       ...minVals,
+      ...dietVals,
     ].join(";");
   });
 
@@ -172,6 +175,14 @@ export function parseFoodDatabaseCsv(text: string): FoodItem[] {
         if (v !== undefined && !isNaN(v) && v > 0) { (minerals as any)[k] = v; hasMinerals = true; }
       });
 
+      // Parse dietary flags (cols 37-44)
+      const dietary: FoodDietaryFlags = {};
+      let hasDietary = false;
+      DIETARY_KEYS.forEach((k, i) => {
+        const val = cols[37 + i]?.toUpperCase();
+        if (val === "J" || val === "N") { (dietary as any)[k] = val === "J"; hasDietary = true; }
+      });
+
       items.push({
         name,
         baseUnit,
@@ -188,6 +199,7 @@ export function parseFoodDatabaseCsv(text: string): FoodItem[] {
         ...(notes ? { notes } : {}),
         ...(hasVitamins ? { vitamins } : {}),
         ...(hasMinerals ? { minerals } : {}),
+        ...(hasDietary ? { dietary } : {}),
       });
     } else {
       // Legacy format: Name;Einheit;kcal;PRO;FAT;KH;FIB;Standard;LiquidMl;Kategorie
