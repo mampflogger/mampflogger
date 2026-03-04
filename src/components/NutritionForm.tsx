@@ -6,20 +6,7 @@ import { Label } from "@/components/ui/label";
 import { FoodItem, searchFood, addFoodItem, trackFoodUsage, getFoodUsageCount, guessCategory } from "@/data/foodDatabase";
 import { X } from "lucide-react";
 import { toast } from "sonner";
-
-// German word-to-number map for voice pick commands (module-level constant)
-const WORD_TO_NUM: Record<string, number> = {
-  "eins": 1, "ein": 1, "erste": 1, "erster": 1, "erstes": 1, "ersten": 1, "1": 1,
-  "zwei": 2, "zweite": 2, "zweiter": 2, "zweites": 2, "zweiten": 2, "2": 2,
-  "drei": 3, "dritte": 3, "dritter": 3, "drittes": 3, "dritten": 3, "3": 3,
-  "vier": 4, "vierte": 4, "vierter": 4, "viertes": 4, "vierten": 4, "4": 4,
-  "fünf": 5, "fünfte": 5, "5": 5,
-  "sechs": 6, "sechste": 6, "6": 6,
-  "sieben": 7, "siebte": 7, "7": 7,
-  "acht": 8, "achte": 8, "8": 8,
-  "neun": 9, "neunte": 9, "9": 9,
-  "zehn": 10, "zehnte": 10, "10": 10,
-};
+import { parseSpokenSelectionIndex } from "@/lib/voiceSelection";
 
 type FocusedField = "food" | "amount" | "submit" | null;
 
@@ -73,29 +60,12 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
     suggestionsRef.current = suggestions;
   }, [suggestions]);
 
-  // WORD_TO_NUM is defined at module level above
-
-  // Parse voice commands like "Nummer eins", "Position 3", "das Erste", "nimm zwei"
   const parseVoicePickCommand = useCallback((text: string): number | null => {
-    const lower = text.toLowerCase().trim();
-    // Pattern: keyword + number word/digit
-    const match = lower.match(/\b(?:nummer|position|number|pos|nimm|nehme|das|die|der)\s+(\S+)/);
-    if (match) {
-      const num = WORD_TO_NUM[match[1]];
-      if (num !== undefined) return num - 1; // 0-based
-    }
-    // Fallback: just a number word alone (e.g. user says "eins")
-    // Only if suggestions are currently visible
-    if (suggestionsRef.current.length > 0) {
-      const words = lower.split(/\s+/);
-      if (words.length <= 2) {
-        for (const w of words) {
-          const num = WORD_TO_NUM[w];
-          if (num !== undefined) return num - 1;
-        }
-      }
-    }
-    return null;
+    return parseSpokenSelectionIndex(text, {
+      allowBareNumber: suggestionsRef.current.length > 0,
+      max: suggestionsRef.current.length || undefined,
+      keywords: ["nummer", "position", "number", "pos", "nimm", "nehme", "das", "die", "der", "eintrag", "liste", "dropdown"],
+    });
   }, []);
 
   // Helper: fuzzy match for "buchen" command (and aliases: ja, okay, yes, check, copy)
