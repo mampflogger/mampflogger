@@ -83,6 +83,67 @@ const MEAL_ROTATIONS: Record<TestDataGender, MealTemplate[][]> = {
   ],
 };
 
+const DRINK_ROTATIONS: Record<TestDataGender, MealTemplate[][]> = {
+  male: [
+    [
+      { time: "06:45", food: "Kaffee schwarz", amount: 250, calories: 5, protein: 0, carbs: 0, fat: 0, fiber: 0, liquidMl: 250 },
+      { time: "09:45", food: "Schwarzer Tee", amount: 300, calories: 2, protein: 0, carbs: 0, fat: 0, fiber: 0, liquidMl: 300 },
+      { time: "12:00", food: "Mineralwasser", amount: 500, calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0, liquidMl: 500 },
+      { time: "15:30", food: "Kaffee schwarz", amount: 220, calories: 4, protein: 0, carbs: 0, fat: 0, fiber: 0, liquidMl: 220 },
+      { time: "17:30", food: "Kräutertee", amount: 300, calories: 2, protein: 0, carbs: 0, fat: 0, fiber: 0, liquidMl: 300 },
+      { time: "20:30", food: "Wasser", amount: 450, calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0, liquidMl: 450 },
+      { time: "21:15", food: "Bier", amount: 330, calories: 143, protein: 1, carbs: 11, fat: 0, fiber: 0, liquidMl: 330 },
+    ],
+    [
+      { time: "07:00", food: "Espresso doppio", amount: 120, calories: 4, protein: 0, carbs: 0, fat: 0, fiber: 0, liquidMl: 120 },
+      { time: "09:30", food: "Grüner Tee", amount: 300, calories: 2, protein: 0, carbs: 0, fat: 0, fiber: 0, liquidMl: 300 },
+      { time: "12:10", food: "Stilles Wasser", amount: 600, calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0, liquidMl: 600 },
+      { time: "15:45", food: "Cappuccino", amount: 180, calories: 62, protein: 3, carbs: 5, fat: 3, fiber: 0, liquidMl: 180 },
+      { time: "17:00", food: "Früchtetee", amount: 300, calories: 2, protein: 0, carbs: 0, fat: 0, fiber: 0, liquidMl: 300 },
+      { time: "19:50", food: "Mineralwasser", amount: 500, calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0, liquidMl: 500 },
+      { time: "21:00", food: "Alkoholfreies Bier", amount: 330, calories: 86, protein: 1, carbs: 19, fat: 0, fiber: 0, liquidMl: 330 },
+    ],
+    [
+      { time: "06:50", food: "Kaffee schwarz", amount: 250, calories: 5, protein: 0, carbs: 0, fat: 0, fiber: 0, liquidMl: 250 },
+      { time: "10:15", food: "Mate Tee", amount: 300, calories: 3, protein: 0, carbs: 0, fat: 0, fiber: 0, liquidMl: 300 },
+      { time: "12:05", food: "Wasser", amount: 500, calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0, liquidMl: 500 },
+      { time: "15:15", food: "Milchkaffee", amount: 250, calories: 78, protein: 4, carbs: 7, fat: 3, fiber: 0, liquidMl: 250 },
+      { time: "17:45", food: "Kräutertee", amount: 300, calories: 2, protein: 0, carbs: 0, fat: 0, fiber: 0, liquidMl: 300 },
+      { time: "20:15", food: "Sprudelwasser", amount: 500, calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0, liquidMl: 500 },
+      { time: "21:20", food: "Pils", amount: 330, calories: 140, protein: 1, carbs: 10, fat: 0, fiber: 0, liquidMl: 330 },
+    ],
+  ],
+  female: [
+    [
+      { time: "06:45", food: "Kaffee mit Milch", amount: 250, calories: 34, protein: 2, carbs: 3, fat: 1, fiber: 0, liquidMl: 250 },
+      { time: "09:45", food: "Jasmintee", amount: 300, calories: 2, protein: 0, carbs: 0, fat: 0, fiber: 0, liquidMl: 300 },
+      { time: "12:00", food: "Mineralwasser", amount: 500, calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0, liquidMl: 500 },
+      { time: "15:30", food: "Cappuccino", amount: 180, calories: 62, protein: 3, carbs: 5, fat: 3, fiber: 0, liquidMl: 180 },
+      { time: "17:30", food: "Kräutertee", amount: 300, calories: 2, protein: 0, carbs: 0, fat: 0, fiber: 0, liquidMl: 300 },
+      { time: "20:30", food: "Wasser", amount: 450, calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0, liquidMl: 450 },
+      { time: "21:00", food: "Beeren-Tee", amount: 250, calories: 2, protein: 0, carbs: 0, fat: 0, fiber: 0, liquidMl: 250 },
+    ],
+    [
+      { time: "07:00", food: "Latte Macchiato", amount: 250, calories: 96, protein: 5, carbs: 8, fat: 4, fiber: 0, liquidMl: 250 },
+      { time: "10:00", food: "Grüner Tee", amount: 300, calories: 2, protein: 0, carbs: 0, fat: 0, fiber: 0, liquidMl: 300 },
+      { time: "12:10", food: "Stilles Wasser", amount: 600, calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0, liquidMl: 600 },
+      { time: "15:45", food: "Kaffee schwarz", amount: 220, calories: 4, protein: 0, carbs: 0, fat: 0, fiber: 0, liquidMl: 220 },
+      { time: "17:00", food: "Früchtetee", amount: 300, calories: 2, protein: 0, carbs: 0, fat: 0, fiber: 0, liquidMl: 300 },
+      { time: "19:50", food: "Mineralwasser", amount: 450, calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0, liquidMl: 450 },
+      { time: "21:00", food: "Kamillentee", amount: 250, calories: 2, protein: 0, carbs: 0, fat: 0, fiber: 0, liquidMl: 250 },
+    ],
+    [
+      { time: "06:50", food: "Flat White", amount: 200, calories: 82, protein: 4, carbs: 6, fat: 4, fiber: 0, liquidMl: 200 },
+      { time: "10:15", food: "Pfefferminztee", amount: 300, calories: 2, protein: 0, carbs: 0, fat: 0, fiber: 0, liquidMl: 300 },
+      { time: "12:05", food: "Wasser", amount: 500, calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0, liquidMl: 500 },
+      { time: "15:15", food: "Milchkaffee", amount: 220, calories: 74, protein: 4, carbs: 6, fat: 3, fiber: 0, liquidMl: 220 },
+      { time: "17:45", food: "Kräutertee", amount: 300, calories: 2, protein: 0, carbs: 0, fat: 0, fiber: 0, liquidMl: 300 },
+      { time: "20:15", food: "Sprudelwasser", amount: 500, calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0, liquidMl: 500 },
+      { time: "21:20", food: "Abendtee", amount: 250, calories: 2, protein: 0, carbs: 0, fat: 0, fiber: 0, liquidMl: 250 },
+    ],
+  ],
+};
+
 const ACTIVITY_ROTATIONS: Record<TestDataGender, ActivityTemplate[]> = {
   male: [
     { activityTypeId: "radfahren", activityName: "Radfahren", value: 45, calories: 450, unit: "min" },
@@ -119,6 +180,7 @@ export function hasConfiguredPersonalProfile(profile: UserProfile | null): boole
 export function buildEmbeddedTestDataset(gender: TestDataGender): EmbeddedTestDataset {
   const today = new Date();
   const mealRotation = MEAL_ROTATIONS[gender];
+  const drinkRotation = DRINK_ROTATIONS[gender];
   const activityRotation = ACTIVITY_ROTATIONS[gender];
   const entries: NutritionEntry[] = [];
   const bookedActivities: BookedActivity[] = [];
@@ -126,8 +188,9 @@ export function buildEmbeddedTestDataset(gender: TestDataGender): EmbeddedTestDa
   for (let dayOffset = DAYS_OF_HISTORY - 1; dayOffset >= 0; dayOffset -= 1) {
     const date = formatDate(shiftDate(today, -dayOffset));
     const mealPlan = mealRotation[dayOffset % mealRotation.length];
+    const drinkPlan = drinkRotation[dayOffset % drinkRotation.length];
 
-    mealPlan.forEach((meal) => {
+    [...drinkPlan, ...mealPlan].forEach((meal) => {
       entries.push({
         id: generateId(),
         date,

@@ -75,6 +75,10 @@ export function saveProfile(profile: UserProfile): void {
   localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
 }
 
+export function clearProfile(): void {
+  localStorage.removeItem(PROFILE_KEY);
+}
+
 export function loadActivities(): DailyActivity[] {
   try {
     const data = localStorage.getItem(ACTIVITY_KEY);
