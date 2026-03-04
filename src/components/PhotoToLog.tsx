@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { ensureCompatibleImage } from "@/lib/imageUtils";
 import { Camera, Loader2, Check, X, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -11,6 +11,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+
+const OPEN_PHOTO_LOG_EVENT = "mampflogger:open-photo-log";
 
 interface RecognizedFood {
   name: string;
@@ -41,6 +43,12 @@ const PhotoToLog = ({ selectedDate, onAddEntries }: PhotoToLogProps) => {
   const handleCapture = () => {
     fileInputRef.current?.click();
   };
+
+  useEffect(() => {
+    const handleOpenPhotoLog = () => handleCapture();
+    window.addEventListener(OPEN_PHOTO_LOG_EVENT, handleOpenPhotoLog);
+    return () => window.removeEventListener(OPEN_PHOTO_LOG_EVENT, handleOpenPhotoLog);
+  }, []);
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     let file = e.target.files?.[0];

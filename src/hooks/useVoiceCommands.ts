@@ -4,7 +4,56 @@ import { toast } from "sonner";
 
 interface VoiceCommand {
   patterns: RegExp[];
-  action: string;
+  action: string | ((transcript: string) => string | null);
+}
+
+const RECIPE_NUMBER_WORDS: Record<string, number> = {
+  eins: 1,
+  ein: 1,
+  erste: 1,
+  erster: 1,
+  erstes: 1,
+  ersten: 1,
+  zwei: 2,
+  zweite: 2,
+  zweiten: 2,
+  drei: 3,
+  dritte: 3,
+  dritten: 3,
+  vier: 4,
+  vierte: 4,
+  fünf: 5,
+  fuenf: 5,
+  fünfte: 5,
+  sechs: 6,
+  sechste: 6,
+  sieben: 7,
+  siebte: 7,
+  acht: 8,
+  achte: 8,
+  neun: 9,
+  neunte: 9,
+  zehn: 10,
+};
+
+const RECIPE_NUMBER_PATTERN = Object.keys(RECIPE_NUMBER_WORDS).join("|");
+
+function parseRecipeVoiceAction(transcript: string): string | null {
+  const lower = transcript.toLowerCase().trim();
+  if (!/\brezept\b/.test(lower)) return null;
+
+  const digitMatch = lower.match(/\b(\d{1,2})\b/);
+  if (digitMatch) {
+    return `recipe:${Math.max(0, parseInt(digitMatch[1], 10) - 1)}`;
+  }
+
+  for (const [word, value] of Object.entries(RECIPE_NUMBER_WORDS)) {
+    if (new RegExp(`\\b${word}\\b`, "i").test(lower)) {
+      return `recipe:${value - 1}`;
+    }
+  }
+
+  return null;
 }
 
 const COMMANDS: VoiceCommand[] = [
@@ -47,12 +96,13 @@ const COMMANDS: VoiceCommand[] = [
 
   // Settings tabs
   { patterns: [/\beinstellung/i, /\bsettings?\b/i], action: "settings:open" },
+  { patterns: [new RegExp(`\\brezept\\b.*\\b(?:\\d{1,2}|${RECIPE_NUMBER_PATTERN})\\b`, "i"), new RegExp(`\\b(?:öffne|zeige)\\s+rezept\\b.*\\b(?:\\d{1,2}|${RECIPE_NUMBER_PATTERN})\\b`, "i")], action: parseRecipeVoiceAction },
   { patterns: [/\bprofil\s+speichern\b/i], action: "click:profil-speichern" },
   { patterns: [/\bprofil\b/i], action: "settings:profile" },
   { patterns: [/\bnew\s*food\b/i], action: "click:new-food" },
   { patterns: [/\blebensmittel\s+suchen\b/i], action: "click:food-search" },
-  { patterns: [/\blebensmittel/i], action: "settings:food" },
-  { patterns: [/\brezept/i], action: "settings:recipes" },
+  { patterns: [/\blebensmittel\b/i], action: "settings:food" },
+  { patterns: [/\brezepte?\b/i], action: "settings:recipes" },
   { patterns: [/\bdaten\b/i], action: "settings:data" },
 
   // Theme – specific color commands BEFORE generic "design"
@@ -67,7 +117,7 @@ const COMMANDS: VoiceCommand[] = [
   { patterns: [/\bdesign\b/i], action: "settings:design" },
 
   // Actions
-  { patterns: [/\bkamera\b/i, /\bfoto\b/i, /\bphoto\b/i], action: "action:camera" },
+  { patterns: [/\bkamera\b/i, /\bfoto\b/i, /\bphoto\b/i, /\bbild\b/i], action: "action:camera" },
 ];
 
 // Map section IDs to the page they belong to
@@ -137,8 +187,11 @@ export function useVoiceCommands({ onCommand, onUnhandledSpeech }: UseVoiceComma
         for (const cmd of COMMANDS) {
           for (const pattern of cmd.patterns) {
             if (pattern.test(lower)) {
-              onCommandRef.current(cmd.action);
-              return;
+              const action = typeof cmd.action === "function" ? cmd.action(lower) : cmd.action;
+              if (action) {
+                onCommandRef.current(action);
+                return;
+              }
             }
           }
         }
