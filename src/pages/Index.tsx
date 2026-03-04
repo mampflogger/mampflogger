@@ -132,6 +132,14 @@ const Index = () => {
       else if (action === "settings:food") setSettingsVoiceTab("food");
       else if (action === "settings:recipes") setSettingsVoiceTab("recipes");
       else if (action === "settings:data") setSettingsVoiceTab("data");
+      else if (action.startsWith("recipe:")) {
+        if (!settingsOpenRef.current || settingsTabRef.current !== "recipes") {
+          setSettingsVoiceTab("recipes");
+          setTimeout(() => setSettingsVoiceAction(action), 300);
+        } else {
+          setSettingsVoiceAction(action);
+        }
+      }
       // Theme commands — context-aware: if in design tab, always apply theme
       else if (action === "theme:dark") setDarkMode(true);
       else if (action === "theme:light") setDarkMode(false);
@@ -141,7 +149,11 @@ const Index = () => {
       else if (action === "theme:green") setColorTheme("green");
       else if (action === "action:camera") {
         closeSettingsAndDo(() => {
-          setActiveTab("log");
+          const needsTabSwitch = activeTabRef.current !== "log";
+          if (needsTabSwitch) setActiveTab("log");
+          setTimeout(() => {
+            window.dispatchEvent(new Event("mampflogger:open-photo-log"));
+          }, needsTabSwitch ? 250 : 50);
         });
       }
       else if (action === "focus:food") {

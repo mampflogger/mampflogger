@@ -678,7 +678,7 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry, voiceExpandIndex, onVoi
                 >
                   {expandedId === sr.id ? <ChevronUp className="w-3 h-3 text-muted-foreground shrink-0" /> : <ChevronDown className="w-3 h-3 text-muted-foreground shrink-0" />}
                   <div>
-                    <span className="block text-[11px] font-medium text-foreground">{sr.name} <span className="text-muted-foreground font-normal">(#{recipeIndex + 1})</span></span>
+                    <span className="block text-[11px] font-medium text-foreground">#{recipeIndex + 1} {sr.name}</span>
                     <span className="block text-[10px] text-muted-foreground font-normal">
                       {sr.perServing.calories} kcal/Portion · {sr.servings} Portionen
                     </span>
