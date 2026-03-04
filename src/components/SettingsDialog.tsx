@@ -1143,7 +1143,7 @@ const SettingsDialog = ({
                 Testdaten löschen
               </Button>
               <p className="text-[10px] text-muted-foreground text-center">
-                Nutzt das aktuell gewählte Geschlecht, färbt Demo-Profile passend ein und spielt 14 Tage Demo-Daten ein.
+                Nutzt das gewählte Geschlecht und spielt 14 Tage Demodaten ein.
               </p>
             </div>
 
