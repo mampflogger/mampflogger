@@ -19,6 +19,7 @@ import {
 } from "recharts";
 import { TrendingDown, TrendingUp, Target } from "lucide-react";
 import NutritionCoach from "./NutritionCoach";
+import MicronutrientCoverageCard from "./MicronutrientCoverageCard";
 
 interface WeeklyOverviewProps {
   entries: NutritionEntry[];
@@ -487,6 +488,26 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
           ))}
         </div>
       </div>
+
+      <MicronutrientCoverageCard
+        entries={entries}
+        selectedDate={selectedDate}
+        gender={profile?.gender ?? "male"}
+        title="Vitamine (Ø 7 Tage)"
+        kind="vitamins"
+        highlighted={hl === "section-vitamine-7-tage"}
+        sectionId="section-vitamine-7-tage"
+      />
+
+      <MicronutrientCoverageCard
+        entries={entries}
+        selectedDate={selectedDate}
+        gender={profile?.gender ?? "male"}
+        title="Spurenelemente & Mineralstoffe (Ø 7 Tage)"
+        kind="minerals"
+        highlighted={hl === "section-mineralstoffe-7-tage"}
+        sectionId="section-mineralstoffe-7-tage"
+      />
 
       {/* AI Nutrition Coach */}
       <div id="section-ki-coach" data-section>

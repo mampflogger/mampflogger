@@ -1,3 +1,5 @@
+import type { FoodMinerals, FoodVitamins } from "@/data/foodDatabase";
+
 export interface NutritionEntry {
   id: string;
   date: string; // YYYY-MM-DD
@@ -11,6 +13,8 @@ export interface NutritionEntry {
   fiber: number;
   gi?: number; // Glykämischer Index
   liquidMl?: number; // Tatsächliche Flüssigkeitsmenge in ml für diesen Eintrag
+  vitamins?: FoodVitamins;
+  minerals?: FoodMinerals;
 }
 
 export interface DailySummary {
