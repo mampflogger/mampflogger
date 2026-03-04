@@ -81,9 +81,11 @@ interface RecipesTabProps {
   entries: NutritionEntry[];
   selectedDate: string;
   onAddEntry: (entry: NutritionEntry) => void;
+  voiceExpandIndex?: number | null;
+  onVoiceExpandHandled?: () => void;
 }
 
-const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
+const RecipesTab = ({ entries, selectedDate, onAddEntry, voiceExpandIndex, onVoiceExpandHandled }: RecipesTabProps) => {
   const [savedRecipes, setSavedRecipes] = useState<SavedRecipe[]>(loadSavedRecipes);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -128,6 +130,14 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
   useEffect(() => {
     saveSavedRecipes(savedRecipes);
   }, [savedRecipes]);
+
+  // Voice-expand recipe by index
+  useEffect(() => {
+    if (voiceExpandIndex != null && voiceExpandIndex >= 0 && voiceExpandIndex < savedRecipes.length) {
+      setExpandedId(savedRecipes[voiceExpandIndex].id);
+      onVoiceExpandHandled?.();
+    }
+  }, [voiceExpandIndex]);
 
   const handleDelete = (id: string) => {
     setSavedRecipes((prev) => prev.filter((r) => r.id !== id));
@@ -654,7 +664,7 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
       )}
 
       <div className="space-y-1.5">
-        {savedRecipes.map((sr) => {
+        {savedRecipes.map((sr, recipeIndex) => {
           const isEditing = editingId === sr.id;
           const displayIngredients = isEditing ? editIngredients : sr.ingredients;
 
@@ -668,7 +678,7 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry }: RecipesTabProps) => {
                 >
                   {expandedId === sr.id ? <ChevronUp className="w-3 h-3 text-muted-foreground shrink-0" /> : <ChevronDown className="w-3 h-3 text-muted-foreground shrink-0" />}
                   <div>
-                    <span className="block text-[11px] font-medium text-foreground">{sr.name}</span>
+                    <span className="block text-[11px] font-medium text-foreground">{sr.name} <span className="text-muted-foreground font-normal">(#{recipeIndex + 1})</span></span>
                     <span className="block text-[10px] text-muted-foreground font-normal">
                       {sr.perServing.calories} kcal/Portion · {sr.servings} Portionen
                     </span>
