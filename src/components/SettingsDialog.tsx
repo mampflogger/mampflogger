@@ -15,7 +15,7 @@ import {
   Settings, Sun, Moon, Trash2, Upload, Download, UserCircle, Save, Check,
   AlertCircle, FileSpreadsheet, UtensilsCrossed, Palette, BarChart3, FileUp,
   ChevronLeft, ChevronRight, RefreshCw, List, Sparkles, Loader2, HardDrive, BookOpen, Search,
-  X,
+  X, Mic, MicOff,
 } from "lucide-react";
 import CookIcon from "@/components/CookIcon";
 import { supabase } from "@/integrations/supabase/client";
@@ -75,6 +75,9 @@ interface SettingsDialogProps {
   onVoiceCloseHandled?: () => void;
   onOpenChange?: (open: boolean) => void;
   onTabChange?: (tab: SettingsTab) => void;
+  isMicSupported?: boolean;
+  isMicListening?: boolean;
+  onMicToggle?: () => void;
 }
 
 type ImportType = "csv-entries" | "csv-balance" | "csv-food";
@@ -106,6 +109,7 @@ const SettingsDialog = ({
   voiceOpenTab, onVoiceOpenTabHandled,
   voiceCloseRequest, onVoiceCloseHandled,
   onOpenChange: onOpenChangeProp, onTabChange,
+  isMicSupported, isMicListening, onMicToggle,
 }: SettingsDialogProps) => {
   const [open, setOpen] = useState(initialOpen ?? false);
   const [tab, setTab] = useState<SettingsTab>(initialTab ?? "profile");
@@ -888,6 +892,17 @@ const SettingsDialog = ({
                 <h1 className="text-lg font-bold tracking-tight">MampfLogger</h1>
               </a>
               <div className="flex items-center gap-1">
+                {isMicSupported && (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={onMicToggle}
+                    className={`h-8 w-8 ${isMicListening ? "bg-destructive/15 text-destructive animate-pulse" : ""}`}
+                    title={isMicListening ? "Mikrofon aus" : "Sprachsteuerung"}
+                  >
+                    {isMicListening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
+                  </Button>
+                )}
                 <Button variant="ghost" size="icon" className="h-8 w-8 bg-muted" title="Einstellungen" onClick={() => handleOpen(false)}>
                   <Settings className="w-4 h-4" />
                 </Button>
