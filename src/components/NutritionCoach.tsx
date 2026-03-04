@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { NutritionEntry, calculateDailySummary, formatDate } from "@/types/nutrition";
 import { UserProfile, BookedActivity, calculateBMR, calculateBookedActivityBonus } from "@/types/profile";
 import { supabase } from "@/integrations/supabase/client";
@@ -24,15 +24,28 @@ interface NutritionCoachProps {
   profile?: UserProfile | null;
   bookedActivities?: BookedActivity[];
   highlightedSection?: string | null;
+  analyzeRequestId?: number;
 }
 
-const NutritionCoach = ({ entries, selectedDate, profile, bookedActivities = [], highlightedSection }: NutritionCoachProps) => {
+const NutritionCoach = ({
+  entries,
+  selectedDate,
+  profile,
+  bookedActivities = [],
+  highlightedSection,
+  analyzeRequestId,
+}: NutritionCoachProps) => {
   const [result, setResult] = useState<CoachResult | null>(null);
   const [loading, setLoading] = useState(false);
+  const loadingRef = useRef(false);
   const { toast } = useToast();
 
-  const handleAnalyze = async () => {
+  const handleAnalyze = useCallback(async () => {
+    if (loadingRef.current) return;
+
+    loadingRef.current = true;
     setLoading(true);
+
     try {
       const today = new Date(selectedDate + "T00:00:00");
       const weekData = [];
@@ -85,9 +98,16 @@ const NutritionCoach = ({ entries, selectedDate, profile, bookedActivities = [],
       console.error("Coach error:", e);
       toast({ title: "Fehler", description: "KI-Analyse konnte nicht durchgeführt werden.", variant: "destructive" });
     } finally {
+      loadingRef.current = false;
       setLoading(false);
     }
-  };
+  }, [bookedActivities, entries, profile, selectedDate, toast]);
+
+  useEffect(() => {
+    if (analyzeRequestId && analyzeRequestId > 0) {
+      void handleAnalyze();
+    }
+  }, [analyzeRequestId, handleAnalyze]);
 
   return (
     <div className="glass-card rounded-xl p-3">
@@ -106,7 +126,7 @@ const NutritionCoach = ({ entries, selectedDate, profile, bookedActivities = [],
           ) : (
             <Search className="w-3.5 h-3.5" />
           )}
-          {loading ? "Analysiere…" : "Woche analysieren"}
+          {loading ? "Analysiere…" : "Wochenanalyse"}
         </Button>
       </div>
 
@@ -118,12 +138,10 @@ const NutritionCoach = ({ entries, selectedDate, profile, bookedActivities = [],
 
       {result && (
         <div className="space-y-3 animate-fade-in">
-          {/* Summary */}
           <div className="rounded-lg bg-background border border-border/50 p-3">
             <p className="text-xs font-medium text-foreground leading-relaxed">{result.summary}</p>
           </div>
 
-          {/* Tips */}
           <div className="space-y-2">
             {result.tips.map((tip, i) => (
               <div

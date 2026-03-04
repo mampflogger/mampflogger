@@ -24,7 +24,7 @@ const COMMANDS: VoiceCommand[] = [
   { patterns: [/\bdefizit/i], action: "section:defizit-pro-tag" },
   { patterns: [/\bmakros?\s+pro\s+tag\b/i], action: "section:makros-pro-tag" },
   { patterns: [/\bmakro.?verteilung\b/i, /\bverteilung\b/i], action: "section:makro-verteilung" },
-  { patterns: [/\bernährungscoach\b/i, /\bcoach\b/i], action: "section:ki-coach" },
+  { patterns: [/\bwochenanalyse\b/i, /\bwoche\s+analysieren\b/i, /^\s*analyse\s*$/i, /\bki[\s-]?ernährungsberater\b/i, /\bernährungsberater\b/i, /\bernährungscoach\b/i], action: "action:weekly-analysis" },
   { patterns: [/\bübersicht\b/i], action: "section:uebersicht" },
 
   // Settings sections
