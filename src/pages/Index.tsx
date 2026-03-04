@@ -448,6 +448,9 @@ const Index = () => {
                 onVoiceCloseHandled={() => setSettingsCloseRequest(false)}
                 onOpenChange={setSettingsOpen}
                 onTabChange={setSettingsCurrentTab}
+                isMicSupported={voiceCommands.isSupported}
+                isMicListening={voiceCommands.isListening}
+                onMicToggle={voiceCommands.toggle}
               />
               <Button
                 variant="ghost"
