@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import { ensureCompatibleImage, resizeImageToDataUrl } from "@/lib/imageUtils";
 import { NutritionEntry, generateId } from "@/types/nutrition";
-import { Trash2, ChevronDown, ChevronUp, Sparkles, Pencil, Check, Plus, Loader2, Share2, PlusCircle, MessageCircle, Camera } from "lucide-react";
+import { Trash2, ChevronDown, ChevronUp, Sparkles, Pencil, Check, Plus, Loader2, Share2, PlusCircle, MessageCircle, Camera, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
@@ -87,6 +87,7 @@ interface RecipesTabProps {
 
 const RecipesTab = ({ entries, selectedDate, onAddEntry, voiceExpandIndex, onVoiceExpandHandled }: RecipesTabProps) => {
   const [savedRecipes, setSavedRecipes] = useState<SavedRecipe[]>(loadSavedRecipes);
+  const [recipeSearch, setRecipeSearch] = useState("");
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editIngredients, setEditIngredients] = useState<RecipeIngredient[]>([]);
@@ -115,6 +116,23 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry, voiceExpandIndex, onVoi
       .slice(0, 8);
   }, [newIngredientName]);
 
+  const filteredRecipes = useMemo(() => {
+    const query = recipeSearch.trim().toLowerCase();
+    if (!query) return savedRecipes;
+
+    return savedRecipes.filter((recipe) => {
+      const haystack = [
+        recipe.name,
+        recipe.ingredients.map((ingredient) => ingredient.name).join(" "),
+        recipe.steps.join(" "),
+      ]
+        .join(" ")
+        .toLowerCase();
+
+      return haystack.includes(query);
+    });
+  }, [recipeSearch, savedRecipes]);
+
   // Close suggestions on outside click
   useEffect(() => {
     const handler = (e: MouseEvent) => {
@@ -130,6 +148,12 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry, voiceExpandIndex, onVoi
   useEffect(() => {
     saveSavedRecipes(savedRecipes);
   }, [savedRecipes]);
+
+  useEffect(() => {
+    if (expandedId && !filteredRecipes.some((recipe) => recipe.id === expandedId)) {
+      setExpandedId(null);
+    }
+  }, [expandedId, filteredRecipes]);
 
   // Voice-expand recipe by index
   useEffect(() => {
@@ -663,8 +687,23 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry, voiceExpandIndex, onVoi
         </div>
       )}
 
+      <div className="relative mb-2">
+        <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
+        <Input
+          type="text"
+          value={recipeSearch}
+          onChange={(e) => setRecipeSearch(e.target.value)}
+          placeholder="Rezept suchen"
+          className="h-9 border-border/60 bg-background pl-8 text-xs"
+        />
+      </div>
+
       <div className="space-y-1.5">
-        {savedRecipes.map((sr, recipeIndex) => {
+        {filteredRecipes.length === 0 ? (
+          <div className="rounded-lg border border-dashed border-border/60 bg-background px-3 py-6 text-center text-xs text-muted-foreground">
+            Keine Rezepte gefunden.
+          </div>
+        ) : filteredRecipes.map((sr, recipeIndex) => {
           const isEditing = editingId === sr.id;
           const displayIngredients = isEditing ? editIngredients : sr.ingredients;
 
@@ -677,8 +716,11 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry, voiceExpandIndex, onVoi
                   className="flex-1 text-left flex items-center gap-1.5"
                 >
                   {expandedId === sr.id ? <ChevronUp className="w-3 h-3 text-muted-foreground shrink-0" /> : <ChevronDown className="w-3 h-3 text-muted-foreground shrink-0" />}
+                  <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary/15 text-[10px] font-semibold text-primary">
+                    {recipeIndex + 1}
+                  </span>
                   <div>
-                    <span className="block text-[11px] font-medium text-foreground">#{recipeIndex + 1} {sr.name}</span>
+                    <span className="block text-[11px] font-medium text-foreground">{sr.name}</span>
                     <span className="block text-[10px] text-muted-foreground font-normal">
                       {sr.perServing.calories} kcal/Portion · {sr.servings} Portionen
                     </span>
