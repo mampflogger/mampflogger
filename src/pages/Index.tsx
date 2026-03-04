@@ -55,6 +55,7 @@ const Index = () => {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [settingsCurrentTab, setSettingsCurrentTab] = useState<string>("profile");
   const [settingsCloseRequest, setSettingsCloseRequest] = useState(false);
+  const [settingsVoiceAction, setSettingsVoiceAction] = useState<string | null>(null);
   const nutritionVoiceRef = useRef<((transcript: string, isInterim: boolean) => void) | undefined>();
   const foodInputRef = useRef<HTMLInputElement>(null);
 
@@ -87,6 +88,7 @@ const Index = () => {
         const settingsTab = SECTION_SETTINGS_TAB[sectionId];
         if (settingsTab) {
           setSettingsVoiceTab(settingsTab);
+          setTimeout(() => setSettingsVoiceAction(`scroll:${sectionId}`), 300);
           return;
         }
 
@@ -145,20 +147,101 @@ const Index = () => {
           setTimeout(() => foodInputRef.current?.focus(), 100);
         });
       }
+      else if (action === "click:profil-speichern") {
+        if (!settingsOpenRef.current) {
+          setSettingsVoiceTab("profile");
+          setTimeout(() => setSettingsVoiceAction("profil-speichern"), 300);
+        } else {
+          setSettingsVoiceAction("profil-speichern");
+        }
+      }
+      else if (action === "click:new-food") {
+        if (!settingsOpenRef.current) {
+          setSettingsVoiceTab("food");
+          setTimeout(() => setSettingsVoiceAction("new-food"), 300);
+        } else {
+          setSettingsVoiceAction("new-food");
+        }
+      }
+      else if (action === "click:food-search") {
+        if (!settingsOpenRef.current) {
+          setSettingsVoiceTab("food");
+          setTimeout(() => setSettingsVoiceAction("food-search"), 300);
+        } else {
+          setSettingsVoiceAction("food-search");
+        }
+      }
     }, [closeSettingsAndDo]),
     onUnhandledSpeech: useCallback((transcript: string, isInterim: boolean) => {
-      // If settings is open on design tab, check for color keywords
-      if (settingsOpenRef.current && settingsTabRef.current === "design") {
+      if (settingsOpenRef.current) {
+        const currentTab = settingsTabRef.current;
         if (!isInterim) {
           const lower = transcript.toLowerCase();
-          if (/\bblau\b/.test(lower)) { setColorTheme("blue"); return; }
-          if (/\bgelb\b/.test(lower)) { setColorTheme("yellow"); return; }
-          if (/\bpink\b/.test(lower)) { setColorTheme("pink"); return; }
-          if (/\bgrün\b/.test(lower)) { setColorTheme("green"); return; }
-          if (/\bdark\b|\bdunkel/.test(lower)) { setDarkMode(true); return; }
-          if (/\blight\b|\bhell/.test(lower)) { setDarkMode(false); return; }
+
+          // Design tab: color keywords
+          if (currentTab === "design") {
+            if (/\bblau\b/.test(lower)) { setColorTheme("blue"); return; }
+            if (/\bgelb\b/.test(lower)) { setColorTheme("yellow"); return; }
+            if (/\bpink\b/.test(lower)) { setColorTheme("pink"); return; }
+            if (/\bgrün\b/.test(lower)) { setColorTheme("green"); return; }
+            if (/\bdark\b|\bdunkel/.test(lower)) { setDarkMode(true); return; }
+            if (/\blight\b|\bhell/.test(lower)) { setDarkMode(false); return; }
+          }
+
+          // Food tab: categories, filters, "neu", "suchen"
+          if (currentTab === "food") {
+            if (/\bneu\b/i.test(lower)) { setSettingsVoiceAction("new-food"); return; }
+            if (/\bsuchen\b/i.test(lower)) { setSettingsVoiceAction("food-search"); return; }
+            if (/\balle\b/i.test(lower)) { setSettingsVoiceAction("category:alle"); return; }
+            const catMap: [RegExp, string][] = [
+              [/\bfleisch\b/i, "Fleisch&Wurst"], [/\bwurst\b/i, "Fleisch&Wurst"],
+              [/\bfisch\b/i, "Fisch&Meeresfrüchte"], [/\bmeeresfrüchte\b/i, "Fisch&Meeresfrüchte"],
+              [/\bkäse\b/i, "Käse"], [/\bnüsse\b/i, "Nüsse&Samen"], [/\bsamen\b/i, "Nüsse&Samen"],
+              [/\bgemüse\b/i, "Gemüse"], [/\bbrot\b/i, "Brot"], [/\bteigwaren\b/i, "Teigwaren"],
+              [/\böle\b/i, "Öle&Fette"], [/\bfette\b/i, "Öle&Fette"],
+              [/\bgetränke\b/i, "Getränke"], [/\bobst\b/i, "Obst"],
+              [/\bmilchprodukte\b/i, "Milchprodukte"], [/\bsüßwaren\b/i, "Süßwaren"],
+              [/\bsonstiges\b/i, "Sonstiges"], [/\beigene\b/i, "Eigene"],
+              [/\bfertiggerichte\b/i, "Fertiggerichte"],
+            ];
+            for (const [re, cat] of catMap) {
+              if (re.test(lower)) { setSettingsVoiceAction(`category:${cat}`); return; }
+            }
+            const filterMap: [RegExp, string][] = [
+              [/\bvegan\b/i, "vgn"], [/\bvegetarisch\b/i, "vgt"],
+              [/\blow\s*carb\b/i, "lc"], [/\bhigh\s*protein\b/i, "hp"],
+              [/\bketo\b/i, "ket"], [/\bglutenfrei\b/i, "gf"],
+              [/\blaktosefrei\b/i, "lf"], [/\bzuckerfrei\b/i, "zf"],
+            ];
+            for (const [re, key] of filterMap) {
+              if (re.test(lower)) { setSettingsVoiceAction(`filter:${key}`); return; }
+            }
+          }
+
+          // Recipes tab: number selection
+          if (currentTab === "recipes") {
+            const numWords: Record<string, number> = {
+              "eins": 1, "zwei": 2, "drei": 3, "vier": 4, "fünf": 5,
+              "sechs": 6, "sieben": 7, "acht": 8, "neun": 9, "zehn": 10,
+              "elf": 11, "zwölf": 12, "dreizehn": 13, "vierzehn": 14, "fünfzehn": 15,
+              "sechzehn": 16, "siebzehn": 17, "achtzehn": 18, "neunzehn": 19, "zwanzig": 20,
+              "einundzwanzig": 21, "zweiundzwanzig": 22, "dreiundzwanzig": 23,
+              "vierundzwanzig": 24, "fünfundzwanzig": 25,
+            };
+            const numMatch = lower.match(/(?:rezept\s+)?(?:nummer\s+|nimm\s+|#)?(\d+)/);
+            if (numMatch) {
+              setSettingsVoiceAction(`recipe:${parseInt(numMatch[1], 10) - 1}`);
+              return;
+            }
+            for (const [word, num] of Object.entries(numWords)) {
+              if (new RegExp(`\\b${word}\\b`, "i").test(lower)) {
+                setSettingsVoiceAction(`recipe:${num - 1}`);
+                return;
+              }
+            }
+          }
         }
-        return; // Don't pass to food input when in design tab
+        return; // Don't pass to food input when in settings
       }
       nutritionVoiceRef.current?.(transcript, isInterim);
     }, []),
@@ -451,6 +534,8 @@ const Index = () => {
                 isMicSupported={voiceCommands.isSupported}
                 isMicListening={voiceCommands.isListening}
                 onMicToggle={voiceCommands.toggle}
+                voiceAction={settingsVoiceAction}
+                onVoiceActionHandled={() => setSettingsVoiceAction(null)}
               />
               <Button
                 variant="ghost"

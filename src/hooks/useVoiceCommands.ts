@@ -47,7 +47,10 @@ const COMMANDS: VoiceCommand[] = [
 
   // Settings tabs
   { patterns: [/\beinstellung/i, /\bsettings?\b/i], action: "settings:open" },
+  { patterns: [/\bprofil\s+speichern\b/i], action: "click:profil-speichern" },
   { patterns: [/\bprofil\b/i], action: "settings:profile" },
+  { patterns: [/\bnew\s*food\b/i], action: "click:new-food" },
+  { patterns: [/\blebensmittel\s+suchen\b/i], action: "click:food-search" },
   { patterns: [/\blebensmittel/i], action: "settings:food" },
   { patterns: [/\brezept/i], action: "settings:recipes" },
   { patterns: [/\bdaten\b/i], action: "settings:data" },

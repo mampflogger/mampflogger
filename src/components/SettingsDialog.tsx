@@ -78,6 +78,8 @@ interface SettingsDialogProps {
   isMicSupported?: boolean;
   isMicListening?: boolean;
   onMicToggle?: () => void;
+  voiceAction?: string | null;
+  onVoiceActionHandled?: () => void;
 }
 
 type ImportType = "csv-entries" | "csv-balance" | "csv-food";
@@ -110,6 +112,7 @@ const SettingsDialog = ({
   voiceCloseRequest, onVoiceCloseHandled,
   onOpenChange: onOpenChangeProp, onTabChange,
   isMicSupported, isMicListening, onMicToggle,
+  voiceAction, onVoiceActionHandled,
 }: SettingsDialogProps) => {
   const [open, setOpen] = useState(initialOpen ?? false);
   const [tab, setTab] = useState<SettingsTab>(initialTab ?? "profile");
@@ -185,6 +188,54 @@ const SettingsDialog = ({
   const [batchEnriching, setBatchEnriching] = useState(false);
   const [batchProgress, setBatchProgress] = useState("");
 
+  const foodSearchRef = React.useRef<HTMLInputElement>(null);
+  const [recipeVoiceIndex, setRecipeVoiceIndex] = useState<number | null>(null);
+
+  // Handle voice actions within settings
+  useEffect(() => {
+    if (!voiceAction) return;
+    if (voiceAction === "profil-speichern") {
+      const btn = document.getElementById("settings-save") as HTMLButtonElement;
+      btn?.click();
+    } else if (voiceAction === "new-food") {
+      setTab("food");
+      setTimeout(() => handleNewFood(), 100);
+    } else if (voiceAction === "food-search") {
+      setTab("food");
+      setTimeout(() => foodSearchRef.current?.focus(), 100);
+    } else if (voiceAction.startsWith("category:")) {
+      const cat = voiceAction.replace("category:", "");
+      if (cat === "alle") {
+        setSelectedCategories(new Set());
+        setSelectedAnimal(null);
+      } else {
+        setSelectedCategories(prev => {
+          const next = new Set(prev);
+          if (next.has(cat)) next.delete(cat);
+          else next.add(cat);
+          return next;
+        });
+      }
+    } else if (voiceAction.startsWith("filter:")) {
+      const key = voiceAction.replace("filter:", "") as keyof FoodDietaryFlags;
+      setSelectedDietaryFilters(prev => {
+        const next = new Set(prev);
+        if (next.has(key)) next.delete(key);
+        else next.add(key);
+        return next;
+      });
+    } else if (voiceAction.startsWith("scroll:")) {
+      const id = voiceAction.replace("scroll:", "");
+      setTimeout(() => {
+        const el = document.getElementById(id);
+        el?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 200);
+    } else if (voiceAction.startsWith("recipe:")) {
+      const idx = parseInt(voiceAction.replace("recipe:", ""), 10);
+      if (!isNaN(idx)) setRecipeVoiceIndex(idx);
+    }
+    onVoiceActionHandled?.();
+  }, [voiceAction]);
 
   // Handle external "New Food" trigger
   useEffect(() => {
@@ -949,7 +1000,7 @@ const SettingsDialog = ({
         {tab === "profile" && (
           <div className="space-y-3">
             {/* Profile Card */}
-            <div className="glass-card rounded-xl p-3 space-y-2">
+            <div id="section-persoenliche-daten" className="glass-card rounded-xl p-3 space-y-2">
               <h2 className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Persönliche Daten</h2>
               <div>
                 <Label className="text-[10px] font-medium text-muted-foreground mb-0.5 block">Name</Label>
@@ -998,7 +1049,7 @@ const SettingsDialog = ({
             </div>
 
             {/* Goals Card */}
-            <div className="glass-card rounded-xl p-3 space-y-2">
+            <div id="section-goals" className="glass-card rounded-xl p-3 space-y-2">
               <Label className="text-[10px] font-semibold text-muted-foreground mb-1 block uppercase tracking-wider pl-0">GOALS</Label>
               <div className="grid grid-cols-2 gap-2">
                 <div>
@@ -1415,6 +1466,7 @@ const SettingsDialog = ({
                     <div className="relative flex-1">
                       <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground pointer-events-none" />
                       <Input
+                        ref={foodSearchRef}
                         placeholder="Lebensmittel suchen..."
                         value={foodSearch}
                         onChange={(e) => setFoodSearch(e.target.value)}
@@ -1546,7 +1598,7 @@ const SettingsDialog = ({
         {/* Recipes Tab */}
         {tab === "recipes" && (
           <div className="space-y-3">
-            <RecipesTab entries={entries} selectedDate={selectedDate} onAddEntry={onAddEntry} />
+            <RecipesTab entries={entries} selectedDate={selectedDate} onAddEntry={onAddEntry} voiceExpandIndex={recipeVoiceIndex} onVoiceExpandHandled={() => setRecipeVoiceIndex(null)} />
           </div>
         )}
 
