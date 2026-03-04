@@ -62,6 +62,7 @@ const Index = () => {
   const [weeklyCoachAnalyzeRequest, setWeeklyCoachAnalyzeRequest] = useState(0);
   const [startupProfilePrompt, setStartupProfilePrompt] = useState(false);
   const nutritionVoiceRef = useRef<((transcript: string, isInterim: boolean) => void) | undefined>();
+  const recipeVoiceRef = useRef<((transcript: string, isInterim: boolean) => void) | undefined>();
   const foodInputRef = useRef<HTMLInputElement>(null);
   const sectionNav = useSectionNavigation();
 
@@ -148,14 +149,26 @@ const Index = () => {
       else if (action === "theme:yellow") setColorTheme("yellow");
       else if (action === "theme:pink") setColorTheme("pink");
       else if (action === "theme:green") setColorTheme("green");
+      else if (action === "action:recipe-search") {
+        if (!settingsOpenRef.current || settingsTabRef.current !== "recipes") {
+          setSettingsVoiceTab("recipes");
+          setTimeout(() => setSettingsVoiceAction("recipe-search"), 300);
+        } else {
+          setSettingsVoiceAction("recipe-search");
+        }
+      }
       else if (action === "action:camera") {
-        closeSettingsAndDo(() => {
-          const needsTabSwitch = activeTabRef.current !== "log";
-          if (needsTabSwitch) setActiveTab("log");
-          setTimeout(() => {
-            window.dispatchEvent(new Event("mampflogger:open-photo-log"));
-          }, needsTabSwitch ? 250 : 50);
-        });
+        if (settingsOpenRef.current && settingsTabRef.current === "recipes") {
+          setSettingsVoiceAction("recipe-photo");
+        } else {
+          closeSettingsAndDo(() => {
+            const needsTabSwitch = activeTabRef.current !== "log";
+            if (needsTabSwitch) setActiveTab("log");
+            setTimeout(() => {
+              window.dispatchEvent(new Event("mampflogger:open-photo-log"));
+            }, needsTabSwitch ? 250 : 50);
+          });
+        }
       }
       else if (action === "focus:food") {
         closeSettingsAndDo(() => {
@@ -262,6 +275,10 @@ const Index = () => {
               setSettingsVoiceAction("recipe:-1");
               return;
             }
+            if (/\b(?:neues?\s+rezept|neu)\b/i.test(lower)) {
+              setSettingsVoiceAction("new-recipe");
+              return;
+            }
 
             const recipeIndex = parseSpokenSelectionIndex(lower, {
               allowBareNumber: true,
@@ -272,6 +289,10 @@ const Index = () => {
               return;
             }
           }
+        }
+
+        if (currentTab === "recipes") {
+          recipeVoiceRef.current?.(transcript, isInterim);
         }
         return; // Don't pass to food input when in settings
       }
@@ -599,6 +620,7 @@ const Index = () => {
                 initialTab={settingsParam === "profile" || startupProfilePrompt ? "profile" : undefined}
                 selectedDate={selectedDate}
                 onAddEntry={handleAdd}
+                recipeVoiceInputRef={recipeVoiceRef}
                 voiceOpenTab={settingsVoiceTab}
                 onVoiceOpenTabHandled={() => setSettingsVoiceTab(null)}
                 voiceCloseRequest={settingsCloseRequest}

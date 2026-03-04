@@ -63,6 +63,7 @@ const COMMANDS: VoiceCommand[] = [
 
   // Settings tabs
   { patterns: [/\beinstellung/i, /\bsettings?\b/i], action: "settings:open" },
+  { patterns: [/\brezept\s+suchen\b/i], action: "action:recipe-search" },
   { patterns: [new RegExp(`\\brezept\\b.*\\b(?:\\d{1,2}|${RECIPE_NUMBER_PATTERN})\\b`, "i"), new RegExp(`\\b(?:öffne|zeige)\\s+rezept\\b.*\\b(?:\\d{1,2}|${RECIPE_NUMBER_PATTERN})\\b`, "i")], action: parseRecipeVoiceAction },
   { patterns: [/\bprofil\s+speichern\b/i], action: "click:profil-speichern" },
   { patterns: [/\bprofil\b/i], action: "settings:profile" },

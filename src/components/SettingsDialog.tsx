@@ -81,6 +81,7 @@ interface SettingsDialogProps {
   initialTab?: SettingsTab;
   selectedDate: string;
   onAddEntry: (entry: NutritionEntry) => void;
+  recipeVoiceInputRef?: React.MutableRefObject<((transcript: string, isInterim: boolean) => void) | undefined>;
   voiceOpenTab?: string | null;
   onVoiceOpenTabHandled?: () => void;
   voiceCloseRequest?: boolean;
@@ -120,6 +121,7 @@ const SettingsDialog = ({
   colorTheme, onChangeTheme, entries, bookedActivities,
   onImport, onImportActivities, onCount, onDelete, onDeleteAll, onDeleteAllActivities, openToNewFood, onOpenToNewFoodHandled, openToRecipes, onOpenToRecipesHandled,
   activeTab, onSetActiveTab, initialOpen, initialTab, selectedDate, onAddEntry,
+  recipeVoiceInputRef,
   voiceOpenTab, onVoiceOpenTabHandled,
   voiceCloseRequest, onVoiceCloseHandled,
   onOpenChange: onOpenChangeProp, onTabChange,
@@ -219,6 +221,24 @@ const SettingsDialog = ({
     } else if (voiceAction === "food-search") {
       setTab("food");
       setTimeout(() => foodSearchRef.current?.focus(), 100);
+    } else if (voiceAction === "recipe-search") {
+      setOpen(true);
+      onOpenChangeProp?.(true);
+      setTab("recipes");
+      onTabChange?.("recipes");
+      setTimeout(() => window.dispatchEvent(new Event("mampflogger:focus-recipe-search")), 150);
+    } else if (voiceAction === "new-recipe") {
+      setOpen(true);
+      onOpenChangeProp?.(true);
+      setTab("recipes");
+      onTabChange?.("recipes");
+      setTimeout(() => window.dispatchEvent(new Event("mampflogger:open-new-recipe")), 150);
+    } else if (voiceAction === "recipe-photo") {
+      setOpen(true);
+      onOpenChangeProp?.(true);
+      setTab("recipes");
+      onTabChange?.("recipes");
+      setTimeout(() => window.dispatchEvent(new Event("mampflogger:open-recipe-photo")), 150);
     } else if (voiceAction.startsWith("category:")) {
       const cat = voiceAction.replace("category:", "");
       if (cat === "alle") {
@@ -1723,7 +1743,7 @@ const SettingsDialog = ({
         {/* Recipes Tab */}
         {tab === "recipes" && (
           <div className="space-y-3">
-            <RecipesTab entries={entries} selectedDate={selectedDate} onAddEntry={onAddEntry} voiceExpandIndex={recipeVoiceIndex} onVoiceExpandHandled={() => setRecipeVoiceIndex(null)} />
+            <RecipesTab entries={entries} selectedDate={selectedDate} onAddEntry={onAddEntry} voiceExpandIndex={recipeVoiceIndex} onVoiceExpandHandled={() => setRecipeVoiceIndex(null)} voiceInputRef={recipeVoiceInputRef} />
           </div>
         )}
 
