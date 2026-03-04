@@ -5,10 +5,20 @@ import "./index.css";
 const LOVABLE_TOKEN_PARAM = "__lovable_token";
 const LOVABLE_TOKEN_SESSION_KEY = "mampflogger-lovable-preview-token";
 const PREVIEW_BUST_PARAM = "__preview_bust";
+const PREVIEW_CACHE_RESET_KEY_PREFIX = "mampflogger-preview-cache-reset-v3";
 
 function isLovablePreviewHost(): boolean {
   const host = window.location.hostname;
   return host.endsWith("lovableproject.com") || (host.endsWith(".lovable.app") && host.includes("--"));
+}
+
+function getPreviewToken(): string {
+  const params = new URLSearchParams(window.location.search);
+  return params.get(LOVABLE_TOKEN_PARAM) ?? sessionStorage.getItem(LOVABLE_TOKEN_SESSION_KEY) ?? "no-token";
+}
+
+function getPreviewCacheResetKey(token: string): string {
+  return `${PREVIEW_CACHE_RESET_KEY_PREFIX}:${token}`;
 }
 
 function handleLovablePreviewToken(): boolean {
@@ -35,8 +45,11 @@ function handleLovablePreviewToken(): boolean {
 async function resetPreviewCacheOnce(): Promise<boolean> {
   if (!isLovablePreviewHost()) return false;
 
-  const params = new URLSearchParams(window.location.search);
-  if (params.has(PREVIEW_BUST_PARAM)) return false;
+  const token = getPreviewToken();
+  const resetKey = getPreviewCacheResetKey(token);
+  if (sessionStorage.getItem(resetKey) === "1") return false;
+
+  sessionStorage.setItem(resetKey, "1");
 
   try {
     if ("serviceWorker" in navigator) {
@@ -51,7 +64,8 @@ async function resetPreviewCacheOnce(): Promise<boolean> {
     console.warn("[Preview] Cache reset failed", error);
   }
 
-  params.set(PREVIEW_BUST_PARAM, String(Date.now()));
+  const params = new URLSearchParams(window.location.search);
+  params.set(PREVIEW_BUST_PARAM, `${Date.now()}`);
   const search = params.toString();
   const nextUrl = `${window.location.pathname}${search ? `?${search}` : ""}${window.location.hash}`;
   window.location.replace(nextUrl);
