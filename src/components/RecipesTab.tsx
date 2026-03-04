@@ -155,13 +155,21 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry, voiceExpandIndex, onVoi
     }
   }, [expandedId, filteredRecipes]);
 
-  // Voice-expand recipe by index
+  // Voice-expand recipe by index / close expanded recipe
   useEffect(() => {
-    if (voiceExpandIndex != null && voiceExpandIndex >= 0 && voiceExpandIndex < savedRecipes.length) {
+    if (voiceExpandIndex == null) return;
+
+    if (voiceExpandIndex === -1) {
+      setExpandedId(null);
+      onVoiceExpandHandled?.();
+      return;
+    }
+
+    if (voiceExpandIndex >= 0 && voiceExpandIndex < savedRecipes.length) {
       setExpandedId(savedRecipes[voiceExpandIndex].id);
       onVoiceExpandHandled?.();
     }
-  }, [voiceExpandIndex]);
+  }, [voiceExpandIndex, savedRecipes, onVoiceExpandHandled]);
 
   const handleDelete = (id: string) => {
     setSavedRecipes((prev) => prev.filter((r) => r.id !== id));

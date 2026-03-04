@@ -241,8 +241,13 @@ const Index = () => {
             }
           }
 
-          // Recipes tab: number selection
+          // Recipes tab: show/close and number selection
           if (currentTab === "recipes") {
+            if (/\b(?:schließen|schliessen|zumachen|zuklappen)\b/i.test(lower)) {
+              setSettingsVoiceAction("recipe:-1");
+              return;
+            }
+
             const numWords: Record<string, number> = {
               "eins": 1, "zwei": 2, "drei": 3, "vier": 4, "fünf": 5,
               "sechs": 6, "sieben": 7, "acht": 8, "neun": 9, "zehn": 10,
@@ -251,13 +256,13 @@ const Index = () => {
               "einundzwanzig": 21, "zweiundzwanzig": 22, "dreiundzwanzig": 23,
               "vierundzwanzig": 24, "fünfundzwanzig": 25,
             };
-            const numMatch = lower.match(/(?:rezept\s+)?(?:nummer\s+|nimm\s+|#)?(\d+)/);
+            const numMatch = lower.match(/(?:zeige\s+|rezept\s+)?(?:nummer\s+|nimm\s+|#)?(\d+)/);
             if (numMatch) {
               setSettingsVoiceAction(`recipe:${parseInt(numMatch[1], 10) - 1}`);
               return;
             }
             for (const [word, num] of Object.entries(numWords)) {
-              if (new RegExp(`\\b${word}\\b`, "i").test(lower)) {
+              if (new RegExp(`\\b${word}\\b`, "i").test(lower) && (/\b(?:zeige|rezept|nimm)\b/i.test(lower) || lower === word)) {
                 setSettingsVoiceAction(`recipe:${num - 1}`);
                 return;
               }
