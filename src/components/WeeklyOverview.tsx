@@ -26,6 +26,7 @@ interface WeeklyOverviewProps {
   profile?: UserProfile | null;
   bookedActivities?: BookedActivity[];
   highlightedSection?: string | null;
+  analyzeCoachRequestId?: number;
 }
 
 interface DayData {
@@ -60,7 +61,7 @@ const COLORS = {
   caloriesMuted: "hsl(var(--primary) / 0.85)",
 };
 
-const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [], highlightedSection }: WeeklyOverviewProps) => {
+const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [], highlightedSection, analyzeCoachRequestId }: WeeklyOverviewProps) => {
   const bmr = profile ? calculateBMR(profile) : null;
 
   const weekData = useMemo(() => {
@@ -495,6 +496,7 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
           profile={profile}
           bookedActivities={bookedActivities}
           highlightedSection={hl}
+          analyzeRequestId={analyzeCoachRequestId}
         />
       </div>
     </div>

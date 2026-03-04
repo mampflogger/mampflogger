@@ -56,9 +56,9 @@ const Index = () => {
   const [settingsCurrentTab, setSettingsCurrentTab] = useState<string>("profile");
   const [settingsCloseRequest, setSettingsCloseRequest] = useState(false);
   const [settingsVoiceAction, setSettingsVoiceAction] = useState<string | null>(null);
+  const [weeklyCoachAnalyzeRequest, setWeeklyCoachAnalyzeRequest] = useState(0);
   const nutritionVoiceRef = useRef<((transcript: string, isInterim: boolean) => void) | undefined>();
   const foodInputRef = useRef<HTMLInputElement>(null);
-
   const sectionNav = useSectionNavigation();
 
   // Refs for use inside callbacks
@@ -170,6 +170,14 @@ const Index = () => {
         } else {
           setSettingsVoiceAction("food-search");
         }
+      }
+      else if (action === "action:weekly-analysis") {
+        closeSettingsAndDo(() => {
+          const needsTabSwitch = activeTabRef.current !== "weekly";
+          if (needsTabSwitch) setActiveTab("weekly");
+          setWeeklyCoachAnalyzeRequest((prev) => prev + 1);
+          setTimeout(() => sectionNav.scrollToSection("section-ki-coach"), needsTabSwitch ? 250 : 0);
+        });
       }
     }, [closeSettingsAndDo]),
     onUnhandledSpeech: useCallback((transcript: string, isInterim: boolean) => {
@@ -710,6 +718,7 @@ const Index = () => {
               profile={profile}
               bookedActivities={bookedActivities}
               highlightedSection={hl}
+              analyzeCoachRequestId={weeklyCoachAnalyzeRequest}
             />
             {/* Spacer so last sections can scroll to top */}
             <div style={{ height: "calc(100vh - 14rem)" }} />
