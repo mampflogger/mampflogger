@@ -240,6 +240,30 @@ const SettingsDialog = ({
         else next.add(key);
         return next;
       });
+    } else if (voiceAction.startsWith("food-item:")) {
+      const idx = parseInt(voiceAction.replace("food-item:", ""), 10);
+      if (idx >= 0 && idx < filteredFoods.length) {
+        handleEditFood(filteredFoods[idx], idx);
+      } else if (filteredFoods.length > 0) {
+        toast.error(`Nur ${filteredFoods.length} Einträge sichtbar.`);
+      }
+    } else if (voiceAction.startsWith("recipe-food:")) {
+      const idx = parseInt(voiceAction.replace("recipe-food:", ""), 10);
+      if (idx >= 0 && idx < filteredFoods.length) {
+        toggleRecipeFood(filteredFoods[idx]);
+      } else if (filteredFoods.length > 0) {
+        toast.error(`Nur ${filteredFoods.length} Hilfsmittel sichtbar.`);
+      }
+    } else if (voiceAction.startsWith("food-category-option:")) {
+      const idx = parseInt(voiceAction.replace("food-category-option:", ""), 10);
+      if (!showCategoryDropdown) {
+        toast.info("Öffne zuerst das Kategorie-Dropdown.");
+      } else if (idx >= 0 && idx < FOOD_CATEGORIES.length) {
+        setEditFoodCategory(FOOD_CATEGORIES[idx]);
+        setShowCategoryDropdown(false);
+      } else {
+        toast.error(`Nur ${FOOD_CATEGORIES.length} Kategorien verfügbar.`);
+      }
     } else if (voiceAction.startsWith("scroll:")) {
       const id = voiceAction.replace("scroll:", "");
       setTimeout(() => {
@@ -251,7 +275,7 @@ const SettingsDialog = ({
       if (!isNaN(idx)) setRecipeVoiceIndex(idx);
     }
     onVoiceActionHandled?.();
-  }, [voiceAction]);
+  }, [voiceAction, showCategoryDropdown, onVoiceActionHandled]);
 
   // Handle external "New Food" trigger
   useEffect(() => {

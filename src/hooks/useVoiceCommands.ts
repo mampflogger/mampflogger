@@ -1,59 +1,26 @@
 import { useCallback, useRef, useEffect } from "react";
 import { useSpeechRecognition } from "./useSpeechRecognition";
 import { toast } from "sonner";
+import { parseSpokenSelectionIndex } from "@/lib/voiceSelection";
 
 interface VoiceCommand {
   patterns: RegExp[];
   action: string | ((transcript: string) => string | null);
 }
 
-const RECIPE_NUMBER_WORDS: Record<string, number> = {
-  eins: 1,
-  ein: 1,
-  erste: 1,
-  erster: 1,
-  erstes: 1,
-  ersten: 1,
-  zwei: 2,
-  zweite: 2,
-  zweiten: 2,
-  drei: 3,
-  dritte: 3,
-  dritten: 3,
-  vier: 4,
-  vierte: 4,
-  fünf: 5,
-  fuenf: 5,
-  fünfte: 5,
-  sechs: 6,
-  sechste: 6,
-  sieben: 7,
-  siebte: 7,
-  acht: 8,
-  achte: 8,
-  neun: 9,
-  neunte: 9,
-  zehn: 10,
-};
-
-const RECIPE_NUMBER_PATTERN = Object.keys(RECIPE_NUMBER_WORDS).join("|");
+const RECIPE_NUMBER_PATTERN = "\\d{1,3}|eins|ein|erste|erster|erstes|ersten|zwei|zweite|zweiten|drei|dritte|dritten|vier|vierte|fünf|fuenf|fünfte|sechs|sechste|sieben|siebte|acht|achte|neun|neunte|zehn|zehnte|elf|zwölf|zwoelf|dreizehn|vierzehn|fünfzehn|fuenfzehn|sechzehn|siebzehn|achtzehn|neunzehn|zwanzig|einundzwanzig|zweiundzwanzig|dreiundzwanzig|vierundzwanzig|fünfundzwanzig|fuenfundzwanzig";
 
 function parseRecipeVoiceAction(transcript: string): string | null {
   const lower = transcript.toLowerCase().trim();
   if (!/\brezept\b/.test(lower)) return null;
 
-  const digitMatch = lower.match(/\b(\d{1,2})\b/);
-  if (digitMatch) {
-    return `recipe:${Math.max(0, parseInt(digitMatch[1], 10) - 1)}`;
-  }
+  const recipeIndex = parseSpokenSelectionIndex(lower, {
+    allowBareNumber: false,
+    keywords: ["rezept", "zeige", "öffne", "oeffne", "nimm", "nummer"],
+  });
 
-  for (const [word, value] of Object.entries(RECIPE_NUMBER_WORDS)) {
-    if (new RegExp(`\\b${word}\\b`, "i").test(lower)) {
-      return `recipe:${value - 1}`;
-    }
-  }
-
-  return null;
+  if (recipeIndex === null) return null;
+  return `recipe:${Math.max(0, recipeIndex)}`;
 }
 
 const COMMANDS: VoiceCommand[] = [

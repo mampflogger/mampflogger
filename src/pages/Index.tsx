@@ -33,6 +33,7 @@ import { ChevronLeft, ChevronRight, BarChart3, List, Mic, MicOff } from "lucide-
 import { Button } from "@/components/ui/button";
 import { useVoiceCommands, SECTION_PAGE_MAP, SECTION_SETTINGS_TAB } from "@/hooks/useVoiceCommands";
 import { useSectionNavigation } from "@/hooks/useSectionNavigation";
+import { parseSpokenSelectionIndex } from "@/lib/voiceSelection";
 
 const Index = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -211,7 +212,7 @@ const Index = () => {
             if (/\blight\b|\bhell/.test(lower)) { setDarkMode(false); return; }
           }
 
-          // Food tab: categories, filters, "neu", "suchen"
+          // Food tab: categories, filters, numbered selection
           if (currentTab === "food") {
             if (/\bneu\b/i.test(lower)) { setSettingsVoiceAction("new-food"); return; }
             if (/\bsuchen\b/i.test(lower)) { setSettingsVoiceAction("food-search"); return; }
@@ -239,6 +240,20 @@ const Index = () => {
             for (const [re, key] of filterMap) {
               if (re.test(lower)) { setSettingsVoiceAction(`filter:${key}`); return; }
             }
+
+            const selectionIndex = parseSpokenSelectionIndex(lower, { allowBareNumber: true });
+            if (selectionIndex !== null) {
+              if (/\b(?:dropdown|kategorie)\b/i.test(lower)) {
+                setSettingsVoiceAction(`food-category-option:${selectionIndex}`);
+                return;
+              }
+              if (/\b(?:hilfsmittel|kochmütze|kochmuetze|zutat|zutaten|rezept)\b/i.test(lower)) {
+                setSettingsVoiceAction(`recipe-food:${selectionIndex}`);
+                return;
+              }
+              setSettingsVoiceAction(`food-item:${selectionIndex}`);
+              return;
+            }
           }
 
           // Recipes tab: show/close and number selection
@@ -248,24 +263,13 @@ const Index = () => {
               return;
             }
 
-            const numWords: Record<string, number> = {
-              "eins": 1, "zwei": 2, "drei": 3, "vier": 4, "fünf": 5,
-              "sechs": 6, "sieben": 7, "acht": 8, "neun": 9, "zehn": 10,
-              "elf": 11, "zwölf": 12, "dreizehn": 13, "vierzehn": 14, "fünfzehn": 15,
-              "sechzehn": 16, "siebzehn": 17, "achtzehn": 18, "neunzehn": 19, "zwanzig": 20,
-              "einundzwanzig": 21, "zweiundzwanzig": 22, "dreiundzwanzig": 23,
-              "vierundzwanzig": 24, "fünfundzwanzig": 25,
-            };
-            const numMatch = lower.match(/(?:zeige\s+|rezept\s+)?(?:nummer\s+|nimm\s+|#)?(\d+)/);
-            if (numMatch) {
-              setSettingsVoiceAction(`recipe:${parseInt(numMatch[1], 10) - 1}`);
+            const recipeIndex = parseSpokenSelectionIndex(lower, {
+              allowBareNumber: true,
+              keywords: ["zeige", "rezept", "nimm", "nummer", "öffne", "oeffne"],
+            });
+            if (recipeIndex !== null) {
+              setSettingsVoiceAction(`recipe:${recipeIndex}`);
               return;
-            }
-            for (const [word, num] of Object.entries(numWords)) {
-              if (new RegExp(`\\b${word}\\b`, "i").test(lower) && (/\b(?:zeige|rezept|nimm)\b/i.test(lower) || lower === word)) {
-                setSettingsVoiceAction(`recipe:${num - 1}`);
-                return;
-              }
             }
           }
         }
