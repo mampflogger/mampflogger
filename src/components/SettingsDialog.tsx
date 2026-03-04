@@ -7,6 +7,16 @@ import {
   DialogTrigger,
   DialogDescription,
 } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -47,6 +57,7 @@ const THEME_COLORS: Record<ColorTheme, { label: string; primary: string; swatch:
 interface SettingsDialogProps {
   profile: UserProfile | null;
   onSaveProfile: (profile: UserProfile) => void;
+  onApplyTestData: (gender: "male" | "female") => void;
   darkMode: boolean;
   onToggleDarkMode: () => void;
   colorTheme: ColorTheme;
@@ -104,7 +115,7 @@ function parseDateInputToISO(text: string): string {
 }
 
 const SettingsDialog = ({
-  profile, onSaveProfile, darkMode, onToggleDarkMode,
+  profile, onSaveProfile, onApplyTestData, darkMode, onToggleDarkMode,
   colorTheme, onChangeTheme, entries, bookedActivities,
   onImport, onImportActivities, onCount, onDelete, onDeleteAll, onDeleteAllActivities, openToNewFood, onOpenToNewFoodHandled, openToRecipes, onOpenToRecipesHandled,
   activeTab, onSetActiveTab, initialOpen, initialTab, selectedDate, onAddEntry,
@@ -120,9 +131,10 @@ const SettingsDialog = ({
   useEffect(() => {
     if (initialOpen) {
       setOpen(true);
+      onOpenChangeProp?.(true);
       if (initialTab) setTab(initialTab);
     }
-  }, [initialOpen, initialTab]);
+  }, [initialOpen, initialTab, onOpenChangeProp]);
 
   // Profile state
   const [name, setName] = useState("");
@@ -157,6 +169,7 @@ const SettingsDialog = ({
   const [showDeleteRangeConfirm, setShowDeleteRangeConfirm] = useState(false);
   const [showDeleteActivitiesConfirm, setShowDeleteActivitiesConfirm] = useState(false);
   const [showResetFoodConfirm, setShowResetFoodConfirm] = useState(false);
+  const [showTestDataConfirm, setShowTestDataConfirm] = useState(false);
 
   // Food list state
   const [foodSearch, setFoodSearch] = useState("");
@@ -608,6 +621,25 @@ const SettingsDialog = ({
     if (!currentProfile) return;
     onSaveProfile(currentProfile);
     toast.success("Profil gespeichert!");
+  };
+
+  const hasExistingTrackingData = entries.length > 0 || bookedActivities.length > 0;
+
+  const applyTestData = () => {
+    onApplyTestData(gender);
+    setShowTestDataConfirm(false);
+    handleOpen(false);
+    onSetActiveTab("log");
+    toast.success(`Testdaten für ${gender === "male" ? "männlich" : "weiblich"} eingespielt!`);
+  };
+
+  const handleTestDataClick = () => {
+    if (hasExistingTrackingData) {
+      setShowTestDataConfirm(true);
+      return;
+    }
+
+    applyTestData();
   };
 
   // Food editing
@@ -1071,10 +1103,33 @@ const SettingsDialog = ({
               </div>
             </div>
 
-            <Button id="settings-save" onClick={handleSaveProfile} disabled={!currentProfile} className="w-full h-8 text-xs gap-2">
-              <Save className="w-4 h-4" />
-              Profil speichern
-            </Button>
+            <div className="space-y-2">
+              <Button id="settings-save" onClick={handleSaveProfile} disabled={!currentProfile} className="w-full h-8 text-xs gap-2">
+                <Save className="w-4 h-4" />
+                Profil speichern
+              </Button>
+              <Button type="button" variant="outline" onClick={handleTestDataClick} className="w-full h-8 text-xs">
+                Testdaten einspielen
+              </Button>
+              <p className="text-[10px] text-muted-foreground text-center">
+                Nutzt das aktuell gewählte Geschlecht und spielt 14 Tage Demo-Daten ein.
+              </p>
+            </div>
+
+            <AlertDialog open={showTestDataConfirm} onOpenChange={setShowTestDataConfirm}>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Eigene Daten überschreiben?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Durch das Einspielen der Testdaten werden dein Profil, Tagesprotokoll und Aktivitäten ersetzt. Dieser Schritt kann nicht rückgängig gemacht werden.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Abbrechen</AlertDialogCancel>
+                  <AlertDialogAction onClick={applyTestData}>Testdaten einspielen</AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </div>
         )}
 
