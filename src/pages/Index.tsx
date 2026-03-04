@@ -6,6 +6,7 @@ import { syncRemoteFoodDatabase, loadRemoteUrl } from "@/lib/remoteFoodSync";
 import {
   UserProfile,
   BookedActivity,
+  clearProfile,
   loadProfile,
   saveProfile,
   loadBookedActivities,
@@ -386,8 +387,25 @@ const Index = () => {
     setEditingEntry(null);
     setEditingActivity(null);
     setSelectedDate(formatDate(new Date()));
+    setColorTheme(gender === "female" ? "pink" : "yellow");
     setActiveTab("log");
     setStartupProfilePrompt(false);
+  };
+
+  const handleDeleteTestData = () => {
+    clearProfile();
+    saveEntries([]);
+    saveBookedActivities([]);
+    setProfile(null);
+    setEntries([]);
+    setBookedActivities([]);
+    setEditingEntry(null);
+    setEditingActivity(null);
+    setSelectedDate(formatDate(new Date()));
+    setColorTheme("yellow");
+    setActiveTab("log");
+    setStartupProfilePrompt(true);
+    setSettingsCurrentTab("profile");
   };
 
   const handleAddBookedActivity = (activity: BookedActivity) => {
@@ -537,6 +555,7 @@ const Index = () => {
                 profile={profile}
                 onSaveProfile={handleSaveProfile}
                 onApplyTestData={handleApplyTestData}
+                onDeleteTestData={handleDeleteTestData}
                 darkMode={darkMode}
                 onToggleDarkMode={() => setDarkMode(!darkMode)}
                 colorTheme={colorTheme}

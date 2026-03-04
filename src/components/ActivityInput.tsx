@@ -190,7 +190,7 @@ const ActivityInput = ({
           onClick={handleSubmit}
           className="h-9 px-3 rounded-full text-xs font-semibold bg-primary text-primary-foreground shrink-0"
         >
-          {isEditing ? "Speichern" : "Buchen"}
+          {isEditing ? "Speichern" : "OK"}
         </button>
       </div>
       <div className="mt-1">

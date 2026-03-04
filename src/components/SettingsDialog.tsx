@@ -58,6 +58,7 @@ interface SettingsDialogProps {
   profile: UserProfile | null;
   onSaveProfile: (profile: UserProfile) => void;
   onApplyTestData: (gender: "male" | "female") => void;
+  onDeleteTestData: () => void;
   darkMode: boolean;
   onToggleDarkMode: () => void;
   colorTheme: ColorTheme;
@@ -115,7 +116,7 @@ function parseDateInputToISO(text: string): string {
 }
 
 const SettingsDialog = ({
-  profile, onSaveProfile, onApplyTestData, darkMode, onToggleDarkMode,
+  profile, onSaveProfile, onApplyTestData, onDeleteTestData, darkMode, onToggleDarkMode,
   colorTheme, onChangeTheme, entries, bookedActivities,
   onImport, onImportActivities, onCount, onDelete, onDeleteAll, onDeleteAllActivities, openToNewFood, onOpenToNewFoodHandled, openToRecipes, onOpenToRecipesHandled,
   activeTab, onSetActiveTab, initialOpen, initialTab, selectedDate, onAddEntry,
@@ -158,6 +159,7 @@ const SettingsDialog = ({
   const backupInputRef = React.useRef<HTMLInputElement>(null);
   const deleteToRef = React.useRef<HTMLInputElement>(null);
   const deletePreviewBtnRef = React.useRef<HTMLButtonElement>(null);
+  const nameInputRef = React.useRef<HTMLInputElement>(null);
 
   // Delete state
   const [fromDate, setFromDate] = useState("");
@@ -170,6 +172,7 @@ const SettingsDialog = ({
   const [showDeleteActivitiesConfirm, setShowDeleteActivitiesConfirm] = useState(false);
   const [showResetFoodConfirm, setShowResetFoodConfirm] = useState(false);
   const [showTestDataConfirm, setShowTestDataConfirm] = useState(false);
+  const [showDeleteTestDataConfirm, setShowDeleteTestDataConfirm] = useState(false);
 
   // Food list state
   const [foodSearch, setFoodSearch] = useState("");
@@ -546,19 +549,35 @@ const SettingsDialog = ({
     }
   };
 
+  const resetProfileForm = () => {
+    setName("");
+    setBirthYear("");
+    setHeightCm("");
+    setWeightKg("");
+    setGender("male");
+    setGoalFluidMl("");
+    setGoalDeficit("");
+    setGoalActivityBonus("");
+    setGoalWeightKg("");
+  };
+
   const handleOpen = (isOpen: boolean) => {
     setOpen(isOpen);
     onOpenChangeProp?.(isOpen);
-    if (isOpen && profile) {
-      setName(profile.name);
-      setBirthYear(String(profile.birthYear));
-      setHeightCm(String(profile.heightCm));
-      setWeightKg(String(profile.weightKg));
-      setGender(profile.gender);
-      setGoalFluidMl(profile.goalFluidMl ? String(profile.goalFluidMl) : "");
-      setGoalDeficit(profile.goalDeficit ? String(profile.goalDeficit) : "");
-      setGoalActivityBonus(profile.goalActivityBonus ? String(profile.goalActivityBonus) : "");
-      setGoalWeightKg(profile.goalWeightKg ? String(profile.goalWeightKg) : "");
+    if (isOpen) {
+      if (profile) {
+        setName(profile.name);
+        setBirthYear(String(profile.birthYear));
+        setHeightCm(String(profile.heightCm));
+        setWeightKg(String(profile.weightKg));
+        setGender(profile.gender);
+        setGoalFluidMl(profile.goalFluidMl ? String(profile.goalFluidMl) : "");
+        setGoalDeficit(profile.goalDeficit ? String(profile.goalDeficit) : "");
+        setGoalActivityBonus(profile.goalActivityBonus ? String(profile.goalActivityBonus) : "");
+        setGoalWeightKg(profile.goalWeightKg ? String(profile.goalWeightKg) : "");
+      } else {
+        resetProfileForm();
+      }
     }
     if (!isOpen) {
       setEditingFood(null);
@@ -631,6 +650,15 @@ const SettingsDialog = ({
     handleOpen(false);
     onSetActiveTab("log");
     toast.success(`Testdaten für ${gender === "male" ? "männlich" : "weiblich"} eingespielt!`);
+  };
+
+  const clearTestData = () => {
+    onDeleteTestData();
+    resetProfileForm();
+    setShowDeleteTestDataConfirm(false);
+    handleTabChange("profile");
+    setTimeout(() => nameInputRef.current?.focus(), 0);
+    toast.success("Testdaten gelöscht – du kannst jetzt dein eigenes Profil anlegen.");
   };
 
   const handleTestDataClick = () => {
@@ -1036,7 +1064,7 @@ const SettingsDialog = ({
               <h2 className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Persönliche Daten</h2>
               <div>
                 <Label className="text-[10px] font-medium text-muted-foreground mb-0.5 block">Name</Label>
-                <Input id="settings-name" value={name} onChange={(e) => setName(e.target.value)} onKeyDown={(e) => handleProfileKeyDown(e, "settings-name")} placeholder="Dein Name" className="h-8 text-sm" autoCorrect="off" spellCheck={false} autoFocus={initialOpen} />
+                <Input ref={nameInputRef} id="settings-name" value={name} onChange={(e) => setName(e.target.value)} onKeyDown={(e) => handleProfileKeyDown(e, "settings-name")} placeholder="Dein Name" className="h-8 text-sm" autoCorrect="off" spellCheck={false} autoFocus={initialOpen} />
               </div>
               <div>
                 <Label className="text-[10px] font-medium text-muted-foreground mb-0.5 block">Geschlecht</Label>
@@ -1111,8 +1139,11 @@ const SettingsDialog = ({
               <Button type="button" variant="outline" onClick={handleTestDataClick} className="w-full h-8 text-xs">
                 Testdaten einspielen
               </Button>
+              <Button type="button" variant="outline" onClick={() => setShowDeleteTestDataConfirm(true)} className="w-full h-8 text-xs">
+                Testdaten löschen
+              </Button>
               <p className="text-[10px] text-muted-foreground text-center">
-                Nutzt das aktuell gewählte Geschlecht und spielt 14 Tage Demo-Daten ein.
+                Nutzt das aktuell gewählte Geschlecht, färbt Demo-Profile passend ein und spielt 14 Tage Demo-Daten ein.
               </p>
             </div>
 
@@ -1127,6 +1158,21 @@ const SettingsDialog = ({
                 <AlertDialogFooter>
                   <AlertDialogCancel>Abbrechen</AlertDialogCancel>
                   <AlertDialogAction onClick={applyTestData}>Testdaten einspielen</AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+
+            <AlertDialog open={showDeleteTestDataConfirm} onOpenChange={setShowDeleteTestDataConfirm}>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Testdaten löschen?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Dadurch werden Profil, Tagesprotokoll und Aktivitäten entfernt und die App zurück auf den Startzustand gesetzt.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Abbrechen</AlertDialogCancel>
+                  <AlertDialogAction onClick={clearTestData}>Testdaten löschen</AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>
