@@ -13,6 +13,7 @@ import {
   calculateBookedActivityBonus,
 } from "@/types/profile";
 import { loadEntries, saveEntries } from "@/lib/storage";
+import { applyEmbeddedTestDataset, hasConfiguredPersonalProfile, TestDataGender } from "@/lib/embeddedTestData";
 import { reloadFoodDatabase } from "@/data/foodDatabase";
 import NutritionForm from "@/components/NutritionForm";
 import NutritionTable from "@/components/NutritionTable";
@@ -57,6 +58,7 @@ const Index = () => {
   const [settingsCloseRequest, setSettingsCloseRequest] = useState(false);
   const [settingsVoiceAction, setSettingsVoiceAction] = useState<string | null>(null);
   const [weeklyCoachAnalyzeRequest, setWeeklyCoachAnalyzeRequest] = useState(0);
+  const [startupProfilePrompt, setStartupProfilePrompt] = useState(false);
   const nutritionVoiceRef = useRef<((transcript: string, isInterim: boolean) => void) | undefined>();
   const foodInputRef = useRef<HTMLInputElement>(null);
   const sectionNav = useSectionNavigation();
@@ -283,9 +285,14 @@ const Index = () => {
   }, [colorTheme]);
 
   useEffect(() => {
-    setEntries(loadEntries());
-    setProfile(loadProfile());
-    setBookedActivities(loadBookedActivities());
+    const loadedEntries = loadEntries();
+    const loadedProfile = loadProfile();
+    const loadedActivities = loadBookedActivities();
+
+    setEntries(loadedEntries);
+    setProfile(loadedProfile);
+    setBookedActivities(loadedActivities);
+    setStartupProfilePrompt(!hasConfiguredPersonalProfile(loadedProfile));
 
     const remoteUrl = loadRemoteUrl();
     if (remoteUrl) {
@@ -367,7 +374,20 @@ const Index = () => {
 
   const handleSaveProfile = (p: UserProfile) => {
     setProfile(p);
+    setStartupProfilePrompt(false);
     saveProfile(p);
+  };
+
+  const handleApplyTestData = (gender: TestDataGender) => {
+    const dataset = applyEmbeddedTestDataset(gender);
+    setProfile(dataset.profile);
+    setEntries(dataset.entries);
+    setBookedActivities(dataset.bookedActivities);
+    setEditingEntry(null);
+    setEditingActivity(null);
+    setSelectedDate(formatDate(new Date()));
+    setActiveTab("log");
+    setStartupProfilePrompt(false);
   };
 
   const handleAddBookedActivity = (activity: BookedActivity) => {
@@ -516,6 +536,7 @@ const Index = () => {
               <SettingsDialog
                 profile={profile}
                 onSaveProfile={handleSaveProfile}
+                onApplyTestData={handleApplyTestData}
                 darkMode={darkMode}
                 onToggleDarkMode={() => setDarkMode(!darkMode)}
                 colorTheme={colorTheme}
@@ -534,8 +555,8 @@ const Index = () => {
                 onOpenToRecipesHandled={() => setOpenRecipes(false)}
                 activeTab={activeTab}
                 onSetActiveTab={setActiveTab}
-                initialOpen={settingsParam === "profile"}
-                initialTab={settingsParam === "profile" ? "profile" : undefined}
+                initialOpen={settingsParam === "profile" || startupProfilePrompt}
+                initialTab={settingsParam === "profile" || startupProfilePrompt ? "profile" : undefined}
                 selectedDate={selectedDate}
                 onAddEntry={handleAdd}
                 voiceOpenTab={settingsVoiceTab}
