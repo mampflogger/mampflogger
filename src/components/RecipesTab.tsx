@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useRef, useMemo, useCallback, type MutableRefObject } from "react";
 import { ensureCompatibleImage, resizeImageToDataUrl } from "@/lib/imageUtils";
 import { NutritionEntry, generateId } from "@/types/nutrition";
 import { Trash2, ChevronDown, ChevronUp, Sparkles, Pencil, Check, Plus, Loader2, Share2, PlusCircle, MessageCircle, Camera, Search } from "lucide-react";
@@ -43,6 +43,9 @@ interface SavedRecipe {
 }
 
 const SAVED_RECIPES_KEY = "mampflogger-saved-recipes";
+const FOCUS_RECIPE_SEARCH_EVENT = "mampflogger:focus-recipe-search";
+const OPEN_RECIPE_PHOTO_EVENT = "mampflogger:open-recipe-photo";
+const OPEN_NEW_RECIPE_EVENT = "mampflogger:open-new-recipe";
 
 function loadSavedRecipes(): SavedRecipe[] {
   try {
@@ -83,9 +86,10 @@ interface RecipesTabProps {
   onAddEntry: (entry: NutritionEntry) => void;
   voiceExpandIndex?: number | null;
   onVoiceExpandHandled?: () => void;
+  voiceInputRef?: MutableRefObject<((transcript: string, isInterim: boolean) => void) | undefined>;
 }
 
-const RecipesTab = ({ entries, selectedDate, onAddEntry, voiceExpandIndex, onVoiceExpandHandled }: RecipesTabProps) => {
+const RecipesTab = ({ entries, selectedDate, onAddEntry, voiceExpandIndex, onVoiceExpandHandled, voiceInputRef }: RecipesTabProps) => {
   const [savedRecipes, setSavedRecipes] = useState<SavedRecipe[]>(loadSavedRecipes);
   const [recipeSearch, setRecipeSearch] = useState("");
   const [expandedId, setExpandedId] = useState<string | null>(null);
@@ -103,10 +107,30 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry, voiceExpandIndex, onVoi
   const [photoError, setPhotoError] = useState<string | null>(null);
   const suggestionsRef = useRef<HTMLDivElement>(null);
   const nameInputRef = useRef<HTMLInputElement>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
   const photoInputRef = useRef<HTMLInputElement>(null);
   const recipePhotoInputRef = useRef<HTMLInputElement>(null);
   const [recipePhotoTargetId, setRecipePhotoTargetId] = useState<string | null>(null);
   const { toast } = useToast();
+
+  const openHiddenFilePicker = useCallback((input: HTMLInputElement | null) => {
+    if (!input) return;
+
+    if ("showPicker" in input) {
+      try {
+        (input as HTMLInputElement & { showPicker?: () => void }).showPicker?.();
+        return;
+      } catch {
+        // Fallback to click below
+      }
+    }
+
+    input.click();
+  }, []);
+
+  const handlePhotoCaptureClick = useCallback(() => {
+    openHiddenFilePicker(photoInputRef.current);
+  }, [openHiddenFilePicker]);
 
   const foodSuggestions = useMemo(() => {
     const q = newIngredientName.trim().toLowerCase();
@@ -155,6 +179,52 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry, voiceExpandIndex, onVoi
     }
   }, [expandedId, filteredRecipes]);
 
+  const focusRecipeSearch = useCallback(() => {
+    setShowManualForm(false);
+    window.setTimeout(() => {
+      searchInputRef.current?.focus();
+      searchInputRef.current?.select();
+    }, 0);
+  }, []);
+
+  const handleNewRecipeRequest = useCallback(() => {
+    setExpandedId(null);
+    setShowManualForm(true);
+  }, []);
+
+  const handleVoiceInput = useCallback((transcript: string) => {
+    if (document.activeElement !== searchInputRef.current) return;
+    setRecipeSearch(transcript);
+  }, []);
+
+  useEffect(() => {
+    if (voiceInputRef) {
+      voiceInputRef.current = handleVoiceInput;
+    }
+
+    return () => {
+      if (voiceInputRef) {
+        voiceInputRef.current = undefined;
+      }
+    };
+  }, [voiceInputRef, handleVoiceInput]);
+
+  useEffect(() => {
+    const handleFocusSearch = () => focusRecipeSearch();
+    const handleOpenPhoto = () => handlePhotoCaptureClick();
+    const handleOpenNewRecipe = () => handleNewRecipeRequest();
+
+    window.addEventListener(FOCUS_RECIPE_SEARCH_EVENT, handleFocusSearch);
+    window.addEventListener(OPEN_RECIPE_PHOTO_EVENT, handleOpenPhoto);
+    window.addEventListener(OPEN_NEW_RECIPE_EVENT, handleOpenNewRecipe);
+
+    return () => {
+      window.removeEventListener(FOCUS_RECIPE_SEARCH_EVENT, handleFocusSearch);
+      window.removeEventListener(OPEN_RECIPE_PHOTO_EVENT, handleOpenPhoto);
+      window.removeEventListener(OPEN_NEW_RECIPE_EVENT, handleOpenNewRecipe);
+    };
+  }, [focusRecipeSearch, handleNewRecipeRequest, handlePhotoCaptureClick]);
+
   // Voice-expand recipe by index / close expanded recipe
   useEffect(() => {
     if (voiceExpandIndex == null) return;
@@ -165,11 +235,18 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry, voiceExpandIndex, onVoi
       return;
     }
 
-    if (voiceExpandIndex >= 0 && voiceExpandIndex < savedRecipes.length) {
-      setExpandedId(savedRecipes[voiceExpandIndex].id);
+    if (voiceExpandIndex >= 0 && voiceExpandIndex < filteredRecipes.length) {
+      setExpandedId(filteredRecipes[voiceExpandIndex].id);
+      onVoiceExpandHandled?.();
+    } else if (filteredRecipes.length > 0) {
+      toast({
+        title: "Nicht gefunden",
+        description: `Nur ${filteredRecipes.length} Rezept${filteredRecipes.length === 1 ? "" : "e"} sichtbar.`,
+        variant: "destructive",
+      });
       onVoiceExpandHandled?.();
     }
-  }, [voiceExpandIndex, savedRecipes, onVoiceExpandHandled]);
+  }, [voiceExpandIndex, filteredRecipes, onVoiceExpandHandled, toast]);
 
   const handleDelete = (id: string) => {
     setSavedRecipes((prev) => prev.filter((r) => r.id !== id));
@@ -258,9 +335,6 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry, voiceExpandIndex, onVoi
     setShowManualForm(false);
   };
 
-  const handlePhotoCaptureClick = () => {
-    photoInputRef.current?.click();
-  };
 
   const handlePhotoFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     let file = e.target.files?.[0];
@@ -698,6 +772,7 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry, voiceExpandIndex, onVoi
       <div className="relative mb-2">
         <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
         <Input
+          ref={searchInputRef}
           type="text"
           value={recipeSearch}
           onChange={(e) => setRecipeSearch(e.target.value)}

@@ -64,7 +64,7 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
     return parseSpokenSelectionIndex(text, {
       allowBareNumber: suggestionsRef.current.length > 0,
       max: suggestionsRef.current.length || undefined,
-      keywords: ["nummer", "position", "number", "pos", "nimm", "nehme", "das", "die", "der", "eintrag", "liste", "dropdown"],
+      keywords: ["nummer", "position", "number", "pos", "nimm", "nehme", "zeige", "das", "die", "der", "eintrag", "liste", "dropdown"],
     });
   }, []);
 
