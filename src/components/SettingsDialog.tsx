@@ -1140,7 +1140,7 @@ const SettingsDialog = ({
                 Testdaten einspielen
               </Button>
               <Button type="button" variant="outline" onClick={() => setShowDeleteTestDataConfirm(true)} className="w-full h-8 text-xs">
-                Testdaten löschen
+                Alle Daten löschen
               </Button>
               <p className="text-[10px] text-muted-foreground text-center">
                 Nutzt das gewählte Geschlecht und spielt 14 Tage Demodaten ein.
@@ -1165,14 +1165,14 @@ const SettingsDialog = ({
             <AlertDialog open={showDeleteTestDataConfirm} onOpenChange={setShowDeleteTestDataConfirm}>
               <AlertDialogContent>
                 <AlertDialogHeader>
-                  <AlertDialogTitle>Testdaten löschen?</AlertDialogTitle>
+                  <AlertDialogTitle>Alle Daten löschen?</AlertDialogTitle>
                   <AlertDialogDescription>
                     Dadurch werden Profil, Tagesprotokoll und Aktivitäten entfernt und die App zurück auf den Startzustand gesetzt.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                   <AlertDialogCancel>Abbrechen</AlertDialogCancel>
-                  <AlertDialogAction onClick={clearTestData}>Testdaten löschen</AlertDialogAction>
+                  <AlertDialogAction onClick={clearTestData}>Alle Daten löschen</AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>
