@@ -4,6 +4,7 @@ import { NutritionEntry, generateId } from "@/types/nutrition";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { FoodItem, searchFood, addFoodItem, trackFoodUsage, getFoodUsageCount, guessCategory } from "@/data/foodDatabase";
+import { buildMicronutrientsFromFood } from "@/lib/micronutrients";
 import { X } from "lucide-react";
 import { toast } from "sonner";
 import { parseSpokenSelectionIndex } from "@/lib/voiceSelection";
@@ -338,6 +339,13 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
       liquidMl = Math.round(selectedFood.liquidMl * factor);
     }
 
+    const micronutrients = selectedFood
+      ? buildMicronutrientsFromFood(selectedFood, parsedAmount)
+      : {
+          vitamins: editingEntry?.vitamins,
+          minerals: editingEntry?.minerals,
+        };
+
     const entry: NutritionEntry = {
       id: editingEntry?.id || generateId(),
       date: editingEntry?.date || selectedDate,
@@ -351,6 +359,8 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
       fiber: parsedFiber,
       ...(parsedGi !== undefined ? { gi: parsedGi } : {}),
       ...(liquidMl !== undefined ? { liquidMl } : {}),
+      ...(micronutrients.vitamins ? { vitamins: micronutrients.vitamins } : {}),
+      ...(micronutrients.minerals ? { minerals: micronutrients.minerals } : {}),
     };
 
     // Auto-add to food database if new

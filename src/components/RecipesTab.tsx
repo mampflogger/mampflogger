@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useMemo, useCallback, type MutableRefObject } from "react";
 import { ensureCompatibleImage, resizeImageToDataUrl } from "@/lib/imageUtils";
 import { NutritionEntry, generateId } from "@/types/nutrition";
+import { estimateRecipeMicronutrients } from "@/lib/micronutrients";
 import { Trash2, ChevronDown, ChevronUp, Sparkles, Pencil, Check, Plus, Loader2, Share2, PlusCircle, MessageCircle, Camera, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -486,6 +487,8 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry, voiceExpandIndex, onVoi
     }, 0);
     const entryLiquidMl = recipeLiquidMl > 0 ? Math.round(recipeLiquidMl / recipe.servings) : undefined;
 
+    const micronutrients = estimateRecipeMicronutrients(recipe.ingredients, recipe.servings);
+
     const entry: NutritionEntry = {
       id: generateId(),
       date: selectedDate,
@@ -498,6 +501,8 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry, voiceExpandIndex, onVoi
       fat: ps.fat,
       fiber: ps.fiber,
       ...(entryLiquidMl ? { liquidMl: entryLiquidMl } : {}),
+      ...(micronutrients.vitamins ? { vitamins: micronutrients.vitamins } : {}),
+      ...(micronutrients.minerals ? { minerals: micronutrients.minerals } : {}),
     };
     onAddEntry(entry);
 

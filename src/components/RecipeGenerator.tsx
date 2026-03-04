@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import { FoodItem, foodDatabase, saveFoodDatabase, guessCategory } from "@/data/foodDatabase";
 import { NutritionEntry, generateId } from "@/types/nutrition";
+import { estimateRecipeMicronutrients } from "@/lib/micronutrients";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -347,6 +348,7 @@ const RecipeGenerator = ({
     const now = new Date();
     const time = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
     const ps = target.perServing;
+    const micronutrients = estimateRecipeMicronutrients(target.ingredients, target.servings);
 
     const entry: NutritionEntry = {
       id: generateId(),
@@ -359,6 +361,8 @@ const RecipeGenerator = ({
       carbs: ps.carbs,
       fat: ps.fat,
       fiber: ps.fiber,
+      ...(micronutrients.vitamins ? { vitamins: micronutrients.vitamins } : {}),
+      ...(micronutrients.minerals ? { minerals: micronutrients.minerals } : {}),
     };
 
     onAddEntry(entry);
