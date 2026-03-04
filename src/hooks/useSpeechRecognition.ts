@@ -30,12 +30,16 @@ const getSpeechRecognition = (): SpeechRecognitionConstructor | null => {
   return ((window as any).SpeechRecognition || (window as any).webkitSpeechRecognition || null) as SpeechRecognitionConstructor | null;
 };
 
+interface StartRecognitionOptions {
+  silent?: boolean;
+}
+
 export function useSpeechRecognition({ onResult, onEnd, onError, lang = "de-DE" }: UseSpeechRecognitionOptions) {
   const [isListening, setIsListening] = useState(false);
   const recognitionRef = useRef<SpeechRecognitionLike | null>(null);
   const processedIndexRef = useRef(0);
   const keepAliveRef = useRef(false);
-
+  const silentStartRef = useRef(false);
   const onResultRef = useRef(onResult);
   const onEndRef = useRef(onEnd);
   const onErrorRef = useRef(onError);
@@ -119,15 +123,18 @@ export function useSpeechRecognition({ onResult, onEnd, onError, lang = "de-DE" 
     return recognition;
   }, [lang]);
 
-  const start = useCallback(() => {
+  const start = useCallback((options?: StartRecognitionOptions) => {
     if (!isSupported) {
-      onErrorRef.current?.("not-supported");
+      if (!options?.silent) {
+        onErrorRef.current?.("not-supported");
+      }
       return;
     }
 
     if (keepAliveRef.current) return;
 
     keepAliveRef.current = true;
+    silentStartRef.current = !!options?.silent;
     setIsListening(true);
 
     try {
@@ -135,11 +142,16 @@ export function useSpeechRecognition({ onResult, onEnd, onError, lang = "de-DE" 
       recognition.lang = lang;
       processedIndexRef.current = 0;
       recognition.start();
+      silentStartRef.current = false;
     } catch (err) {
       console.warn("[Speech] start failed:", err);
       keepAliveRef.current = false;
       setIsListening(false);
-      onErrorRef.current?.("start-failed");
+      const silent = silentStartRef.current;
+      silentStartRef.current = false;
+      if (!silent) {
+        onErrorRef.current?.("start-failed");
+      }
     }
   }, [initRecognition, isSupported, lang]);
 

@@ -300,6 +300,11 @@ const Index = () => {
     }
   }, []);
 
+  useEffect(() => {
+    if (!voiceCommands.isSupported) return;
+    voiceCommands.start({ silent: true });
+  }, [voiceCommands.isSupported, voiceCommands.start]);
+
   const todayEntries = useMemo(
     () => entries.filter((e) => e.date === selectedDate),
     [entries, selectedDate]

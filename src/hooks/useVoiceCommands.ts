@@ -106,6 +106,10 @@ interface UseVoiceCommandsOptions {
   onUnhandledSpeech: (transcript: string, isInterim: boolean) => void;
 }
 
+interface StartVoiceOptions {
+  silent?: boolean;
+}
+
 export function useVoiceCommands({ onCommand, onUnhandledSpeech }: UseVoiceCommandsOptions) {
   const onCommandRef = useRef(onCommand);
   const onUnhandledRef = useRef(onUnhandledSpeech);
@@ -160,8 +164,8 @@ export function useVoiceCommands({ onCommand, onUnhandledSpeech }: UseVoiceComma
 
   stopFnRef.current = voice.stop;
 
-  const start = useCallback(() => {
-    voice.start();
+  const start = useCallback((options?: StartVoiceOptions) => {
+    voice.start(options);
     resetTimeout();
   }, [voice.start, resetTimeout]);
 
