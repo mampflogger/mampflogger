@@ -4,11 +4,18 @@ import "./index.css";
 
 const LOVABLE_TOKEN_PARAM = "__lovable_token";
 const LOVABLE_TOKEN_SESSION_KEY = "mampflogger-lovable-preview-token";
-const PREVIEW_CACHE_RESET_KEY = "mampflogger-preview-cache-reset-v1";
+const PREVIEW_CACHE_RESET_KEY_PREFIX = "mampflogger-preview-cache-reset-v2";
 
 function isLovablePreviewHost(): boolean {
   const host = window.location.hostname;
   return host.endsWith("lovableproject.com") || (host.endsWith(".lovable.app") && host.includes("--"));
+}
+
+function getPreviewCacheResetKey(): string {
+  const tokenFromUrl = new URLSearchParams(window.location.search).get(LOVABLE_TOKEN_PARAM);
+  const tokenFromSession = sessionStorage.getItem(LOVABLE_TOKEN_SESSION_KEY);
+  const token = tokenFromUrl ?? tokenFromSession ?? "no-token";
+  return `${PREVIEW_CACHE_RESET_KEY_PREFIX}:${token}`;
 }
 
 function handleLovablePreviewToken(): boolean {
@@ -34,9 +41,11 @@ function handleLovablePreviewToken(): boolean {
 
 async function resetPreviewCacheOnce(): Promise<boolean> {
   if (!isLovablePreviewHost()) return false;
-  if (sessionStorage.getItem(PREVIEW_CACHE_RESET_KEY) === "1") return false;
 
-  sessionStorage.setItem(PREVIEW_CACHE_RESET_KEY, "1");
+  const resetKey = getPreviewCacheResetKey();
+  if (sessionStorage.getItem(resetKey) === "1") return false;
+
+  sessionStorage.setItem(resetKey, "1");
 
   try {
     if ("serviceWorker" in navigator) {
