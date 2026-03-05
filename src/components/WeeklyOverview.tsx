@@ -503,7 +503,7 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
         entries={entries}
         selectedDate={selectedDate}
         gender={profile?.gender ?? "male"}
-        title="Spurenelemente & Mineralstoffe (Ø 7 Tage)"
+        title="Mineralstoffe & Spurenelemente (Ø 7 Tage)"
         kind="minerals"
         highlighted={hl === "section-mineralstoffe-7-tage"}
         sectionId="section-mineralstoffe-7-tage"
