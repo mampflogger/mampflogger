@@ -7,6 +7,8 @@ const DEFAULT_SELECTION_KEYWORDS = [
   "rezept",
   "eintrag",
   "dropdown",
+  "option",
+  "optionen",
   "liste",
   "auswahl",
   "hilfsmittel",

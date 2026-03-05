@@ -87,6 +87,9 @@ const ActivityInput = ({
   const selectTriggerRef = useRef<HTMLButtonElement>(null);
   const submitButtonRef = useRef<HTMLButtonElement>(null);
   const focusedFieldRef = useRef<FocusedField>("value");
+  const valueVoiceBufferRef = useRef("");
+  const valueVoiceTimerRef = useRef<number | null>(null);
+  const audioContextRef = useRef<AudioContext | null>(null);
 
   const isEditing = !!editingActivity;
 
@@ -111,7 +114,40 @@ const ActivityInput = ({
       .trim()
   ), []);
 
-  const isBookingCommand = useCallback((text: string) => /\b(?:okay|ok|ja|buchen)\b/i.test(text), []);
+  const isBookingCommand = useCallback((text: string) => /\b(?:okay|ja|buchen)\b/i.test(text), []);
+  const isOptionsCommand = useCallback((text: string) => /\b(?:optionen|option|ausklappen|dropdown|liste)\b/i.test(text), []);
+
+  const playConfirmationTone = useCallback(() => {
+    if (typeof window === "undefined") return;
+
+    const AudioContextCtor = window.AudioContext ?? (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+    if (!AudioContextCtor) return;
+
+    if (!audioContextRef.current) {
+      audioContextRef.current = new AudioContextCtor();
+    }
+
+    const ctx = audioContextRef.current;
+    if (ctx.state === "suspended") {
+      void ctx.resume();
+    }
+
+    const oscillator = ctx.createOscillator();
+    const gainNode = ctx.createGain();
+
+    oscillator.type = "sine";
+    oscillator.frequency.setValueAtTime(660, ctx.currentTime);
+
+    gainNode.gain.setValueAtTime(0.0001, ctx.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.025, ctx.currentTime + 0.01);
+    gainNode.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.14);
+
+    oscillator.connect(gainNode);
+    gainNode.connect(ctx.destination);
+
+    oscillator.start();
+    oscillator.stop(ctx.currentTime + 0.15);
+  }, []);
 
   const focusSubmitButton = useCallback(() => {
     setTimeout(() => {
@@ -125,37 +161,76 @@ const ActivityInput = ({
     if (!type) return;
     setSelectedTypeId(type.id);
     setIsTypeOpen(false);
+    playConfirmationTone();
     focusSubmitButton();
-  }, [activityTypes, focusSubmitButton]);
+  }, [activityTypes, focusSubmitButton, playConfirmationTone]);
+
+  const flushSpokenValueBuffer = useCallback(() => {
+    const spokenValue = parseGermanSpokenNumber(valueVoiceBufferRef.current);
+    valueVoiceBufferRef.current = "";
+
+    if (spokenValue === null || spokenValue <= 0) return;
+
+    setValue(String(spokenValue));
+    playConfirmationTone();
+    setTimeout(() => {
+      selectTriggerRef.current?.focus();
+      setFocusedField("type");
+    }, 0);
+  }, [playConfirmationTone]);
 
   const handleVoiceInput = useCallback((transcript: string, isInterim: boolean) => {
     const currentField = focusedFieldRef.current;
 
     if (currentField === "submit" && isBookingCommand(transcript)) {
+      playConfirmationTone();
       submitButtonRef.current?.click();
       return;
     }
 
-    if (isInterim) return;
-
     if (currentField === "value") {
-      const spokenValue = parseGermanSpokenNumber(transcript);
-      if (spokenValue !== null && spokenValue > 0) {
-        setValue(String(spokenValue));
-        setTimeout(() => {
-          selectTriggerRef.current?.focus();
-          setFocusedField("type");
-        }, 0);
+      const chunk = transcript.trim();
+      if (!chunk) return;
+
+      valueVoiceBufferRef.current = `${valueVoiceBufferRef.current} ${chunk}`.trim();
+
+      if (valueVoiceTimerRef.current !== null) {
+        window.clearTimeout(valueVoiceTimerRef.current);
       }
+
+      valueVoiceTimerRef.current = window.setTimeout(() => {
+        valueVoiceTimerRef.current = null;
+        flushSpokenValueBuffer();
+      }, isInterim ? 700 : 500);
       return;
     }
 
+    if (isInterim) return;
     if (currentField !== "type") return;
+
+    if (isBookingCommand(transcript)) {
+      const numValue = Number.parseFloat(value.replace(",", "."));
+      if (selectedTypeId && Number.isFinite(numValue) && numValue > 0) {
+        playConfirmationTone();
+        submitButtonRef.current?.click();
+        return;
+      }
+    }
+
+    if (isOptionsCommand(transcript)) {
+      setIsTypeOpen(true);
+      playConfirmationTone();
+      setTimeout(() => {
+        selectTriggerRef.current?.focus();
+        setFocusedField("type");
+      }, 0);
+      return;
+    }
 
     const pickIndex = parseSpokenSelectionIndex(transcript, {
       allowBareNumber: true,
       max: activityTypes.length || undefined,
-      keywords: ["nummer", "position", "nimm", "nehme", "zeige", "liste", "auswahl", "dropdown", "aktivitaet", "activity"],
+      keywords: ["nummer", "position", "nimm", "nehme", "zeige", "liste", "auswahl", "dropdown", "option", "optionen", "aktivitaet", "activity"],
     });
 
     if (pickIndex !== null) {
@@ -163,12 +238,38 @@ const ActivityInput = ({
       return;
     }
 
-    const normalizedTranscript = normalizeForVoice(transcript);
-    if (normalizedTranscript.length > 0) {
-      const matches = activityTypes.filter((type) => normalizeForVoice(type.name).includes(normalizedTranscript));
+    const normalizedTranscript = normalizeForVoice(transcript)
+      .replace(/\b(?:bitte|nimm|nehme|waehle|waehl|aktivitaet|activity|auswahl|nummer|position|option|optionen)\b/g, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+
+    const searchTerm = normalizedTranscript || normalizeForVoice(transcript);
+    if (searchTerm.length > 0) {
+      let matches = activityTypes.filter((type) => {
+        const normalizedName = normalizeForVoice(type.name);
+        return normalizedName.includes(searchTerm) || searchTerm.includes(normalizedName);
+      });
+
+      if (matches.length !== 1) {
+        const tokens = searchTerm.split(" ").filter((token) => token.length > 1);
+        const scored = activityTypes
+          .map((type) => {
+            const normalizedName = normalizeForVoice(type.name);
+            const score = tokens.reduce((sum, token) => sum + (normalizedName.includes(token) ? 1 : 0), 0);
+            return { type, score };
+          })
+          .filter((item) => item.score > 0)
+          .sort((a, b) => b.score - a.score);
+
+        if (scored.length > 0 && scored[0].score > (scored[1]?.score ?? 0)) {
+          matches = [scored[0].type];
+        }
+      }
+
       if (matches.length === 1) {
         setSelectedTypeId(matches[0].id);
         setIsTypeOpen(false);
+        playConfirmationTone();
         focusSubmitButton();
         return;
       }
@@ -179,7 +280,7 @@ const ActivityInput = ({
       selectTriggerRef.current?.focus();
       setFocusedField("type");
     }, 0);
-  }, [activityTypes, focusSubmitButton, isBookingCommand, normalizeForVoice, selectActivityTypeByIndex]);
+  }, [activityTypes, flushSpokenValueBuffer, focusSubmitButton, isBookingCommand, isOptionsCommand, normalizeForVoice, playConfirmationTone, selectActivityTypeByIndex, selectedTypeId, value]);
 
   useEffect(() => {
     if (!voiceInputRef) return;
@@ -190,10 +291,29 @@ const ActivityInput = ({
   }, [voiceInputRef, handleVoiceInput]);
 
   useEffect(() => {
+    return () => {
+      if (valueVoiceTimerRef.current !== null) {
+        window.clearTimeout(valueVoiceTimerRef.current);
+        valueVoiceTimerRef.current = null;
+      }
+      valueVoiceBufferRef.current = "";
+      if (audioContextRef.current) {
+        void audioContextRef.current.close();
+        audioContextRef.current = null;
+      }
+    };
+  }, []);
+
+  useEffect(() => {
     if (focusRequestId === undefined) return;
     setTimeout(() => {
       valueInputRef.current?.focus();
       setFocusedField("value");
+      valueVoiceBufferRef.current = "";
+      if (valueVoiceTimerRef.current !== null) {
+        window.clearTimeout(valueVoiceTimerRef.current);
+        valueVoiceTimerRef.current = null;
+      }
     }, 0);
   }, [focusRequestId]);
 
@@ -348,7 +468,7 @@ const ActivityInput = ({
             isVoiceActive && focusedField === "submit" ? "ring-2 ring-primary" : ""
           }`}
         >
-          {isVoiceActive && focusedField === "submit" ? "Okay / Ja / Buchen" : (isEditing ? "Speichern" : "OK")}
+          Okay
         </button>
       </div>
 

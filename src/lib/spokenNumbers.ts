@@ -115,11 +115,14 @@ export function parseGermanSpokenNumber(transcript: string): number | null {
   }
 
   const tokens = normalized.split(" ").filter(Boolean);
-  const candidates = [tokens.join(""), ...tokens];
 
-  for (const candidate of candidates) {
-    const parsed = parseGermanNumberWord(candidate);
-    if (parsed !== null) return parsed;
+  // Try longest token windows first (e.g. "fuenf tausend schritte" -> "fuenftausend")
+  for (let size = tokens.length; size >= 1; size -= 1) {
+    for (let start = 0; start + size <= tokens.length; start += 1) {
+      const candidate = tokens.slice(start, start + size).join("");
+      const parsed = parseGermanNumberWord(candidate);
+      if (parsed !== null) return parsed;
+    }
   }
 
   return null;
