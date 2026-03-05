@@ -1,4 +1,5 @@
 import { saveEntries } from "@/lib/storage";
+import { hydrateEntryDerivedData } from "@/lib/entryDerivedData";
 import { BookedActivity, saveBookedActivities, saveProfile, UserProfile } from "@/types/profile";
 import { formatDate, generateId, NutritionEntry } from "@/types/nutrition";
 
@@ -191,11 +192,11 @@ export function buildEmbeddedTestDataset(gender: TestDataGender): EmbeddedTestDa
     const drinkPlan = drinkRotation[dayOffset % drinkRotation.length];
 
     [...drinkPlan, ...mealPlan].forEach((meal) => {
-      entries.push({
+      entries.push(hydrateEntryDerivedData({
         id: generateId(),
         date,
         ...meal,
-      });
+      }));
     });
 
     if (dayOffset % 2 === 0) {
