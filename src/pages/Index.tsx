@@ -65,6 +65,7 @@ const Index = () => {
   const nutritionVoiceRef = useRef<((transcript: string, isInterim: boolean) => void) | undefined>();
   const recipeVoiceRef = useRef<((transcript: string, isInterim: boolean) => void) | undefined>();
   const activityVoiceRef = useRef<((transcript: string, isInterim: boolean) => void) | undefined>();
+  const activityVoiceCaptureUntilRef = useRef(0);
   const foodInputRef = useRef<HTMLInputElement>(null);
   const sectionNav = useSectionNavigation();
 
@@ -114,6 +115,7 @@ const Index = () => {
               setTimeout(() => foodInputRef.current?.focus(), 300);
             }
             if (sectionId === "section-activity") {
+              activityVoiceCaptureUntilRef.current = Date.now() + (needsTabSwitch ? 6000 : 4000);
               setTimeout(() => setActivityFocusRequestId((prev) => prev + 1), needsTabSwitch ? 350 : 120);
             }
           });
@@ -304,7 +306,11 @@ const Index = () => {
       }
 
       const activeElement = document.activeElement as HTMLElement | null;
-      if (activeElement?.closest("#section-activity")) {
+      const isActivityFocused = !!activeElement?.closest("#section-activity");
+      const shouldRouteToActivity = isActivityFocused || Date.now() < activityVoiceCaptureUntilRef.current;
+
+      if (shouldRouteToActivity) {
+        activityVoiceCaptureUntilRef.current = Date.now() + 4000;
         activityVoiceRef.current?.(transcript, isInterim);
         return;
       }
