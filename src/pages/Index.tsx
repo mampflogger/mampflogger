@@ -242,11 +242,12 @@ const Index = () => {
               [/\bfleisch\b/i, "Fleisch&Wurst"], [/\bwurst\b/i, "Fleisch&Wurst"],
               [/\bfisch\b/i, "Fisch&Meeresfrüchte"], [/\bmeeresfrüchte\b/i, "Fisch&Meeresfrüchte"],
               [/\bkäse\b/i, "Käse"], [/\bnüsse\b/i, "Nüsse&Samen"], [/\bsamen\b/i, "Nüsse&Samen"],
-              [/\bgemüse\b/i, "Gemüse"], [/\bbrot\b/i, "Brot"], [/\bteigwaren\b/i, "Teigwaren"],
+              [/\bgemüse\b/i, "Gemüse"], [/\bgetreide\b/i, "Getreide und Teigwaren"], [/\bbrot\b/i, "Getreide und Teigwaren"], [/\bteigwaren\b/i, "Getreide und Teigwaren"],
               [/\böle\b/i, "Öle&Fette"], [/\bfette\b/i, "Öle&Fette"],
               [/\bgetränke\b/i, "Getränke"], [/\bobst\b/i, "Obst"],
               [/\bmilchprodukte\b/i, "Milchprodukte"], [/\bsüßwaren\b/i, "Süßwaren"],
-              [/\bsonstiges\b/i, "Sonstiges"], [/\beigene\b/i, "Eigene"],
+              [/\bstreetfood\b/i, "Streetfood"], [/\bgewürze\b/i, "Gewürze"],
+              [/\bsonstige(s)?\b/i, "Sonstiges"], [/\beigene\b/i, "Eigene"],
               [/\bfertiggerichte\b/i, "Fertiggerichte"],
             ];
             for (const [re, cat] of catMap) {
