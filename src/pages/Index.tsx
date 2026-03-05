@@ -61,8 +61,10 @@ const Index = () => {
   const [settingsVoiceAction, setSettingsVoiceAction] = useState<string | null>(null);
   const [weeklyCoachAnalyzeRequest, setWeeklyCoachAnalyzeRequest] = useState(0);
   const [startupProfilePrompt, setStartupProfilePrompt] = useState(false);
+  const [activityFocusRequestId, setActivityFocusRequestId] = useState(0);
   const nutritionVoiceRef = useRef<((transcript: string, isInterim: boolean) => void) | undefined>();
   const recipeVoiceRef = useRef<((transcript: string, isInterim: boolean) => void) | undefined>();
+  const activityVoiceRef = useRef<((transcript: string, isInterim: boolean) => void) | undefined>();
   const foodInputRef = useRef<HTMLInputElement>(null);
   const sectionNav = useSectionNavigation();
 
@@ -101,7 +103,8 @@ const Index = () => {
         const page = SECTION_PAGE_MAP[sectionId];
         if (page) {
           closeSettingsAndDo(() => {
-            if (page !== activeTabRef.current) {
+            const needsTabSwitch = page !== activeTabRef.current;
+            if (needsTabSwitch) {
               setActiveTab(page);
               setTimeout(() => sectionNav.scrollToSection(sectionId), 200);
             } else {
@@ -109,6 +112,9 @@ const Index = () => {
             }
             if (sectionId === "section-neuer-eintrag") {
               setTimeout(() => foodInputRef.current?.focus(), 300);
+            }
+            if (sectionId === "section-activity") {
+              setTimeout(() => setActivityFocusRequestId((prev) => prev + 1), needsTabSwitch ? 350 : 120);
             }
           });
         }
@@ -296,6 +302,13 @@ const Index = () => {
         }
         return; // Don't pass to food input when in settings
       }
+
+      const activeElement = document.activeElement as HTMLElement | null;
+      if (activeElement?.closest("#section-activity")) {
+        activityVoiceRef.current?.(transcript, isInterim);
+        return;
+      }
+
       nutritionVoiceRef.current?.(transcript, isInterim);
     }, []),
   });
@@ -766,6 +779,9 @@ const Index = () => {
                   onCancelEdit={() => setEditingActivity(null)}
                   activityBonus={activityBonus}
                   goalActivityBonus={profile.goalActivityBonus}
+                  voiceInputRef={activityVoiceRef}
+                  isVoiceActive={voiceCommands.isListening}
+                  focusRequestId={activityFocusRequestId}
                 />
               </div>
             )}

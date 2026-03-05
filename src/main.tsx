@@ -4,6 +4,7 @@ import "./index.css";
 
 const LOVABLE_TOKEN_PARAM = "__lovable_token";
 const LOVABLE_TOKEN_SESSION_KEY = "mampflogger-lovable-preview-token";
+const LOVABLE_TOKEN_LOCAL_KEY_PREFIX = "mampflogger-lovable-preview-token-v2";
 const PREVIEW_BUST_PARAM = "__preview_bust";
 const PREVIEW_CACHE_RESET_KEY_PREFIX = "mampflogger-preview-cache-reset-v3";
 
@@ -12,9 +13,22 @@ function isLovablePreviewHost(): boolean {
   return host.endsWith("lovableproject.com") || (host.endsWith(".lovable.app") && host.includes("--"));
 }
 
+function getPreviewTokenStorageKey(): string {
+  return `${LOVABLE_TOKEN_LOCAL_KEY_PREFIX}:${window.location.hostname}:${window.location.pathname}`;
+}
+
+function readStoredPreviewToken(): string | null {
+  return sessionStorage.getItem(LOVABLE_TOKEN_SESSION_KEY) ?? localStorage.getItem(getPreviewTokenStorageKey());
+}
+
+function persistPreviewToken(token: string): void {
+  sessionStorage.setItem(LOVABLE_TOKEN_SESSION_KEY, token);
+  localStorage.setItem(getPreviewTokenStorageKey(), token);
+}
+
 function getPreviewToken(): string {
   const params = new URLSearchParams(window.location.search);
-  return params.get(LOVABLE_TOKEN_PARAM) ?? sessionStorage.getItem(LOVABLE_TOKEN_SESSION_KEY) ?? "no-token";
+  return params.get(LOVABLE_TOKEN_PARAM) ?? readStoredPreviewToken() ?? "no-token";
 }
 
 function getPreviewCacheResetKey(token: string): string {
@@ -28,11 +42,11 @@ function handleLovablePreviewToken(): boolean {
   const currentToken = params.get(LOVABLE_TOKEN_PARAM);
 
   if (currentToken) {
-    sessionStorage.setItem(LOVABLE_TOKEN_SESSION_KEY, currentToken);
+    persistPreviewToken(currentToken);
     return false;
   }
 
-  const storedToken = sessionStorage.getItem(LOVABLE_TOKEN_SESSION_KEY);
+  const storedToken = readStoredPreviewToken();
   if (!storedToken) return false;
 
   params.set(LOVABLE_TOKEN_PARAM, storedToken);
