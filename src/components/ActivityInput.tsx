@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect, useCallback, type CSSProperties, type MutableRefObject } from "react";
 import {
   ActivityType,
   BookedActivity,
@@ -8,7 +8,7 @@ import {
 import { generateId } from "@/types/nutrition";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Trash2, Plus } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -25,6 +25,10 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { parseSpokenSelectionIndex } from "@/lib/voiceSelection";
+import { parseGermanSpokenNumber } from "@/lib/spokenNumbers";
+
+type FocusedField = "value" | "type" | "submit" | null;
 
 interface ActivityInputProps {
   bookedActivities: BookedActivity[];
@@ -36,6 +40,9 @@ interface ActivityInputProps {
   onCancelEdit: () => void;
   activityBonus: number;
   goalActivityBonus?: number;
+  voiceInputRef?: MutableRefObject<((transcript: string, isInterim: boolean) => void) | undefined>;
+  isVoiceActive?: boolean;
+  focusRequestId?: number;
 }
 
 const ActivityInput = ({
@@ -48,10 +55,12 @@ const ActivityInput = ({
   onCancelEdit,
   activityBonus,
   goalActivityBonus,
+  voiceInputRef,
+  isVoiceActive = false,
+  focusRequestId,
 }: ActivityInputProps) => {
   const [activityTypes, setActivityTypes] = useState<ActivityType[]>(() => {
     const types = loadActivityTypes();
-    // Sort by last used (stored order)
     const lastUsedId = localStorage.getItem("mampflogger-last-activity-type");
     if (lastUsedId) {
       const idx = types.findIndex((t) => t.id === lastUsedId);
@@ -62,21 +71,131 @@ const ActivityInput = ({
     }
     return types;
   });
+
   const [selectedTypeId, setSelectedTypeId] = useState<string>(
-    editingActivity?.activityTypeId || activityTypes[0]?.id || ""
+    editingActivity?.activityTypeId || activityTypes[0]?.id || "",
   );
   const [value, setValue] = useState(editingActivity?.value.toString() || "");
   const [showNewType, setShowNewType] = useState(false);
   const [newName, setNewName] = useState("");
   const [newCalories, setNewCalories] = useState("");
   const [newUnit, setNewUnit] = useState("");
+  const [focusedField, setFocusedField] = useState<FocusedField>("value");
+  const [isTypeOpen, setIsTypeOpen] = useState(false);
 
   const valueInputRef = useRef<HTMLInputElement>(null);
   const selectTriggerRef = useRef<HTMLButtonElement>(null);
   const submitButtonRef = useRef<HTMLButtonElement>(null);
+  const focusedFieldRef = useRef<FocusedField>("value");
 
-  // Sync editing state
   const isEditing = !!editingActivity;
+
+  useEffect(() => {
+    focusedFieldRef.current = focusedField;
+  }, [focusedField]);
+
+  useEffect(() => {
+    if (!editingActivity) return;
+    setSelectedTypeId(editingActivity.activityTypeId);
+    setValue(String(editingActivity.value));
+  }, [editingActivity]);
+
+  const normalizeForVoice = useCallback((text: string) => (
+    text
+      .toLowerCase()
+      .replace(/[.,!?;:]/g, "")
+      .replace(/ä/g, "ae")
+      .replace(/ö/g, "oe")
+      .replace(/ü/g, "ue")
+      .replace(/ß/g, "ss")
+      .trim()
+  ), []);
+
+  const isBookingCommand = useCallback((text: string) => /\b(?:okay|ok|ja|buchen)\b/i.test(text), []);
+
+  const focusSubmitButton = useCallback(() => {
+    setTimeout(() => {
+      submitButtonRef.current?.focus();
+      setFocusedField("submit");
+    }, 0);
+  }, []);
+
+  const selectActivityTypeByIndex = useCallback((index: number) => {
+    const type = activityTypes[index];
+    if (!type) return;
+    setSelectedTypeId(type.id);
+    setIsTypeOpen(false);
+    focusSubmitButton();
+  }, [activityTypes, focusSubmitButton]);
+
+  const handleVoiceInput = useCallback((transcript: string, isInterim: boolean) => {
+    const currentField = focusedFieldRef.current;
+
+    if (currentField === "submit" && isBookingCommand(transcript)) {
+      submitButtonRef.current?.click();
+      return;
+    }
+
+    if (isInterim) return;
+
+    if (currentField === "value") {
+      const spokenValue = parseGermanSpokenNumber(transcript);
+      if (spokenValue !== null && spokenValue > 0) {
+        setValue(String(spokenValue));
+        setTimeout(() => {
+          selectTriggerRef.current?.focus();
+          setFocusedField("type");
+        }, 0);
+      }
+      return;
+    }
+
+    if (currentField !== "type") return;
+
+    const pickIndex = parseSpokenSelectionIndex(transcript, {
+      allowBareNumber: true,
+      max: activityTypes.length || undefined,
+      keywords: ["nummer", "position", "nimm", "nehme", "zeige", "liste", "auswahl", "dropdown", "aktivitaet", "activity"],
+    });
+
+    if (pickIndex !== null) {
+      selectActivityTypeByIndex(pickIndex);
+      return;
+    }
+
+    const normalizedTranscript = normalizeForVoice(transcript);
+    if (normalizedTranscript.length > 0) {
+      const matches = activityTypes.filter((type) => normalizeForVoice(type.name).includes(normalizedTranscript));
+      if (matches.length === 1) {
+        setSelectedTypeId(matches[0].id);
+        setIsTypeOpen(false);
+        focusSubmitButton();
+        return;
+      }
+    }
+
+    setIsTypeOpen(true);
+    setTimeout(() => {
+      selectTriggerRef.current?.focus();
+      setFocusedField("type");
+    }, 0);
+  }, [activityTypes, focusSubmitButton, isBookingCommand, normalizeForVoice, selectActivityTypeByIndex]);
+
+  useEffect(() => {
+    if (!voiceInputRef) return;
+    voiceInputRef.current = handleVoiceInput;
+    return () => {
+      if (voiceInputRef) voiceInputRef.current = undefined;
+    };
+  }, [voiceInputRef, handleVoiceInput]);
+
+  useEffect(() => {
+    if (focusRequestId === undefined) return;
+    setTimeout(() => {
+      valueInputRef.current?.focus();
+      setFocusedField("value");
+    }, 0);
+  }, [focusRequestId]);
 
   const handleSubmit = () => {
     const type = activityTypes.find((t) => t.id === selectedTypeId);
@@ -87,7 +206,6 @@ const ActivityInput = ({
 
     const calories = Math.round(type.caloriesPerUnit * numValue);
 
-    // Move last used type to top
     localStorage.setItem("mampflogger-last-activity-type", type.id);
     const reordered = [type, ...activityTypes.filter((t) => t.id !== type.id)];
     setActivityTypes(reordered);
@@ -116,7 +234,10 @@ const ActivityInput = ({
     setValue("");
     setSelectedTypeId(reordered[0]?.id || "");
     if (isEditing) onCancelEdit();
-    setTimeout(() => valueInputRef.current?.focus(), 0);
+    setTimeout(() => {
+      valueInputRef.current?.focus();
+      setFocusedField("value");
+    }, 0);
   };
 
   const handleAddType = () => {
@@ -150,7 +271,6 @@ const ActivityInput = ({
 
   return (
     <div className="space-y-2">
-      {/* Input row: value, type dropdown, add button */}
       <div className="flex gap-2 items-end">
         <div className="w-16">
           <Label className="text-[10px] font-medium text-muted-foreground mb-1 block">
@@ -164,35 +284,74 @@ const ActivityInput = ({
             placeholder="0"
             value={value}
             onChange={(e) => setValue(e.target.value)}
-            onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); submitButtonRef.current?.focus(); } }}
-            className="h-9 text-xs px-2"
+            onFocus={() => setFocusedField("value")}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                submitButtonRef.current?.focus();
+              }
+            }}
+            className={`h-9 text-xs px-2 ${isVoiceActive && focusedField === "value" ? "ring-2 ring-primary" : ""}`}
           />
         </div>
+
         <div className="flex-1 min-w-0">
           <Label className="text-[10px] font-medium text-muted-foreground mb-1 block">
             Activity
           </Label>
-          <Select value={selectedTypeId} onValueChange={(val) => { setSelectedTypeId(val); setTimeout(() => submitButtonRef.current?.focus(), 0); }}>
-            <SelectTrigger ref={selectTriggerRef} className="h-9 text-xs w-full" onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); e.currentTarget.click(); } }}>
+          <Select
+            open={isTypeOpen}
+            onOpenChange={(open) => {
+              setIsTypeOpen(open);
+              if (open) setFocusedField("type");
+            }}
+            value={selectedTypeId}
+            onValueChange={(val) => {
+              setSelectedTypeId(val);
+              setIsTypeOpen(false);
+              focusSubmitButton();
+            }}
+          >
+            <SelectTrigger
+              ref={selectTriggerRef}
+              className={`h-9 text-xs w-full ${isVoiceActive && focusedField === "type" ? "ring-2 ring-primary" : ""}`}
+              onFocus={() => setFocusedField("type")}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  e.currentTarget.click();
+                }
+              }}
+            >
               <SelectValue placeholder="Wählen..." />
             </SelectTrigger>
             <SelectContent>
-              {activityTypes.map((type) => (
+              {activityTypes.map((type, index) => (
                 <SelectItem key={type.id} value={type.id} className="text-xs">
-                  {type.name}
+                  <span className="flex items-center gap-1.5">
+                    <span className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-muted text-[9px] font-bold text-muted-foreground shrink-0">
+                      {index + 1}
+                    </span>
+                    <span>{type.name}</span>
+                  </span>
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
         </div>
+
         <button
           ref={submitButtonRef}
           onClick={handleSubmit}
-          className="h-9 px-3 rounded-full text-xs font-semibold bg-primary text-primary-foreground shrink-0"
+          onFocus={() => setFocusedField("submit")}
+          className={`h-9 px-3 rounded-full text-xs font-semibold bg-primary text-primary-foreground shrink-0 ${
+            isVoiceActive && focusedField === "submit" ? "ring-2 ring-primary" : ""
+          }`}
         >
-          {isEditing ? "Speichern" : "OK"}
+          {isVoiceActive && focusedField === "submit" ? "Okay / Ja / Buchen" : (isEditing ? "Speichern" : "OK")}
         </button>
       </div>
+
       <div className="mt-1">
         <Dialog open={showNewType} onOpenChange={setShowNewType}>
           <DialogTrigger asChild>
@@ -204,16 +363,15 @@ const ActivityInput = ({
             hideClose
             className="w-screen h-[100dvh] max-w-none max-h-[100dvh] rounded-none border-0 flex flex-col p-0 gap-0 data-[state=open]:animate-none data-[state=closed]:animate-none md:left-0 md:top-0 md:w-screen md:translate-x-0 md:translate-y-0 md:h-[100dvh] md:max-h-[100dvh] md:max-w-none md:rounded-none md:border-0"
             style={{
-              '--tw-enter-scale': '1',
-              '--tw-exit-scale': '1',
-              '--tw-enter-translate-x': '0',
-              '--tw-enter-translate-y': '0',
-              '--tw-exit-translate-x': '0',
-              '--tw-exit-translate-y': '0',
-            } as React.CSSProperties}
+              "--tw-enter-scale": "1",
+              "--tw-exit-scale": "1",
+              "--tw-enter-translate-x": "0",
+              "--tw-enter-translate-y": "0",
+              "--tw-exit-translate-x": "0",
+              "--tw-exit-translate-y": "0",
+            } as CSSProperties}
           >
-            {/* Standard header */}
-            <header className="shrink-0 sticky top-0 z-10 bg-background/80 backdrop-blur-lg border-b border-border" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
+            <header className="shrink-0 sticky top-0 z-10 bg-background/80 backdrop-blur-lg border-b border-border" style={{ paddingTop: "env(safe-area-inset-top)" }}>
               <div className="max-w-lg mx-auto px-4 py-3">
                 <div className="flex items-center justify-between">
                   <a href="/" className="flex items-center gap-2 no-underline text-foreground">
@@ -240,7 +398,6 @@ const ActivityInput = ({
                 <DialogDescription>Definiere eine neue Sportart mit Kalorienverbrauch pro Einheit.</DialogDescription>
               </DialogHeader>
               <div className="max-w-lg mx-auto px-4 w-full pb-8">
-                {/* New activity form card */}
                 <div className="glass-card rounded-xl p-3 my-3 space-y-3">
                   <h2 className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Neue Aktivität</h2>
                   <div>
@@ -278,7 +435,6 @@ const ActivityInput = ({
                   </Button>
                 </div>
 
-                {/* Existing types card */}
                 <div className="glass-card rounded-xl p-3 space-y-1">
                   <h2 className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-2">Gespeicherte Workouts</h2>
                   {activityTypes.map((t) => (
@@ -305,7 +461,6 @@ const ActivityInput = ({
         </button>
       )}
 
-      {/* Booked activities list */}
       {todayActivities.length > 0 && (
         <div className="space-y-0.5">
           {todayActivities.map((a) => (
@@ -337,6 +492,7 @@ const ActivityInput = ({
           </div>
         </div>
       )}
+
       {goalActivityBonus && goalActivityBonus > 0 && (
         <>
           <div className="h-2 rounded-full bg-muted overflow-hidden mt-2">

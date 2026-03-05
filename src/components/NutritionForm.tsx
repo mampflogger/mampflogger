@@ -69,11 +69,10 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
     });
   }, []);
 
-  // Helper: fuzzy match for "buchen" command (and aliases: ja, okay, yes, check, copy)
+  // Helper: booking command is intentionally limited to: okay, ja, buchen
   const isBuchenCommand = useCallback((text: string) => {
     const lower = text.toLowerCase().trim();
-    // Match "buchen" variants + short confirmation words
-    return /\b(buchen|buche|buch|buchem|bucher|buchern|butchen|bu[ck]h?en?|ja|okay|yes|check|copy)\b/.test(lower);
+    return /\b(okay|ok|ja|buchen)\b/.test(lower);
   }, []);
 
   // Helper: fuzzy match for "storno" command (clear current field)
@@ -583,7 +582,7 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
           }`}
         >
           {isVoiceActive && (focusedField === "submit" || focusedField === "amount")
-            ? <span className="italic">Sag „Okay" oder „Ja"</span>
+            ? <span className="italic">Sag „Okay", „Ja" oder „Buchen"</span>
             : (editingEntry ? "Speichern" : "Hinzufügen")}
         </button>
         {editingEntry && (
