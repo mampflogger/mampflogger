@@ -31,7 +31,7 @@ const COMMANDS: VoiceCommand[] = [
   { patterns: [/\btagesübersicht\b/i], action: "section:tagesuebersicht" },
   { patterns: [/\bkalorienaufnahme\b/i], action: "section:kalorienaufnahme" },
   { patterns: [/\bfasten/i], action: "section:fastenanalyse" },
-  { patterns: [/\bactivit/i, /\baktivität/i, /\baktivitäten\b/i], action: "section:activity" },
+  { patterns: [/\bactivit/i, /\baktivität/i, /\baktivitaet\b/i, /\baktivitäten\b/i, /\bworkout\b/i, /\bworkouts\b/i], action: "section:activity" },
   { patterns: [/\bkalorienbilanz\b/i, /\bbilanz\b/i], action: "section:kalorienbilanz" },
   { patterns: [/\bflüssigkeit\b/i], action: "section:fluessigkeit" },
 
