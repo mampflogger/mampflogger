@@ -14,7 +14,6 @@ import {
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
 } from "@/components/ui/select";
 import {
   Dialog,
@@ -115,6 +114,7 @@ const ActivityInput = ({
   ), []);
 
   const isBookingCommand = useCallback((text: string) => /\b(?:okay|ja|buchen)\b/i.test(text), []);
+  const isStornoCommand = useCallback((text: string) => /\b(?:storno|abbrechen|reset|zurueck|zurück)\b/i.test(text), []);
   const isOptionsCommand = useCallback((text: string) => /\b(?:optionen|option|ausklappen|dropdown|liste)\b/i.test(text), []);
 
   const playConfirmationTone = useCallback(() => {
@@ -135,18 +135,18 @@ const ActivityInput = ({
     const oscillator = ctx.createOscillator();
     const gainNode = ctx.createGain();
 
-    oscillator.type = "sine";
-    oscillator.frequency.setValueAtTime(660, ctx.currentTime);
+    oscillator.type = "triangle";
+    oscillator.frequency.setValueAtTime(520, ctx.currentTime);
 
     gainNode.gain.setValueAtTime(0.0001, ctx.currentTime);
-    gainNode.gain.exponentialRampToValueAtTime(0.025, ctx.currentTime + 0.01);
-    gainNode.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.14);
+    gainNode.gain.exponentialRampToValueAtTime(0.012, ctx.currentTime + 0.03);
+    gainNode.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.22);
 
     oscillator.connect(gainNode);
     gainNode.connect(ctx.destination);
 
     oscillator.start();
-    oscillator.stop(ctx.currentTime + 0.15);
+    oscillator.stop(ctx.currentTime + 0.24);
   }, []);
 
   const focusSubmitButton = useCallback(() => {
@@ -155,6 +155,24 @@ const ActivityInput = ({
       setFocusedField("submit");
     }, 0);
   }, []);
+
+  const resetActivityInput = useCallback((cancelEdit = false) => {
+    setValue("");
+    setSelectedTypeId(activityTypes[0]?.id || "");
+    setIsTypeOpen(false);
+    valueVoiceBufferRef.current = "";
+    if (valueVoiceTimerRef.current !== null) {
+      window.clearTimeout(valueVoiceTimerRef.current);
+      valueVoiceTimerRef.current = null;
+    }
+    if (cancelEdit && isEditing) {
+      onCancelEdit();
+    }
+    setTimeout(() => {
+      valueInputRef.current?.focus();
+      setFocusedField("value");
+    }, 0);
+  }, [activityTypes, isEditing, onCancelEdit]);
 
   const selectActivityTypeByIndex = useCallback((index: number) => {
     const type = activityTypes[index];
@@ -182,6 +200,12 @@ const ActivityInput = ({
   const handleVoiceInput = useCallback((transcript: string, isInterim: boolean) => {
     const currentField = focusedFieldRef.current;
 
+    if (isStornoCommand(transcript)) {
+      playConfirmationTone();
+      resetActivityInput(true);
+      return;
+    }
+
     if (currentField === "submit" && isBookingCommand(transcript)) {
       playConfirmationTone();
       submitButtonRef.current?.click();
@@ -201,7 +225,7 @@ const ActivityInput = ({
       valueVoiceTimerRef.current = window.setTimeout(() => {
         valueVoiceTimerRef.current = null;
         flushSpokenValueBuffer();
-      }, isInterim ? 700 : 500);
+      }, isInterim ? 1500 : 1100);
       return;
     }
 
@@ -228,7 +252,7 @@ const ActivityInput = ({
     }
 
     const pickIndex = parseSpokenSelectionIndex(transcript, {
-      allowBareNumber: true,
+      allowBareNumber: false,
       max: activityTypes.length || undefined,
       keywords: ["nummer", "position", "nimm", "nehme", "zeige", "liste", "auswahl", "dropdown", "option", "optionen", "aktivitaet", "activity"],
     });
@@ -247,7 +271,7 @@ const ActivityInput = ({
     if (searchTerm.length > 0) {
       let matches = activityTypes.filter((type) => {
         const normalizedName = normalizeForVoice(type.name);
-        return normalizedName.includes(searchTerm) || searchTerm.includes(normalizedName);
+        return normalizedName === searchTerm || normalizedName.startsWith(searchTerm) || normalizedName.includes(searchTerm) || searchTerm.includes(normalizedName);
       });
 
       if (matches.length !== 1) {
@@ -280,7 +304,7 @@ const ActivityInput = ({
       selectTriggerRef.current?.focus();
       setFocusedField("type");
     }, 0);
-  }, [activityTypes, flushSpokenValueBuffer, focusSubmitButton, isBookingCommand, isOptionsCommand, normalizeForVoice, playConfirmationTone, selectActivityTypeByIndex, selectedTypeId, value]);
+  }, [activityTypes, flushSpokenValueBuffer, focusSubmitButton, isBookingCommand, isOptionsCommand, isStornoCommand, normalizeForVoice, playConfirmationTone, resetActivityInput, selectActivityTypeByIndex, selectedTypeId, value]);
 
   useEffect(() => {
     if (!voiceInputRef) return;
@@ -443,7 +467,7 @@ const ActivityInput = ({
                 }
               }}
             >
-              <SelectValue placeholder="Wählen..." />
+              <span className="block truncate text-left">{selectedType?.name || "Wählen..."}</span>
             </SelectTrigger>
             <SelectContent>
               {activityTypes.map((type, index) => (
@@ -468,7 +492,7 @@ const ActivityInput = ({
             isVoiceActive && focusedField === "submit" ? "ring-2 ring-primary" : ""
           }`}
         >
-          Okay
+          OK
         </button>
       </div>
 
