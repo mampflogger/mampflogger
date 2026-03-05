@@ -7,15 +7,17 @@ export const FOOD_CATEGORIES = [
   "Käse",
   "Nüsse&Samen",
   "Gemüse",
-  "Brot&Teigwaren",
+  "Getreide und Teigwaren",
   "Öle&Fette",
   "Getränke",
   "Obst",
   "Milchprodukte",
   "Süßwaren",
-  "Sonstiges",
-  "Eigene",
   "Fertiggerichte",
+  "Streetfood",
+  "Gewürze",
+  "Eigene",
+  "Sonstiges",
 ] as const;
 
 export type FoodCategory = typeof FOOD_CATEGORIES[number];
@@ -182,13 +184,15 @@ export function guessCategory(name: string, aiCategory?: string): FoodCategory {
     [["käse", "parmesan", "mozzarella", "gouda", "edamer", "emmentaler", "cheddar", "feta", "brie", "camembert", "halloumi", "ricotta", "gorgonzola"], "Käse"],
     [["nuss", "nüsse", "mandel", "cashew", "pistazie", "walnuss", "erdnuss", "samen", "kerne", "pekan", "macadamia", "haselnuss", "paranuss"], "Nüsse&Samen"],
     [["salat", "spinat", "kohl", "brokkoli", "blumenkohl", "zucchini", "aubergine", "paprika", "tomate", "gurke", "karotte", "möhre", "lauch", "zwiebel", "knoblauch", "sellerie", "fenchel", "radieschen", "champignon", "pilz", "erbse", "bohne", "gemüse", "kartoffel", "süßkartoffel", "kürbis", "mais", "petersilie", "basilikum", "kräuter", "dill", "schnittlauch", "rosmarin", "thymian", "oregano", "kohlrabi", "rote bete"], "Gemüse"],
-    [["brot", "nudel", "pasta", "spaghetti", "penne", "makkaroni", "reis", "mehl", "teig", "semmel", "brötchen", "toast", "couscous", "bulgur", "quinoa", "haferflocken", "müsli", "cornflakes", "tortilla", "wrap"], "Brot&Teigwaren"],
+    [["brot", "nudel", "pasta", "spaghetti", "penne", "makkaroni", "reis", "mehl", "teig", "semmel", "brötchen", "toast", "couscous", "bulgur", "quinoa", "haferflocken", "müsli", "cornflakes", "tortilla"], "Getreide und Teigwaren"],
     [["öl", "fett", "butter", "margarine", "schmalz", "mayonnaise", "mayo"], "Öle&Fette"],
     [["saft", "cola", "limo", "wasser", "tee", "kaffee", "milchkaffee", "kakao", "brühe", "smoothie", "bier", "wein", "sekt", "energy", "mate"], "Getränke"],
     [["apfel", "birne", "banane", "orange", "zitrone", "limette", "kiwi", "mango", "ananas", "erdbeere", "himbeere", "blaubeere", "heidelbeere", "kirsche", "traube", "melone", "pflaume", "pfirsich", "aprikose", "obst", "beere"], "Obst"],
     [["joghurt", "quark", "milch", "sahne", "rahm", "skyr", "buttermilch", "kefir", "schmand", "crème fraîche", "molke"], "Milchprodukte"],
     [["schokolade", "gummibärchen", "bonbon", "keks", "kuchen", "eis", "zucker", "honig", "marmelade", "nutella", "süß"], "Süßwaren"],
-    [["tiefkühlpizza", "fertiggericht", "pizza tk", "lasagne tk", "tk-pizza", "mikrowelle", "fertig-", "convenience", "tk ", "tiefkühl", "döner", "kebab", "burger", "asia-pfanne", "bami goreng", "nasi goreng", "cordon bleu", "cevapcici", "kroketten", "kartoffelpuffer", "wrap", "burrito", "hot dog", "chicken wings", "wedges", "taquitos", "backfisch", "rösti", "frikadellen", "cannelloni", "mac and cheese"], "Fertiggerichte"],
+    [["döner", "kebab", "burger", "hot dog", "burrito", "taco", "wrap", "falafel", "gyros pita", "pommes", "currywurst", "sandwich to go"], "Streetfood"],
+    [["salz", "pfeffer", "curry", "paprikapulver", "zimt", "kurkuma", "oregano", "basilikum", "thymian", "rosmarin", "kreuzkümmel", "muskat", "chili", "gewürz", "würzmischung"], "Gewürze"],
+    [["tiefkühlpizza", "fertiggericht", "pizza tk", "lasagne tk", "tk-pizza", "mikrowelle", "fertig-", "convenience", "tk ", "tiefkühl", "asia-pfanne", "bami goreng", "nasi goreng", "cordon bleu", "cevapcici", "kroketten", "kartoffelpuffer", "chicken wings", "wedges", "taquitos", "backfisch", "rösti", "frikadellen", "cannelloni", "mac and cheese"], "Fertiggerichte"],
   ];
   for (const [words, cat] of keywords) {
     if (words.some(w => lower.includes(w))) return cat;
@@ -262,6 +266,10 @@ const LEGACY_FOOD_RENAMES: Record<string, string> = {
   "Appenzeller 50 %": "Appenzeller 50 % i. Tr.",
 };
 
+const LEGACY_CATEGORY_RENAMES: Partial<Record<string, FoodCategory>> = {
+  "Brot&Teigwaren": "Getreide und Teigwaren",
+};
+
 const REMOVED_FOOD_NAMES = new Set([
   "tafelspitz (rind)",
   "rinderbrust (tafelspitz)",
@@ -300,8 +308,15 @@ function loadFoodDatabase(): FoodItem[] {
         changed = true;
         continue;
       }
+      const migratedCategory = item.category ? LEGACY_CATEGORY_RENAMES[item.category] ?? item.category : item.category;
+      if (migratedCategory !== item.category) {
+        changed = true;
+      }
       seenStoredNames.add(key);
-      cleanedStored.push(item);
+      cleanedStored.push({
+        ...item,
+        ...(migratedCategory ? { category: migratedCategory } : {}),
+      });
     }
 
     // Build a map of stored items by name (lowercase)

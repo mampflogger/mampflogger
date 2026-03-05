@@ -162,6 +162,7 @@ const SettingsDialog = ({
   const deleteToRef = React.useRef<HTMLInputElement>(null);
   const deletePreviewBtnRef = React.useRef<HTMLButtonElement>(null);
   const nameInputRef = React.useRef<HTMLInputElement>(null);
+  const foodNameInputRef = React.useRef<HTMLInputElement>(null);
 
   // Delete state
   const [fromDate, setFromDate] = useState("");
@@ -343,6 +344,7 @@ const SettingsDialog = ({
     setEditVitamins({});
     setEditMinerals({});
     setEditDietary({});
+    setTimeout(() => foodNameInputRef.current?.focus(), 0);
   };
 
   const parseDietaryFlagValue = (value: unknown): boolean | undefined => {
@@ -1303,7 +1305,7 @@ const SettingsDialog = ({
                   <div className="grid grid-cols-5 gap-1.5">
                     <div className="col-span-4">
                       <Label className="text-[8px] text-muted-foreground leading-none block mb-0.5">Lebensmittel</Label>
-                      <Input value={editFoodName} onChange={(e) => setEditFoodName(e.target.value)} className="h-6 !text-[10px] px-1 text-left" autoCorrect="off" spellCheck={false} />
+                      <Input ref={foodNameInputRef} value={editFoodName} onChange={(e) => setEditFoodName(e.target.value)} className="h-6 !text-[10px] px-1 text-left" autoCorrect="off" spellCheck={false} />
                     </div>
                     <div className="col-span-1">
                       <Label className="text-[8px] text-muted-foreground leading-none block mb-0.5">g/ml</Label>
