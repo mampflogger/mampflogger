@@ -51,6 +51,29 @@ function normalize(value: string): string {
     .trim();
 }
 
+function parseNumericLiteral(normalizedTranscript: string): number | null {
+  const thousandSeparated = normalizedTranscript.match(/\b\d{1,3}(?:[.\s]\d{3})+(?:,\d+)?\b/);
+  if (thousandSeparated) {
+    const [integerRaw, fractionRaw] = thousandSeparated[0].split(",");
+    const integer = integerRaw.replace(/[.\s]/g, "");
+    const numeric = fractionRaw ? `${integer}.${fractionRaw}` : integer;
+    const parsed = Number.parseFloat(numeric);
+    return Number.isFinite(parsed) ? parsed : null;
+  }
+
+  const directNumeric = normalizedTranscript.match(/\b\d+(?:[.,]\d+)?\b/);
+  if (!directNumeric) return null;
+
+  const token = directNumeric[0];
+  if (/^\d{1,3}(?:\.\d{3})+$/.test(token)) {
+    const parsed = Number.parseInt(token.replace(/\./g, ""), 10);
+    return Number.isFinite(parsed) ? parsed : null;
+  }
+
+  const parsed = Number.parseFloat(token.replace(",", "."));
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
 function parseUnderHundred(word: string): number | null {
   if (word in SMALL_NUMBERS) return SMALL_NUMBERS[word];
   if (word in TENS) return TENS[word];
@@ -108,10 +131,9 @@ export function parseGermanSpokenNumber(transcript: string): number | null {
   const normalized = normalize(transcript);
   if (!normalized) return null;
 
-  const directMatch = normalized.match(/\d+(?:[.,]\d+)?/);
-  if (directMatch) {
-    const numeric = Number.parseFloat(directMatch[0].replace(",", "."));
-    return Number.isFinite(numeric) ? numeric : null;
+  const numericLiteral = parseNumericLiteral(normalized);
+  if (numericLiteral !== null) {
+    return numericLiteral;
   }
 
   const tokens = normalized.split(" ").filter(Boolean);

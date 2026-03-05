@@ -88,6 +88,7 @@ const ActivityInput = ({
   const focusedFieldRef = useRef<FocusedField>("value");
   const valueVoiceBufferRef = useRef("");
   const valueVoiceTimerRef = useRef<number | null>(null);
+  const pendingTypeIgnoreNumericUntilRef = useRef(0);
   const audioContextRef = useRef<AudioContext | null>(null);
 
   const isEditing = !!editingActivity;
@@ -135,18 +136,18 @@ const ActivityInput = ({
     const oscillator = ctx.createOscillator();
     const gainNode = ctx.createGain();
 
-    oscillator.type = "triangle";
-    oscillator.frequency.setValueAtTime(520, ctx.currentTime);
+    oscillator.type = "sine";
+    oscillator.frequency.setValueAtTime(420, ctx.currentTime);
 
     gainNode.gain.setValueAtTime(0.0001, ctx.currentTime);
-    gainNode.gain.exponentialRampToValueAtTime(0.012, ctx.currentTime + 0.03);
-    gainNode.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.22);
+    gainNode.gain.exponentialRampToValueAtTime(0.008, ctx.currentTime + 0.05);
+    gainNode.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.28);
 
     oscillator.connect(gainNode);
     gainNode.connect(ctx.destination);
 
     oscillator.start();
-    oscillator.stop(ctx.currentTime + 0.24);
+    oscillator.stop(ctx.currentTime + 0.3);
   }, []);
 
   const focusSubmitButton = useCallback(() => {
@@ -160,6 +161,7 @@ const ActivityInput = ({
     setValue("");
     setSelectedTypeId(activityTypes[0]?.id || "");
     setIsTypeOpen(false);
+    pendingTypeIgnoreNumericUntilRef.current = 0;
     valueVoiceBufferRef.current = "";
     if (valueVoiceTimerRef.current !== null) {
       window.clearTimeout(valueVoiceTimerRef.current);
@@ -191,6 +193,7 @@ const ActivityInput = ({
 
     setValue(String(spokenValue));
     playConfirmationTone();
+    pendingTypeIgnoreNumericUntilRef.current = Date.now() + 1500;
     setTimeout(() => {
       selectTriggerRef.current?.focus();
       setFocusedField("type");
@@ -201,8 +204,25 @@ const ActivityInput = ({
     const currentField = focusedFieldRef.current;
 
     if (isStornoCommand(transcript)) {
+      pendingTypeIgnoreNumericUntilRef.current = 0;
       playConfirmationTone();
       resetActivityInput(true);
+      return;
+    }
+
+    if (isOptionsCommand(transcript)) {
+      valueVoiceBufferRef.current = "";
+      if (valueVoiceTimerRef.current !== null) {
+        window.clearTimeout(valueVoiceTimerRef.current);
+        valueVoiceTimerRef.current = null;
+      }
+      pendingTypeIgnoreNumericUntilRef.current = 0;
+      setIsTypeOpen(true);
+      playConfirmationTone();
+      setTimeout(() => {
+        selectTriggerRef.current?.focus();
+        setFocusedField("type");
+      }, 0);
       return;
     }
 
@@ -225,7 +245,7 @@ const ActivityInput = ({
       valueVoiceTimerRef.current = window.setTimeout(() => {
         valueVoiceTimerRef.current = null;
         flushSpokenValueBuffer();
-      }, isInterim ? 1500 : 1100);
+      }, isInterim ? 1800 : 1400);
       return;
     }
 
@@ -241,14 +261,12 @@ const ActivityInput = ({
       }
     }
 
-    if (isOptionsCommand(transcript)) {
-      setIsTypeOpen(true);
-      playConfirmationTone();
-      setTimeout(() => {
-        selectTriggerRef.current?.focus();
-        setFocusedField("type");
-      }, 0);
-      return;
+    const hasSelectionKeyword = /\b(?:nummer|position|nimm|nehme|zeige|liste|auswahl|dropdown|option|optionen)\b/i.test(transcript);
+    if (!hasSelectionKeyword && Date.now() < pendingTypeIgnoreNumericUntilRef.current) {
+      const carryOverNumber = parseGermanSpokenNumber(transcript);
+      if (carryOverNumber !== null) {
+        return;
+      }
     }
 
     const pickIndex = parseSpokenSelectionIndex(transcript, {
@@ -258,6 +276,7 @@ const ActivityInput = ({
     });
 
     if (pickIndex !== null) {
+      pendingTypeIgnoreNumericUntilRef.current = 0;
       selectActivityTypeByIndex(pickIndex);
       return;
     }
@@ -291,6 +310,7 @@ const ActivityInput = ({
       }
 
       if (matches.length === 1) {
+        pendingTypeIgnoreNumericUntilRef.current = 0;
         setSelectedTypeId(matches[0].id);
         setIsTypeOpen(false);
         playConfirmationTone();
@@ -333,6 +353,7 @@ const ActivityInput = ({
     setTimeout(() => {
       valueInputRef.current?.focus();
       setFocusedField("value");
+      pendingTypeIgnoreNumericUntilRef.current = 0;
       valueVoiceBufferRef.current = "";
       if (valueVoiceTimerRef.current !== null) {
         window.clearTimeout(valueVoiceTimerRef.current);

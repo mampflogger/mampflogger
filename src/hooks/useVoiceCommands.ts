@@ -40,6 +40,8 @@ const COMMANDS: VoiceCommand[] = [
   { patterns: [/\bdefizit/i], action: "section:defizit-pro-tag" },
   { patterns: [/\bmakros?\s+pro\s+tag\b/i], action: "section:makros-pro-tag" },
   { patterns: [/\bmakro.?verteilung\b/i, /\bverteilung\b/i], action: "section:makro-verteilung" },
+  { patterns: [/\bvitamine?\b/i], action: "section:vitamine-7-tage" },
+  { patterns: [/\bmineralstoffe?\b/i, /\bspurenelemente?\b/i], action: "section:mineralstoffe-7-tage" },
   { patterns: [/\bwochenanalyse\b/i, /\bwoche\s+analysieren\b/i, /^\s*analyse\s*$/i, /\bernährungsberater\b/i, /\bernährungscoach\b/i, /\bcoach\b/i], action: "action:weekly-analysis" },
   { patterns: [/\bübersicht\b/i], action: "section:uebersicht" },
 
@@ -103,6 +105,8 @@ export const SECTION_PAGE_MAP: Record<string, "log" | "weekly"> = {
   "section-defizit-pro-tag": "weekly",
   "section-makros-pro-tag": "weekly",
   "section-makro-verteilung": "weekly",
+  "section-vitamine-7-tage": "weekly",
+  "section-mineralstoffe-7-tage": "weekly",
   "section-ki-coach": "weekly",
 };
 
