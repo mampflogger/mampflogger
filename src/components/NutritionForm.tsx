@@ -9,7 +9,7 @@ import { X } from "lucide-react";
 import { toast } from "sonner";
 import { parseSpokenSelectionIndex } from "@/lib/voiceSelection";
 
-type FocusedField = "food" | "amount" | "submit" | null;
+type FocusedField = "time" | "food" | "amount" | "submit" | null;
 
 interface NutritionFormProps {
   onAdd: (entry: NutritionEntry) => void;
@@ -44,6 +44,7 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
   const suggestionsRef = useRef<FoodItem[]>([]);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLUListElement>(null);
+  const timeInputRef = useRef<HTMLInputElement>(null);
   const foodInputRef = useRef<HTMLInputElement>(null);
   const amountInputRef = useRef<HTMLInputElement>(null);
   const submitButtonRef = useRef<HTMLButtonElement>(null);
@@ -175,6 +176,62 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
       }
     };
   }, [voiceInputRef, handleVoiceInput]);
+
+  // Field navigation commands (Zurück / Weiter / Löschen)
+  useEffect(() => {
+    const FIELD_ORDER: FocusedField[] = ["time", "food", "amount", "submit"];
+    const handler = (e: Event) => {
+      const cmd = (e as CustomEvent).detail as string;
+      const current = focusedFieldRef.current;
+      const idx = current ? FIELD_ORDER.indexOf(current) : -1;
+
+      if (cmd === "field:next") {
+        const next = FIELD_ORDER[Math.min(idx + 1, FIELD_ORDER.length - 1)];
+        if (next) {
+          setFocusedField(next);
+          setTimeout(() => {
+            if (next === "time") timeInputRef.current?.focus();
+            else if (next === "food") foodInputRef.current?.focus();
+            else if (next === "amount") amountInputRef.current?.focus();
+            else if (next === "submit") submitButtonRef.current?.focus();
+          }, 0);
+        }
+      } else if (cmd === "field:prev") {
+        const prev = FIELD_ORDER[Math.max(idx - 1, 0)];
+        if (prev) {
+          setFocusedField(prev);
+          setTimeout(() => {
+            if (prev === "time") timeInputRef.current?.focus();
+            else if (prev === "food") foodInputRef.current?.focus();
+            else if (prev === "amount") amountInputRef.current?.focus();
+            else if (prev === "submit") submitButtonRef.current?.focus();
+          }, 0);
+        }
+      } else if (cmd === "field:clear") {
+        if (current === "time") {
+          setTime("");
+          timeInputRef.current?.focus();
+        } else if (current === "food") {
+          setFood("");
+          setSelectedFood(null);
+          setSuggestions([]);
+          setShowSuggestions(false);
+          foodInputRef.current?.focus();
+        } else if (current === "amount") {
+          setAmount("");
+          setCalories("");
+          setProtein("");
+          setCarbs("");
+          setFat("");
+          setFiber("");
+          setGi("");
+          amountInputRef.current?.focus();
+        }
+      }
+    };
+    window.addEventListener("mampflogger:field-command", handler);
+    return () => window.removeEventListener("mampflogger:field-command", handler);
+  }, []);
 
   // Load editing entry into form
   useEffect(() => {
@@ -419,11 +476,13 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
           </Label>
           <Input
             id="time"
+            ref={timeInputRef}
             type="text"
             inputMode="numeric"
             placeholder="08:00"
             value={time}
             onChange={(e) => handleTimeChange(e.target.value)}
+            onFocus={() => setFocusedField("time")}
             className="h-9 text-[10px] px-1 min-w-0 text-center"
             autoCorrect="off"
             spellCheck={false}

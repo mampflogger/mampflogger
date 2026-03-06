@@ -115,7 +115,7 @@ const ActivityInput = ({
   ), []);
 
   const isBookingCommand = useCallback((text: string) => /\b(?:okay|ja|buchen)\b/i.test(text), []);
-  const isStornoCommand = useCallback((text: string) => /\b(?:storno|abbrechen|reset|zurueck|zurück)\b/i.test(text), []);
+  const isStornoCommand = useCallback((text: string) => /\b(?:storno|abbrechen|reset)\b/i.test(text), []);
   const isOptionsCommand = useCallback((text: string) => /\b(?:optionen|option|ausklappen|dropdown|liste)\b/i.test(text), []);
 
   const playConfirmationTone = useCallback(() => {
@@ -361,6 +361,53 @@ const ActivityInput = ({
       }
     }, 0);
   }, [focusRequestId]);
+
+  // Field navigation commands (Zurück / Weiter / Löschen)
+  useEffect(() => {
+    const FIELD_ORDER: FocusedField[] = ["value", "type", "submit"];
+    const handler = (e: Event) => {
+      const cmd = (e as CustomEvent).detail as string;
+      const current = focusedFieldRef.current;
+      const idx = current ? FIELD_ORDER.indexOf(current) : -1;
+
+      if (cmd === "field:next") {
+        const next = FIELD_ORDER[Math.min(idx + 1, FIELD_ORDER.length - 1)];
+        if (next) {
+          setFocusedField(next);
+          setTimeout(() => {
+            if (next === "value") valueInputRef.current?.focus();
+            else if (next === "type") selectTriggerRef.current?.focus();
+            else if (next === "submit") submitButtonRef.current?.focus();
+          }, 0);
+        }
+      } else if (cmd === "field:prev") {
+        const prev = FIELD_ORDER[Math.max(idx - 1, 0)];
+        if (prev) {
+          setFocusedField(prev);
+          setTimeout(() => {
+            if (prev === "value") valueInputRef.current?.focus();
+            else if (prev === "type") selectTriggerRef.current?.focus();
+            else if (prev === "submit") submitButtonRef.current?.focus();
+          }, 0);
+        }
+      } else if (cmd === "field:clear") {
+        if (current === "value") {
+          setValue("");
+          valueVoiceBufferRef.current = "";
+          if (valueVoiceTimerRef.current !== null) {
+            window.clearTimeout(valueVoiceTimerRef.current);
+            valueVoiceTimerRef.current = null;
+          }
+          valueInputRef.current?.focus();
+        } else if (current === "type") {
+          setSelectedTypeId(activityTypes[0]?.id || "");
+          selectTriggerRef.current?.focus();
+        }
+      }
+    };
+    window.addEventListener("mampflogger:field-command", handler);
+    return () => window.removeEventListener("mampflogger:field-command", handler);
+  }, [activityTypes]);
 
   const handleSubmit = () => {
     const type = activityTypes.find((t) => t.id === selectedTypeId);
