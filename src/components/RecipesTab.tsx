@@ -776,7 +776,7 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry, voiceExpandIndex, onVoi
 
       {showManualForm && (
         <div className="mb-2">
-          <ManualRecipeForm onSave={handleManualSave} onCancel={() => setShowManualForm(false)} />
+          <ManualRecipeForm onSave={handleManualSave} onCancel={() => setShowManualForm(false)} voiceInputRef={manualFormVoiceRef} isVoiceActive={!!voiceInputRef?.current} />
         </div>
       )}
 
