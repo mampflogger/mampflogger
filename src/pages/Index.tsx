@@ -120,6 +120,7 @@ const Index = () => {
               sectionNav.scrollToSection(sectionId);
             }
             if (sectionId === "section-neuer-eintrag") {
+              activityVoiceCaptureUntilRef.current = 0;
               focusFoodField(300);
             }
             if (sectionId === "section-activity") {
@@ -216,7 +217,18 @@ const Index = () => {
         }
       }
       else if (action === "field:next" || action === "field:prev" || action === "field:clear") {
-        window.dispatchEvent(new CustomEvent("mampflogger:field-command", { detail: action }));
+        const activeElement = document.activeElement as HTMLElement | null;
+        const scope = activeElement?.closest('[data-voice-scope="manual-recipe"]')
+          ? "manual-recipe"
+          : activeElement?.closest("#section-neuer-eintrag")
+            ? "nutrition"
+            : activeElement?.closest("#section-activity")
+              ? "activity"
+              : (settingsOpenRef.current && settingsTabRef.current === "recipes" ? "manual-recipe" : null);
+
+        if (scope) {
+          window.dispatchEvent(new CustomEvent("mampflogger:field-command", { detail: { action, scope } }));
+        }
       }
       else if (action === "action:weekly-analysis") {
         closeSettingsAndDo(() => {
@@ -318,7 +330,8 @@ const Index = () => {
 
       const activeElement = document.activeElement as HTMLElement | null;
       const isActivityFocused = !!activeElement?.closest("#section-activity");
-      const shouldRouteToActivity = isActivityFocused || Date.now() < activityVoiceCaptureUntilRef.current;
+      const isNutritionFocused = !!activeElement?.closest("#section-neuer-eintrag");
+      const shouldRouteToActivity = isActivityFocused || (!isNutritionFocused && Date.now() < activityVoiceCaptureUntilRef.current);
 
       if (shouldRouteToActivity) {
         activityVoiceCaptureUntilRef.current = Date.now() + 4000;

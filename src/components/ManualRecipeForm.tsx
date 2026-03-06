@@ -264,7 +264,10 @@ const ManualRecipeForm = ({ onSave, onCancel, voiceInputRef, isVoiceActive = fal
   // Field navigation commands (Zurück / Weiter / Löschen)
   useEffect(() => {
     const handler = (e: Event) => {
-      const cmd = (e as CustomEvent).detail as string;
+      const detail = (e as CustomEvent).detail as string | { action: string; scope?: string };
+      const cmd = typeof detail === "string" ? detail : detail?.action;
+      const scope = typeof detail === "string" ? undefined : detail?.scope;
+      if (!cmd || (scope && scope !== "manual-recipe")) return;
       const current = focusedFieldRef.current;
       const idx = current ? FIELD_ORDER.indexOf(current) : -1;
 
@@ -439,7 +442,7 @@ const ManualRecipeForm = ({ onSave, onCancel, voiceInputRef, isVoiceActive = fal
     isVoiceActive && focusedField === field ? "ring-2 ring-primary" : "";
 
   return (
-    <div className="rounded-lg bg-background border border-border/50 p-3 space-y-3">
+    <div data-voice-scope="manual-recipe" className="rounded-lg bg-background border border-border/50 p-3 space-y-3">
       {/* Header with close */}
       <div className="flex items-center justify-between">
         <h3 className="text-[11px] font-semibold text-foreground uppercase tracking-wider">Neues Rezept</h3>
