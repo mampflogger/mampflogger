@@ -194,10 +194,15 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry, voiceExpandIndex, onVoi
     setShowManualForm(true);
   }, []);
 
-  const handleVoiceInput = useCallback((transcript: string) => {
+  const handleVoiceInput = useCallback((transcript: string, isInterim: boolean) => {
+    // Delegate to manual form if open
+    if (showManualForm && manualFormVoiceRef.current) {
+      manualFormVoiceRef.current(transcript, isInterim);
+      return;
+    }
     if (document.activeElement !== searchInputRef.current) return;
     setRecipeSearch(transcript);
-  }, []);
+  }, [showManualForm]);
 
   useEffect(() => {
     if (voiceInputRef) {
