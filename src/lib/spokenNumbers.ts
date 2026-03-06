@@ -118,8 +118,18 @@ function parseUnderThousand(word: string): number | null {
   return parseUnderHundred(word);
 }
 
+function normalizeNumberWord(raw: string): string {
+  return normalize(raw)
+    .replace(/\s+/g, "")
+    .replace(/tausen(?!d)/g, "tausend")
+    .replace(/tausnd/g, "tausend")
+    .replace(/tausent/g, "tausend")
+    .replace(/hunder(?!t)/g, "hundert")
+    .replace(/hundrd/g, "hundert");
+}
+
 function parseGermanNumberWord(raw: string): number | null {
-  const word = normalize(raw).replace(/\s+/g, "");
+  const word = normalizeNumberWord(raw);
   if (!word) return null;
 
   if (word.includes("tausend")) {
