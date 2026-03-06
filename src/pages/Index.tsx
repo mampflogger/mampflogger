@@ -302,6 +302,9 @@ const Index = () => {
 
           // Recipes tab: show/close and number selection
           if (currentTab === "recipes") {
+            // If manual recipe form is open, don't intercept numbers – let them flow to the form
+            const manualFormOpen = !!document.querySelector('[data-voice-scope="manual-recipe"]');
+
             if (/\b(?:schließen|schliessen|zumachen|zuklappen)\b/i.test(lower)) {
               setSettingsVoiceAction("recipe:-1");
               return;
@@ -311,13 +314,15 @@ const Index = () => {
               return;
             }
 
-            const recipeIndex = parseSpokenSelectionIndex(lower, {
-              allowBareNumber: true,
-              keywords: ["zeige", "rezept", "nimm", "nummer", "öffne", "oeffne"],
-            });
-            if (recipeIndex !== null) {
-              setSettingsVoiceAction(`recipe:${recipeIndex}`);
-              return;
+            if (!manualFormOpen) {
+              const recipeIndex = parseSpokenSelectionIndex(lower, {
+                allowBareNumber: true,
+                keywords: ["zeige", "rezept", "nimm", "nummer", "öffne", "oeffne"],
+              });
+              if (recipeIndex !== null) {
+                setSettingsVoiceAction(`recipe:${recipeIndex}`);
+                return;
+              }
             }
           }
         }
