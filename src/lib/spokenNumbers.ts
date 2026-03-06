@@ -52,19 +52,28 @@ function normalize(value: string): string {
 }
 
 function parseNumericLiteral(normalizedTranscript: string): number | null {
-  const thousandSeparated = normalizedTranscript.match(/\b\d{1,3}(?:[.\s]\d{3})+(?:,\d+)?\b/);
-  if (thousandSeparated) {
-    const [integerRaw, fractionRaw] = thousandSeparated[0].split(",");
+  const scaledMatch = normalizedTranscript.match(/\b(\d+(?:[.,]\d+)?)\s*(tausend|hundert)\b/);
+  if (scaledMatch) {
+    const base = Number.parseFloat(scaledMatch[1].replace(",", "."));
+    if (Number.isFinite(base)) {
+      return scaledMatch[2] === "tausend" ? base * 1000 : base * 100;
+    }
+  }
+
+  const thousandSeparatedMatches = [...normalizedTranscript.matchAll(/\b\d{1,3}(?:[.\s]\d{3})+(?:,\d+)?\b/g)];
+  if (thousandSeparatedMatches.length > 0) {
+    const token = thousandSeparatedMatches[thousandSeparatedMatches.length - 1][0];
+    const [integerRaw, fractionRaw] = token.split(",");
     const integer = integerRaw.replace(/[.\s]/g, "");
     const numeric = fractionRaw ? `${integer}.${fractionRaw}` : integer;
     const parsed = Number.parseFloat(numeric);
     return Number.isFinite(parsed) ? parsed : null;
   }
 
-  const directNumeric = normalizedTranscript.match(/\b\d+(?:[.,]\d+)?\b/);
-  if (!directNumeric) return null;
+  const directNumericMatches = [...normalizedTranscript.matchAll(/\b\d+(?:[.,]\d+)?\b/g)];
+  if (directNumericMatches.length === 0) return null;
 
-  const token = directNumeric[0];
+  const token = directNumericMatches[directNumericMatches.length - 1][0];
   if (/^\d{1,3}(?:\.\d{3})+$/.test(token)) {
     const parsed = Number.parseInt(token.replace(/\./g, ""), 10);
     return Number.isFinite(parsed) ? parsed : null;
