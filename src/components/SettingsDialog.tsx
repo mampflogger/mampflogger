@@ -582,7 +582,7 @@ const SettingsDialog = ({
        setEditFoodNotes(n.notes || "");
        const validCategory = (FOOD_CATEGORIES as readonly string[]).includes(n.category) ? n.category as FoodCategory : "Eigene";
       setEditFoodCategory(validCategory);
-      setEditFoodDefault(n.defaultAmount ? String(n.defaultAmount) : "");
+      if (!editFoodDefault) setEditFoodDefault(n.defaultAmount ? String(n.defaultAmount) : "");
       if (n.vitamins) setEditVitamins(n.vitamins);
       if (n.minerals) setEditMinerals(n.minerals);
       if (n.dietary) setEditDietary(n.dietary);
