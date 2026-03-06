@@ -388,7 +388,7 @@ const ActivityInput = ({
       selectTriggerRef.current?.focus();
       setFocusedField("type");
     }, 0);
-  }, [activityTypes, flushSpokenValueBuffer, focusSubmitButton, isBookingCommand, isOptionsCommand, isStornoCommand, normalizeForVoice, playConfirmationTone, resetActivityInput, selectActivityTypeByIndex, selectedTypeId, value]);
+  }, [activityTypes, flushSpokenValueBuffer, focusSubmitButton, isBookingCommand, isOptionsCommand, isStornoCommand, isTypeOpen, normalizeForVoice, playConfirmationTone, resetActivityInput, selectActivityTypeByIndex, selectedTypeId, value]);
 
   useEffect(() => {
     if (!voiceInputRef) return;
