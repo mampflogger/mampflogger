@@ -1987,7 +1987,7 @@ const SettingsDialog = ({
             <div id="section-loeschen" className="glass-card rounded-xl p-3 space-y-1.5">
               <div className="flex items-center gap-1.5">
                 <Trash2 className="w-3.5 h-3.5 text-primary" />
-                <h3 className="text-[11px] font-bold uppercase tracking-wider text-foreground">Löschen</h3>
+                <h3 className="text-[11px] font-bold uppercase tracking-wider text-foreground">Cancel</h3>
               </div>
 
               {/* Date range delete */}
