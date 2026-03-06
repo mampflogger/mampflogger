@@ -1,4 +1,4 @@
-import { useState, useRef, useMemo, useEffect } from "react";
+import { useState, useRef, useMemo, useEffect, useCallback, type MutableRefObject } from "react";
 import { generateId } from "@/types/nutrition";
 import { X, Plus, Loader2, Sparkles, Save } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -8,6 +8,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { foodDatabase, saveFoodDatabase, guessCategory, type FoodItem } from "@/data/foodDatabase";
+import { parseGermanSpokenNumber } from "@/lib/spokenNumbers";
 
 interface RecipeMacros {
   calories: number;
@@ -38,9 +39,19 @@ interface SavedRecipe {
 interface ManualRecipeFormProps {
   onSave: (recipe: SavedRecipe) => void;
   onCancel: () => void;
+  voiceInputRef?: MutableRefObject<((transcript: string, isInterim: boolean) => void) | undefined>;
+  isVoiceActive?: boolean;
 }
 
-const ManualRecipeForm = ({ onSave, onCancel }: ManualRecipeFormProps) => {
+type FocusedField = "recipeName" | "servings" | "prepTime" | "ingredientAmount" | "ingredientName" | "steps" | "aiCheckbox" | "save" | null;
+
+const FIELD_ORDER: FocusedField[] = [
+  "recipeName", "servings", "prepTime",
+  "ingredientAmount", "ingredientName",
+  "steps", "aiCheckbox", "save",
+];
+
+const ManualRecipeForm = ({ onSave, onCancel, voiceInputRef, isVoiceActive = false }: ManualRecipeFormProps) => {
   const [name, setName] = useState("");
   const [servings, setServings] = useState("2");
   const [prepTime, setPrepTime] = useState("");
@@ -51,15 +62,250 @@ const ManualRecipeForm = ({ onSave, onCancel }: ManualRecipeFormProps) => {
   const [stepsText, setStepsText] = useState("");
   const [aiGenerateSteps, setAiGenerateSteps] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [focusedField, setFocusedField] = useState<FocusedField>("recipeName");
 
   const suggestionsRef = useRef<HTMLDivElement>(null);
   const nameInputRef = useRef<HTMLInputElement>(null);
   const recipeNameInputRef = useRef<HTMLInputElement>(null);
+  const servingsInputRef = useRef<HTMLInputElement>(null);
+  const prepTimeInputRef = useRef<HTMLInputElement>(null);
+  const ingredientAmountRef = useRef<HTMLInputElement>(null);
+  const ingredientNameRef = useRef<HTMLInputElement>(null);
+  const stepsRef = useRef<HTMLTextAreaElement>(null);
+  const aiCheckboxRef = useRef<HTMLButtonElement>(null);
+  const saveButtonRef = useRef<HTMLButtonElement>(null);
+  const focusedFieldRef = useRef<FocusedField>("recipeName");
+  const voiceBufferRef = useRef("");
+  const voiceTimerRef = useRef<number | null>(null);
   const { toast } = useToast();
+
+  useEffect(() => {
+    focusedFieldRef.current = focusedField;
+  }, [focusedField]);
 
   // Auto-focus recipe name field on mount
   useEffect(() => {
-    setTimeout(() => recipeNameInputRef.current?.focus(), 100);
+    setTimeout(() => {
+      recipeNameInputRef.current?.focus();
+      setFocusedField("recipeName");
+    }, 100);
+  }, []);
+
+  const focusField = useCallback((field: FocusedField) => {
+    setFocusedField(field);
+    setTimeout(() => {
+      switch (field) {
+        case "recipeName": recipeNameInputRef.current?.focus(); break;
+        case "servings": servingsInputRef.current?.focus(); break;
+        case "prepTime": prepTimeInputRef.current?.focus(); break;
+        case "ingredientAmount": ingredientAmountRef.current?.focus(); break;
+        case "ingredientName": ingredientNameRef.current?.focus(); break;
+        case "steps": stepsRef.current?.focus(); break;
+        case "aiCheckbox": aiCheckboxRef.current?.focus(); break;
+        case "save": saveButtonRef.current?.focus(); break;
+      }
+    }, 0);
+  }, []);
+
+  const clearVoiceBuffer = useCallback(() => {
+    voiceBufferRef.current = "";
+    if (voiceTimerRef.current !== null) {
+      window.clearTimeout(voiceTimerRef.current);
+      voiceTimerRef.current = null;
+    }
+  }, []);
+
+  const handleAddIngredientInternal = useCallback(() => {
+    const n = newIngredientName.trim();
+    if (!n) return false;
+    const a = newIngredientAmount.trim();
+    setIngredients((prev) => [...prev, { name: n, amount: a, isMain: false }]);
+    setNewIngredientAmount("");
+    setNewIngredientName("");
+    setShowSuggestions(false);
+    return true;
+  }, [newIngredientAmount, newIngredientName]);
+
+  const isPlusCommand = useCallback((text: string) => /\b(?:plus|hinzufügen|hinzufuegen|dazu)\b/i.test(text), []);
+  const isBookingCommand = useCallback((text: string) => /\b(?:okay|ja|buchen|ok)\b/i.test(text), []);
+  const isStornoCommand = useCallback((text: string) => /\b(?:storno|abbrechen|reset)\b/i.test(text), []);
+
+  const flushVoiceBuffer = useCallback((field: FocusedField) => {
+    const text = voiceBufferRef.current.trim();
+    voiceBufferRef.current = "";
+    if (!text) return;
+
+    switch (field) {
+      case "recipeName":
+        setName(text);
+        break;
+      case "servings": {
+        const num = parseGermanSpokenNumber(text);
+        if (num !== null && num > 0) setServings(String(Math.round(num)));
+        break;
+      }
+      case "prepTime":
+        setPrepTime(text);
+        break;
+      case "ingredientAmount": {
+        // Could be a number or text like "200g"
+        const num = parseGermanSpokenNumber(text);
+        if (num !== null && num > 0) {
+          setNewIngredientAmount(String(num));
+        } else {
+          setNewIngredientAmount(text);
+        }
+        break;
+      }
+      case "ingredientName":
+        setNewIngredientName(text);
+        break;
+      case "steps":
+        setStepsText((prev) => prev ? prev + "\n" + text : text);
+        break;
+      default:
+        break;
+    }
+  }, []);
+
+  const handleVoiceInput = useCallback((transcript: string, isInterim: boolean) => {
+    const current = focusedFieldRef.current;
+
+    // Storno resets the form
+    if (!isInterim && isStornoCommand(transcript)) {
+      clearVoiceBuffer();
+      onCancel();
+      return;
+    }
+
+    // "Plus" command adds ingredient and loops back
+    if (!isInterim && isPlusCommand(transcript)) {
+      clearVoiceBuffer();
+      // First flush any pending ingredient name
+      if (current === "ingredientName") {
+        const pendingName = voiceBufferRef.current.trim() || newIngredientName.trim();
+        if (pendingName && !newIngredientName.trim()) {
+          setNewIngredientName(pendingName);
+        }
+      }
+      // Use setTimeout to ensure state is updated
+      setTimeout(() => {
+        const n = (document.querySelector<HTMLInputElement>('[data-voice-field="ingredientName"]')?.value || "").trim();
+        if (n) {
+          handleAddIngredientInternal();
+          focusField("ingredientAmount");
+        }
+      }, 50);
+      return;
+    }
+
+    // "Okay" on save button triggers save
+    if (!isInterim && current === "save" && isBookingCommand(transcript)) {
+      clearVoiceBuffer();
+      saveButtonRef.current?.click();
+      return;
+    }
+
+    // "Okay" when in ingredient fields → move to steps
+    if (!isInterim && isBookingCommand(transcript) && (current === "ingredientAmount" || current === "ingredientName")) {
+      clearVoiceBuffer();
+      // Add pending ingredient first if any
+      if (newIngredientName.trim()) {
+        handleAddIngredientInternal();
+      }
+      focusField("steps");
+      return;
+    }
+
+    // "Okay" on aiCheckbox → toggle it
+    if (!isInterim && current === "aiCheckbox" && isBookingCommand(transcript)) {
+      clearVoiceBuffer();
+      setAiGenerateSteps((prev) => !prev);
+      return;
+    }
+
+    // Text input fields
+    const isTextField = current === "recipeName" || current === "servings" || current === "prepTime" ||
+                        current === "ingredientAmount" || current === "ingredientName" || current === "steps";
+
+    if (isTextField) {
+      const chunk = transcript.trim();
+      if (!chunk) return;
+
+      if (isInterim) {
+        // For interim results, just buffer
+        voiceBufferRef.current = chunk;
+        return;
+      }
+
+      // Final result
+      voiceBufferRef.current = chunk;
+      
+      if (voiceTimerRef.current !== null) {
+        window.clearTimeout(voiceTimerRef.current);
+      }
+      voiceTimerRef.current = window.setTimeout(() => {
+        voiceTimerRef.current = null;
+        flushVoiceBuffer(focusedFieldRef.current);
+        voiceBufferRef.current = "";
+      }, 800);
+    }
+  }, [clearVoiceBuffer, flushVoiceBuffer, focusField, handleAddIngredientInternal, isBookingCommand, isPlusCommand, isStornoCommand, newIngredientName, onCancel]);
+
+  // Register voice input handler
+  useEffect(() => {
+    if (!voiceInputRef) return;
+    voiceInputRef.current = handleVoiceInput;
+    return () => {
+      if (voiceInputRef) voiceInputRef.current = undefined;
+    };
+  }, [voiceInputRef, handleVoiceInput]);
+
+  // Field navigation commands (Zurück / Weiter / Löschen)
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const cmd = (e as CustomEvent).detail as string;
+      const current = focusedFieldRef.current;
+      const idx = current ? FIELD_ORDER.indexOf(current) : -1;
+
+      if (cmd === "field:next") {
+        const next = FIELD_ORDER[Math.min(idx + 1, FIELD_ORDER.length - 1)];
+        if (next) {
+          clearVoiceBuffer();
+          // Flush current field before moving
+          if (current) flushVoiceBuffer(current);
+          focusField(next);
+        }
+      } else if (cmd === "field:prev") {
+        const prev = FIELD_ORDER[Math.max(idx - 1, 0)];
+        if (prev) {
+          clearVoiceBuffer();
+          if (current) flushVoiceBuffer(current);
+          focusField(prev);
+        }
+      } else if (cmd === "field:clear") {
+        clearVoiceBuffer();
+        switch (current) {
+          case "recipeName": setName(""); recipeNameInputRef.current?.focus(); break;
+          case "servings": setServings(""); servingsInputRef.current?.focus(); break;
+          case "prepTime": setPrepTime(""); prepTimeInputRef.current?.focus(); break;
+          case "ingredientAmount": setNewIngredientAmount(""); ingredientAmountRef.current?.focus(); break;
+          case "ingredientName": setNewIngredientName(""); setShowSuggestions(false); ingredientNameRef.current?.focus(); break;
+          case "steps": setStepsText(""); stepsRef.current?.focus(); break;
+        }
+      }
+    };
+    window.addEventListener("mampflogger:field-command", handler);
+    return () => window.removeEventListener("mampflogger:field-command", handler);
+  }, [clearVoiceBuffer, flushVoiceBuffer, focusField]);
+
+  // Cleanup
+  useEffect(() => {
+    return () => {
+      if (voiceTimerRef.current !== null) {
+        window.clearTimeout(voiceTimerRef.current);
+      }
+    };
   }, []);
 
   const foodSuggestions = useMemo(() => {
@@ -87,13 +333,7 @@ const ManualRecipeForm = ({ onSave, onCancel }: ManualRecipeFormProps) => {
   };
 
   const handleAddIngredient = () => {
-    const n = newIngredientName.trim();
-    if (!n) return;
-    const a = newIngredientAmount.trim();
-    setIngredients((prev) => [...prev, { name: n, amount: a, isMain: false }]);
-    setNewIngredientAmount("");
-    setNewIngredientName("");
-    setShowSuggestions(false);
+    handleAddIngredientInternal();
   };
 
   const handleDeleteIngredient = (index: number) => {
@@ -195,6 +435,9 @@ const ManualRecipeForm = ({ onSave, onCancel }: ManualRecipeFormProps) => {
     }
   };
 
+  const ringClass = (field: FocusedField) =>
+    isVoiceActive && focusedField === field ? "ring-2 ring-primary" : "";
+
   return (
     <div className="rounded-lg bg-background border border-border/50 p-3 space-y-3">
       {/* Header with close */}
@@ -210,8 +453,9 @@ const ManualRecipeForm = ({ onSave, onCancel }: ManualRecipeFormProps) => {
         ref={recipeNameInputRef}
         value={name}
         onChange={(e) => setName(e.target.value)}
+        onFocus={() => setFocusedField("recipeName")}
         placeholder="Name des Rezepts"
-        className="h-8 text-[12px] px-2"
+        className={`h-8 text-[12px] px-2 ${ringClass("recipeName")}`}
       />
 
       {/* Servings + Time */}
@@ -219,22 +463,26 @@ const ManualRecipeForm = ({ onSave, onCancel }: ManualRecipeFormProps) => {
         <div className="flex items-center gap-1.5 flex-1">
           <span className="text-[11px] text-muted-foreground shrink-0">👥</span>
           <Input
+            ref={servingsInputRef}
             type="number"
             inputMode="numeric"
             min={1}
             value={servings}
             onChange={(e) => setServings(e.target.value)}
+            onFocus={() => setFocusedField("servings")}
             placeholder="Portionen"
-            className="h-7 text-[11px] px-2"
+            className={`h-7 text-[11px] px-2 ${ringClass("servings")}`}
           />
         </div>
         <div className="flex items-center gap-1.5 flex-1">
           <span className="text-[11px] text-muted-foreground shrink-0">⏱️</span>
           <Input
+            ref={prepTimeInputRef}
             value={prepTime}
             onChange={(e) => setPrepTime(e.target.value)}
+            onFocus={() => setFocusedField("prepTime")}
             placeholder="z.B. 30 Min."
-            className="h-7 text-[11px] px-2"
+            className={`h-7 text-[11px] px-2 ${ringClass("prepTime")}`}
           />
         </div>
       </div>
@@ -263,26 +511,35 @@ const ManualRecipeForm = ({ onSave, onCancel }: ManualRecipeFormProps) => {
         {/* Add ingredient row */}
         <div className="relative flex items-center gap-1">
           <Input
+            ref={ingredientAmountRef}
             type="text"
             inputMode="decimal"
             value={newIngredientAmount}
             onChange={(e) => setNewIngredientAmount(e.target.value)}
+            onFocus={() => setFocusedField("ingredientAmount")}
             placeholder="Menge"
-            className="h-6 text-[11px] px-2 w-16 shrink-0"
+            className={`h-6 text-[11px] px-2 w-16 shrink-0 ${ringClass("ingredientAmount")}`}
           />
           <div className="relative flex-1">
             <Input
-              ref={nameInputRef}
+              ref={(el) => {
+                ingredientNameRef.current = el;
+                (nameInputRef as React.MutableRefObject<HTMLInputElement | null>).current = el;
+              }}
               type="text"
               value={newIngredientName}
               onChange={(e) => {
                 setNewIngredientName(e.target.value);
                 setShowSuggestions(true);
               }}
-              onFocus={() => newIngredientName.trim().length >= 1 && setShowSuggestions(true)}
+              onFocus={() => {
+                setFocusedField("ingredientName");
+                if (newIngredientName.trim().length >= 1) setShowSuggestions(true);
+              }}
               onKeyDown={(e) => e.key === "Enter" && handleAddIngredient()}
               placeholder="Zutat hinzufügen…"
-              className="h-6 text-[11px] px-2 w-full"
+              data-voice-field="ingredientName"
+              className={`h-6 text-[11px] px-2 w-full ${ringClass("ingredientName")}`}
             />
             {showSuggestions && foodSuggestions.length > 0 && (
               <div
@@ -320,9 +577,11 @@ const ManualRecipeForm = ({ onSave, onCancel }: ManualRecipeFormProps) => {
           <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Zubereitung</p>
           <label className="flex items-center gap-1.5 cursor-pointer">
             <Checkbox
+              ref={aiCheckboxRef}
               checked={aiGenerateSteps}
               onCheckedChange={(v) => setAiGenerateSteps(!!v)}
-              className="h-3 w-3"
+              onFocus={() => setFocusedField("aiCheckbox")}
+              className={`h-3 w-3 ${ringClass("aiCheckbox")}`}
             />
             <span className="text-[10px] text-muted-foreground flex items-center gap-0.5">
               <Sparkles className="w-2.5 h-2.5 text-primary" />
@@ -331,11 +590,13 @@ const ManualRecipeForm = ({ onSave, onCancel }: ManualRecipeFormProps) => {
           </label>
         </div>
         <Textarea
+          ref={stepsRef}
           value={stepsText}
           onChange={(e) => setStepsText(e.target.value)}
+          onFocus={() => setFocusedField("steps")}
           placeholder={aiGenerateSteps ? "Wird von der KI generiert…" : "Zubereitungsschritte eingeben…"}
           disabled={aiGenerateSteps}
-          className="text-[11px] min-h-[60px] px-2 py-1.5 resize-none"
+          className={`text-[11px] min-h-[60px] px-2 py-1.5 resize-none ${ringClass("steps")}`}
           rows={3}
           style={{ height: "auto", minHeight: "60px" }}
           onInput={(e) => {
@@ -348,9 +609,11 @@ const ManualRecipeForm = ({ onSave, onCancel }: ManualRecipeFormProps) => {
 
       {/* Save button */}
       <Button
+        ref={saveButtonRef}
         onClick={handleSave}
+        onFocus={() => setFocusedField("save")}
         disabled={saving}
-        className="w-full h-9 text-xs gap-1.5"
+        className={`w-full h-9 text-xs gap-1.5 ${ringClass("save")}`}
       >
         {saving ? (
           <>
