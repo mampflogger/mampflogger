@@ -177,6 +177,62 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
     };
   }, [voiceInputRef, handleVoiceInput]);
 
+  // Field navigation commands (Zurück / Weiter / Löschen)
+  useEffect(() => {
+    const FIELD_ORDER: FocusedField[] = ["time", "food", "amount", "submit"];
+    const handler = (e: Event) => {
+      const cmd = (e as CustomEvent).detail as string;
+      const current = focusedFieldRef.current;
+      const idx = current ? FIELD_ORDER.indexOf(current) : -1;
+
+      if (cmd === "field:next") {
+        const next = FIELD_ORDER[Math.min(idx + 1, FIELD_ORDER.length - 1)];
+        if (next) {
+          setFocusedField(next);
+          setTimeout(() => {
+            if (next === "time") timeInputRef.current?.focus();
+            else if (next === "food") foodInputRef.current?.focus();
+            else if (next === "amount") amountInputRef.current?.focus();
+            else if (next === "submit") submitButtonRef.current?.focus();
+          }, 0);
+        }
+      } else if (cmd === "field:prev") {
+        const prev = FIELD_ORDER[Math.max(idx - 1, 0)];
+        if (prev) {
+          setFocusedField(prev);
+          setTimeout(() => {
+            if (prev === "time") timeInputRef.current?.focus();
+            else if (prev === "food") foodInputRef.current?.focus();
+            else if (prev === "amount") amountInputRef.current?.focus();
+            else if (prev === "submit") submitButtonRef.current?.focus();
+          }, 0);
+        }
+      } else if (cmd === "field:clear") {
+        if (current === "time") {
+          setTime("");
+          timeInputRef.current?.focus();
+        } else if (current === "food") {
+          setFood("");
+          setSelectedFood(null);
+          setSuggestions([]);
+          setShowSuggestions(false);
+          foodInputRef.current?.focus();
+        } else if (current === "amount") {
+          setAmount("");
+          setCalories("");
+          setProtein("");
+          setCarbs("");
+          setFat("");
+          setFiber("");
+          setGi("");
+          amountInputRef.current?.focus();
+        }
+      }
+    };
+    window.addEventListener("mampflogger:field-command", handler);
+    return () => window.removeEventListener("mampflogger:field-command", handler);
+  }, []);
+
   // Load editing entry into form
   useEffect(() => {
     if (editingEntry) {
