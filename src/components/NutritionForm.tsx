@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from "react";
+import { parseGermanSpokenNumber } from "@/lib/spokenNumbers";
 import { createPortal } from "react-dom";
 import { NutritionEntry, generateId } from "@/types/nutrition";
 import { Input } from "@/components/ui/input";
@@ -118,8 +119,76 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
       if (currentField === "submit") return;
     }
 
-    // For food/amount fields: only act on final results
+    // For food/amount/time fields: only act on final results
     if (isInterim) return;
+
+    if (currentField === "time") {
+      // Parse spoken time like "sechzehn Uhr", "16 Uhr", "acht Uhr dreißig", "14:30"
+      const lower = transcript.toLowerCase().trim();
+
+      // Try direct HH:MM pattern first (e.g. "16:30", "8:15")
+      const directTimeMatch = lower.match(/(\d{1,2})\s*[:\.]\s*(\d{2})/);
+      if (directTimeMatch) {
+        const h = directTimeMatch[1].padStart(2, "0");
+        const m = directTimeMatch[2];
+        if (parseInt(h) < 24 && parseInt(m) < 60) {
+          setTime(`${h}:${m}`);
+          setTimeout(() => foodInputRef.current?.focus(), 0);
+          setFocusedField("food");
+          return;
+        }
+      }
+
+      // Try "X Uhr Y" pattern with spoken numbers
+      const uhrMatch = lower.match(/^(.+?)\s*uhr\s*(.+)?$/);
+      if (uhrMatch) {
+        const hourPart = parseGermanSpokenNumber(uhrMatch[1]);
+        const minutePart = uhrMatch[2] ? parseGermanSpokenNumber(uhrMatch[2]) : 0;
+        if (hourPart !== null && hourPart >= 0 && hourPart < 24) {
+          const mins = minutePart !== null ? minutePart : 0;
+          if (mins >= 0 && mins < 60) {
+            const h = String(hourPart).padStart(2, "0");
+            const m = String(mins).padStart(2, "0");
+            setTime(`${h}:${m}`);
+            setTimeout(() => foodInputRef.current?.focus(), 0);
+            setFocusedField("food");
+            return;
+          }
+        }
+      }
+
+      // Try bare number (e.g. "16" → 16:00, "1630" → 16:30)
+      const bareNum = parseGermanSpokenNumber(lower);
+      if (bareNum !== null) {
+        if (bareNum >= 0 && bareNum < 24) {
+          setTime(`${String(bareNum).padStart(2, "0")}:00`);
+          setTimeout(() => foodInputRef.current?.focus(), 0);
+          setFocusedField("food");
+          return;
+        }
+        if (bareNum >= 100 && bareNum <= 2359) {
+          const h = Math.floor(bareNum / 100);
+          const m = bareNum % 100;
+          if (h < 24 && m < 60) {
+            setTime(`${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`);
+            setTimeout(() => foodInputRef.current?.focus(), 0);
+            setFocusedField("food");
+            return;
+          }
+        }
+      }
+
+      // Try raw digits from transcript
+      const digits = transcript.replace(/\D/g, "");
+      if (digits.length >= 1 && digits.length <= 4) {
+        handleTimeChange(digits);
+        if (digits.length >= 3) {
+          setTimeout(() => foodInputRef.current?.focus(), 0);
+          setFocusedField("food");
+        }
+      }
+      return;
+    }
 
     if (currentField === "food") {
       // Ignore speech that arrives right after booking or is itself a booking command
