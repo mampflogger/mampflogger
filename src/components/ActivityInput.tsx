@@ -29,6 +29,23 @@ import { parseGermanSpokenNumber } from "@/lib/spokenNumbers";
 
 type FocusedField = "value" | "type" | "submit" | null;
 
+const DEFERRED_SINGLE_NUMBER_WORDS = new Set([
+  "ein",
+  "eins",
+  "eine",
+  "einen",
+  "einem",
+  "zwei",
+  "drei",
+  "vier",
+  "fuenf",
+  "fünf",
+  "sechs",
+  "sieben",
+  "acht",
+  "neun",
+]);
+
 interface ActivityInputProps {
   bookedActivities: BookedActivity[];
   selectedDate: string;
@@ -88,6 +105,7 @@ const ActivityInput = ({
   const focusedFieldRef = useRef<FocusedField>("value");
   const valueVoiceBufferRef = useRef("");
   const valueVoiceTimerRef = useRef<number | null>(null);
+  const valueVoiceDeferredRef = useRef(false);
   const pendingTypeIgnoreNumericUntilRef = useRef(0);
   const audioContextRef = useRef<AudioContext | null>(null);
 
@@ -117,6 +135,16 @@ const ActivityInput = ({
   const isBookingCommand = useCallback((text: string) => /\b(?:okay|ja|buchen)\b/i.test(text), []);
   const isStornoCommand = useCallback((text: string) => /\b(?:storno|abbrechen|reset)\b/i.test(text), []);
   const isOptionsCommand = useCallback((text: string) => /\b(?:optionen|option|ausklappen|dropdown|liste)\b/i.test(text), []);
+
+  const shouldDeferSpokenValue = useCallback((buffer: string, parsed: number) => {
+    if (!Number.isInteger(parsed) || parsed < 1 || parsed > 9) return false;
+
+    const normalized = normalizeForVoice(buffer);
+    if (!normalized || /\b(?:hundert|tausend)\b/.test(normalized)) return false;
+
+    const tokens = normalized.split(/\s+/).filter(Boolean);
+    return tokens.length === 1 && DEFERRED_SINGLE_NUMBER_WORDS.has(tokens[0]);
+  }, [normalizeForVoice]);
 
   const playConfirmationTone = useCallback(() => {
     if (typeof window === "undefined") return;
@@ -163,6 +191,7 @@ const ActivityInput = ({
     setIsTypeOpen(false);
     pendingTypeIgnoreNumericUntilRef.current = 0;
     valueVoiceBufferRef.current = "";
+    valueVoiceDeferredRef.current = false;
     if (valueVoiceTimerRef.current !== null) {
       window.clearTimeout(valueVoiceTimerRef.current);
       valueVoiceTimerRef.current = null;
@@ -186,11 +215,40 @@ const ActivityInput = ({
   }, [activityTypes, focusSubmitButton, playConfirmationTone]);
 
   const flushSpokenValueBuffer = useCallback(() => {
-    const spokenValue = parseGermanSpokenNumber(valueVoiceBufferRef.current);
+    const bufferedTranscript = valueVoiceBufferRef.current.trim();
+    if (!bufferedTranscript) return;
+
+    const spokenValue = parseGermanSpokenNumber(bufferedTranscript);
+    if (spokenValue === null || spokenValue <= 0) {
+      valueVoiceBufferRef.current = "";
+      valueVoiceDeferredRef.current = false;
+      return;
+    }
+
+    if (!valueVoiceDeferredRef.current && shouldDeferSpokenValue(bufferedTranscript, spokenValue)) {
+      valueVoiceDeferredRef.current = true;
+      valueVoiceTimerRef.current = window.setTimeout(() => {
+        valueVoiceTimerRef.current = null;
+        valueVoiceDeferredRef.current = false;
+
+        const finalTranscript = valueVoiceBufferRef.current.trim();
+        valueVoiceBufferRef.current = "";
+        const finalValue = parseGermanSpokenNumber(finalTranscript);
+        if (finalValue === null || finalValue <= 0) return;
+
+        setValue(String(finalValue));
+        playConfirmationTone();
+        pendingTypeIgnoreNumericUntilRef.current = Date.now() + 1500;
+        setTimeout(() => {
+          selectTriggerRef.current?.focus();
+          setFocusedField("type");
+        }, 0);
+      }, 900);
+      return;
+    }
+
     valueVoiceBufferRef.current = "";
-
-    if (spokenValue === null || spokenValue <= 0) return;
-
+    valueVoiceDeferredRef.current = false;
     setValue(String(spokenValue));
     playConfirmationTone();
     pendingTypeIgnoreNumericUntilRef.current = Date.now() + 1500;
@@ -198,13 +256,14 @@ const ActivityInput = ({
       selectTriggerRef.current?.focus();
       setFocusedField("type");
     }, 0);
-  }, [playConfirmationTone]);
+  }, [playConfirmationTone, shouldDeferSpokenValue]);
 
   const handleVoiceInput = useCallback((transcript: string, isInterim: boolean) => {
     const currentField = focusedFieldRef.current;
 
     if (isStornoCommand(transcript)) {
       pendingTypeIgnoreNumericUntilRef.current = 0;
+      valueVoiceDeferredRef.current = false;
       playConfirmationTone();
       resetActivityInput(true);
       return;
@@ -212,6 +271,7 @@ const ActivityInput = ({
 
     if (isOptionsCommand(transcript)) {
       valueVoiceBufferRef.current = "";
+      valueVoiceDeferredRef.current = false;
       if (valueVoiceTimerRef.current !== null) {
         window.clearTimeout(valueVoiceTimerRef.current);
         valueVoiceTimerRef.current = null;
@@ -236,6 +296,7 @@ const ActivityInput = ({
       const chunk = transcript.trim();
       if (!chunk) return;
 
+      valueVoiceDeferredRef.current = false;
       valueVoiceBufferRef.current = `${valueVoiceBufferRef.current} ${chunk}`.trim();
 
       if (valueVoiceTimerRef.current !== null) {
@@ -245,7 +306,7 @@ const ActivityInput = ({
       valueVoiceTimerRef.current = window.setTimeout(() => {
         valueVoiceTimerRef.current = null;
         flushSpokenValueBuffer();
-      }, isInterim ? 1800 : 1400);
+      }, isInterim ? 1800 : 1600);
       return;
     }
 
@@ -341,6 +402,7 @@ const ActivityInput = ({
         valueVoiceTimerRef.current = null;
       }
       valueVoiceBufferRef.current = "";
+      valueVoiceDeferredRef.current = false;
       if (audioContextRef.current) {
         void audioContextRef.current.close();
         audioContextRef.current = null;
@@ -355,6 +417,7 @@ const ActivityInput = ({
       setFocusedField("value");
       pendingTypeIgnoreNumericUntilRef.current = 0;
       valueVoiceBufferRef.current = "";
+      valueVoiceDeferredRef.current = false;
       if (valueVoiceTimerRef.current !== null) {
         window.clearTimeout(valueVoiceTimerRef.current);
         valueVoiceTimerRef.current = null;
@@ -394,6 +457,7 @@ const ActivityInput = ({
         if (current === "value") {
           setValue("");
           valueVoiceBufferRef.current = "";
+          valueVoiceDeferredRef.current = false;
           if (valueVoiceTimerRef.current !== null) {
             window.clearTimeout(valueVoiceTimerRef.current);
             valueVoiceTimerRef.current = null;
