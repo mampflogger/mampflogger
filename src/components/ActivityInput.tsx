@@ -326,7 +326,7 @@ const ActivityInput = ({
     }
 
     const hasSelectionKeyword = /\b(?:nummer|position|nimm|nehme|zeige|liste|auswahl|dropdown|option|optionen)\b/i.test(transcript);
-    if (!hasSelectionKeyword && Date.now() < pendingTypeIgnoreNumericUntilRef.current) {
+    if (!hasSelectionKeyword && !isTypeOpen && Date.now() < pendingTypeIgnoreNumericUntilRef.current) {
       const carryOverNumber = parseGermanSpokenNumber(transcript);
       if (carryOverNumber !== null) {
         return;
@@ -334,7 +334,7 @@ const ActivityInput = ({
     }
 
     const pickIndex = parseSpokenSelectionIndex(transcript, {
-      allowBareNumber: false,
+      allowBareNumber: isTypeOpen,
       max: activityTypes.length || undefined,
       keywords: ["nummer", "position", "nimm", "nehme", "zeige", "liste", "auswahl", "dropdown", "option", "optionen", "aktivitaet", "activity"],
     });
