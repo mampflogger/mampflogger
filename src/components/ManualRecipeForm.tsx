@@ -54,7 +54,13 @@ const ManualRecipeForm = ({ onSave, onCancel }: ManualRecipeFormProps) => {
 
   const suggestionsRef = useRef<HTMLDivElement>(null);
   const nameInputRef = useRef<HTMLInputElement>(null);
+  const recipeNameInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
+
+  // Auto-focus recipe name field on mount
+  useEffect(() => {
+    setTimeout(() => recipeNameInputRef.current?.focus(), 100);
+  }, []);
 
   const foodSuggestions = useMemo(() => {
     const q = newIngredientName.trim().toLowerCase();
@@ -201,6 +207,7 @@ const ManualRecipeForm = ({ onSave, onCancel }: ManualRecipeFormProps) => {
 
       {/* Name */}
       <Input
+        ref={recipeNameInputRef}
         value={name}
         onChange={(e) => setName(e.target.value)}
         placeholder="Name des Rezepts"
