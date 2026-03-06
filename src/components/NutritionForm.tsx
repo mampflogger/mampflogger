@@ -9,7 +9,7 @@ import { X } from "lucide-react";
 import { toast } from "sonner";
 import { parseSpokenSelectionIndex } from "@/lib/voiceSelection";
 
-type FocusedField = "food" | "amount" | "submit" | null;
+type FocusedField = "time" | "food" | "amount" | "submit" | null;
 
 interface NutritionFormProps {
   onAdd: (entry: NutritionEntry) => void;

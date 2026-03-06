@@ -208,6 +208,9 @@ const Index = () => {
           setSettingsVoiceAction("food-search");
         }
       }
+      else if (action === "field:next" || action === "field:prev" || action === "field:clear") {
+        window.dispatchEvent(new CustomEvent("mampflogger:field-command", { detail: action }));
+      }
       else if (action === "action:weekly-analysis") {
         closeSettingsAndDo(() => {
           const needsTabSwitch = activeTabRef.current !== "weekly";
