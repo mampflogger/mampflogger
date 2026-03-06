@@ -115,7 +115,7 @@ const ActivityInput = ({
   ), []);
 
   const isBookingCommand = useCallback((text: string) => /\b(?:okay|ja|buchen)\b/i.test(text), []);
-  const isStornoCommand = useCallback((text: string) => /\b(?:storno|abbrechen|reset|zurueck|zurück)\b/i.test(text), []);
+  const isStornoCommand = useCallback((text: string) => /\b(?:storno|abbrechen|reset)\b/i.test(text), []);
   const isOptionsCommand = useCallback((text: string) => /\b(?:optionen|option|ausklappen|dropdown|liste)\b/i.test(text), []);
 
   const playConfirmationTone = useCallback(() => {

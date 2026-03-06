@@ -476,11 +476,13 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
           </Label>
           <Input
             id="time"
+            ref={timeInputRef}
             type="text"
             inputMode="numeric"
             placeholder="08:00"
             value={time}
             onChange={(e) => handleTimeChange(e.target.value)}
+            onFocus={() => setFocusedField("time")}
             className="h-9 text-[10px] px-1 min-w-0 text-center"
             autoCorrect="off"
             spellCheck={false}
