@@ -143,7 +143,10 @@ const ActivityInput = ({
     if (!normalized || /\b(?:hundert|tausend)\b/.test(normalized)) return false;
 
     const tokens = normalized.split(/\s+/).filter(Boolean);
-    return tokens.length === 1 && DEFERRED_SINGLE_NUMBER_WORDS.has(tokens[0]);
+    if (tokens.length !== 1) return false;
+
+    const token = tokens[0];
+    return DEFERRED_SINGLE_NUMBER_WORDS.has(token) || /^[1-9]$/.test(token);
   }, [normalizeForVoice]);
 
   const playConfirmationTone = useCallback(() => {
@@ -243,7 +246,7 @@ const ActivityInput = ({
           selectTriggerRef.current?.focus();
           setFocusedField("type");
         }, 0);
-      }, 900);
+      }, 1400);
       return;
     }
 
