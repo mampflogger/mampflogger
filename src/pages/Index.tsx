@@ -61,12 +61,11 @@ const Index = () => {
   const [settingsVoiceAction, setSettingsVoiceAction] = useState<string | null>(null);
   const [weeklyCoachAnalyzeRequest, setWeeklyCoachAnalyzeRequest] = useState(0);
   const [startupProfilePrompt, setStartupProfilePrompt] = useState(false);
-  const [activityFocusRequestId, setActivityFocusRequestId] = useState(0);
+  const [activityFocusRequestId, setActivityFocusRequestId] = useState<number | undefined>(undefined);
   const nutritionVoiceRef = useRef<((transcript: string, isInterim: boolean) => void) | undefined>();
   const recipeVoiceRef = useRef<((transcript: string, isInterim: boolean) => void) | undefined>();
   const activityVoiceRef = useRef<((transcript: string, isInterim: boolean) => void) | undefined>();
   const activityVoiceCaptureUntilRef = useRef(0);
-  const foodInputRef = useRef<HTMLInputElement>(null);
   const sectionNav = useSectionNavigation();
 
   // Refs for use inside callbacks
@@ -83,6 +82,15 @@ const Index = () => {
     } else {
       fn();
     }
+  }, []);
+
+  const focusFoodField = useCallback((delay = 0) => {
+    window.setTimeout(() => {
+      setActiveTab("log");
+      window.scrollTo({ top: 0, behavior: "auto" });
+      const foodInput = document.getElementById("food") as HTMLInputElement | null;
+      foodInput?.focus();
+    }, delay);
   }, []);
 
   // Global voice command system
@@ -112,11 +120,11 @@ const Index = () => {
               sectionNav.scrollToSection(sectionId);
             }
             if (sectionId === "section-neuer-eintrag") {
-              setTimeout(() => foodInputRef.current?.focus(), 300);
+              focusFoodField(300);
             }
             if (sectionId === "section-activity") {
               activityVoiceCaptureUntilRef.current = Date.now() + (needsTabSwitch ? 6000 : 4000);
-              setTimeout(() => setActivityFocusRequestId((prev) => prev + 1), needsTabSwitch ? 350 : 120);
+              setTimeout(() => setActivityFocusRequestId((prev) => (prev ?? 0) + 1), needsTabSwitch ? 350 : 120);
             }
           });
         }
@@ -180,8 +188,7 @@ const Index = () => {
       }
       else if (action === "focus:food") {
         closeSettingsAndDo(() => {
-          setActiveTab("log");
-          setTimeout(() => foodInputRef.current?.focus(), 100);
+          focusFoodField(100);
         });
       }
       else if (action === "click:profil-speichern") {
@@ -358,7 +365,13 @@ const Index = () => {
     setEntries(loadedEntries);
     setProfile(loadedProfile);
     setBookedActivities(loadedActivities);
-    setStartupProfilePrompt(!hasConfiguredPersonalProfile(loadedProfile));
+
+    const hasProfile = hasConfiguredPersonalProfile(loadedProfile);
+    setStartupProfilePrompt(!hasProfile);
+
+    if (hasProfile) {
+      focusFoodField(120);
+    }
 
     const remoteUrl = loadRemoteUrl();
     if (remoteUrl) {
@@ -371,7 +384,7 @@ const Index = () => {
         }
       });
     }
-  }, []);
+  }, [focusFoodField]);
 
   useEffect(() => {
     if (!voiceCommands.isSupported) return;
