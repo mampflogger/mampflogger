@@ -102,6 +102,7 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry, voiceExpandIndex, onVoi
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [recalculating, setRecalculating] = useState(false);
   const [showManualForm, setShowManualForm] = useState(false);
+  const manualFormVoiceRef = useRef<((transcript: string, isInterim: boolean) => void) | undefined>();
   const [photoAnalyzing, setPhotoAnalyzing] = useState(false);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [showPhotoDialog, setShowPhotoDialog] = useState(false);
