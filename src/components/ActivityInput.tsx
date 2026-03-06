@@ -432,7 +432,10 @@ const ActivityInput = ({
   useEffect(() => {
     const FIELD_ORDER: FocusedField[] = ["value", "type", "submit"];
     const handler = (e: Event) => {
-      const cmd = (e as CustomEvent).detail as string;
+      const detail = (e as CustomEvent).detail as string | { action: string; scope?: string };
+      const cmd = typeof detail === "string" ? detail : detail?.action;
+      const scope = typeof detail === "string" ? undefined : detail?.scope;
+      if (!cmd || (scope && scope !== "activity")) return;
       const current = focusedFieldRef.current;
       const idx = current ? FIELD_ORDER.indexOf(current) : -1;
 
