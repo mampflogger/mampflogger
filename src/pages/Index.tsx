@@ -399,8 +399,21 @@ const Index = () => {
     }
   }, [focusFoodField]);
 
+  // Auto-start voice only when NOT coming from a reload/update (no user gesture → browser blocks mic)
+  const hasAutoStartedRef = useRef(false);
   useEffect(() => {
-    if (!voiceCommands.isSupported) return;
+    if (!voiceCommands.isSupported || hasAutoStartedRef.current) return;
+    hasAutoStartedRef.current = true;
+
+    // If the page was just reloaded by a PWA update or cache reset, skip auto-start
+    const params = new URLSearchParams(window.location.search);
+    const isPostUpdate = sessionStorage.getItem("mampflogger-pwa-backup") !== null
+      || params.has("__preview_bust");
+    if (isPostUpdate) {
+      console.info("[Voice] Skipping auto-start after update/reload (no user gesture)");
+      return;
+    }
+
     voiceCommands.start({ silent: true });
   }, [voiceCommands.isSupported, voiceCommands.start]);
 
