@@ -53,7 +53,7 @@ const COMMANDS: VoiceCommand[] = [
   { patterns: [/\bimport\b/i], action: "section:import" },
   { patterns: [/\bexport\b/i], action: "section:export" },
   { patterns: [/\bbackup\b/i, /\bsicherung\b/i], action: "section:backup" },
-  { patterns: [/\blöschen\b/i], action: "section:loeschen" },
+  { patterns: [/\bcancel\b/i], action: "section:loeschen" },
 
   // Scroll up/down
   { patterns: [/\brunter\b/i, /\bnach\s*unten\b/i, /\bunten\b/i, /\bscroll\s*runter\b/i], action: "scroll:down" },
@@ -85,6 +85,11 @@ const COMMANDS: VoiceCommand[] = [
 
   // Generic design → settings design tab (after specific theme commands)
   { patterns: [/\bdesign\b/i], action: "settings:design" },
+
+  // Contextual field commands (active form only)
+  { patterns: [/\bzurück\b/i, /\bzurueck\b/i], action: "field:prev" },
+  { patterns: [/\bweiter\b/i], action: "field:next" },
+  { patterns: [/\blöschen\b/i, /\bloeschen\b/i], action: "field:clear" },
 
   // Actions
   { patterns: [/\bkamera\b/i, /\bfoto\b/i, /\bphoto\b/i, /\bbild\b/i], action: "action:camera" },
