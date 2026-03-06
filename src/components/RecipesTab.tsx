@@ -102,6 +102,7 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry, voiceExpandIndex, onVoi
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [recalculating, setRecalculating] = useState(false);
   const [showManualForm, setShowManualForm] = useState(false);
+  const manualFormVoiceRef = useRef<((transcript: string, isInterim: boolean) => void) | undefined>();
   const [photoAnalyzing, setPhotoAnalyzing] = useState(false);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [showPhotoDialog, setShowPhotoDialog] = useState(false);
@@ -193,10 +194,15 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry, voiceExpandIndex, onVoi
     setShowManualForm(true);
   }, []);
 
-  const handleVoiceInput = useCallback((transcript: string) => {
+  const handleVoiceInput = useCallback((transcript: string, isInterim: boolean) => {
+    // Delegate to manual form if open
+    if (showManualForm && manualFormVoiceRef.current) {
+      manualFormVoiceRef.current(transcript, isInterim);
+      return;
+    }
     if (document.activeElement !== searchInputRef.current) return;
     setRecipeSearch(transcript);
-  }, []);
+  }, [showManualForm]);
 
   useEffect(() => {
     if (voiceInputRef) {
@@ -770,7 +776,7 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry, voiceExpandIndex, onVoi
 
       {showManualForm && (
         <div className="mb-2">
-          <ManualRecipeForm onSave={handleManualSave} onCancel={() => setShowManualForm(false)} />
+          <ManualRecipeForm onSave={handleManualSave} onCancel={() => setShowManualForm(false)} voiceInputRef={manualFormVoiceRef} isVoiceActive={!!voiceInputRef?.current} />
         </div>
       )}
 
