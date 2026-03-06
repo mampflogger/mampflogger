@@ -128,6 +128,7 @@ const ManualRecipeForm = ({ onSave, onCancel, voiceInputRef, isVoiceActive = fal
 
   const isPlusCommand = useCallback((text: string) => /\b(?:plus|hinzufügen|hinzufuegen|dazu)\b/i.test(text), []);
   const isBookingCommand = useCallback((text: string) => /\b(?:okay|ja|buchen|ok)\b/i.test(text), []);
+  const isAdvanceCommand = useCallback((text: string) => /\b(?:okay|ok|weiter)\b/i.test(text), []);
   const isStornoCommand = useCallback((text: string) => /\b(?:storno|abbrechen|reset)\b/i.test(text), []);
 
   const flushVoiceBuffer = useCallback((field: FocusedField) => {
@@ -144,9 +145,25 @@ const ManualRecipeForm = ({ onSave, onCancel, voiceInputRef, isVoiceActive = fal
         if (num !== null && num > 0) setServings(String(Math.round(num)));
         break;
       }
-      case "prepTime":
+      case "prepTime": {
+        // Parse spoken time like "zehn Minuten", "zwanzig Minuten", "30 Minuten"
+        const minuteMatch = text.match(/^(.+?)\s*(?:minuten?|min)\s*$/i);
+        if (minuteMatch) {
+          const num = parseGermanSpokenNumber(minuteMatch[1]);
+          if (num !== null && num > 0) {
+            setPrepTime(`${Math.round(num)} Min.`);
+            break;
+          }
+        }
+        // Try bare number → treat as minutes
+        const bareNum = parseGermanSpokenNumber(text);
+        if (bareNum !== null && bareNum > 0 && bareNum <= 600) {
+          setPrepTime(`${Math.round(bareNum)} Min.`);
+          break;
+        }
         setPrepTime(text);
         break;
+      }
       case "ingredientAmount": {
         // Could be a number or text like "200g"
         const num = parseGermanSpokenNumber(text);
@@ -196,6 +213,17 @@ const ManualRecipeForm = ({ onSave, onCancel, voiceInputRef, isVoiceActive = fal
           focusField("ingredientAmount");
         }
       }, 50);
+      return;
+    }
+
+    // "Okay"/"Weiter" advances from recipeName → servings → prepTime → ingredientAmount
+    if (!isInterim && isAdvanceCommand(transcript) && (current === "recipeName" || current === "servings" || current === "prepTime")) {
+      // Flush current buffer before advancing
+      flushVoiceBuffer(current);
+      clearVoiceBuffer();
+      const idx = FIELD_ORDER.indexOf(current);
+      const next = FIELD_ORDER[Math.min(idx + 1, FIELD_ORDER.length - 1)];
+      if (next) focusField(next);
       return;
     }
 
@@ -250,7 +278,7 @@ const ManualRecipeForm = ({ onSave, onCancel, voiceInputRef, isVoiceActive = fal
         voiceBufferRef.current = "";
       }, 800);
     }
-  }, [clearVoiceBuffer, flushVoiceBuffer, focusField, handleAddIngredientInternal, isBookingCommand, isPlusCommand, isStornoCommand, newIngredientName, onCancel]);
+  }, [clearVoiceBuffer, flushVoiceBuffer, focusField, handleAddIngredientInternal, isAdvanceCommand, isBookingCommand, isPlusCommand, isStornoCommand, newIngredientName, onCancel]);
 
   // Register voice input handler
   useEffect(() => {
