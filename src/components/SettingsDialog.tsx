@@ -174,6 +174,7 @@ const SettingsDialog = ({
   const [showDeleteRangeConfirm, setShowDeleteRangeConfirm] = useState(false);
   const [showDeleteActivitiesConfirm, setShowDeleteActivitiesConfirm] = useState(false);
   const [showResetFoodConfirm, setShowResetFoodConfirm] = useState(false);
+  const [showResetMicroConfirm, setShowResetMicroConfirm] = useState(false);
   const [showTestDataConfirm, setShowTestDataConfirm] = useState(false);
   const [showDeleteTestDataConfirm, setShowDeleteTestDataConfirm] = useState(false);
 
@@ -1867,6 +1868,35 @@ const SettingsDialog = ({
                       </div>
                     </div>
                   )}
+                  {!showResetMicroConfirm ? (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setShowResetMicroConfirm(true)}
+                      className="w-full h-7 text-[11px] gap-1.5"
+                    >
+                      <RefreshCw className="w-3 h-3" />
+                      Reset Mikronährstoffe
+                    </Button>
+                  ) : (
+                    <div className="rounded-lg border-2 border-destructive p-2.5 space-y-2">
+                      <p className="text-xs font-semibold text-destructive">
+                        Alle Sollwerte auf DGE-Standard zurücksetzen?
+                      </p>
+                      <div className="flex gap-2">
+                        <Button variant="outline" size="sm" onClick={() => {
+                          localStorage.removeItem("mampflogger-custom-targets");
+                          setShowResetMicroConfirm(false);
+                          toast.success("Mikronährstoff-Sollwerte auf DGE-Standard zurückgesetzt!");
+                        }} className="flex-1 h-8 text-xs border-destructive/30 hover:bg-destructive/10 text-destructive">
+                          Reset
+                        </Button>
+                        <Button variant="secondary" size="sm" autoFocus onClick={() => setShowResetMicroConfirm(false)} className="flex-1 h-8 text-xs ring-2 ring-primary">
+                          Abbruch
+                        </Button>
+                      </div>
+                    </div>
+                  )}
                   <Button
                     variant="outline"
                     size="sm"
@@ -1979,6 +2009,7 @@ const SettingsDialog = ({
                       "mampflogger-remote-sync",
                       "mampflogger-last-activity-type",
                       "mampflogger-saved-recipes",
+                      "mampflogger-custom-targets",
                     ];
                     const backup: Record<string, string | null> = {};
                     BACKUP_KEYS.forEach((key) => {
