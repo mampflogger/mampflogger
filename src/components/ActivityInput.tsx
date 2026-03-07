@@ -299,17 +299,27 @@ const ActivityInput = ({
       const chunk = transcript.trim();
       if (!chunk) return;
 
+      // Replace buffer with latest transcript (speech API sends cumulative interim results)
       valueVoiceDeferredRef.current = false;
-      valueVoiceBufferRef.current = `${valueVoiceBufferRef.current} ${chunk}`.trim();
+      valueVoiceBufferRef.current = chunk;
 
       if (valueVoiceTimerRef.current !== null) {
         window.clearTimeout(valueVoiceTimerRef.current);
       }
 
-      valueVoiceTimerRef.current = window.setTimeout(() => {
-        valueVoiceTimerRef.current = null;
-        flushSpokenValueBuffer();
-      }, isInterim ? 1800 : 1600);
+      if (!isInterim) {
+        // Final result: flush after short delay to allow deferred single-number logic
+        valueVoiceTimerRef.current = window.setTimeout(() => {
+          valueVoiceTimerRef.current = null;
+          flushSpokenValueBuffer();
+        }, 1600);
+      } else {
+        // Interim: wait longer for more words
+        valueVoiceTimerRef.current = window.setTimeout(() => {
+          valueVoiceTimerRef.current = null;
+          flushSpokenValueBuffer();
+        }, 1800);
+      }
       return;
     }
 
