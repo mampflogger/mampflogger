@@ -223,6 +223,8 @@ export function useVoiceCommands({ onCommand, onUnhandledSpeech }: UseVoiceComma
       // Try matching commands (only on final results)
       if (!isInterim) {
         const lower = transcript.toLowerCase().trim();
+
+        // 1. Exact regex pattern matching (fast path)
         for (const cmd of COMMANDS) {
           for (const pattern of cmd.patterns) {
             if (pattern.test(lower)) {
@@ -233,6 +235,16 @@ export function useVoiceCommands({ onCommand, onUnhandledSpeech }: UseVoiceComma
               }
             }
           }
+        }
+
+        // 2. Fuzzy fallback – tolerates dialect / imprecise speech
+        const keywords = FUZZY_KEYWORD_MAP.map(([kw]) => kw);
+        const { index, score } = bestFuzzyMatch(lower, keywords, 0.5);
+        if (index >= 0 && score >= 0.5) {
+          const action = FUZZY_KEYWORD_MAP[index][1];
+          console.debug(`[Voice] fuzzy match: "${lower}" → "${keywords[index]}" (${(score * 100).toFixed(0)}%) → ${action}`);
+          onCommandRef.current(action);
+          return;
         }
       }
 
