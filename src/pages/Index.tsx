@@ -219,6 +219,14 @@ const Index = () => {
           window.scrollTo({ top: 0, behavior: "smooth" });
         });
       }
+      else if (action === "action:date-today") {
+        closeSettingsAndDo(() => {
+          setSelectedDate(formatDate(new Date()));
+          setDateFocused(true);
+          dateFocusedRef.current = true;
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        });
+      }
       else if (action === "focus:food") {
         closeSettingsAndDo(() => {
           focusFoodField(100);
