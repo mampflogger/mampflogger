@@ -1,5 +1,16 @@
+import { useState } from "react";
 import { NutritionEntry, calculateDailySummary } from "@/types/nutrition";
 import { Trash2 } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 interface NutritionTableProps {
   entries: NutritionEntry[];
@@ -15,6 +26,8 @@ const MACRO_COLORS = {
 };
 
 const NutritionTable = ({ entries, onDelete, onEntryClick }: NutritionTableProps) => {
+  const [deleteEntry, setDeleteEntry] = useState<NutritionEntry | null>(null);
+
   if (entries.length === 0) {
     return (
       <div className="text-center py-8 animate-fade-in">
@@ -63,7 +76,7 @@ const NutritionTable = ({ entries, onDelete, onEntryClick }: NutritionTableProps
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
-                      onDelete(entry.id);
+                      setDeleteEntry(entry);
                     }}
                     className="p-0.5 rounded-full text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
                     aria-label="Eintrag löschen"
@@ -87,6 +100,23 @@ const NutritionTable = ({ entries, onDelete, onEntryClick }: NutritionTableProps
           </tfoot>
         </table>
       </div>
+
+      <AlertDialog open={!!deleteEntry} onOpenChange={(v) => { if (!v) setDeleteEntry(null); }}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Wirklich löschen?</AlertDialogTitle>
+            <AlertDialogDescription>
+              „{deleteEntry?.food}" ({deleteEntry?.time}) wird aus dem Tagesprotokoll entfernt.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Abbruch</AlertDialogCancel>
+            <AlertDialogAction onClick={() => { if (deleteEntry) { onDelete(deleteEntry.id); setDeleteEntry(null); } }}>
+              Ja
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

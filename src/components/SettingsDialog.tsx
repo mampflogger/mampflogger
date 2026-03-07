@@ -1779,6 +1779,24 @@ const SettingsDialog = ({
                 onAddEntry={onAddEntry}
               />
             )}
+
+            {/* Food delete confirmation */}
+            <AlertDialog open={!!foodToDelete} onOpenChange={(v) => { if (!v) setFoodToDelete(null); }}>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Wirklich löschen?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    „{foodToDelete}" wird unwiderruflich aus der Lebensmittelliste entfernt.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Abbruch</AlertDialogCancel>
+                  <AlertDialogAction onClick={() => { if (foodToDelete) { handleRemoveFood(foodToDelete); setFoodToDelete(null); } }}>
+                    Ja
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </div>
         )}
 
