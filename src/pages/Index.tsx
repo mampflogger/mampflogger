@@ -144,7 +144,14 @@ const Index = () => {
 
       // Scroll commands
       if (action === "scroll:bottom") {
-        window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
+        // Scroll to the last section, not beyond the viewport
+        const sections = document.querySelectorAll("[data-section]");
+        if (sections.length > 0) {
+          const lastSection = sections[sections.length - 1];
+          const HEADER_OFFSET = 140;
+          const targetTop = Math.max(0, (lastSection as HTMLElement).offsetTop - HEADER_OFFSET);
+          window.scrollTo({ top: targetTop, behavior: "smooth" });
+        }
         return;
       }
       if (action === "scroll:top") {
