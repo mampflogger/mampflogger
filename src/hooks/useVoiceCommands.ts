@@ -2,6 +2,7 @@ import { useCallback, useRef, useEffect } from "react";
 import { useSpeechRecognition } from "./useSpeechRecognition";
 import { toast } from "sonner";
 import { parseSpokenSelectionIndex } from "@/lib/voiceSelection";
+import { bestFuzzyMatch } from "@/lib/fuzzyMatch";
 
 interface VoiceCommand {
   patterns: RegExp[];
