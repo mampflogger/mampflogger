@@ -204,7 +204,7 @@ const MicronutrientTile = ({ item, editing, draftValue, onDraftChange, gender, d
           <p className="text-[11px] font-medium text-muted-foreground">
             {item.label} ({item.unit})
           </p>
-          <p className="text-[9px] text-muted-foreground/70 italic truncate ml-2">
+          <p className="text-[10px] text-muted-foreground/70 italic truncate ml-2 pr-2">
             {item.fullName}
           </p>
         </div>
