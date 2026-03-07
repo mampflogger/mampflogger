@@ -61,7 +61,9 @@ const Index = () => {
   const [settingsVoiceAction, setSettingsVoiceAction] = useState<string | null>(null);
   const [weeklyCoachAnalyzeRequest, setWeeklyCoachAnalyzeRequest] = useState(0);
   const [startupProfilePrompt, setStartupProfilePrompt] = useState(false);
-  const [activityFocusRequestId, setActivityFocusRequestId] = useState<number | undefined>(undefined);
+   const [activityFocusRequestId, setActivityFocusRequestId] = useState<number | undefined>(undefined);
+  const [dateFocused, setDateFocused] = useState(false);
+  const dateFocusedRef = useRef(false);
   const nutritionVoiceRef = useRef<((transcript: string, isInterim: boolean) => void) | undefined>();
   const recipeVoiceRef = useRef<((transcript: string, isInterim: boolean) => void) | undefined>();
   const activityVoiceRef = useRef<((transcript: string, isInterim: boolean) => void) | undefined>();
