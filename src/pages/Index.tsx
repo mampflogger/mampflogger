@@ -195,7 +195,7 @@ const Index = () => {
               window.dispatchEvent(new Event("mampflogger:open-photo-log"));
             }, needsTabSwitch ? 250 : 50);
           });
-      }
+        }
       else if (action === "action:date-focus") {
         closeSettingsAndDo(() => {
           setDateFocused(true);
