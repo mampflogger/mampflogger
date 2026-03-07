@@ -1525,6 +1525,7 @@ const SettingsDialog = ({
                 {/* Fixed controls area */}
                 <div className="shrink-0 space-y-1.5">
                   <div className="flex items-center justify-between">
+                    <h3 className="text-sm font-semibold text-foreground">Lebensmittelliste</h3>
                     <button
                       onClick={handleNewFood}
                       className="text-xs text-primary font-medium hover:underline"
