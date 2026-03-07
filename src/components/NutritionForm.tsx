@@ -143,6 +143,7 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
 
       // Try "X Uhr Y" pattern with spoken numbers
       const uhrMatch = lower.match(/^(.+?)\s*uhr\s*(.+)?$/);
+      console.log("[NutritionVoice:TIME] uhrMatch:", uhrMatch, "directTimeMatch:", directTimeMatch);
       if (uhrMatch) {
         const hourPart = parseGermanSpokenNumber(uhrMatch[1]);
         const minutePart = uhrMatch[2] ? parseGermanSpokenNumber(uhrMatch[2]) : 0;
