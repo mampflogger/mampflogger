@@ -298,6 +298,13 @@ const SettingsDialog = ({
     onVoiceActionHandled?.();
   }, [voiceAction, showCategoryDropdown, onVoiceActionHandled]);
 
+  // Focus on search field when food tab becomes active
+  useEffect(() => {
+    if (tab === "food" && open) {
+      setTimeout(() => foodSearchRef.current?.focus(), 50);
+    }
+  }, [tab, open]);
+
   // Handle external "New Food" trigger
   useEffect(() => {
     if (openToNewFood) {
