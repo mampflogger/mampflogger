@@ -142,19 +142,15 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
 
       // Try "X Uhr Y" pattern with spoken numbers
       const uhrMatch = lower.match(/^(.+?)\s*uhr\s*(.+)?$/);
-      console.log("[NutritionVoice:TIME] uhrMatch:", uhrMatch, "directTimeMatch:", directTimeMatch);
       if (uhrMatch) {
         const hourPart = parseGermanSpokenNumber(uhrMatch[1]);
         const minutePart = uhrMatch[2] ? parseGermanSpokenNumber(uhrMatch[2]) : 0;
-        console.log("[NutritionVoice:TIME] parsed hour:", hourPart, "min:", minutePart);
         if (hourPart !== null && hourPart >= 0 && hourPart < 24) {
           const mins = minutePart !== null ? minutePart : 0;
           if (mins >= 0 && mins < 60) {
             const h = String(hourPart).padStart(2, "0");
             const m = String(mins).padStart(2, "0");
-            const newTime = `${h}:${m}`;
-            console.log("[NutritionVoice:TIME] setting time to:", newTime);
-            setTime(newTime);
+            setTime(`${h}:${m}`);
             setTimeout(() => foodInputRef.current?.focus(), 0);
             setFocusedField("food");
             return;
