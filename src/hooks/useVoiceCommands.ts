@@ -62,6 +62,7 @@ const COMMANDS: VoiceCommand[] = [
   { patterns: [/\bhoch\b/i, /\brauf\b/i, /\bnach\s*oben\b/i, /\boben\b/i, /\bscroll\s*hoch\b/i], action: "scroll:up" },
 
   // Navigation
+  { patterns: [/\bheute\b/i], action: "action:date-today" },
   { patterns: [/\bdatum\b/i], action: "action:date-focus" },
   { patterns: [/\beingabe\b/i, /\blog\b/i], action: "nav:log" },
   { patterns: [/\bstatistik\b/i, /\bwoche\b/i], action: "nav:weekly" },
