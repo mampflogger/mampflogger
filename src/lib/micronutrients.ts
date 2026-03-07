@@ -7,6 +7,7 @@ export type MicronutrientGender = "male" | "female";
 export interface MicronutrientDefinition {
   key: string;
   label: string;
+  fullName: string;
   unit: string;
   target: {
     male: number | null;
@@ -15,34 +16,34 @@ export interface MicronutrientDefinition {
 }
 
 export const VITAMIN_DEFINITIONS = [
-  { key: "vitA", label: "A", unit: "µg", target: { male: 850, female: 700 } },
-  { key: "vitB1", label: "B1", unit: "mg", target: { male: 1.2, female: 1.0 } },
-  { key: "vitB2", label: "B2", unit: "mg", target: { male: 1.4, female: 1.1 } },
-  { key: "vitB3", label: "B3", unit: "mg", target: { male: 15, female: 12 } },
-  { key: "vitB5", label: "B5", unit: "mg", target: { male: 5, female: 5 } },
-  { key: "vitB6", label: "B6", unit: "mg", target: { male: 1.6, female: 1.4 } },
-  { key: "vitB7", label: "B7", unit: "µg", target: { male: 40, female: 40 } },
-  { key: "vitB9", label: "B9", unit: "µg", target: { male: 300, female: 300 } },
-  { key: "vitB12", label: "B12", unit: "µg", target: { male: 4, female: 4 } },
-  { key: "vitC", label: "C", unit: "mg", target: { male: 110, female: 95 } },
-  { key: "vitD", label: "D", unit: "µg", target: { male: 20, female: 20 } },
-  { key: "vitE", label: "E", unit: "mg", target: { male: 14, female: 12 } },
-  { key: "vitK", label: "K", unit: "µg", target: { male: 70, female: 60 } },
+  { key: "vitA", label: "A", fullName: "Retinol", unit: "µg", target: { male: 850, female: 700 } },
+  { key: "vitB1", label: "B1", fullName: "Thiamin", unit: "mg", target: { male: 1.2, female: 1.0 } },
+  { key: "vitB2", label: "B2", fullName: "Riboflavin", unit: "mg", target: { male: 1.4, female: 1.1 } },
+  { key: "vitB3", label: "B3", fullName: "Niacin", unit: "mg", target: { male: 15, female: 12 } },
+  { key: "vitB5", label: "B5", fullName: "Pantothensäure", unit: "mg", target: { male: 5, female: 5 } },
+  { key: "vitB6", label: "B6", fullName: "Pyridoxin", unit: "mg", target: { male: 1.6, female: 1.4 } },
+  { key: "vitB7", label: "B7", fullName: "Biotin", unit: "µg", target: { male: 40, female: 40 } },
+  { key: "vitB9", label: "B9", fullName: "Folsäure", unit: "µg", target: { male: 300, female: 300 } },
+  { key: "vitB12", label: "B12", fullName: "Cobalamin", unit: "µg", target: { male: 4, female: 4 } },
+  { key: "vitC", label: "C", fullName: "Ascorbinsäure", unit: "mg", target: { male: 110, female: 95 } },
+  { key: "vitD", label: "D", fullName: "Calciferol", unit: "µg", target: { male: 20, female: 20 } },
+  { key: "vitE", label: "E", fullName: "Tocopherol", unit: "mg", target: { male: 14, female: 12 } },
+  { key: "vitK", label: "K", fullName: "Phyllochinon", unit: "µg", target: { male: 70, female: 60 } },
 ] as const satisfies readonly MicronutrientDefinition[];
 
 export const MINERAL_DEFINITIONS = [
-  { key: "calcium", label: "Ca", unit: "mg", target: { male: 1000, female: 1000 } },
-  { key: "chlorid", label: "Cl", unit: "mg", target: { male: 2300, female: 2300 } },
-  { key: "eisen", label: "Fe", unit: "mg", target: { male: 10, female: 15 } },
-  { key: "fluorid", label: "F", unit: "mg", target: { male: 3.5, female: 3.1 } },
-  { key: "kalium", label: "K", unit: "mg", target: { male: 4000, female: 4000 } },
-  { key: "kupfer", label: "Cu", unit: "mg", target: { male: 1.25, female: 1.25 } },
-  { key: "magnesium", label: "Mg", unit: "mg", target: { male: 350, female: 300 } },
-  { key: "mangan", label: "Mn", unit: "mg", target: { male: 3.5, female: 3.5 } },
-  { key: "natrium", label: "Na", unit: "mg", target: { male: 1500, female: 1500 } },
-  { key: "phosphor", label: "P", unit: "mg", target: { male: 550, female: 550 } },
-  { key: "schwefel", label: "S", unit: "mg", target: { male: null, female: null } },
-  { key: "zink", label: "Zn", unit: "mg", target: { male: 14, female: 8 } },
+  { key: "calcium", label: "Ca", fullName: "Calcium", unit: "mg", target: { male: 1000, female: 1000 } },
+  { key: "chlorid", label: "Cl", fullName: "Chlorid", unit: "mg", target: { male: 2300, female: 2300 } },
+  { key: "eisen", label: "Fe", fullName: "Eisen", unit: "mg", target: { male: 10, female: 15 } },
+  { key: "fluorid", label: "F", fullName: "Fluorid", unit: "mg", target: { male: 3.5, female: 3.1 } },
+  { key: "kalium", label: "K", fullName: "Kalium", unit: "mg", target: { male: 4000, female: 4000 } },
+  { key: "kupfer", label: "Cu", fullName: "Kupfer", unit: "mg", target: { male: 1.25, female: 1.25 } },
+  { key: "magnesium", label: "Mg", fullName: "Magnesium", unit: "mg", target: { male: 350, female: 300 } },
+  { key: "mangan", label: "Mn", fullName: "Mangan", unit: "mg", target: { male: 3.5, female: 3.5 } },
+  { key: "natrium", label: "Na", fullName: "Natrium", unit: "mg", target: { male: 1500, female: 1500 } },
+  { key: "phosphor", label: "P", fullName: "Phosphor", unit: "mg", target: { male: 550, female: 550 } },
+  { key: "schwefel", label: "S", fullName: "Schwefel", unit: "mg", target: { male: null, female: null } },
+  { key: "zink", label: "Zn", fullName: "Zink", unit: "mg", target: { male: 14, female: 8 } },
 ] as const satisfies readonly MicronutrientDefinition[];
 
 const findMatchingFood = (name: string): FoodItem | undefined => {
