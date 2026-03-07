@@ -126,7 +126,6 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
     if (currentField === "time") {
       // Parse spoken time like "sechzehn Uhr", "16 Uhr", "acht Uhr dreißig", "14:30"
       const lower = transcript.toLowerCase().trim();
-      console.log("[NutritionVoice:TIME] parsing:", JSON.stringify(lower));
 
       // Try direct HH:MM pattern first (e.g. "16:30", "8:15")
       const directTimeMatch = lower.match(/(\d{1,2})\s*[:\.]\s*(\d{2})/);
