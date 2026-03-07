@@ -247,7 +247,7 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
     };
   }, [voiceInputRef, handleVoiceInput]);
 
-  // Field navigation commands (Zurück / Weiter / Löschen)
+  // Field navigation commands (Zurück / Weiter / Löschen / Dropdown open/close)
   useEffect(() => {
     const FIELD_ORDER: FocusedField[] = ["time", "food", "amount", "submit"];
     const handler = (e: Event) => {
@@ -258,7 +258,21 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
       const current = focusedFieldRef.current;
       const idx = current ? FIELD_ORDER.indexOf(current) : -1;
 
-      if (cmd === "field:next") {
+      if (cmd === "field:open-dropdown") {
+        // Open food suggestions if in food field
+        if (current === "food") {
+          const results = searchFood(foodInputRef.current?.value || "");
+          if (results.length > 0) {
+            setSuggestions(results);
+            setShowSuggestions(true);
+            setHighlightIndex(-1);
+          }
+        }
+      } else if (cmd === "field:close-dropdown") {
+        if (showSuggestions) {
+          setShowSuggestions(false);
+        }
+      } else if (cmd === "field:next") {
         const next = FIELD_ORDER[Math.min(idx + 1, FIELD_ORDER.length - 1)];
         if (next) {
           setFocusedField(next);
@@ -304,7 +318,7 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
     };
     window.addEventListener("mampflogger:field-command", handler);
     return () => window.removeEventListener("mampflogger:field-command", handler);
-  }, []);
+  }, [showSuggestions]);
 
   // Load editing entry into form
   useEffect(() => {
