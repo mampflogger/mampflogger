@@ -2,6 +2,7 @@ import { useCallback, useRef, useEffect } from "react";
 import { useSpeechRecognition } from "./useSpeechRecognition";
 import { toast } from "sonner";
 import { parseSpokenSelectionIndex } from "@/lib/voiceSelection";
+import { bestFuzzyMatch } from "@/lib/fuzzyMatch";
 
 interface VoiceCommand {
   patterns: RegExp[];
@@ -101,6 +102,61 @@ const COMMANDS: VoiceCommand[] = [
   { patterns: [/\bkamera\b/i, /\bfoto\b/i, /\bphoto\b/i, /\bbild\b/i], action: "action:camera" },
 ];
 
+// Fuzzy keyword → action map for fallback matching when regex fails
+const FUZZY_KEYWORD_MAP: [string, string][] = [
+  ["neuer eintrag", "section:neuer-eintrag"],
+  ["neue eingabe", "section:neuer-eintrag"],
+  ["naehrstoffe", "section:makro-naehrstoffe"],
+  ["naehrstoff", "section:makro-naehrstoffe"],
+  ["tagesuebersicht", "section:tagesuebersicht"],
+  ["kalorienaufnahme", "section:kalorienaufnahme"],
+  ["fastenanalyse", "section:fastenanalyse"],
+  ["fasten", "section:fastenanalyse"],
+  ["aktivitaet", "section:activity"],
+  ["aktivitaeten", "section:activity"],
+  ["workout", "section:activity"],
+  ["kalorienbilanz", "section:kalorienbilanz"],
+  ["bilanz", "section:kalorienbilanz"],
+  ["fluessigkeit", "section:fluessigkeit"],
+  ["kalorien pro tag", "section:kalorien-pro-tag"],
+  ["defizit", "section:defizit-pro-tag"],
+  ["makros pro tag", "section:makros-pro-tag"],
+  ["makroverteilung", "section:makro-verteilung"],
+  ["verteilung", "section:makro-verteilung"],
+  ["vitamine", "section:vitamine-7-tage"],
+  ["mineralstoffe", "section:mineralstoffe-7-tage"],
+  ["spurenelemente", "section:mineralstoffe-7-tage"],
+  ["wochenanalyse", "action:weekly-analysis"],
+  ["ernaehrungsberater", "action:weekly-analysis"],
+  ["ernaehrungscoach", "action:weekly-analysis"],
+  ["coach", "action:weekly-analysis"],
+  ["uebersicht", "section:uebersicht"],
+  ["persoenliche daten", "section:persoenliche-daten"],
+  ["ziele", "section:ziele"],
+  ["rezeptgenerator", "section:rezeptgenerator"],
+  ["generator", "section:rezeptgenerator"],
+  ["gespeicherte rezepte", "section:gespeicherte-rezepte"],
+  ["import", "section:import"],
+  ["export", "section:export"],
+  ["backup", "section:backup"],
+  ["sicherung", "section:backup"],
+  ["einstellungen", "settings:open"],
+  ["settings", "settings:open"],
+  ["statistik", "nav:weekly"],
+  ["eingabe", "nav:log"],
+  ["profil", "settings:profile"],
+  ["lebensmittel", "settings:food"],
+  ["rezepte", "settings:recipes"],
+  ["daten", "settings:data"],
+  ["design", "settings:design"],
+  ["dark mode", "theme:dark"],
+  ["dunkler modus", "theme:dark"],
+  ["light mode", "theme:light"],
+  ["heller modus", "theme:light"],
+  ["kamera", "action:camera"],
+  ["foto", "action:camera"],
+];
+
 // Map section IDs to the page they belong to
 export const SECTION_PAGE_MAP: Record<string, "log" | "weekly"> = {
   "section-neuer-eintrag": "log",
@@ -167,6 +223,8 @@ export function useVoiceCommands({ onCommand, onUnhandledSpeech }: UseVoiceComma
       // Try matching commands (only on final results)
       if (!isInterim) {
         const lower = transcript.toLowerCase().trim();
+
+        // 1. Exact regex pattern matching (fast path)
         for (const cmd of COMMANDS) {
           for (const pattern of cmd.patterns) {
             if (pattern.test(lower)) {
@@ -177,6 +235,16 @@ export function useVoiceCommands({ onCommand, onUnhandledSpeech }: UseVoiceComma
               }
             }
           }
+        }
+
+        // 2. Fuzzy fallback – tolerates dialect / imprecise speech
+        const keywords = FUZZY_KEYWORD_MAP.map(([kw]) => kw);
+        const { index, score } = bestFuzzyMatch(lower, keywords, 0.5);
+        if (index >= 0 && score >= 0.5) {
+          const action = FUZZY_KEYWORD_MAP[index][1];
+          console.debug(`[Voice] fuzzy match: "${lower}" → "${keywords[index]}" (${(score * 100).toFixed(0)}%) → ${action}`);
+          onCommandRef.current(action);
+          return;
         }
       }
 
