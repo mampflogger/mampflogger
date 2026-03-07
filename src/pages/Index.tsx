@@ -780,7 +780,7 @@ const Index = () => {
               >
                 <ChevronLeft className="w-5 h-5" />
               </Button>
-              <div className="text-center min-h-[2.5rem] flex flex-col justify-center">
+              <div className="text-center min-h-[2.5rem] flex flex-col justify-center cursor-pointer" onClick={() => { setDateFocused(f => !f); dateFocusedRef.current = !dateFocusedRef.current; }}>
                 <p className={`text-sm font-semibold transition-colors duration-500 ${dateFocused ? "text-primary" : ""}`}>{isToday ? "Heute" : displayWeekday}</p>
                 <p className={`text-xs transition-colors duration-500 ${dateFocused ? "text-primary/70" : "text-muted-foreground"}`}>{displayDateOnly}</p>
               </div>
