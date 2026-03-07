@@ -1709,7 +1709,7 @@ const SettingsDialog = ({
                                 <CookIcon className="w-3.5 h-3.5" />
                               </button>
                               <button
-                                onClick={(e) => { e.stopPropagation(); handleRemoveFood(f.name); }}
+                                onClick={(e) => { e.stopPropagation(); setFoodToDelete(f.name); }}
                                 className="p-0.5 rounded text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
                               >
                                 <Trash2 className="w-3.5 h-3.5" />
@@ -1753,7 +1753,7 @@ const SettingsDialog = ({
                                 <CookIcon className="w-3.5 h-3.5" />
                               </button>
                               <button
-                                onClick={(e) => { e.stopPropagation(); handleRemoveFood(f.name); }}
+                                onClick={(e) => { e.stopPropagation(); setFoodToDelete(f.name); }}
                                 className="p-0.5 rounded text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
                               >
                                 <Trash2 className="w-3.5 h-3.5" />
