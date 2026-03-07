@@ -1237,6 +1237,7 @@ const SettingsDialog = ({
           <div className="space-y-3">
             {/* Appearance Card */}
             <div className="glass-card rounded-xl p-3 space-y-3">
+              <h2 className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Design</h2>
               <div>
                 <Label className="text-[10px] font-medium text-muted-foreground mb-1 block">Modus</Label>
                 <button
@@ -1525,7 +1526,7 @@ const SettingsDialog = ({
                 {/* Fixed controls area */}
                 <div className="shrink-0 space-y-1.5">
                   <div className="flex items-center justify-between">
-                    <h3 className="text-sm font-semibold text-foreground">Lebensmittelliste</h3>
+                    <h2 className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Lebensmittelliste</h2>
                     <button
                       onClick={handleNewFood}
                       className="text-xs text-primary font-medium hover:underline"
@@ -1765,7 +1766,7 @@ const SettingsDialog = ({
             <div id="section-import" className="glass-card rounded-xl p-3 space-y-1.5">
               <div className="flex items-center gap-1.5">
                 <Download className="w-3.5 h-3.5 text-primary" />
-                <h3 className="text-[11px] font-bold uppercase tracking-wider text-foreground">Import</h3>
+                <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Import</h2>
                 <span className="text-[9px] text-muted-foreground ml-auto">Auto-Erkennung</span>
               </div>
               <input
@@ -1877,7 +1878,7 @@ const SettingsDialog = ({
             <div id="section-export" className="glass-card rounded-xl p-3 space-y-1.5">
               <div className="flex items-center gap-1.5">
                 <Upload className="w-3.5 h-3.5 text-primary" />
-                <h3 className="text-[11px] font-bold uppercase tracking-wider text-foreground">Export</h3>
+                <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Export</h2>
               </div>
               <div className="grid grid-cols-4 gap-1.5">
                 {[
@@ -1905,7 +1906,7 @@ const SettingsDialog = ({
             <div id="section-backup" className="glass-card rounded-xl p-3 space-y-1.5">
               <div className="flex items-center gap-1.5">
                 <HardDrive className="w-3.5 h-3.5 text-primary" />
-                <h3 className="text-[11px] font-bold uppercase tracking-wider text-foreground">Backup</h3>
+                <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Backup</h2>
               </div>
               <div className="grid grid-cols-2 gap-1.5">
                 <Button
@@ -1995,7 +1996,7 @@ const SettingsDialog = ({
             <div id="section-loeschen" className="glass-card rounded-xl p-3 space-y-1.5">
               <div className="flex items-center gap-1.5">
                 <Trash2 className="w-3.5 h-3.5 text-primary" />
-                <h3 className="text-[11px] font-bold uppercase tracking-wider text-foreground">Cancel</h3>
+                <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Cancel</h2>
               </div>
 
               {/* Date range delete */}
