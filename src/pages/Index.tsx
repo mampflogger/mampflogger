@@ -234,6 +234,12 @@ const Index = () => {
         }
       }
       else if (action === "field:next" || action === "field:prev" || action === "field:clear" || action === "field:open-dropdown" || action === "field:close-dropdown") {
+        // Date navigation mode: next/prev navigate days
+        if (dateFocusedRef.current && (action === "field:next" || action === "field:prev")) {
+          const offset = action === "field:next" ? 1 : -1;
+          navigateDay(offset);
+          return;
+        }
         // If settings is open, route dropdown commands to settings
         if (settingsOpenRef.current) {
           if (action === "field:open-dropdown") { setSettingsVoiceAction("open-dropdown"); return; }
