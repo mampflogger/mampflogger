@@ -210,6 +210,9 @@ const SettingsDialog = ({
   const foodSearchRef = React.useRef<HTMLInputElement>(null);
   const [recipeVoiceIndex, setRecipeVoiceIndex] = useState<number | null>(null);
 
+  // State for individual food delete confirmation
+  const [foodToDelete, setFoodToDelete] = useState<string | null>(null);
+
   // Handle voice actions within settings
   useEffect(() => {
     if (!voiceAction) return;
@@ -240,6 +243,34 @@ const SettingsDialog = ({
       setTab("recipes");
       onTabChange?.("recipes");
       setTimeout(() => window.dispatchEvent(new Event("mampflogger:open-recipe-photo")), 150);
+    } else if (voiceAction === "open-dropdown") {
+      // Open category dropdown in food editor
+      if (tab === "food" && editingFood) {
+        setShowCategoryDropdown(true);
+      }
+    } else if (voiceAction === "close-dropdown") {
+      // Close category dropdown
+      if (showCategoryDropdown) {
+        setShowCategoryDropdown(false);
+      }
+    } else if (voiceAction === "food-save") {
+      if (tab === "food" && editingFood) {
+        handleSaveFood();
+      }
+    } else if (voiceAction === "food-next") {
+      if (tab === "food" && editingFood) {
+        handleSaveFood();
+        handleNewFood();
+      }
+    } else if (voiceAction === "food-back") {
+      if (tab === "food") {
+        setEditingFood(null);
+        setFoodNavIndex(null);
+      }
+    } else if (voiceAction === "food-ai-lookup") {
+      if (tab === "food" && editingFood && editFoodName.trim()) {
+        handleAiLookup();
+      }
     } else if (voiceAction.startsWith("category:")) {
       const cat = voiceAction.replace("category:", "");
       if (cat === "alle") {
@@ -1162,8 +1193,8 @@ const SettingsDialog = ({
             </div>
 
             {/* Goals Card */}
-            <div id="section-goals" className="glass-card rounded-xl p-3 space-y-2">
-              <Label className="text-[10px] font-semibold text-muted-foreground mb-1 block uppercase tracking-wider pl-0">GOALS</Label>
+            <div id="section-ziele" className="glass-card rounded-xl p-3 space-y-2">
+              <h2 className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Ziele</h2>
               <div className="grid grid-cols-2 gap-2">
                 <div>
                   <Label className="text-[10px] font-medium text-muted-foreground mb-0.5 block">Zielgewicht (kg)</Label>
@@ -1382,13 +1413,13 @@ const SettingsDialog = ({
                 {/* Buttons */}
                 <div className="grid grid-cols-3 gap-1.5">
                   <Button variant="outline" onClick={() => { handleSaveFood(); handleNewFood(); }} className="h-6 text-[8px]">
-                    + Nächstes
+                    → Next
                   </Button>
                   <Button onClick={handleSaveFood} className="h-6 text-[8px] gap-1">
                     <Save className="w-3 h-3" /> Speichern
                   </Button>
                   <Button variant="outline" onClick={() => { setEditingFood(null); setFoodNavIndex(null); }} className="h-6 text-[8px]">
-                    ← Tabelle
+                    ← Zurück
                   </Button>
                 </div>
 
@@ -1678,7 +1709,7 @@ const SettingsDialog = ({
                                 <CookIcon className="w-3.5 h-3.5" />
                               </button>
                               <button
-                                onClick={(e) => { e.stopPropagation(); handleRemoveFood(f.name); }}
+                                onClick={(e) => { e.stopPropagation(); setFoodToDelete(f.name); }}
                                 className="p-0.5 rounded text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
                               >
                                 <Trash2 className="w-3.5 h-3.5" />
@@ -1722,7 +1753,7 @@ const SettingsDialog = ({
                                 <CookIcon className="w-3.5 h-3.5" />
                               </button>
                               <button
-                                onClick={(e) => { e.stopPropagation(); handleRemoveFood(f.name); }}
+                                onClick={(e) => { e.stopPropagation(); setFoodToDelete(f.name); }}
                                 className="p-0.5 rounded text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
                               >
                                 <Trash2 className="w-3.5 h-3.5" />
@@ -1748,6 +1779,24 @@ const SettingsDialog = ({
                 onAddEntry={onAddEntry}
               />
             )}
+
+            {/* Food delete confirmation */}
+            <AlertDialog open={!!foodToDelete} onOpenChange={(v) => { if (!v) setFoodToDelete(null); }}>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Wirklich löschen?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    „{foodToDelete}" wird unwiderruflich aus der Lebensmittelliste entfernt.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Abbruch</AlertDialogCancel>
+                  <AlertDialogAction onClick={() => { if (foodToDelete) { handleRemoveFood(foodToDelete); setFoodToDelete(null); } }}>
+                    Ja
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </div>
         )}
 
