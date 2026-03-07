@@ -133,8 +133,9 @@ const ActivityInput = ({
   ), []);
 
   const isBookingCommand = useCallback((text: string) => /\b(?:okay|ja|buchen)\b/i.test(text), []);
-  const isStornoCommand = useCallback((text: string) => /\b(?:storno|abbrechen|reset)\b/i.test(text), []);
+  const isStornoCommand = useCallback((text: string) => /\b(?:storno|abbrechen|reset|leer|clear)\b/i.test(text), []);
   const isOptionsCommand = useCallback((text: string) => /\b(?:optionen|option|ausklappen|dropdown|liste)\b/i.test(text), []);
+  const isEscapeCommand = useCallback((text: string) => /\b(?:escape|schließen|schliessen|zumachen|zuklappen|abbrechen)\b/i.test(text), []);
 
   const shouldDeferSpokenValue = useCallback((buffer: string, parsed: number) => {
     if (!Number.isInteger(parsed) || parsed < 1 || parsed > 9) return false;
