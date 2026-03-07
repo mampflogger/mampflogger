@@ -633,17 +633,34 @@ export function searchFood(query: string): FoodItem[] {
   const lower = query.toLowerCase();
   const usage = loadFoodUsage();
 
-  const matches = foodDatabase.filter((item) =>
+  // 1. Exact substring matches (fast path)
+  const exactMatches = foodDatabase.filter((item) =>
     item.name.toLowerCase().includes(lower)
   );
 
-  // Sort: items used before come first (desc), then alphabetically
-  matches.sort((a, b) => {
+  if (exactMatches.length > 0) {
+    exactMatches.sort((a, b) => {
+      const ua = usage[a.name.toLowerCase()] ?? 0;
+      const ub = usage[b.name.toLowerCase()] ?? 0;
+      if (ub !== ua) return ub - ua;
+      return a.name.localeCompare(b.name, "de");
+    });
+    return exactMatches.slice(0, 10);
+  }
+
+  // 2. Fuzzy fallback – tolerates speech recognition errors
+  const { fuzzyFilter } = require("@/lib/fuzzyMatch") as typeof import("@/lib/fuzzyMatch");
+  const fuzzyResults = fuzzyFilter(query, foodDatabase, (item) => item.name, 0.35);
+
+  if (fuzzyResults.length === 0) return [];
+
+  const fuzzyMatches = fuzzyResults.slice(0, 10).map((r) => r.item);
+  fuzzyMatches.sort((a, b) => {
     const ua = usage[a.name.toLowerCase()] ?? 0;
     const ub = usage[b.name.toLowerCase()] ?? 0;
     if (ub !== ua) return ub - ua;
     return a.name.localeCompare(b.name, "de");
   });
 
-  return matches.slice(0, 10);
+  return fuzzyMatches;
 }
