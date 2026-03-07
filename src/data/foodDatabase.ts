@@ -1,5 +1,6 @@
 import defaultFoodsCsv from "@/data/defaultFoods.csv?raw";
 import { supabase } from "@/integrations/supabase/client";
+import { fuzzyFilter } from "@/lib/fuzzyMatch";
 
 export const FOOD_CATEGORIES = [
   "Fleisch&Wurst",
@@ -649,7 +650,6 @@ export function searchFood(query: string): FoodItem[] {
   }
 
   // 2. Fuzzy fallback – tolerates speech recognition errors
-  const { fuzzyFilter } = require("@/lib/fuzzyMatch") as typeof import("@/lib/fuzzyMatch");
   const fuzzyResults = fuzzyFilter(query, foodDatabase, (item) => item.name, 0.35);
 
   if (fuzzyResults.length === 0) return [];
