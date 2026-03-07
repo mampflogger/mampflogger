@@ -265,11 +265,34 @@ const ActivityInput = ({
   const handleVoiceInput = useCallback((transcript: string, isInterim: boolean) => {
     const currentField = focusedFieldRef.current;
 
+    // Storno: works from ANY state, ANY field, interim or final
     if (isStornoCommand(transcript)) {
       pendingTypeIgnoreNumericUntilRef.current = 0;
       valueVoiceDeferredRef.current = false;
+      setIsTypeOpen(false);
       playConfirmationTone();
       resetActivityInput(true);
+      return;
+    }
+
+    // Escape/Schließen: close dropdown if open, return to value field
+    if (isEscapeCommand(transcript) && !isStornoCommand(transcript)) {
+      if (isTypeOpen) {
+        setIsTypeOpen(false);
+        playConfirmationTone();
+        // Stay on type field but close dropdown
+        setTimeout(() => {
+          selectTriggerRef.current?.focus();
+          setFocusedField("type");
+        }, 0);
+        return;
+      }
+      // If dropdown not open, treat as "go back to value"
+      playConfirmationTone();
+      setTimeout(() => {
+        valueInputRef.current?.focus();
+        setFocusedField("value");
+      }, 0);
       return;
     }
 
@@ -290,10 +313,17 @@ const ActivityInput = ({
       return;
     }
 
-    if (currentField === "submit" && isBookingCommand(transcript)) {
-      playConfirmationTone();
-      submitButtonRef.current?.click();
-      return;
+    // Booking command works from submit OR type field
+    if (isBookingCommand(transcript) && !isInterim) {
+      if (currentField === "submit" || currentField === "type") {
+        const numValue = Number.parseFloat(value.replace(",", "."));
+        if (selectedTypeId && Number.isFinite(numValue) && numValue > 0) {
+          setIsTypeOpen(false);
+          playConfirmationTone();
+          submitButtonRef.current?.click();
+          return;
+        }
+      }
     }
 
     if (currentField === "value") {
@@ -309,13 +339,11 @@ const ActivityInput = ({
       }
 
       if (!isInterim) {
-        // Final result: flush after short delay to allow deferred single-number logic
         valueVoiceTimerRef.current = window.setTimeout(() => {
           valueVoiceTimerRef.current = null;
           flushSpokenValueBuffer();
         }, 1600);
       } else {
-        // Interim: wait longer for more words
         valueVoiceTimerRef.current = window.setTimeout(() => {
           valueVoiceTimerRef.current = null;
           flushSpokenValueBuffer();
@@ -324,17 +352,9 @@ const ActivityInput = ({
       return;
     }
 
+    // For type field: only act on final results
     if (isInterim) return;
     if (currentField !== "type") return;
-
-    if (isBookingCommand(transcript)) {
-      const numValue = Number.parseFloat(value.replace(",", "."));
-      if (selectedTypeId && Number.isFinite(numValue) && numValue > 0) {
-        playConfirmationTone();
-        submitButtonRef.current?.click();
-        return;
-      }
-    }
 
     const hasSelectionKeyword = /\b(?:nummer|position|nimm|nehme|zeige|liste|auswahl|dropdown|option|optionen)\b/i.test(transcript);
     if (!hasSelectionKeyword && !isTypeOpen && Date.now() < pendingTypeIgnoreNumericUntilRef.current) {
