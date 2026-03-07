@@ -56,6 +56,8 @@ const COMMANDS: VoiceCommand[] = [
   { patterns: [/\bcancel\b/i], action: "section:loeschen" },
 
   // Scroll up/down
+  { patterns: [/\bganz\s*nach\s*unten\b/i, /\bganz\s*unten\b/i], action: "scroll:bottom" },
+  { patterns: [/\bganz\s*nach\s*oben\b/i, /\bganz\s*oben\b/i], action: "scroll:top" },
   { patterns: [/\brunter\b/i, /\bnach\s*unten\b/i, /\bunten\b/i, /\bscroll\s*runter\b/i], action: "scroll:down" },
   { patterns: [/\bhoch\b/i, /\brauf\b/i, /\bnach\s*oben\b/i, /\boben\b/i, /\bscroll\s*hoch\b/i], action: "scroll:up" },
 
