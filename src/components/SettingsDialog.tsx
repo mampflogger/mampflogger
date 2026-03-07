@@ -298,6 +298,13 @@ const SettingsDialog = ({
     onVoiceActionHandled?.();
   }, [voiceAction, showCategoryDropdown, onVoiceActionHandled]);
 
+  // Focus on search field when food tab becomes active
+  useEffect(() => {
+    if (tab === "food" && open) {
+      setTimeout(() => foodSearchRef.current?.focus(), 50);
+    }
+  }, [tab, open]);
+
   // Handle external "New Food" trigger
   useEffect(() => {
     if (openToNewFood) {
@@ -1518,6 +1525,7 @@ const SettingsDialog = ({
                 {/* Fixed controls area */}
                 <div className="shrink-0 space-y-1.5">
                   <div className="flex items-center justify-between">
+                    <h3 className="text-sm font-semibold text-foreground">Lebensmittelliste</h3>
                     <button
                       onClick={handleNewFood}
                       className="text-xs text-primary font-medium hover:underline"
