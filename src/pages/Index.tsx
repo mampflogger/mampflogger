@@ -61,7 +61,9 @@ const Index = () => {
   const [settingsVoiceAction, setSettingsVoiceAction] = useState<string | null>(null);
   const [weeklyCoachAnalyzeRequest, setWeeklyCoachAnalyzeRequest] = useState(0);
   const [startupProfilePrompt, setStartupProfilePrompt] = useState(false);
-  const [activityFocusRequestId, setActivityFocusRequestId] = useState<number | undefined>(undefined);
+   const [activityFocusRequestId, setActivityFocusRequestId] = useState<number | undefined>(undefined);
+  const [dateFocused, setDateFocused] = useState(false);
+  const dateFocusedRef = useRef(false);
   const nutritionVoiceRef = useRef<((transcript: string, isInterim: boolean) => void) | undefined>();
   const recipeVoiceRef = useRef<((transcript: string, isInterim: boolean) => void) | undefined>();
   const activityVoiceRef = useRef<((transcript: string, isInterim: boolean) => void) | undefined>();
@@ -96,6 +98,14 @@ const Index = () => {
   // Global voice command system
   const voiceCommands = useVoiceCommands({
     onCommand: useCallback((action: string) => {
+      // Deactivate date focus when a non-date command is used
+      if (action !== "action:date-focus" && action !== "field:next" && action !== "field:prev") {
+        if (dateFocusedRef.current) {
+          setDateFocused(false);
+          dateFocusedRef.current = false;
+        }
+      }
+
       // Section navigation
       if (action.startsWith("section:")) {
         const sectionId = action.replace("section:", "section-");
@@ -195,6 +205,13 @@ const Index = () => {
           });
         }
       }
+      else if (action === "action:date-focus") {
+        closeSettingsAndDo(() => {
+          setDateFocused(true);
+          dateFocusedRef.current = true;
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        });
+      }
       else if (action === "focus:food") {
         closeSettingsAndDo(() => {
           focusFoodField(100);
@@ -225,6 +242,12 @@ const Index = () => {
         }
       }
       else if (action === "field:next" || action === "field:prev" || action === "field:clear" || action === "field:open-dropdown" || action === "field:close-dropdown") {
+        // Date navigation mode: next/prev navigate days
+        if (dateFocusedRef.current && (action === "field:next" || action === "field:prev")) {
+          const offset = action === "field:next" ? 1 : -1;
+          navigateDay(offset);
+          return;
+        }
         // If settings is open, route dropdown commands to settings
         if (settingsOpenRef.current) {
           if (action === "field:open-dropdown") { setSettingsVoiceAction("open-dropdown"); return; }
@@ -743,7 +766,7 @@ const Index = () => {
       <main className="max-w-lg mx-auto px-4 pb-8">
         {/* Date Navigation – sticky below header */}
         <div className="sticky top-[calc(env(safe-area-inset-top)+3.5rem)] z-[9] -mx-4 px-4 pt-3 pb-0 bg-background">
-          <div className="glass-card rounded-xl p-3 mb-3">
+          <div className={`glass-card rounded-xl p-3 mb-3 transition-all duration-500 ${dateFocused ? "ring-2 ring-primary shadow-lg shadow-primary/20" : ""}`}>
             <div className="flex items-center justify-between">
               <Button
                 variant="ghost"
@@ -757,9 +780,9 @@ const Index = () => {
               >
                 <ChevronLeft className="w-5 h-5" />
               </Button>
-              <div className="text-center min-h-[2.5rem] flex flex-col justify-center">
-                <p className="text-sm font-semibold">{isToday ? "Heute" : displayWeekday}</p>
-                <p className="text-xs text-muted-foreground">{displayDateOnly}</p>
+              <div className="text-center min-h-[2.5rem] flex flex-col justify-center cursor-pointer" onClick={() => { setDateFocused(f => !f); dateFocusedRef.current = !dateFocusedRef.current; }}>
+                <p className={`text-sm font-semibold transition-colors duration-500 ${dateFocused ? "text-primary" : ""}`}>{isToday ? "Heute" : displayWeekday}</p>
+                <p className={`text-xs transition-colors duration-500 ${dateFocused ? "text-primary/70" : "text-muted-foreground"}`}>{displayDateOnly}</p>
               </div>
               <Button
                 variant="ghost"

@@ -62,6 +62,7 @@ const COMMANDS: VoiceCommand[] = [
   { patterns: [/\bhoch\b/i, /\brauf\b/i, /\bnach\s*oben\b/i, /\boben\b/i, /\bscroll\s*hoch\b/i], action: "scroll:up" },
 
   // Navigation
+  { patterns: [/\bdatum\b/i], action: "action:date-focus" },
   { patterns: [/\beingabe\b/i, /\blog\b/i], action: "nav:log" },
   { patterns: [/\bstatistik\b/i, /\bwoche\b/i], action: "nav:weekly" },
 
@@ -89,8 +90,8 @@ const COMMANDS: VoiceCommand[] = [
   { patterns: [/\bdesign\b/i], action: "settings:design" },
 
   // Contextual field commands (active form only)
-  { patterns: [/\bzurück\b/i, /\bzurueck\b/i], action: "field:prev" },
-  { patterns: [/\bweiter\b/i], action: "field:next" },
+  { patterns: [/\bzurück\b/i, /\bzurueck\b/i, /\bback\b/i], action: "field:prev" },
+  { patterns: [/\bweiter\b/i, /\bvorwärts\b/i, /\bvorwaerts\b/i, /\bnext\b/i], action: "field:next" },
   { patterns: [/\blöschen\b/i, /\bloeschen\b/i], action: "field:clear" },
   { patterns: [/\bauswahl\b/i, /\boptionen?\b/i], action: "field:open-dropdown" },
   { patterns: [/\bescape\b/i], action: "field:close-dropdown" },
