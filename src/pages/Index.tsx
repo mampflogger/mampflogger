@@ -133,6 +133,14 @@ const Index = () => {
       }
 
       // Scroll commands
+      if (action === "scroll:bottom") {
+        window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
+        return;
+      }
+      if (action === "scroll:top") {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        return;
+      }
       if (action === "scroll:down") {
         sectionNav.scrollDirection("down");
         return;
