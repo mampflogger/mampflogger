@@ -200,9 +200,14 @@ const MicronutrientTile = ({ item, editing, draftValue, onDraftChange, gender, d
         aria-hidden="true"
       />
       <div className="relative z-10">
-        <p className="text-[11px] font-medium text-muted-foreground">
-          {item.label} ({item.unit})
-        </p>
+        <div className="flex items-center justify-between">
+          <p className="text-[11px] font-medium text-muted-foreground">
+            {item.label} ({item.unit})
+          </p>
+          <p className="text-[9px] text-muted-foreground/70 italic truncate ml-2">
+            {item.fullName}
+          </p>
+        </div>
         <p className="mt-1 text-xl font-semibold leading-none tabular-nums text-foreground">
           {formatMicronutrientValue(item.averageDaily)}
         </p>
