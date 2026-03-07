@@ -216,7 +216,12 @@ const Index = () => {
           setSettingsVoiceAction("food-search");
         }
       }
-      else if (action === "field:next" || action === "field:prev" || action === "field:clear") {
+      else if (action === "field:next" || action === "field:prev" || action === "field:clear" || action === "field:open-dropdown" || action === "field:close-dropdown") {
+        // If settings is open, route dropdown commands to settings
+        if (settingsOpenRef.current) {
+          if (action === "field:open-dropdown") { setSettingsVoiceAction("open-dropdown"); return; }
+          if (action === "field:close-dropdown") { setSettingsVoiceAction("close-dropdown"); return; }
+        }
         const activeElement = document.activeElement as HTMLElement | null;
         const scope = activeElement?.closest('[data-voice-scope="manual-recipe"]')
           ? "manual-recipe"
@@ -255,11 +260,17 @@ const Index = () => {
             if (/\blight\b|\bhell/.test(lower)) { setDarkMode(false); return; }
           }
 
-          // Food tab: categories, filters, numbered selection
+          // Food tab: categories, filters, numbered selection, food editor commands
           if (currentTab === "food") {
             if (/\bneu\b/i.test(lower)) { setSettingsVoiceAction("new-food"); return; }
             if (/\bsuchen\b/i.test(lower)) { setSettingsVoiceAction("food-search"); return; }
             if (/\balle\b/i.test(lower)) { setSettingsVoiceAction("category:alle"); return; }
+            // Food editor voice commands
+            if (/\bnährwerte?\b/i.test(lower)) { setSettingsVoiceAction("food-ai-lookup"); return; }
+            if (/\b(speichern)\b/i.test(lower)) { setSettingsVoiceAction("food-save"); return; }
+            if (/\b(okay|ok|ja)\b/i.test(lower)) { setSettingsVoiceAction("food-save"); return; }
+            if (/\b(nächstes|next)\b/i.test(lower)) { setSettingsVoiceAction("food-next"); return; }
+            if (/\b(zurück|back|tabelle)\b/i.test(lower)) { setSettingsVoiceAction("food-back"); return; }
             const catMap: [RegExp, string][] = [
               [/\bfleisch\b/i, "Fleisch&Wurst"], [/\bwurst\b/i, "Fleisch&Wurst"],
               [/\bfisch\b/i, "Fisch&Meeresfrüchte"], [/\bmeeresfrüchte\b/i, "Fisch&Meeresfrüchte"],
