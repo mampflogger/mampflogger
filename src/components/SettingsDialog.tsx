@@ -210,6 +210,9 @@ const SettingsDialog = ({
   const foodSearchRef = React.useRef<HTMLInputElement>(null);
   const [recipeVoiceIndex, setRecipeVoiceIndex] = useState<number | null>(null);
 
+  // State for individual food delete confirmation
+  const [foodToDelete, setFoodToDelete] = useState<string | null>(null);
+
   // Handle voice actions within settings
   useEffect(() => {
     if (!voiceAction) return;
@@ -240,6 +243,34 @@ const SettingsDialog = ({
       setTab("recipes");
       onTabChange?.("recipes");
       setTimeout(() => window.dispatchEvent(new Event("mampflogger:open-recipe-photo")), 150);
+    } else if (voiceAction === "open-dropdown") {
+      // Open category dropdown in food editor
+      if (tab === "food" && editingFood) {
+        setShowCategoryDropdown(true);
+      }
+    } else if (voiceAction === "close-dropdown") {
+      // Close category dropdown
+      if (showCategoryDropdown) {
+        setShowCategoryDropdown(false);
+      }
+    } else if (voiceAction === "food-save") {
+      if (tab === "food" && editingFood) {
+        handleSaveFood();
+      }
+    } else if (voiceAction === "food-next") {
+      if (tab === "food" && editingFood) {
+        handleSaveFood();
+        handleNewFood();
+      }
+    } else if (voiceAction === "food-back") {
+      if (tab === "food") {
+        setEditingFood(null);
+        setFoodNavIndex(null);
+      }
+    } else if (voiceAction === "food-ai-lookup") {
+      if (tab === "food" && editingFood && editFoodName.trim()) {
+        handleAiLookup();
+      }
     } else if (voiceAction.startsWith("category:")) {
       const cat = voiceAction.replace("category:", "");
       if (cat === "alle") {
