@@ -86,6 +86,7 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
   // Voice input handler – receives transcripts from global voice command system
   const handleVoiceInput = useCallback((transcript: string, isInterim: boolean) => {
     const currentField = focusedFieldRef.current;
+    console.log("[NutritionVoice]", { transcript, isInterim, currentField });
 
     // "storno" command: clear current field and reset focus
     if (isStornoCommand(transcript)) {
