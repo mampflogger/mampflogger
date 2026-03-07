@@ -47,7 +47,7 @@ const COMMANDS: VoiceCommand[] = [
 
   // Settings sections
   { patterns: [/\bpersönliche\s+daten\b/i], action: "section:persoenliche-daten" },
-  { patterns: [/\bgoals?\b/i, /\bziele?\b/i], action: "section:goals" },
+  { patterns: [/\bgoals?\b/i, /\bziele?\b/i], action: "section:ziele" },
   { patterns: [/\brezeptgenerator\b/i, /\bgenerator\b/i], action: "section:rezeptgenerator" },
   { patterns: [/\bgespeicherte\s+rezepte?\b/i], action: "section:gespeicherte-rezepte" },
   { patterns: [/\bimport\b/i], action: "section:import" },
@@ -90,6 +90,8 @@ const COMMANDS: VoiceCommand[] = [
   { patterns: [/\bzurück\b/i, /\bzurueck\b/i], action: "field:prev" },
   { patterns: [/\bweiter\b/i], action: "field:next" },
   { patterns: [/\blöschen\b/i, /\bloeschen\b/i], action: "field:clear" },
+  { patterns: [/\bauswahl\b/i, /\boptionen?\b/i], action: "field:open-dropdown" },
+  { patterns: [/\bescape\b/i], action: "field:close-dropdown" },
 
   // Actions
   { patterns: [/\bkamera\b/i, /\bfoto\b/i, /\bphoto\b/i, /\bbild\b/i], action: "action:camera" },
@@ -117,7 +119,7 @@ export const SECTION_PAGE_MAP: Record<string, "log" | "weekly"> = {
 
 export const SECTION_SETTINGS_TAB: Record<string, string> = {
   "section-persoenliche-daten": "profile",
-  "section-goals": "profile",
+  "section-ziele": "profile",
   "section-rezeptgenerator": "recipes",
   "section-gespeicherte-rezepte": "recipes",
   "section-import": "data",

@@ -1162,8 +1162,8 @@ const SettingsDialog = ({
             </div>
 
             {/* Goals Card */}
-            <div id="section-goals" className="glass-card rounded-xl p-3 space-y-2">
-              <Label className="text-[10px] font-semibold text-muted-foreground mb-1 block uppercase tracking-wider pl-0">GOALS</Label>
+            <div id="section-ziele" className="glass-card rounded-xl p-3 space-y-2">
+              <h2 className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Ziele</h2>
               <div className="grid grid-cols-2 gap-2">
                 <div>
                   <Label className="text-[10px] font-medium text-muted-foreground mb-0.5 block">Zielgewicht (kg)</Label>
@@ -1382,13 +1382,13 @@ const SettingsDialog = ({
                 {/* Buttons */}
                 <div className="grid grid-cols-3 gap-1.5">
                   <Button variant="outline" onClick={() => { handleSaveFood(); handleNewFood(); }} className="h-6 text-[8px]">
-                    + Nächstes
+                    → Next
                   </Button>
                   <Button onClick={handleSaveFood} className="h-6 text-[8px] gap-1">
                     <Save className="w-3 h-3" /> Speichern
                   </Button>
                   <Button variant="outline" onClick={() => { setEditingFood(null); setFoodNavIndex(null); }} className="h-6 text-[8px]">
-                    ← Tabelle
+                    ← Zurück
                   </Button>
                 </div>
 
