@@ -1886,7 +1886,9 @@ const SettingsDialog = ({
                       <div className="flex gap-2">
                         <Button variant="outline" size="sm" onClick={() => {
                           localStorage.removeItem("mampflogger-custom-targets");
+                          window.dispatchEvent(new Event("mampflogger-custom-targets-reset"));
                           setShowResetMicroConfirm(false);
+                          toast.success("Mikronährstoff-Sollwerte auf DGE-Standard zurückgesetzt!");
                           toast.success("Mikronährstoff-Sollwerte auf DGE-Standard zurückgesetzt!");
                         }} className="flex-1 h-8 text-xs border-destructive/30 hover:bg-destructive/10 text-destructive">
                           Reset

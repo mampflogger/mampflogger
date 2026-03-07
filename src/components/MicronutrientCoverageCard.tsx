@@ -63,6 +63,13 @@ const MicronutrientCoverageCard = ({
   const [customTargets, setCustomTargets] = useState<CustomTargets>(() => loadCustomTargets(kind));
   const [draftTargets, setDraftTargets] = useState<CustomTargets>({});
 
+  // Listen for external reset
+  useEffect(() => {
+    const handler = () => setCustomTargets({});
+    window.addEventListener("mampflogger-custom-targets-reset", handler);
+    return () => window.removeEventListener("mampflogger-custom-targets-reset", handler);
+  }, []);
+
   const startEditing = useCallback(() => {
     setDraftTargets({ ...customTargets });
     setEditing(true);
