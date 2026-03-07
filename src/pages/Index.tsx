@@ -98,6 +98,14 @@ const Index = () => {
   // Global voice command system
   const voiceCommands = useVoiceCommands({
     onCommand: useCallback((action: string) => {
+      // Deactivate date focus when a non-date command is used
+      if (action !== "action:date-focus" && action !== "field:next" && action !== "field:prev") {
+        if (dateFocusedRef.current) {
+          setDateFocused(false);
+          dateFocusedRef.current = false;
+        }
+      }
+
       // Section navigation
       if (action.startsWith("section:")) {
         const sectionId = action.replace("section:", "section-");
