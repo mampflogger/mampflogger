@@ -10,7 +10,7 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { weekData, profile } = await req.json();
+    const { weekData, profile, micronutrients } = await req.json();
 
     if (!weekData || !Array.isArray(weekData)) {
       return new Response(JSON.stringify({ error: "weekData is required" }), {
@@ -21,6 +21,20 @@ serve(async (req) => {
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
+
+    let microBlock = "";
+    if (micronutrients) {
+      const formatList = (items: any[]) =>
+        items
+          .filter((i: any) => i.avgDaily > 0 || i.target)
+          .map((i: any) => {
+            const pct = i.target ? Math.round((i.avgDaily / i.target) * 100) : null;
+            return `  - ${i.name}: ${i.avgDaily} ${i.unit}/Tag ${i.target ? `(Soll: ${i.target} ${i.unit}, ${pct}%)` : "(kein Sollwert)"}`;
+          })
+          .join("\n");
+
+      microBlock = `\n\nMikronährstoff-Durchschnitt (letzte 7 Tage):\nVitamine:\n${formatList(micronutrients.vitamins)}\nMineralstoffe:\n${formatList(micronutrients.minerals)}`;
+    }
 
     const systemPrompt = `Du bist ein freundlicher, motivierender Ernährungscoach. Du analysierst die Ernährungsdaten der letzten 7 Tage und gibst 3-5 personalisierte, konkrete Tipps.
 
@@ -46,13 +60,15 @@ Antworte NUR mit einem JSON-Objekt in diesem Format:
 
 Regeln:
 - Genau 3-5 Tipps
-- Verwende passende Emojis als Icons (z.B. 🥦 🏋️ 💧 🌙 ⚖️ 🥩 🍞 🎯 ⏰)
+- Verwende passende Emojis als Icons (z.B. 🥦 🏋️ 💧 🌙 ⚖️ 🥩 🍞 🎯 ⏰ 💊 🧬)
 - Erkenne Muster: z.B. abends zu viele KH, zu wenig Protein, zu wenig Ballaststoffe, unregelmäßige Essenszeiten
+- Beziehe die Mikronährstoffdaten ein: Weise auf Defizite bei Vitaminen oder Mineralstoffen hin (z.B. zu wenig Vitamin D, Eisen, Calcium) und gib konkrete Lebensmittelempfehlungen
+- Wenn ein Mikronährstoff deutlich unter dem Sollwert liegt (<50%), erwähne das besonders
 - Sei konkret und positiv, nicht belehrend
 - Beziehe dich auf die tatsächlichen Daten
 - Kein zusätzlicher Text außerhalb des JSON`;
 
-    const userContent = `Hier sind meine Ernährungsdaten der letzten 7 Tage:\n\n${JSON.stringify(weekData, null, 2)}`;
+    const userContent = `Hier sind meine Ernährungsdaten der letzten 7 Tage:\n\n${JSON.stringify(weekData, null, 2)}${microBlock}`;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",

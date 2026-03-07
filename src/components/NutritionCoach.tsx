@@ -1,9 +1,10 @@
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import { NutritionEntry, calculateDailySummary, formatDate } from "@/types/nutrition";
 import { UserProfile, BookedActivity, calculateBMR, calculateBookedActivityBonus } from "@/types/profile";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Sparkles, Loader2, Search } from "lucide-react";
+import { aggregateMicronutrients, VITAMIN_DEFINITIONS, MINERAL_DEFINITIONS, getMicronutrientTarget, type MicronutrientGender } from "@/lib/micronutrients";
 import { useToast } from "@/hooks/use-toast";
 import SectionHeading from "@/components/SectionHeading";
 
@@ -49,12 +50,14 @@ const NutritionCoach = ({
     try {
       const today = new Date(selectedDate + "T00:00:00");
       const weekData = [];
+      const allWeekEntries: NutritionEntry[] = [];
 
       for (let i = 6; i >= 0; i--) {
         const d = new Date(today);
         d.setDate(d.getDate() - i);
         const dateStr = formatDate(d);
         const dayEntries = entries.filter((e) => e.date === dateStr);
+        allWeekEntries.push(...dayEntries);
         const summary = calculateDailySummary(dayEntries);
         const bonus = calculateBookedActivityBonus(bookedActivities, dateStr);
         const bmr = profile ? calculateBMR(profile) : null;
@@ -82,8 +85,26 @@ const NutritionCoach = ({
         });
       }
 
+      // Build micronutrient summary
+      const gender: MicronutrientGender = profile?.gender === "female" ? "female" : "male";
+      const microTotals = aggregateMicronutrients(allWeekEntries);
+      const microSummary = {
+        vitamins: VITAMIN_DEFINITIONS.map((d) => ({
+          name: `${d.label} (${d.fullName})`,
+          unit: d.unit,
+          avgDaily: +(microTotals.vitamins[d.key] / 7).toFixed(2),
+          target: getMicronutrientTarget(d, gender),
+        })),
+        minerals: MINERAL_DEFINITIONS.map((d) => ({
+          name: `${d.label} (${d.fullName})`,
+          unit: d.unit,
+          avgDaily: +(microTotals.minerals[d.key] / 7).toFixed(2),
+          target: getMicronutrientTarget(d, gender),
+        })),
+      };
+
       const { data, error } = await supabase.functions.invoke("nutrition-coach", {
-        body: { weekData, profile },
+        body: { weekData, profile, micronutrients: microSummary },
       });
 
       if (error) throw error;
