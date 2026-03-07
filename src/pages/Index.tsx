@@ -195,7 +195,14 @@ const Index = () => {
               window.dispatchEvent(new Event("mampflogger:open-photo-log"));
             }, needsTabSwitch ? 250 : 50);
           });
-        }
+      }
+      else if (action === "action:date-focus") {
+        closeSettingsAndDo(() => {
+          setDateFocused(true);
+          dateFocusedRef.current = true;
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        });
+      }
       }
       else if (action === "focus:food") {
         closeSettingsAndDo(() => {
