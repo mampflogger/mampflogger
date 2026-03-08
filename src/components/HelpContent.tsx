@@ -75,6 +75,11 @@ const FAQ_ITEMS: FaqItem[] = [
   { question: "Kann ich mit meinen eigenen Lebensmitteln Rezepte von der KI erstellen lassen?", answer: "Ja! In den Rezepte-Einstellungen kannst du bis zu 5 Zutaten aus deiner Lebensmitteldatenbank auswählen und die KI bietet dir Rezeptvorschläge an. Die KI generiert dann ein komplettes Rezept mit Zubereitungsschritten und berechnet automatisch alle Nährwerte." },
   { question: "Wie speichere ich ein KI-generiertes Rezept dauerhaft?", answer: "Nach der KI-Generierung wird das Rezept zunächst als Vorschlag angezeigt. Mit dem Button 'Speichern' kannst du es in deine Rezeptsammlung aufnehmen. Du kannst es danach jederzeit bearbeiten, erneut generieren oder als Mahlzeit buchen." },
   { question: "Kann ich ein gespeichertes Rezept nachträglich bearbeiten oder die KI neu berechnen lassen?", answer: "Ja! Öffne ein Rezept und tippe auf das Stift-Symbol zum Bearbeiten. Du kannst Zutaten ändern, Mengen anpassen oder den KI-Rechner verwenden, um Zubereitungsschritte und Nährwerte neu berechnen zu lassen." },
+  { question: "Ich bin laktoseintolerant – kann ich laktosefreie Lebensmittel filtern?", answer: "In der Lebensmitteldatenbank kannst du nach laktosefreien Alternativen suchen. Außerdem kannst du eigene laktosefreie Lebensmittel anlegen und speichern, sodass sie bei der Eingabe als Vorschläge erscheinen. Die KI berücksichtigt deine Ernährungsweise auch bei der Rezeptgenerierung, wenn du sie darauf hinweist." },
+  { question: "Kann ich die App für eine Keto-Ernährung nutzen?", answer: "Ja! Die Makro-Verteilung zeigt dir genau, wie viel Fett, Eiweiß und Kohlenhydrate du zu dir nimmst – perfekt für Keto. Du kannst deine Makro-Ziele im Profil anpassen und siehst in der Tagesübersicht und Statistik sofort, ob du im gewünschten Verhältnis liegst. Auch der KI-Coach gibt dir Tipps passend zu deiner Ernährungsform." },
+  { question: "Kann ich eigene Lebensmittel eingeben und dauerhaft speichern?", answer: "Ja! Gehe in die Einstellungen unter 'Lebensmittel'. Dort kannst du eigene Lebensmittel mit allen Nährwerten (Kalorien, Eiweiß, Fett, Kohlenhydrate, Ballaststoffe) anlegen, bearbeiten oder löschen. Deine eigenen Lebensmittel erscheinen danach automatisch als Vorschläge bei der Eingabe." },
+  { question: "Wie erstelle ich ein Backup meiner Daten und wie kann ich es wieder einlesen?", answer: "Gehe in die Einstellungen unter 'Daten'. Dort findest du die Funktion 'Backup erstellen', die alle deine Daten (Profil, Einträge, Lebensmittel, Rezepte und Aktivitäten) als Datei exportiert. Mit 'Backup laden' kannst du eine zuvor erstellte Sicherungskopie wieder einlesen – alle Daten werden dabei vollständig wiederhergestellt." },
+  { question: "Kann ich eigene Aktivitäten und Workouts anlegen?", answer: "Ja! Im Activity-Bereich der Eingabemaske kannst du deine sportlichen Aktivitäten eintragen – z. B. Joggen, Radfahren, Krafttraining oder Schwimmen. Gib die Dauer und den geschätzten Kalorienverbrauch an. Die verbrannten Kalorien werden automatisch in deiner Kalorienbilanz berücksichtigt." },
 ];
 
 const HelpContent = () => {
@@ -169,15 +174,15 @@ const HelpContent = () => {
                 <CollapsibleTrigger asChild>
                   <button className="flex items-center w-full text-left group">
                     <span
-                      className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors cursor-pointer select-none ${
+                      className={`flex items-center justify-between gap-1.5 w-full rounded-xl border px-3 py-2 text-xs font-semibold transition-colors cursor-pointer select-none ${
                         isOpen
                           ? "bg-primary text-primary-foreground border-primary"
                           : "bg-secondary text-secondary-foreground border-transparent hover:bg-primary hover:text-primary-foreground"
                       }`}
                     >
-                      {faq.question}
+                      <span className="flex-1">{faq.question}</span>
                       <ChevronDown
-                        className={`w-3 h-3 transition-transform duration-200 ${
+                        className={`w-3 h-3 shrink-0 transition-transform duration-200 ${
                           isOpen ? "rotate-180" : ""
                         }`}
                       />
