@@ -169,15 +169,15 @@ const HelpContent = () => {
                 <CollapsibleTrigger asChild>
                   <button className="flex items-center w-full text-left group">
                     <span
-                      className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors cursor-pointer select-none ${
+                      className={`flex items-center justify-between gap-1.5 w-full rounded-xl border px-3 py-2 text-xs font-semibold transition-colors cursor-pointer select-none ${
                         isOpen
                           ? "bg-primary text-primary-foreground border-primary"
                           : "bg-secondary text-secondary-foreground border-transparent hover:bg-primary hover:text-primary-foreground"
                       }`}
                     >
-                      {faq.question}
+                      <span className="flex-1">{faq.question}</span>
                       <ChevronDown
-                        className={`w-3 h-3 transition-transform duration-200 ${
+                        className={`w-3 h-3 shrink-0 transition-transform duration-200 ${
                           isOpen ? "rotate-180" : ""
                         }`}
                       />
