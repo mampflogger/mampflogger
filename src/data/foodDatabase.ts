@@ -15,7 +15,7 @@ export const FOOD_CATEGORIES = [
   "Milchprodukte",
   "Süßwaren",
   "Fertiggerichte",
-  "Streetfood",
+  "Fast Food",
   "Gewürze",
   "Eigene",
   "Sonstiges",
