@@ -215,6 +215,9 @@ const SettingsDialog = ({
   const [highlightedSettingsTab, setHighlightedSettingsTab] = useState<string | null>(null);
   const highlightSettingsTimerRef = React.useRef<ReturnType<typeof setTimeout>>();
 
+  const [highlightedSettingsSection, setHighlightedSettingsSection] = useState<string | null>(null);
+  const highlightSettingsSectionTimerRef = React.useRef<ReturnType<typeof setTimeout>>();
+
   // Flash settings tab when opened via voice
   useEffect(() => {
     if (voiceOpenTab) {
