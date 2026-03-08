@@ -37,6 +37,7 @@ import {
 } from "@/lib/csvExport";
 
 import { parseImportText } from "@/lib/importParser";
+import { parseGermanSpokenNumber } from "@/lib/spokenNumbers";
 import { BookedActivity } from "@/types/profile";
 import { toast } from "sonner";
 import { syncRemoteFoodDatabase, loadRemoteUrl } from "@/lib/remoteFoodSync";
