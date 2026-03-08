@@ -690,7 +690,7 @@ const Index = () => {
     setEditingEntry(null);
     setEditingActivity(null);
     setSelectedDate(formatDate(new Date()));
-    setColorTheme("orange");
+    setColorTheme("yellow");
     setActiveTab("log");
     setStartupProfilePrompt(true);
     setSettingsCurrentTab("profile");
