@@ -74,6 +74,7 @@ const Index = () => {
   const nutritionVoiceRef = useRef<((transcript: string, isInterim: boolean) => void) | undefined>();
   const recipeVoiceRef = useRef<((transcript: string, isInterim: boolean) => void) | undefined>();
   const activityVoiceRef = useRef<((transcript: string, isInterim: boolean) => void) | undefined>();
+  const profileVoiceRef = useRef<((transcript: string, isInterim: boolean) => void) | undefined>();
   const activityVoiceCaptureUntilRef = useRef(0);
   const sectionNav = useSectionNavigation();
 
@@ -291,11 +292,14 @@ const Index = () => {
         const activeElement = document.activeElement as HTMLElement | null;
         const scope = activeElement?.closest('[data-voice-scope="manual-recipe"]')
           ? "manual-recipe"
-          : activeElement?.closest("#section-neuer-eintrag")
-            ? "nutrition"
-            : activeElement?.closest("#section-activity")
-              ? "activity"
-              : (settingsOpenRef.current && settingsTabRef.current === "recipes" ? "manual-recipe" : null);
+          : activeElement?.closest('[data-voice-scope="profile"]')
+            ? "profile"
+            : activeElement?.closest("#section-neuer-eintrag")
+              ? "nutrition"
+              : activeElement?.closest("#section-activity")
+                ? "activity"
+                : (settingsOpenRef.current && settingsTabRef.current === "recipes" ? "manual-recipe"
+                  : settingsOpenRef.current && settingsTabRef.current === "profile" ? "profile" : null);
 
         if (scope) {
           window.dispatchEvent(new CustomEvent("mampflogger:field-command", { detail: { action, scope } }));
@@ -406,6 +410,9 @@ const Index = () => {
 
         if (currentTab === "recipes") {
           recipeVoiceRef.current?.(transcript, isInterim);
+        }
+        if (currentTab === "profile") {
+          profileVoiceRef.current?.(transcript, isInterim);
         }
         return; // Don't pass to food input when in settings
       }
@@ -763,6 +770,7 @@ const Index = () => {
                 selectedDate={selectedDate}
                 onAddEntry={handleAdd}
                 recipeVoiceInputRef={recipeVoiceRef}
+                profileVoiceInputRef={profileVoiceRef}
                 voiceOpenTab={settingsVoiceTab}
                 onVoiceOpenTabHandled={() => setSettingsVoiceTab(null)}
                 voiceCloseRequest={settingsCloseRequest}
