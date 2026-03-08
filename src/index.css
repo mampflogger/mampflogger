@@ -274,3 +274,16 @@
 .section-heading-highlight {
   animation: section-pulse 0.5s ease-out;
 }
+
+/* Card-level highlight glow when navigated to */
+@keyframes card-glow {
+  0% { box-shadow: 0 0 0 0 hsl(var(--primary) / 0.6); }
+  40% { box-shadow: 0 0 12px 3px hsl(var(--primary) / 0.35); }
+  100% { box-shadow: 0 0 0 0 hsl(var(--primary) / 0); }
+}
+
+.section-card-highlight {
+  animation: card-glow 1.5s ease-out;
+  border-color: hsl(var(--primary) / 0.5);
+  transition: border-color 0.3s ease-out;
+}
