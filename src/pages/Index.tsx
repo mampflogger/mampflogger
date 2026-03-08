@@ -63,6 +63,13 @@ const Index = () => {
   const [startupProfilePrompt, setStartupProfilePrompt] = useState(false);
    const [activityFocusRequestId, setActivityFocusRequestId] = useState<number | undefined>(undefined);
   const [dateFocused, setDateFocused] = useState(false);
+  const [highlightedTab, setHighlightedTab] = useState<string | null>(null);
+  const highlightTabTimerRef = useRef<ReturnType<typeof setTimeout>>();
+  const flashTab = useCallback((tab: string) => {
+    if (highlightTabTimerRef.current) clearTimeout(highlightTabTimerRef.current);
+    setHighlightedTab(tab);
+    highlightTabTimerRef.current = setTimeout(() => setHighlightedTab(null), 1500);
+  }, []);
   const dateFocusedRef = useRef(false);
   const nutritionVoiceRef = useRef<((transcript: string, isInterim: boolean) => void) | undefined>();
   const recipeVoiceRef = useRef<((transcript: string, isInterim: boolean) => void) | undefined>();
@@ -168,14 +175,14 @@ const Index = () => {
       }
 
       // Navigation — close settings first
-      if (action === "nav:log") closeSettingsAndDo(() => setActiveTab("log"));
-      else if (action === "nav:weekly") closeSettingsAndDo(() => setActiveTab("weekly"));
-      else if (action === "settings:open") setSettingsVoiceTab("profile");
-      else if (action === "settings:profile") setSettingsVoiceTab("profile");
-      else if (action === "settings:design") setSettingsVoiceTab("design");
-      else if (action === "settings:food") setSettingsVoiceTab("food");
-      else if (action === "settings:recipes") setSettingsVoiceTab("recipes");
-      else if (action === "settings:data") setSettingsVoiceTab("data");
+      if (action === "nav:log") closeSettingsAndDo(() => { setActiveTab("log"); flashTab("log"); });
+      else if (action === "nav:weekly") closeSettingsAndDo(() => { setActiveTab("weekly"); flashTab("weekly"); });
+      else if (action === "settings:open") { setSettingsVoiceTab("profile"); flashTab("settings"); }
+      else if (action === "settings:profile") { setSettingsVoiceTab("profile"); flashTab("settings"); }
+      else if (action === "settings:design") { setSettingsVoiceTab("design"); flashTab("settings"); }
+      else if (action === "settings:food") { setSettingsVoiceTab("food"); flashTab("settings"); }
+      else if (action === "settings:recipes") { setSettingsVoiceTab("recipes"); flashTab("settings"); }
+      else if (action === "settings:data") { setSettingsVoiceTab("data"); flashTab("settings"); }
       else if (action.startsWith("recipe:")) {
         if (!settingsOpenRef.current || settingsTabRef.current !== "recipes") {
           setSettingsVoiceTab("recipes");
@@ -754,11 +761,12 @@ const Index = () => {
                 onMicToggle={voiceCommands.toggle}
                 voiceAction={settingsVoiceAction}
                 onVoiceActionHandled={() => setSettingsVoiceAction(null)}
+                highlightedTab={highlightedTab === "settings"}
               />
               <Button
                 variant="ghost"
                 size="icon"
-                className={`h-8 w-8 ${activeTab === "log" ? "bg-muted" : ""}`}
+                className={`h-8 w-8 ${activeTab === "log" ? "bg-muted" : ""} ${highlightedTab === "log" ? "section-card-highlight rounded-lg" : ""}`}
                 onClick={() => setActiveTab("log")}
                 title="Eingabe"
               >
@@ -767,7 +775,7 @@ const Index = () => {
               <Button
                 variant="ghost"
                 size="icon"
-                className={`h-8 w-8 ${activeTab === "weekly" ? "bg-muted" : ""}`}
+                className={`h-8 w-8 ${activeTab === "weekly" ? "bg-muted" : ""} ${highlightedTab === "weekly" ? "section-card-highlight rounded-lg" : ""}`}
                 onClick={() => setActiveTab("weekly")}
                 title="Statistik"
               >

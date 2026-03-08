@@ -93,6 +93,7 @@ interface SettingsDialogProps {
   onMicToggle?: () => void;
   voiceAction?: string | null;
   onVoiceActionHandled?: () => void;
+  highlightedTab?: boolean;
 }
 
 type ImportType = "csv-entries" | "csv-balance" | "csv-food";
@@ -127,6 +128,7 @@ const SettingsDialog = ({
   onOpenChange: onOpenChangeProp, onTabChange,
   isMicSupported, isMicListening, onMicToggle,
   voiceAction, onVoiceActionHandled,
+  highlightedTab,
 }: SettingsDialogProps) => {
   const [open, setOpen] = useState(initialOpen ?? false);
   const [tab, setTab] = useState<SettingsTab>(initialTab ?? "profile");
@@ -1056,7 +1058,7 @@ const SettingsDialog = ({
   return (
     <Dialog open={open} onOpenChange={handleOpen}>
       <DialogTrigger asChild>
-        <Button variant="ghost" size="icon" className="h-8 w-8" title="Einstellungen">
+        <Button variant="ghost" size="icon" className={`h-8 w-8 ${highlightedTab ? "section-card-highlight rounded-lg" : ""}`} title="Einstellungen">
           <Settings className="w-4 h-4" />
         </Button>
       </DialogTrigger>
