@@ -27,6 +27,7 @@ import DailyCalorieChart from "@/components/DailyCalorieChart";
 import PhotoToLog from "@/components/PhotoToLog";
 import FastingAnalysis from "@/components/FastingAnalysis";
 import SectionHeading from "@/components/SectionHeading";
+import HelpDialog from "@/components/HelpDialog";
 
 import SettingsDialog, { ColorTheme } from "@/components/SettingsDialog";
 import { ChevronLeft, ChevronRight, BarChart3, List, Mic, MicOff, HelpCircle } from "lucide-react";
@@ -154,6 +155,7 @@ const Index = () => {
   const [startupProfilePrompt, setStartupProfilePrompt] = useState(false);
    const [activityFocusRequestId, setActivityFocusRequestId] = useState<number | undefined>(undefined);
   const [dateFocused, setDateFocused] = useState(false);
+  const [helpOpen, setHelpOpen] = useState(false);
   const [highlightedTab, setHighlightedTab] = useState<string | null>(null);
   const highlightTabTimerRef = useRef<ReturnType<typeof setTimeout>>();
   const flashTab = useCallback((tab: string) => {
@@ -1003,7 +1005,7 @@ const Index = () => {
                 variant="ghost"
                 size="icon"
                 className="h-8 w-8"
-                onClick={() => {/* TODO: Hilfe */}}
+                onClick={() => setHelpOpen(true)}
                 title="Hilfe"
               >
                 <HelpCircle className="w-4 h-4" />
@@ -1179,6 +1181,7 @@ const Index = () => {
           </>
         )}
       </main>
+      <HelpDialog open={helpOpen} onOpenChange={setHelpOpen} />
     </div>
   );
 };
