@@ -253,6 +253,10 @@ const Index = () => {
       // Theme commands — context-aware: if in design tab, always apply theme
       else if (action === "theme:dark") setDarkMode(true);
       else if (action === "theme:light") setDarkMode(false);
+      else if (action === "theme:blue") setColorTheme("blue");
+      else if (action === "theme:yellow") setColorTheme("yellow");
+      else if (action === "theme:pink") setColorTheme("pink");
+      else if (action === "theme:green") setColorTheme("green");
       else if (action === "theme:orange") setColorTheme("orange");
       else if (action === "theme:teal") setColorTheme("teal");
       else if (action === "theme:red") setColorTheme("red");
@@ -395,6 +399,10 @@ const Index = () => {
 
           // Design tab: color keywords
           if (currentTab === "design") {
+            if (/\bblau\b/.test(lower)) { setColorTheme("blue"); return; }
+            if (/\bgelb\b/.test(lower)) { setColorTheme("yellow"); return; }
+            if (/\bpink\b/.test(lower)) { setColorTheme("pink"); return; }
+            if (/\bgrün\b/.test(lower)) { setColorTheme("green"); return; }
             if (/\borange\b/.test(lower)) { setColorTheme("orange"); return; }
             if (/\bt(?:ü|ue)rkis\b/.test(lower)) { setColorTheme("teal"); return; }
             if (/\brot\b/.test(lower)) { setColorTheme("red"); return; }
@@ -531,7 +539,7 @@ const Index = () => {
     return false;
   });
   const [colorTheme, setColorTheme] = useState<ColorTheme>(() => {
-    return (localStorage.getItem("mampflogger-color-theme") as ColorTheme) || "orange";
+    return (localStorage.getItem("mampflogger-color-theme") as ColorTheme) || "yellow";
   });
 
   useEffect(() => {
@@ -541,8 +549,8 @@ const Index = () => {
 
   useEffect(() => {
     const el = document.documentElement;
-    el.classList.remove("theme-teal", "theme-red", "theme-gray");
-    if (colorTheme !== "orange") {
+    el.classList.remove("theme-yellow", "theme-blue", "theme-pink", "theme-orange", "theme-teal", "theme-red", "theme-gray");
+    if (colorTheme !== "green") {
       el.classList.add(`theme-${colorTheme}`);
     }
     localStorage.setItem("mampflogger-color-theme", colorTheme);
@@ -667,7 +675,7 @@ const Index = () => {
     setEditingEntry(null);
     setEditingActivity(null);
     setSelectedDate(formatDate(new Date()));
-    setColorTheme(gender === "female" ? "red" : "orange");
+    setColorTheme(gender === "female" ? "pink" : "yellow");
     setActiveTab("log");
     setStartupProfilePrompt(false);
   };
@@ -682,7 +690,7 @@ const Index = () => {
     setEditingEntry(null);
     setEditingActivity(null);
     setSelectedDate(formatDate(new Date()));
-    setColorTheme("orange");
+    setColorTheme("yellow");
     setActiveTab("log");
     setStartupProfilePrompt(true);
     setSettingsCurrentTab("profile");
