@@ -102,18 +102,6 @@ const HELP_TOPICS: Record<HelpTab, HelpTopic[]> = {
         "Der KI-Ernährungscoach analysiert dein Essverhalten der letzten 7 Tage und gibt dir personalisierte Tipps und Empfehlungen. Drücke auf 'Analysieren', um eine neue Auswertung zu starten.",
     },
   ],
-  mikro: [
-    {
-      label: "Vitamine",
-      description:
-        "In diesem Bereich siehst du Fortschrittsbalken für jedes Vitamin (A, B1–B12, C, D, E, K). Die Werte werden aus deinen Lebensmitteln geschätzt. Tippe auf einen Balken, um eine Erklärung zum Vitamin und passende Lebensmittelquellen zu sehen.",
-    },
-    {
-      label: "Mineralstoffe",
-      description:
-        "Analog zu den Vitaminen: Fortschrittsbalken für Calcium, Eisen, Magnesium, Zink und weitere Mineralstoffe. Auch hier kannst du auf jeden Balken tippen, um Details und Lebensmitteltipps zu erhalten.",
-    },
-  ],
   einstellungen: [
     {
       label: "Profil",
