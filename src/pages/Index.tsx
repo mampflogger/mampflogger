@@ -403,11 +403,11 @@ const Index = () => {
               /\bblau\b/.test(lower) ? "blue" :
               /\bgelb\b/.test(lower) ? "yellow" :
               /\bpink\b/.test(lower) ? "pink" :
-              /\bgrün\b/.test(lower) ? "green" :
-              /\borange\b/.test(lower) ? "orange" :
-              /\bt(?:ü|ue)rkis\b/.test(lower) ? "teal" :
-              /\brot\b/.test(lower) ? "red" :
-              /\bgrau\b/.test(lower) ? "gray" : null;
+              /\bgr(?:ü|ue)n(?:e|en|em|es)?\b/.test(lower) ? "green" :
+              /\borange(?:n|s)?\b/.test(lower) ? "orange" :
+              /\bt(?:ü|ue)rkis(?:e|en|em|es)?\b/.test(lower) ? "teal" :
+              /\brot(?:e|en|em|es)?\b/.test(lower) ? "red" :
+              /\bgrau(?:e|en|em|es)?\b/.test(lower) ? "gray" : null;
             if (colorMatch) { setColorTheme(colorMatch as ColorTheme); return; }
             if (/\bdark\b|\bdunkel/.test(lower)) { setDarkMode(true); return; }
             if (/\blight\b|\bhell/.test(lower)) { setDarkMode(false); return; }

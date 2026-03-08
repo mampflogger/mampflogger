@@ -110,7 +110,7 @@ const COMMANDS: VoiceCommand[] = [
   { patterns: [/\bweiter\b/i, /\bvorwärts\b/i, /\bvorwaerts\b/i, /\bnext\b/i], action: "field:next" },
   { patterns: [/\blöschen\b/i, /\bloeschen\b/i], action: "field:clear" },
   { patterns: [/\bauswahl\b/i, /\boptionen?\b/i], action: "field:open-dropdown" },
-  { patterns: [/\bescape\b/i], action: "field:close-dropdown" },
+  { patterns: [/\b(?:escape|schließen|schliessen|zuklappen|zumachen)\b/i], action: "field:close-dropdown" },
 
   // Actions
   { patterns: [/\bmikro\s*aus\b/i, /\bmikrofon\s*aus\b/i, /\bmic\s*off\b/i], action: "action:mic-off" },
