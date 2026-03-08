@@ -25,7 +25,7 @@ import {
   Settings, Sun, Moon, Trash2, Upload, Download, UserCircle, Save, Check,
   AlertCircle, FileSpreadsheet, UtensilsCrossed, Palette, BarChart3, FileUp,
   ChevronLeft, ChevronRight, RefreshCw, List, Sparkles, Loader2, HardDrive, BookOpen, Search,
-  X, Mic, MicOff,
+  X, Mic, MicOff, HelpCircle,
 } from "lucide-react";
 import CookIcon from "@/components/CookIcon";
 import { supabase } from "@/integrations/supabase/client";
@@ -1238,14 +1238,17 @@ const SettingsDialog = ({
                     {isMicListening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
                   </Button>
                 )}
-                <Button variant="ghost" size="icon" className={`h-8 w-8 bg-muted ${highlightedTab ? "section-card-highlight rounded-lg" : ""}`} title="Einstellungen" onClick={() => handleOpen(false)}>
-                  <Settings className="w-4 h-4" />
-                </Button>
                 <Button variant="ghost" size="icon" className="h-8 w-8" title="Eingabe" onClick={() => { handleOpen(false); onSetActiveTab("log"); }}>
                   <List className="w-4 h-4" />
                 </Button>
                 <Button variant="ghost" size="icon" className="h-8 w-8" title="Statistik" onClick={() => { handleOpen(false); onSetActiveTab("weekly"); }}>
                   <BarChart3 className="w-4 h-4" />
+                </Button>
+                <Button variant="ghost" size="icon" className={`h-8 w-8 ring-2 ring-primary bg-muted ${highlightedTab ? "section-card-highlight rounded-lg" : ""}`} title="Einstellungen" onClick={() => handleOpen(false)}>
+                  <Settings className="w-4 h-4" />
+                </Button>
+                <Button variant="ghost" size="icon" className="h-8 w-8" title="Hilfe" onClick={() => handleOpen(false)}>
+                  <HelpCircle className="w-4 h-4" />
                 </Button>
               </div>
             </div>
