@@ -131,7 +131,7 @@ const NutritionCoach = ({
   }, [analyzeRequestId, handleAnalyze]);
 
   return (
-    <div className="glass-card rounded-xl p-3">
+    <div className={`glass-card rounded-xl p-3 ${highlightedSection === "section-ki-coach" ? "section-card-highlight" : ""}`}>
       <div className="flex items-center justify-between mb-2">
         <SectionHeading highlighted={highlightedSection === "section-ki-coach"}>
           KI-Ernährungscoach
