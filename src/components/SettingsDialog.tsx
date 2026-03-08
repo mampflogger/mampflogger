@@ -1101,7 +1101,7 @@ const SettingsDialog = ({
                     {isMicListening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
                   </Button>
                 )}
-                <Button variant="ghost" size="icon" className="h-8 w-8 bg-muted" title="Einstellungen" onClick={() => handleOpen(false)}>
+                <Button variant="ghost" size="icon" className={`h-8 w-8 bg-muted ${highlightedTab ? "section-card-highlight rounded-lg" : ""}`} title="Einstellungen" onClick={() => handleOpen(false)}>
                   <Settings className="w-4 h-4" />
                 </Button>
                 <Button variant="ghost" size="icon" className="h-8 w-8" title="Eingabe" onClick={() => { handleOpen(false); onSetActiveTab("log"); }}>
