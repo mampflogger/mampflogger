@@ -74,6 +74,7 @@ const Index = () => {
   const nutritionVoiceRef = useRef<((transcript: string, isInterim: boolean) => void) | undefined>();
   const recipeVoiceRef = useRef<((transcript: string, isInterim: boolean) => void) | undefined>();
   const activityVoiceRef = useRef<((transcript: string, isInterim: boolean) => void) | undefined>();
+  const profileVoiceRef = useRef<((transcript: string, isInterim: boolean) => void) | undefined>();
   const activityVoiceCaptureUntilRef = useRef(0);
   const sectionNav = useSectionNavigation();
 
