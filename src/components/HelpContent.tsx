@@ -51,10 +51,19 @@ const HELP_TOPICS: Record<HelpTab, HelpTopic[]> = {
   ],
 };
 
+interface FaqItem {
+  question: string;
+  answer: string;
+}
+
+const FAQ_ITEMS: FaqItem[] = [
+  { question: "Platzhalter-Frage 1?", answer: "Hier kommt die Antwort hin." },
+];
+
 const HelpContent = () => {
   const [activeCategory, setActiveCategory] = useState<HelpTab>("eingabe");
   const [openTopic, setOpenTopic] = useState<string | null>(null);
-
+  const [openFaq, setOpenFaq] = useState<string | null>(null);
   const topics = HELP_TOPICS[activeCategory];
 
   return (
@@ -120,6 +129,47 @@ const HelpContent = () => {
                 <CollapsibleContent>
                   <div className="ml-1 mt-1.5 mb-1 p-3 rounded-lg bg-muted/50 text-sm text-muted-foreground leading-relaxed">
                     {topic.description}
+                  </div>
+                </CollapsibleContent>
+              </Collapsible>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* FAQ card */}
+      <div className="glass-card rounded-xl p-3 mb-3">
+        <SectionHeading className="mb-2">FAQs</SectionHeading>
+        <div className="flex flex-col gap-1.5">
+          {FAQ_ITEMS.map((faq) => {
+            const isOpen = openFaq === faq.question;
+            return (
+              <Collapsible
+                key={faq.question}
+                open={isOpen}
+                onOpenChange={(o) => setOpenFaq(o ? faq.question : null)}
+              >
+                <CollapsibleTrigger asChild>
+                  <button className="flex items-center w-full text-left group">
+                    <span
+                      className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors cursor-pointer select-none ${
+                        isOpen
+                          ? "bg-primary text-primary-foreground border-primary"
+                          : "bg-secondary text-secondary-foreground border-transparent hover:bg-primary hover:text-primary-foreground"
+                      }`}
+                    >
+                      {faq.question}
+                      <ChevronDown
+                        className={`w-3 h-3 transition-transform duration-200 ${
+                          isOpen ? "rotate-180" : ""
+                        }`}
+                      />
+                    </span>
+                  </button>
+                </CollapsibleTrigger>
+                <CollapsibleContent>
+                  <div className="ml-1 mt-1.5 mb-1 p-3 rounded-lg bg-muted/50 text-sm text-muted-foreground leading-relaxed">
+                    {faq.answer}
                   </div>
                 </CollapsibleContent>
               </Collapsible>
