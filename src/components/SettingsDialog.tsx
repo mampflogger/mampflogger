@@ -743,12 +743,118 @@ const SettingsDialog = ({
     next?.focus();
   };
 
+  const retreatProfileFocus = (currentId: string) => {
+    const idx = profileFieldOrder.indexOf(currentId);
+    if (idx <= 0) return;
+    const prev = document.getElementById(profileFieldOrder[idx - 1]);
+    prev?.focus();
+  };
+
   const handleProfileKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, id: string) => {
     if (e.key === "Enter") {
       e.preventDefault();
       advanceProfileFocus(id);
     }
   };
+
+  // Voice input handler for profile fields
+  const handleProfileVoiceInput = useCallback((transcript: string, isInterim: boolean) => {
+    if (isInterim) return;
+    const lower = transcript.toLowerCase().trim();
+
+    // "OK" / "ja" / "okay" → save
+    if (/^(ok|okay|ja|speichern|profil speichern)$/i.test(lower)) {
+      const btn = document.getElementById("settings-save") as HTMLButtonElement;
+      btn?.click();
+      return;
+    }
+
+    // Determine which field is focused
+    const active = document.activeElement as HTMLInputElement | null;
+    if (!active) return;
+    const fieldId = active.id;
+    if (!profileFieldOrder.includes(fieldId)) return;
+
+    // "Männlich" / "Weiblich" → gender toggle (works from any profile field)
+    if (/\bmännlich\b|\bmaennlich\b|\bmale\b/i.test(lower)) { setGender("male"); return; }
+    if (/\bweiblich\b|\bfemale\b/i.test(lower)) { setGender("female"); return; }
+
+    if (fieldId === "settings-name") {
+      // For name field: use the spoken text directly
+      const cleaned = transcript.trim();
+      if (cleaned) {
+        // Capitalize first letter
+        const capitalized = cleaned.charAt(0).toUpperCase() + cleaned.slice(1);
+        setName(capitalized);
+        setTimeout(() => advanceProfileFocus(fieldId), 300);
+      }
+      return;
+    }
+
+    // Numeric fields: parse spoken number
+    const num = parseGermanSpokenNumber(lower);
+    const directNum = parseFloat(transcript.replace(",", "."));
+    const value = num ?? (isNaN(directNum) ? null : directNum);
+    if (value === null) return;
+
+    const setters: Record<string, (v: string) => void> = {
+      "settings-birth": setBirthYear,
+      "settings-height": setHeightCm,
+      "settings-weight": setWeightKg,
+      "settings-goalweight": setGoalWeightKg,
+      "settings-fluid": setGoalFluidMl,
+      "settings-deficit": setGoalDeficit,
+      "settings-activity": setGoalActivityBonus,
+    };
+
+    const setter = setters[fieldId];
+    if (setter) {
+      // For decimal fields, preserve one decimal place
+      const isDecimal = fieldId === "settings-weight" || fieldId === "settings-goalweight";
+      setter(isDecimal ? String(value) : String(Math.round(value)));
+      setTimeout(() => advanceProfileFocus(fieldId), 500);
+    }
+  }, []);
+
+  // Register profile voice input handler
+  useEffect(() => {
+    if (!profileVoiceInputRef) return;
+    profileVoiceInputRef.current = handleProfileVoiceInput;
+    return () => {
+      if (profileVoiceInputRef) profileVoiceInputRef.current = undefined;
+    };
+  }, [profileVoiceInputRef, handleProfileVoiceInput]);
+
+  // Listen for field commands (weiter/zurück) when profile tab is active
+  useEffect(() => {
+    if (!open || tab !== "profile") return;
+    const handler = (e: Event) => {
+      const detail = (e as CustomEvent).detail;
+      if (detail.scope !== "profile") return;
+      const active = document.activeElement as HTMLElement | null;
+      const fieldId = active?.id || "";
+      if (detail.action === "field:next") advanceProfileFocus(fieldId);
+      else if (detail.action === "field:prev") retreatProfileFocus(fieldId);
+      else if (detail.action === "field:clear") {
+        if (active && "value" in active) {
+          const input = active as HTMLInputElement;
+          const nativeInputValueSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, "value")?.set;
+          nativeInputValueSetter?.call(input, "");
+          input.dispatchEvent(new Event("input", { bubbles: true }));
+          // Also update React state
+          const setters: Record<string, (v: string) => void> = {
+            "settings-name": setName, "settings-birth": setBirthYear,
+            "settings-height": setHeightCm, "settings-weight": setWeightKg,
+            "settings-goalweight": setGoalWeightKg, "settings-fluid": setGoalFluidMl,
+            "settings-deficit": setGoalDeficit, "settings-activity": setGoalActivityBonus,
+          };
+          setters[fieldId]?.("");
+        }
+      }
+    };
+    window.addEventListener("mampflogger:field-command", handler);
+    return () => window.removeEventListener("mampflogger:field-command", handler);
+  }, [open, tab]);
 
   const handleSaveProfile = () => {
     if (!currentProfile) return;
