@@ -81,18 +81,18 @@ const COMMANDS: VoiceCommand[] = [
   { patterns: [/\bdaten\b/i], action: "settings:data" },
 
   // Theme – specific color commands BEFORE generic "design"
-  { patterns: [/\bdesign\s+blau\b/i, /\bblau(?:es?)?\s+design\b/i], action: "theme:blue" },
-  { patterns: [/\bdesign\s+gelb\b/i, /\bgelb(?:es?)?\s+design\b/i], action: "theme:yellow" },
-  { patterns: [/\bdesign\s+pink\b/i, /\bpink(?:es?)?\s+design\b/i], action: "theme:pink" },
-  { patterns: [/\bdesign\s+grün\b/i, /\bgrün(?:es?)?\s+design\b/i], action: "theme:green" },
+  { patterns: [/\bdesign\s+orange\b/i, /\borange(?:s?)?\s+design\b/i], action: "theme:orange" },
+  { patterns: [/\bdesign\s+t(?:ü|ue)rkis\b/i, /\bt(?:ü|ue)rkis(?:es?)?\s+design\b/i], action: "theme:teal" },
+  { patterns: [/\bdesign\s+rot\b/i, /\brote?s?\s+design\b/i], action: "theme:red" },
+  { patterns: [/\bdesign\s+grau\b/i, /\bgraue?s?\s+design\b/i], action: "theme:gray" },
   { patterns: [/\bdark\s*mode\b/i, /\bdunkler?\s+modus\b/i], action: "theme:dark" },
   { patterns: [/\blight\s*mode\b/i, /\bheller?\s+modus\b/i], action: "theme:light" },
 
   // Bare color words (context-sensitive: only work on design tab)
-  { patterns: [/^\s*blau\s*$/i], action: "ctx-color:blue" },
-  { patterns: [/^\s*gelb\s*$/i], action: "ctx-color:yellow" },
-  { patterns: [/^\s*pink\s*$/i], action: "ctx-color:pink" },
-  { patterns: [/^\s*grün\s*$/i, /^\s*gruen\s*$/i], action: "ctx-color:green" },
+  { patterns: [/^\s*orange\s*$/i], action: "ctx-color:orange" },
+  { patterns: [/^\s*t(?:ü|ue)rkis\s*$/i], action: "ctx-color:teal" },
+  { patterns: [/^\s*rot\s*$/i], action: "ctx-color:red" },
+  { patterns: [/^\s*grau\s*$/i], action: "ctx-color:gray" },
 
   // Generic design → settings design tab (after specific theme commands)
   { patterns: [/\bdesign\b/i], action: "settings:design" },

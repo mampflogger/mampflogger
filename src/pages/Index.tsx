@@ -253,14 +253,14 @@ const Index = () => {
       // Theme commands — context-aware: if in design tab, always apply theme
       else if (action === "theme:dark") setDarkMode(true);
       else if (action === "theme:light") setDarkMode(false);
-      else if (action === "theme:blue") setColorTheme("blue");
-      else if (action === "theme:yellow") setColorTheme("yellow");
-      else if (action === "theme:pink") setColorTheme("pink");
-      else if (action === "theme:green") setColorTheme("green");
+      else if (action === "theme:orange") setColorTheme("orange");
+      else if (action === "theme:teal") setColorTheme("teal");
+      else if (action === "theme:red") setColorTheme("red");
+      else if (action === "theme:gray") setColorTheme("gray");
       // Context-sensitive bare color words — only on design tab
       else if (action.startsWith("ctx-color:")) {
         if (settingsOpenRef.current && settingsTabRef.current === "design") {
-          const color = action.replace("ctx-color:", "") as "blue" | "yellow" | "pink" | "green";
+          const color = action.replace("ctx-color:", "") as ColorTheme;
           setColorTheme(color);
         }
         // Otherwise ignore — don't let it fall through to fuzzy matching
@@ -395,10 +395,10 @@ const Index = () => {
 
           // Design tab: color keywords
           if (currentTab === "design") {
-            if (/\bblau\b/.test(lower)) { setColorTheme("blue"); return; }
-            if (/\bgelb\b/.test(lower)) { setColorTheme("yellow"); return; }
-            if (/\bpink\b/.test(lower)) { setColorTheme("pink"); return; }
-            if (/\bgrün\b/.test(lower)) { setColorTheme("green"); return; }
+            if (/\borange\b/.test(lower)) { setColorTheme("orange"); return; }
+            if (/\bt(?:ü|ue)rkis\b/.test(lower)) { setColorTheme("teal"); return; }
+            if (/\brot\b/.test(lower)) { setColorTheme("red"); return; }
+            if (/\bgrau\b/.test(lower)) { setColorTheme("gray"); return; }
             if (/\bdark\b|\bdunkel/.test(lower)) { setDarkMode(true); return; }
             if (/\blight\b|\bhell/.test(lower)) { setDarkMode(false); return; }
           }
@@ -531,7 +531,7 @@ const Index = () => {
     return false;
   });
   const [colorTheme, setColorTheme] = useState<ColorTheme>(() => {
-    return (localStorage.getItem("mampflogger-color-theme") as ColorTheme) || "yellow";
+    return (localStorage.getItem("mampflogger-color-theme") as ColorTheme) || "orange";
   });
 
   useEffect(() => {
@@ -541,8 +541,8 @@ const Index = () => {
 
   useEffect(() => {
     const el = document.documentElement;
-    el.classList.remove("theme-yellow", "theme-blue", "theme-pink");
-    if (colorTheme !== "green") {
+    el.classList.remove("theme-teal", "theme-red", "theme-gray");
+    if (colorTheme !== "orange") {
       el.classList.add(`theme-${colorTheme}`);
     }
     localStorage.setItem("mampflogger-color-theme", colorTheme);
@@ -667,7 +667,7 @@ const Index = () => {
     setEditingEntry(null);
     setEditingActivity(null);
     setSelectedDate(formatDate(new Date()));
-    setColorTheme(gender === "female" ? "pink" : "yellow");
+    setColorTheme(gender === "female" ? "red" : "orange");
     setActiveTab("log");
     setStartupProfilePrompt(false);
   };
@@ -682,7 +682,7 @@ const Index = () => {
     setEditingEntry(null);
     setEditingActivity(null);
     setSelectedDate(formatDate(new Date()));
-    setColorTheme("yellow");
+    setColorTheme("orange");
     setActiveTab("log");
     setStartupProfilePrompt(true);
     setSettingsCurrentTab("profile");
