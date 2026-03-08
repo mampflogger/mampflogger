@@ -1195,7 +1195,7 @@ const SettingsDialog = ({
   return (
     <Dialog open={open} onOpenChange={handleOpen}>
       <DialogTrigger asChild>
-        <Button variant="ghost" size="icon" className={`h-8 w-8 ${highlightedTab ? "section-card-highlight rounded-lg" : ""}`} title="Einstellungen">
+        <Button variant="ghost" size="icon" className={`h-8 w-8 ${open ? "ring-2 ring-primary bg-muted" : ""} ${highlightedTab ? "section-card-highlight rounded-lg" : ""}`} title="Einstellungen">
           <Settings className="w-4 h-4" />
         </Button>
       </DialogTrigger>
