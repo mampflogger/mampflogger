@@ -8,12 +8,12 @@ interface HelpTopic {
   description: string;
 }
 
-type HelpTab = "eingabe" | "statistik" | "mikro" | "einstellungen";
+type HelpTab = "eingabe" | "statistik" | "sprache" | "einstellungen";
 
 const HELP_TABS: { id: HelpTab; label: string }[] = [
   { id: "eingabe", label: "Eingabemaske" },
   { id: "statistik", label: "Statistik" },
-  { id: "mikro", label: "Mikronährstoffe" },
+  { id: "sprache", label: "Sprachsteuerung" },
   { id: "einstellungen", label: "Einstellungen" },
 ];
 
