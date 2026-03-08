@@ -1278,7 +1278,7 @@ const SettingsDialog = ({
 
         {/* Profile Tab */}
         {tab === "profile" && (
-          <div className="space-y-3">
+          <div className="space-y-3" data-voice-scope="profile">
             {/* Profile Card */}
             <div id="section-persoenliche-daten" className={`glass-card rounded-xl p-3 space-y-2 ${highlightedSettingsSection === "section-persoenliche-daten" ? "section-card-highlight" : ""}`}>
               <h2 className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Persönliche Daten</h2>
