@@ -7,10 +7,10 @@ const Landing = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const stored = localStorage.getItem("mampflogger-color-theme") || "yellow";
+    const stored = localStorage.getItem("mampflogger-color-theme") || "orange";
     const el = document.documentElement;
-    el.classList.remove("theme-yellow", "theme-blue", "theme-pink");
-    if (stored !== "green") {
+    el.classList.remove("theme-teal", "theme-red", "theme-gray");
+    if (stored !== "orange") {
       el.classList.add(`theme-${stored}`);
     }
   }, []);

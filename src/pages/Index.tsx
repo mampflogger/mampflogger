@@ -253,14 +253,14 @@ const Index = () => {
       // Theme commands — context-aware: if in design tab, always apply theme
       else if (action === "theme:dark") setDarkMode(true);
       else if (action === "theme:light") setDarkMode(false);
-      else if (action === "theme:blue") setColorTheme("blue");
-      else if (action === "theme:yellow") setColorTheme("yellow");
-      else if (action === "theme:pink") setColorTheme("pink");
-      else if (action === "theme:green") setColorTheme("green");
+      else if (action === "theme:orange") setColorTheme("orange");
+      else if (action === "theme:teal") setColorTheme("teal");
+      else if (action === "theme:red") setColorTheme("red");
+      else if (action === "theme:gray") setColorTheme("gray");
       // Context-sensitive bare color words — only on design tab
       else if (action.startsWith("ctx-color:")) {
         if (settingsOpenRef.current && settingsTabRef.current === "design") {
-          const color = action.replace("ctx-color:", "") as "blue" | "yellow" | "pink" | "green";
+          const color = action.replace("ctx-color:", "") as ColorTheme;
           setColorTheme(color);
         }
         // Otherwise ignore — don't let it fall through to fuzzy matching
