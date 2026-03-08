@@ -847,7 +847,7 @@ const Index = () => {
                 <p className={`text-xs transition-colors duration-500 ${dateFocused ? "text-primary/70" : "text-muted-foreground"}`}>{displayDateOnly}</p>
               </div>
               <div className="flex items-center gap-1">
-                {dateFocused && <span className="text-xs text-primary font-medium animate-in fade-in duration-300">Weiter</span>}
+                {dateFocused && !isToday && <span className="text-xs text-primary font-medium animate-in fade-in duration-300">Weiter</span>}
                 <Button
                   variant="ghost"
                   size="icon"
