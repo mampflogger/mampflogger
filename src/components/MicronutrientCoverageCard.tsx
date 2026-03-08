@@ -256,7 +256,7 @@ const MicronutrientTile = ({ item, editing, draftValue, onDraftChange, gender, d
       />
       <div className="relative z-10">
         <div className="flex items-center justify-between">
-          <p className="text-[11px] font-medium text-muted-foreground">
+          <p className="text-[11px] font-medium text-muted-foreground truncate">
             {item.label} ({item.unit})
           </p>
           <div className="flex items-center gap-1">
