@@ -395,6 +395,10 @@
   animation: section-pulse 0.5s ease-out;
 }
 
+[data-section-active="true"] h2 {
+  color: hsl(var(--primary));
+}
+
 /* Card-level highlight glow when navigated to */
 @keyframes card-glow {
   0% { box-shadow: 0 0 0 0 hsl(var(--primary) / 0.6); }
