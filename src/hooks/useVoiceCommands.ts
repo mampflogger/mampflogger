@@ -93,14 +93,14 @@ const COMMANDS: VoiceCommand[] = [
   { patterns: [/\blight\s*mode\b/i, /\bheller?\s+modus\b/i], action: "theme:light" },
 
   // Bare color words (context-sensitive: only work on design tab)
-  { patterns: [/^\s*blau\s*$/i], action: "ctx-color:blue" },
-  { patterns: [/^\s*gelb\s*$/i], action: "ctx-color:yellow" },
-  { patterns: [/^\s*pink\s*$/i], action: "ctx-color:pink" },
-  { patterns: [/^\s*grün\s*$/i, /^\s*gruen\s*$/i], action: "ctx-color:green" },
-  { patterns: [/^\s*orange\s*$/i], action: "ctx-color:orange" },
-  { patterns: [/^\s*t(?:ü|ue)rkis\s*$/i], action: "ctx-color:teal" },
-  { patterns: [/^\s*rot\s*$/i], action: "ctx-color:red" },
-  { patterns: [/^\s*grau\s*$/i], action: "ctx-color:gray" },
+  { patterns: [/^\s*(?:farbe\s+)?blau(?:es|en|em)?(?:\s+bitte)?[.!?]?\s*$/i], action: "ctx-color:blue" },
+  { patterns: [/^\s*(?:farbe\s+)?gelb(?:e|en|em|es)?(?:\s+bitte)?[.!?]?\s*$/i], action: "ctx-color:yellow" },
+  { patterns: [/^\s*(?:farbe\s+)?pink(?:e|en|em|es)?(?:\s+bitte)?[.!?]?\s*$/i], action: "ctx-color:pink" },
+  { patterns: [/^\s*(?:farbe\s+)?gr(?:ü|ue)n(?:e|en|em|es)?(?:\s+bitte)?[.!?]?\s*$/i], action: "ctx-color:green" },
+  { patterns: [/^\s*(?:farbe\s+)?orange(?:n|s)?(?:\s+bitte)?[.!?]?\s*$/i], action: "ctx-color:orange" },
+  { patterns: [/^\s*(?:farbe\s+)?t(?:ü|ue)rkis(?:e|en|em|es)?(?:\s+bitte)?[.!?]?\s*$/i], action: "ctx-color:teal" },
+  { patterns: [/^\s*(?:farbe\s+)?rot(?:e|en|em|es)?(?:\s+bitte)?[.!?]?\s*$/i], action: "ctx-color:red" },
+  { patterns: [/^\s*(?:farbe\s+)?grau(?:e|en|em|es)?(?:\s+bitte)?[.!?]?\s*$/i], action: "ctx-color:gray" },
 
   // Generic design → settings design tab (after specific theme commands)
   { patterns: [/\bdesign\b/i], action: "settings:design" },
@@ -110,7 +110,7 @@ const COMMANDS: VoiceCommand[] = [
   { patterns: [/\bweiter\b/i, /\bvorwärts\b/i, /\bvorwaerts\b/i, /\bnext\b/i], action: "field:next" },
   { patterns: [/\blöschen\b/i, /\bloeschen\b/i], action: "field:clear" },
   { patterns: [/\bauswahl\b/i, /\boptionen?\b/i], action: "field:open-dropdown" },
-  { patterns: [/\bescape\b/i], action: "field:close-dropdown" },
+  { patterns: [/\b(?:escape|schließen|schliessen|zuklappen|zumachen)\b/i], action: "field:close-dropdown" },
 
   // Actions
   { patterns: [/\bmikro\s*aus\b/i, /\bmikrofon\s*aus\b/i, /\bmic\s*off\b/i], action: "action:mic-off" },
