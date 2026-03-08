@@ -675,7 +675,7 @@ const Index = () => {
     setEditingEntry(null);
     setEditingActivity(null);
     setSelectedDate(formatDate(new Date()));
-    setColorTheme(gender === "female" ? "red" : "orange");
+    setColorTheme(gender === "female" ? "pink" : "yellow");
     setActiveTab("log");
     setStartupProfilePrompt(false);
   };
