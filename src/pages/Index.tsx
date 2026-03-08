@@ -29,7 +29,7 @@ import FastingAnalysis from "@/components/FastingAnalysis";
 import SectionHeading from "@/components/SectionHeading";
 
 import SettingsDialog, { ColorTheme } from "@/components/SettingsDialog";
-import { ChevronLeft, ChevronRight, BarChart3, List, Mic, MicOff } from "lucide-react";
+import { ChevronLeft, ChevronRight, BarChart3, List, Mic, MicOff, HelpCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useVoiceCommands, SECTION_PAGE_MAP, SECTION_SETTINGS_TAB } from "@/hooks/useVoiceCommands";
 import { useSectionNavigation } from "@/hooks/useSectionNavigation";
@@ -939,6 +939,24 @@ const Index = () => {
                   {voiceCommands.isListening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
                 </Button>
               )}
+              <Button
+                variant="ghost"
+                size="icon"
+                className={`h-8 w-8 ${activeTab === "log" ? "bg-muted" : ""} ${highlightedTab === "log" ? "section-card-highlight rounded-lg" : ""}`}
+                onClick={() => setActiveTab("log")}
+                title="Eingabe"
+              >
+                <List className="w-4 h-4" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                className={`h-8 w-8 ${activeTab === "weekly" ? "bg-muted" : ""} ${highlightedTab === "weekly" ? "section-card-highlight rounded-lg" : ""}`}
+                onClick={() => setActiveTab("weekly")}
+                title="Statistik"
+              >
+                <BarChart3 className="w-4 h-4" />
+              </Button>
               <SettingsDialog
                 profile={profile}
                 onSaveProfile={handleSaveProfile}
@@ -984,20 +1002,11 @@ const Index = () => {
               <Button
                 variant="ghost"
                 size="icon"
-                className={`h-8 w-8 ${activeTab === "log" ? "bg-muted" : ""} ${highlightedTab === "log" ? "section-card-highlight rounded-lg" : ""}`}
-                onClick={() => setActiveTab("log")}
-                title="Eingabe"
+                className="h-8 w-8"
+                onClick={() => {/* TODO: Hilfe */}}
+                title="Hilfe"
               >
-                <List className="w-4 h-4" />
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                className={`h-8 w-8 ${activeTab === "weekly" ? "bg-muted" : ""} ${highlightedTab === "weekly" ? "section-card-highlight rounded-lg" : ""}`}
-                onClick={() => setActiveTab("weekly")}
-                title="Statistik"
-              >
-                <BarChart3 className="w-4 h-4" />
+                <HelpCircle className="w-4 h-4" />
               </Button>
             </div>
           </div>
