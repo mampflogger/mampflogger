@@ -1016,15 +1016,9 @@ const Index = () => {
       <main className="max-w-lg mx-auto px-4 pb-8">
         {/* Date Navigation – sticky below header */}
         <div className="sticky top-[calc(env(safe-area-inset-top)+3.5rem)] z-[9] -mx-4 px-4 pt-3 pb-0 bg-background">
-          <div className={`glass-card rounded-xl px-3 py-2 mb-3 transition-all duration-500 ${dateFocused ? "ring-2 ring-primary shadow-lg shadow-primary/20" : ""}`}>
+          <div className={`glass-card rounded-xl p-3 mb-3 transition-all duration-500 ${dateFocused ? "ring-2 ring-primary shadow-lg shadow-primary/20" : ""}`}>
+            <SectionHeading className="mb-1">Datum</SectionHeading>
             <div className="flex items-center justify-between">
-              <SectionHeading className="mb-0">Datum</SectionHeading>
-              <div className="text-right cursor-pointer" onClick={() => { setDateFocused(f => !f); dateFocusedRef.current = !dateFocusedRef.current; }}>
-                <span className={`text-sm font-semibold transition-colors duration-500 ${dateFocused ? "text-primary" : ""}`}>{isToday ? "Heute" : displayWeekday}</span>
-                <span className={`text-xs ml-1.5 transition-colors duration-500 ${dateFocused ? "text-primary/70" : "text-muted-foreground"}`}>{displayDateOnly}</span>
-              </div>
-            </div>
-            <div className="flex items-center justify-between mt-1">
               <div className="flex items-center gap-1">
                 <Button
                   variant="ghost"
@@ -1034,11 +1028,15 @@ const Index = () => {
                   onMouseLeave={stopNavigate}
                   onTouchStart={(e) => { e.preventDefault(); startNavigate(-1); }}
                   onTouchEnd={stopNavigate}
-                  className="h-7 w-7"
+                  className="h-8 w-8"
                 >
-                  <ChevronLeft className="w-4 h-4" />
+                  <ChevronLeft className="w-5 h-5" />
                 </Button>
                 {dateFocused && <span className="text-xs text-primary font-medium animate-in fade-in duration-300">Zurück</span>}
+              </div>
+              <div className="text-center min-h-[2.5rem] flex flex-col justify-center cursor-pointer" onClick={() => { setDateFocused(f => !f); dateFocusedRef.current = !dateFocusedRef.current; }}>
+                <p className={`text-sm font-semibold transition-colors duration-500 ${dateFocused ? "text-primary" : ""}`}>{isToday ? "Heute" : displayWeekday}</p>
+                <p className={`text-xs transition-colors duration-500 ${dateFocused ? "text-primary/70" : "text-muted-foreground"}`}>{displayDateOnly}</p>
               </div>
               <div className="flex items-center gap-1">
                 {dateFocused && <span className={`text-xs text-primary font-medium animate-in fade-in duration-300 ${isToday ? "invisible" : ""}`}>Weiter</span>}
@@ -1051,9 +1049,9 @@ const Index = () => {
                   onTouchStart={(e) => { e.preventDefault(); !isToday && startNavigate(1); }}
                   onTouchEnd={stopNavigate}
                   disabled={isToday}
-                  className="h-7 w-7"
+                  className="h-8 w-8"
                 >
-                  <ChevronRight className="w-4 h-4" />
+                  <ChevronRight className="w-5 h-5" />
                 </Button>
               </div>
             </div>
