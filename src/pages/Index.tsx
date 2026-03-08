@@ -98,19 +98,19 @@ function matchNutrientVoice(
 }
 
 const ACTIVE_VITAMIN_SHORTCUTS: [RegExp, string][] = [
-  [/^\s*(?:vitamin\s*)?a\s*$/i, "vitA"],
-  [/^\s*(?:vitamin\s*)?b\s*1\s*$/i, "vitB1"],
-  [/^\s*(?:vitamin\s*)?b\s*2\s*$/i, "vitB2"],
-  [/^\s*(?:vitamin\s*)?b\s*3\s*$/i, "vitB3"],
-  [/^\s*(?:vitamin\s*)?b\s*5\s*$/i, "vitB5"],
-  [/^\s*(?:vitamin\s*)?b\s*6\s*$/i, "vitB6"],
-  [/^\s*(?:vitamin\s*)?b\s*7\s*$/i, "vitB7"],
-  [/^\s*(?:vitamin\s*)?b\s*9\s*$/i, "vitB9"],
-  [/^\s*(?:vitamin\s*)?b\s*12\s*$/i, "vitB12"],
-  [/^\s*(?:vitamin\s*)?c\s*$/i, "vitC"],
-  [/^\s*(?:vitamin\s*)?d\s*$/i, "vitD"],
-  [/^\s*(?:vitamin\s*)?e\s*$/i, "vitE"],
-  [/^\s*(?:vitamin\s*)?k\s*$/i, "vitK"],
+  [/^\s*(?:vitamin\s*)?a(?:\s+bitte)?[.!?]?\s*$/i, "vitA"],
+  [/^\s*(?:vitamin\s*)?b\s*1(?:\s+bitte)?[.!?]?\s*$/i, "vitB1"],
+  [/^\s*(?:vitamin\s*)?b\s*2(?:\s+bitte)?[.!?]?\s*$/i, "vitB2"],
+  [/^\s*(?:vitamin\s*)?b\s*3(?:\s+bitte)?[.!?]?\s*$/i, "vitB3"],
+  [/^\s*(?:vitamin\s*)?b\s*5(?:\s+bitte)?[.!?]?\s*$/i, "vitB5"],
+  [/^\s*(?:vitamin\s*)?b\s*6(?:\s+bitte)?[.!?]?\s*$/i, "vitB6"],
+  [/^\s*(?:vitamin\s*)?b\s*7(?:\s+bitte)?[.!?]?\s*$/i, "vitB7"],
+  [/^\s*(?:vitamin\s*)?b\s*9(?:\s+bitte)?[.!?]?\s*$/i, "vitB9"],
+  [/^\s*(?:vitamin\s*)?b\s*12(?:\s+bitte)?[.!?]?\s*$/i, "vitB12"],
+  [/^\s*(?:vitamin\s*)?c(?:\s+bitte)?[.!?]?\s*$/i, "vitC"],
+  [/^\s*(?:vitamin\s*)?d(?:\s+bitte)?[.!?]?\s*$/i, "vitD"],
+  [/^\s*(?:vitamin\s*)?e(?:\s+bitte)?[.!?]?\s*$/i, "vitE"],
+  [/^\s*(?:vitamin\s*)?k(?:\s+bitte)?[.!?]?\s*$/i, "vitK"],
 ];
 
 function matchActiveVitaminShortcut(lower: string): string | null {
