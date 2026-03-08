@@ -88,6 +88,12 @@ const COMMANDS: VoiceCommand[] = [
   { patterns: [/\bdark\s*mode\b/i, /\bdunkler?\s+modus\b/i], action: "theme:dark" },
   { patterns: [/\blight\s*mode\b/i, /\bheller?\s+modus\b/i], action: "theme:light" },
 
+  // Bare color words (context-sensitive: only work on design tab)
+  { patterns: [/^\s*blau\s*$/i], action: "ctx-color:blue" },
+  { patterns: [/^\s*gelb\s*$/i], action: "ctx-color:yellow" },
+  { patterns: [/^\s*pink\s*$/i], action: "ctx-color:pink" },
+  { patterns: [/^\s*grün\s*$/i, /^\s*gruen\s*$/i], action: "ctx-color:green" },
+
   // Generic design → settings design tab (after specific theme commands)
   { patterns: [/\bdesign\b/i], action: "settings:design" },
 
