@@ -1060,15 +1060,13 @@ const Index = () => {
 
         {activeTab === "log" ? (
           <>
-            <div id="section-neuer-eintrag" data-section className={`glass-card rounded-xl p-3 mb-3 ${hl === "section-neuer-eintrag" ? "section-card-highlight" : ""}`}>
-              <div className="flex items-center justify-between mb-2">
-                <SectionHeading highlighted={hl === "section-neuer-eintrag"} className="mb-0">
-                  {editingEntry ? "Eintrag bearbeiten" : "Neuer Eintrag"}
-                </SectionHeading>
-                <div className="flex items-center gap-1">
-                  <PhotoToLog selectedDate={selectedDate} onAddEntries={handleAddMultiple} />
-                </div>
+            <div id="section-neuer-eintrag" data-section className={`glass-card rounded-xl p-3 mb-3 relative ${hl === "section-neuer-eintrag" ? "section-card-highlight" : ""}`}>
+              <div className="absolute top-2.5 right-2.5 flex items-center gap-1">
+                <PhotoToLog selectedDate={selectedDate} onAddEntries={handleAddMultiple} />
               </div>
+              <SectionHeading highlighted={hl === "section-neuer-eintrag"} className="mb-2">
+                {editingEntry ? "Eintrag bearbeiten" : "Neuer Eintrag"}
+              </SectionHeading>
               <NutritionForm
                 onAdd={handleAdd}
                 selectedDate={selectedDate}
