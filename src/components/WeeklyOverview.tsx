@@ -269,7 +269,7 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
   return (
     <div className="space-y-3 animate-fade-in">
       {/* Stats Row */}
-      <div id="section-uebersicht" data-section className="glass-card rounded-xl p-3">
+      <div id="section-uebersicht" data-section className={`glass-card rounded-xl p-3 ${hl === "section-uebersicht" ? "section-card-highlight" : ""}`}>
         <SectionHeading highlighted={hl === "section-uebersicht"} className="mb-2">Übersicht</SectionHeading>
         <div className={`grid gap-3 w-full ${daysToGoal !== null ? "grid-cols-2" : avgDeficit7 !== null ? "grid-cols-3" : "grid-cols-2"}`}>
           <div className="rounded-xl bg-background p-3 text-center">
@@ -314,7 +314,7 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
       </div>
 
       {/* Calories per Day */}
-      <div id="section-kalorien-pro-tag" data-section className="glass-card rounded-xl p-3">
+      <div id="section-kalorien-pro-tag" data-section className={`glass-card rounded-xl p-3 ${hl === "section-kalorien-pro-tag" ? "section-card-highlight" : ""}`}>
         <SectionHeading highlighted={hl === "section-kalorien-pro-tag"} className="mb-2">
           Kalorien pro Tag
         </SectionHeading>
@@ -364,7 +364,7 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
 
       {/* Deficit Bar Chart */}
       {deficitData && (
-        <div id="section-defizit-pro-tag" data-section className="glass-card rounded-xl p-3">
+        <div id="section-defizit-pro-tag" data-section className={`glass-card rounded-xl p-3 ${hl === "section-defizit-pro-tag" ? "section-card-highlight" : ""}`}>
           <SectionHeading highlighted={hl === "section-defizit-pro-tag"} className="mb-2">
             Defizit pro Tag
           </SectionHeading>
@@ -415,7 +415,7 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
       )}
 
       {/* Daily macro stacked bars */}
-      <div id="section-makros-pro-tag" data-section className="glass-card rounded-xl p-3">
+      <div id="section-makros-pro-tag" data-section className={`glass-card rounded-xl p-3 ${hl === "section-makros-pro-tag" ? "section-card-highlight" : ""}`}>
         <SectionHeading highlighted={hl === "section-makros-pro-tag"} className="mb-2">
           Makros pro Tag (g)
         </SectionHeading>
@@ -460,7 +460,7 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
       </div>
 
       {/* Macro Distribution */}
-      <div id="section-makro-verteilung" data-section className="glass-card rounded-xl p-3">
+      <div id="section-makro-verteilung" data-section className={`glass-card rounded-xl p-3 ${hl === "section-makro-verteilung" ? "section-card-highlight" : ""}`}>
         <SectionHeading highlighted={hl === "section-makro-verteilung"} className="mb-2">
           Makro-Verteilung (7 Tage)
         </SectionHeading>
@@ -510,7 +510,7 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
       />
 
       {/* AI Nutrition Coach */}
-      <div id="section-ki-coach" data-section>
+      <div id="section-ki-coach" data-section className={hl === "section-ki-coach" ? "section-card-highlight" : ""}>
         <NutritionCoach
           entries={entries}
           selectedDate={selectedDate}

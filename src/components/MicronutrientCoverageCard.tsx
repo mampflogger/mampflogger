@@ -114,7 +114,7 @@ const MicronutrientCoverageCard = ({
   }, [definitions, gender, kind, totals.minerals, totals.vitamins, customTargets]);
 
   return (
-    <div id={sectionId} data-section className="glass-card rounded-xl p-3">
+    <div id={sectionId} data-section className={`glass-card rounded-xl p-3 ${highlighted ? "section-card-highlight" : ""}`}>
       <div className="flex items-center justify-between mb-3">
         <SectionHeading highlighted={highlighted} className="mb-0">
           {title}

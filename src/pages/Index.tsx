@@ -824,7 +824,7 @@ const Index = () => {
 
         {activeTab === "log" ? (
           <>
-            <div id="section-neuer-eintrag" data-section className="glass-card rounded-xl p-3 mb-3">
+            <div id="section-neuer-eintrag" data-section className={`glass-card rounded-xl p-3 mb-3 ${hl === "section-neuer-eintrag" ? "section-card-highlight" : ""}`}>
               <div className="flex items-center justify-between mb-2">
                 <SectionHeading highlighted={hl === "section-neuer-eintrag"}>
                   {editingEntry ? "Eintrag bearbeiten" : "Neuer Eintrag"}
@@ -845,7 +845,7 @@ const Index = () => {
             </div>
 
             {todayEntries.length > 0 && (
-              <div id="section-makro-naehrstoffe" data-section className="glass-card rounded-xl p-3 mb-3">
+              <div id="section-makro-naehrstoffe" data-section className={`glass-card rounded-xl p-3 mb-3 ${hl === "section-makro-naehrstoffe" ? "section-card-highlight" : ""}`}>
                 <SectionHeading highlighted={hl === "section-makro-naehrstoffe"} className="mb-2">
                   Makro Nährstoffverteilung
                 </SectionHeading>
@@ -853,7 +853,7 @@ const Index = () => {
               </div>
             )}
 
-            <div id="section-tagesuebersicht" data-section className="glass-card rounded-xl p-3 mb-3">
+            <div id="section-tagesuebersicht" data-section className={`glass-card rounded-xl p-3 mb-3 ${hl === "section-tagesuebersicht" ? "section-card-highlight" : ""}`}>
               <SectionHeading highlighted={hl === "section-tagesuebersicht"} className="mb-2">
                 Tagesübersicht
                 {todayEntries.length > 0 && (
@@ -865,14 +865,14 @@ const Index = () => {
               <NutritionTable entries={todayEntries} onDelete={handleDelete} onEntryClick={handleEntryClick} />
             </div>
 
-            <div id="section-kalorienaufnahme" data-section className="glass-card rounded-xl p-3 mb-3">
+            <div id="section-kalorienaufnahme" data-section className={`glass-card rounded-xl p-3 mb-3 ${hl === "section-kalorienaufnahme" ? "section-card-highlight" : ""}`}>
               <SectionHeading highlighted={hl === "section-kalorienaufnahme"} className="mb-2">
                 Kalorienaufnahme 24 Stunden
               </SectionHeading>
               <DailyCalorieChart entries={todayEntries} />
             </div>
 
-            <div id="section-fastenanalyse" data-section className="glass-card rounded-xl p-3 mb-3">
+            <div id="section-fastenanalyse" data-section className={`glass-card rounded-xl p-3 mb-3 ${hl === "section-fastenanalyse" ? "section-card-highlight" : ""}`}>
               <SectionHeading highlighted={hl === "section-fastenanalyse"} className="mb-2">
                 Fastenanalyse
               </SectionHeading>
@@ -880,7 +880,7 @@ const Index = () => {
             </div>
 
             {profile && (
-              <div id="section-activity" data-section className="glass-card rounded-xl p-3 mb-3">
+              <div id="section-activity" data-section className={`glass-card rounded-xl p-3 mb-3 ${hl === "section-activity" ? "section-card-highlight" : ""}`}>
                 <SectionHeading highlighted={hl === "section-activity"} className="mb-2">
                   Activity
                 </SectionHeading>
@@ -902,7 +902,7 @@ const Index = () => {
             )}
 
             {profile && (
-              <div id="section-kalorienbilanz" data-section className="glass-card rounded-xl p-3 mb-3">
+              <div id="section-kalorienbilanz" data-section className={`glass-card rounded-xl p-3 mb-3 ${hl === "section-kalorienbilanz" ? "section-card-highlight" : ""}`}>
                 <SectionHeading highlighted={hl === "section-kalorienbilanz"} className="mb-2">
                   Kalorienbilanz
                 </SectionHeading>
@@ -911,7 +911,7 @@ const Index = () => {
             )}
 
             {profile && (
-              <div id="section-fluessigkeit" data-section className="glass-card rounded-xl p-3 mb-3">
+              <div id="section-fluessigkeit" data-section className={`glass-card rounded-xl p-3 mb-3 ${hl === "section-fluessigkeit" ? "section-card-highlight" : ""}`}>
                 <SectionHeading highlighted={hl === "section-fluessigkeit"} className="mb-2">
                   Flüssigkeit
                 </SectionHeading>
