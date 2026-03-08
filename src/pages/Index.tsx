@@ -1017,7 +1017,7 @@ const Index = () => {
         {/* Date Navigation – sticky below header */}
         <div className="sticky top-[calc(env(safe-area-inset-top)+3.5rem)] z-[9] -mx-4 px-4 pt-3 pb-0 bg-background">
           <div className={`glass-card rounded-xl p-3 mb-3 transition-all duration-500 ${dateFocused ? "ring-2 ring-primary shadow-lg shadow-primary/20" : ""}`}>
-            <SectionHeading className="mb-2">Datum</SectionHeading>
+            <SectionHeading className="mb-1">Datum</SectionHeading>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-1">
                 <Button
