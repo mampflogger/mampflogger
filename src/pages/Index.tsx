@@ -245,6 +245,26 @@ const Index = () => {
         return;
       }
 
+      // Nutrient-specific voice commands: navigate to section + open info tile
+      if (action.startsWith("nutrient:")) {
+        const parts = action.split(":");
+        const nutrientKey = parts[1];
+        const nutrientKind = parts[2] as "vitamins" | "minerals";
+        const sectionId = nutrientKind === "vitamins" ? "section-vitamine-7-tage" : "section-mineralstoffe-7-tage";
+
+        closeSettingsAndDo(() => {
+          const needsTabSwitch = activeTabRef.current !== "weekly";
+          if (needsTabSwitch) setActiveTab("weekly");
+          setTimeout(() => {
+            sectionNav.scrollToSection(sectionId);
+            setTimeout(() => {
+              window.dispatchEvent(new CustomEvent("mampflogger:nutrient-info", { detail: { key: nutrientKey, kind: nutrientKind } }));
+            }, 300);
+          }, needsTabSwitch ? 200 : 50);
+        });
+        return;
+      }
+
       // Scroll commands
       if (action === "scroll:bottom") {
         // Scroll to the last section, not beyond the viewport
