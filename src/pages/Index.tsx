@@ -1181,6 +1181,7 @@ const Index = () => {
           </>
         )}
       </main>
+      <HelpDialog open={helpOpen} onOpenChange={setHelpOpen} />
     </div>
   );
 };
