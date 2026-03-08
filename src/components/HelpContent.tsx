@@ -57,7 +57,6 @@ interface FaqItem {
 }
 
 const FAQ_ITEMS: FaqItem[] = [
-  { question: "Wie kann ich Essen im Restaurant eingeben?", answer: "Schätze die Portionsgröße in Gramm und suche das Gericht über die Eingabemaske. Viele typische Restaurantgerichte findest du in der Lebensmitteldatenbank. Alternativ kannst du ein Foto deiner Mahlzeit machen – die KI erkennt die Speisen und schätzt die Nährwerte automatisch." },
   { question: "Muss ich wirklich alles grammgenau abwiegen?", answer: "Nein, du musst nicht alles auf das Gramm genau wiegen. Grobe Schätzungen reichen oft aus, um einen guten Überblick zu bekommen. Mit der Zeit entwickelst du ein gutes Augenmaß. Wichtiger als Perfektion ist Konstanz beim Tracking." },
   { question: "Wie funktioniert die Foto-Erkennung?", answer: "Tippe auf das Kamera-Symbol in der Eingabemaske und fotografiere deine Mahlzeit. Die KI analysiert das Bild, erkennt die einzelnen Lebensmittel und schätzt Menge sowie Nährwerte. Du kannst die Vorschläge anschließend noch anpassen, bevor du sie übernimmst." },
   { question: "Kann ich eigene Rezepte speichern?", answer: "Ja! Gehe in die Einstellungen unter 'Rezepte'. Dort kannst du eigene Rezepte manuell anlegen, per KI generieren lassen oder ein Foto eines Rezepts hochladen. Gespeicherte Rezepte erscheinen danach als Vorschlag bei der Eingabe." },
@@ -67,6 +66,10 @@ const FAQ_ITEMS: FaqItem[] = [
   { question: "Was ist Intervallfasten und wie hilft die Fastenanalyse?", answer: "Intervallfasten bedeutet, dass du nur in einem bestimmten Zeitfenster isst, z. B. 8 Stunden essen, 16 Stunden fasten (16:8). Die Fastenanalyse erkennt automatisch deine Essenspausen anhand deiner Einträge und zeigt dir, wie lange deine Fastenperioden sind." },
   { question: "Wie kann ich meine Fortschritte sehen?", answer: "Wechsle zum Statistik-Tab. Dort findest du eine 7-Tage-Übersicht mit Kalorien, Defizit und Makronährstoffen als Diagramme. Außerdem zeigt dir die Übersicht, wie viele Tage du bei deinem aktuellen Defizit noch bis zu deinem Zielgewicht brauchst." },
   { question: "Zählen Getränke automatisch zur Flüssigkeit?", answer: "Ja! Getränke wie Wasser, Tee, Kaffee oder Saft werden automatisch aus deinen Einträgen erkannt und zur Flüssigkeitsaufnahme gezählt. Du siehst im Flüssigkeits-Widget, wie viel du bereits getrunken hast und wie viel noch bis zu deinem Tagesziel fehlt." },
+  { question: "Kann ich Daten aus anderen Apps importieren?", answer: "Ja! In den Einstellungen unter 'Daten' findest du eine Import-Funktion. Du kannst CSV-Dateien von anderen Ernährungs-Apps hochladen. Die Daten werden dann in die App importiert und stehen dir zur Verfügung." },
+  { question: "Wie wird mein täglicher Kalorienbedarf berechnet?", answer: "Der Kalorienbedarf wird basierend auf deinen Profildaten (Alter, Geschlecht, Größe, Gewicht) und deinem Aktivitätslevel berechnet. Die App nutzt anerkannte Formeln wie die Harris-Benedict-Formel für deinen Grundumsatz und berücksichtigt deine erfassten Aktivitäten." },
+  { question: "Was sind Mikronährstoffe und kann ich diese tracken?", answer: "Mikronährstoffe sind Vitamine und Mineralien wie Vitamin C, Eisen, Kalium oder Calcium. Die App zeigt dir in der Übersicht, wie gut deine Nährstoffversorgung ist und warnt dich, wenn wichtige Mikronährstoffe zu kurz kommen." },
+  { question: "Kann ich mehrere Profile erstellen?", answer: "Aktuell unterstützt die App ein Hauptprofil. Du kannst deine Profildaten aber jederzeit in den Einstellungen anpassen, wenn sich deine Ziele oder persönlichen Daten ändern." },
 ];
 
 const HelpContent = () => {
