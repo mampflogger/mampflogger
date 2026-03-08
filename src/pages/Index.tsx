@@ -139,7 +139,7 @@ const Index = () => {
   
   const [entries, setEntries] = useState<NutritionEntry[]>([]);
   const [selectedDate, setSelectedDate] = useState(formatDate(new Date()));
-  const [activeTab, setActiveTab] = useState<"log" | "weekly">("log");
+  const [activeTab, setActiveTab] = useState<"log" | "weekly" | "help">("log");
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [bookedActivities, setBookedActivities] = useState<BookedActivity[]>([]);
   const [editingEntry, setEditingEntry] = useState<NutritionEntry | null>(null);
