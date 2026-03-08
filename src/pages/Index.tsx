@@ -35,6 +35,49 @@ import { useVoiceCommands, SECTION_PAGE_MAP, SECTION_SETTINGS_TAB } from "@/hook
 import { useSectionNavigation } from "@/hooks/useSectionNavigation";
 import { parseSpokenSelectionIndex } from "@/lib/voiceSelection";
 
+// Voice-to-nutrient matching for info panel toggle
+const NUTRIENT_VOICE_MAP: [RegExp, string, "vitamins" | "minerals"][] = [
+  [/\bvitamin\s*a\b/i, "vitA", "vitamins"],
+  [/\bvitamin\s*b\s*1\b/i, "vitB1", "vitamins"],
+  [/\bvitamin\s*b\s*2\b/i, "vitB2", "vitamins"],
+  [/\bvitamin\s*b\s*3\b/i, "vitB3", "vitamins"],
+  [/\bniacin\b/i, "vitB3", "vitamins"],
+  [/\bvitamin\s*b\s*5\b/i, "vitB5", "vitamins"],
+  [/\bpantothensäure\b/i, "vitB5", "vitamins"],
+  [/\bvitamin\s*b\s*6\b/i, "vitB6", "vitamins"],
+  [/\bvitamin\s*b\s*7\b/i, "vitB7", "vitamins"],
+  [/\bbiotin\b/i, "vitB7", "vitamins"],
+  [/\bvitamin\s*b\s*9\b/i, "vitB9", "vitamins"],
+  [/\bfolsäure\b/i, "vitB9", "vitamins"],
+  [/\bvitamin\s*b\s*12\b/i, "vitB12", "vitamins"],
+  [/\bcobalamin\b/i, "vitB12", "vitamins"],
+  [/\bvitamin\s*c\b/i, "vitC", "vitamins"],
+  [/\bascorbinsäure\b/i, "vitC", "vitamins"],
+  [/\bvitamin\s*d\b/i, "vitD", "vitamins"],
+  [/\bvitamin\s*e\b/i, "vitE", "vitamins"],
+  [/\bvitamin\s*k\b/i, "vitK", "vitamins"],
+  [/\bcalcium\b/i, "calcium", "minerals"],
+  [/\bkalzium\b/i, "calcium", "minerals"],
+  [/\bchlor(?:id)?\b/i, "chlorid", "minerals"],
+  [/\beisen\b/i, "eisen", "minerals"],
+  [/\bfluorid\b/i, "fluorid", "minerals"],
+  [/\bkalium\b/i, "kalium", "minerals"],
+  [/\bkupfer\b/i, "kupfer", "minerals"],
+  [/\bmagnesium\b/i, "magnesium", "minerals"],
+  [/\bmangan\b/i, "mangan", "minerals"],
+  [/\bnatrium\b/i, "natrium", "minerals"],
+  [/\bphosphor\b/i, "phosphor", "minerals"],
+  [/\bschwefel\b/i, "schwefel", "minerals"],
+  [/\bzink\b/i, "zink", "minerals"],
+];
+
+function matchNutrientVoice(lower: string): { key: string; kind: "vitamins" | "minerals" } | null {
+  for (const [pattern, key, kind] of NUTRIENT_VOICE_MAP) {
+    if (pattern.test(lower)) return { key, kind };
+  }
+  return null;
+}
+
 const Index = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const settingsParam = searchParams.get("settings");
