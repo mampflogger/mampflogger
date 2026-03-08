@@ -9,12 +9,11 @@ interface HelpTopic {
   description: string;
 }
 
-type HelpTab = "eingabe" | "statistik" | "mikro" | "einstellungen";
+type HelpTab = "eingabe" | "statistik" | "einstellungen";
 
 const HELP_TABS: { id: HelpTab; label: string }[] = [
   { id: "eingabe", label: "Eingabemaske" },
   { id: "statistik", label: "Statistik" },
-  { id: "mikro", label: "Mikro" },
   { id: "einstellungen", label: "Einstellungen" },
 ];
 
@@ -103,18 +102,6 @@ const HELP_TOPICS: Record<HelpTab, HelpTopic[]> = {
         "Der KI-Ernährungscoach analysiert dein Essverhalten der letzten 7 Tage und gibt dir personalisierte Tipps und Empfehlungen. Drücke auf 'Analysieren', um eine neue Auswertung zu starten.",
     },
   ],
-  mikro: [
-    {
-      label: "Vitamine",
-      description:
-        "In diesem Bereich siehst du Fortschrittsbalken für jedes Vitamin (A, B1–B12, C, D, E, K). Die Werte werden aus deinen Lebensmitteln geschätzt. Tippe auf einen Balken, um eine Erklärung zum Vitamin und passende Lebensmittelquellen zu sehen.",
-    },
-    {
-      label: "Mineralstoffe",
-      description:
-        "Analog zu den Vitaminen: Fortschrittsbalken für Calcium, Eisen, Magnesium, Zink und weitere Mineralstoffe. Auch hier kannst du auf jeden Balken tippen, um Details und Lebensmitteltipps zu erhalten.",
-    },
-  ],
   einstellungen: [
     {
       label: "Profil",
@@ -159,9 +146,9 @@ const HelpDialog = ({ open, onOpenChange }: HelpDialogProps) => {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Hilfe</DialogTitle>
+          <DialogTitle>Hilfeseiten</DialogTitle>
           <DialogDescription>
-            Klicke an, zu welchem Stichwort du mehr Informationen brauchst.
+            Hier findest du mehr Informationen zu den einzelnen Funktionen. Bei welchem Thema brauchst du Hilfe?
           </DialogDescription>
         </DialogHeader>
 
