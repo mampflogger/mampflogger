@@ -27,9 +27,10 @@ import DailyCalorieChart from "@/components/DailyCalorieChart";
 import PhotoToLog from "@/components/PhotoToLog";
 import FastingAnalysis from "@/components/FastingAnalysis";
 import SectionHeading from "@/components/SectionHeading";
+import HelpDialog from "@/components/HelpDialog";
 
 import SettingsDialog, { ColorTheme } from "@/components/SettingsDialog";
-import { ChevronLeft, ChevronRight, BarChart3, List, Mic, MicOff } from "lucide-react";
+import { ChevronLeft, ChevronRight, BarChart3, List, Mic, MicOff, HelpCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useVoiceCommands, SECTION_PAGE_MAP, SECTION_SETTINGS_TAB } from "@/hooks/useVoiceCommands";
 import { useSectionNavigation } from "@/hooks/useSectionNavigation";
@@ -86,10 +87,43 @@ const NUTRIENT_VOICE_MAP: [RegExp, string, "vitamins" | "minerals"][] = [
   [/\bzink\b/i, "zink", "minerals"],
 ];
 
-function matchNutrientVoice(lower: string): { key: string; kind: "vitamins" | "minerals" } | null {
+function matchNutrientVoice(
+  lower: string,
+  kindFilter?: "vitamins" | "minerals",
+): { key: string; kind: "vitamins" | "minerals" } | null {
   for (const [pattern, key, kind] of NUTRIENT_VOICE_MAP) {
+    if (kindFilter && kind !== kindFilter) continue;
     if (pattern.test(lower)) return { key, kind };
   }
+  return null;
+}
+
+const ACTIVE_VITAMIN_SHORTCUTS: [RegExp, string][] = [
+  [/^\s*(?:vitamin\s*)?a(?:\s+bitte)?[.!?]?\s*$/i, "vitA"],
+  [/^\s*(?:vitamin\s*)?b\s*1(?:\s+bitte)?[.!?]?\s*$/i, "vitB1"],
+  [/^\s*(?:vitamin\s*)?b\s*2(?:\s+bitte)?[.!?]?\s*$/i, "vitB2"],
+  [/^\s*(?:vitamin\s*)?b\s*3(?:\s+bitte)?[.!?]?\s*$/i, "vitB3"],
+  [/^\s*(?:vitamin\s*)?b\s*5(?:\s+bitte)?[.!?]?\s*$/i, "vitB5"],
+  [/^\s*(?:vitamin\s*)?b\s*6(?:\s+bitte)?[.!?]?\s*$/i, "vitB6"],
+  [/^\s*(?:vitamin\s*)?b\s*7(?:\s+bitte)?[.!?]?\s*$/i, "vitB7"],
+  [/^\s*(?:vitamin\s*)?b\s*9(?:\s+bitte)?[.!?]?\s*$/i, "vitB9"],
+  [/^\s*(?:vitamin\s*)?b\s*12(?:\s+bitte)?[.!?]?\s*$/i, "vitB12"],
+  [/^\s*(?:vitamin\s*)?c(?:\s+bitte)?[.!?]?\s*$/i, "vitC"],
+  [/^\s*(?:vitamin\s*)?d(?:\s+bitte)?[.!?]?\s*$/i, "vitD"],
+  [/^\s*(?:vitamin\s*)?e(?:\s+bitte)?[.!?]?\s*$/i, "vitE"],
+  [/^\s*(?:vitamin\s*)?k(?:\s+bitte)?[.!?]?\s*$/i, "vitK"],
+];
+
+function matchActiveVitaminShortcut(lower: string): string | null {
+  for (const [pattern, key] of ACTIVE_VITAMIN_SHORTCUTS) {
+    if (pattern.test(lower)) return key;
+  }
+  return null;
+}
+
+function getNutrientKindForSection(sectionId: string | null): "vitamins" | "minerals" | null {
+  if (sectionId === "section-vitamine-7-tage") return "vitamins";
+  if (sectionId === "section-mineralstoffe-7-tage") return "minerals";
   return null;
 }
 
@@ -121,6 +155,7 @@ const Index = () => {
   const [startupProfilePrompt, setStartupProfilePrompt] = useState(false);
    const [activityFocusRequestId, setActivityFocusRequestId] = useState<number | undefined>(undefined);
   const [dateFocused, setDateFocused] = useState(false);
+  const [helpOpen, setHelpOpen] = useState(false);
   const [highlightedTab, setHighlightedTab] = useState<string | null>(null);
   const highlightTabTimerRef = useRef<ReturnType<typeof setTimeout>>();
   const flashTab = useCallback((tab: string) => {
@@ -135,6 +170,8 @@ const Index = () => {
   const profileVoiceRef = useRef<((transcript: string, isInterim: boolean) => void) | undefined>();
   const activityVoiceCaptureUntilRef = useRef(0);
   const sectionNav = useSectionNavigation();
+  const activeSectionRef = useRef<string | null>(null);
+  activeSectionRef.current = sectionNav.activeSection;
 
   // Refs for use inside callbacks
   const settingsOpenRef = useRef(false);
@@ -253,6 +290,10 @@ const Index = () => {
       // Theme commands — context-aware: if in design tab, always apply theme
       else if (action === "theme:dark") setDarkMode(true);
       else if (action === "theme:light") setDarkMode(false);
+      else if (action === "theme:blue") setColorTheme("blue");
+      else if (action === "theme:yellow") setColorTheme("yellow");
+      else if (action === "theme:pink") setColorTheme("pink");
+      else if (action === "theme:green") setColorTheme("green");
       else if (action === "theme:orange") setColorTheme("orange");
       else if (action === "theme:teal") setColorTheme("teal");
       else if (action === "theme:red") setColorTheme("red");
@@ -336,6 +377,15 @@ const Index = () => {
         }
       }
       else if (action === "field:next" || action === "field:prev" || action === "field:clear" || action === "field:open-dropdown" || action === "field:close-dropdown") {
+        // Weekly nutrient scopes: close currently active nutrient info panel
+        if (!settingsOpenRef.current && action === "field:close-dropdown" && activeTabRef.current === "weekly") {
+          const activeNutrientKind = getNutrientKindForSection(activeSectionRef.current);
+          if (activeNutrientKind) {
+            window.dispatchEvent(new CustomEvent("mampflogger:nutrient-info", { detail: { key: "__close__", kind: activeNutrientKind } }));
+            return;
+          }
+        }
+
         // If settings is open, route dropdown commands to settings
         if (settingsOpenRef.current) {
           if (action === "field:open-dropdown") { setSettingsVoiceAction("open-dropdown"); return; }
@@ -393,12 +443,18 @@ const Index = () => {
         if (!isInterim) {
           const lower = transcript.toLowerCase();
 
-          // Design tab: color keywords
+          // Design tab: color keywords — catch broadly to prevent food-input leaks
           if (currentTab === "design") {
-            if (/\borange\b/.test(lower)) { setColorTheme("orange"); return; }
-            if (/\bt(?:ü|ue)rkis\b/.test(lower)) { setColorTheme("teal"); return; }
-            if (/\brot\b/.test(lower)) { setColorTheme("red"); return; }
-            if (/\bgrau\b/.test(lower)) { setColorTheme("gray"); return; }
+            const colorMatch =
+              /\bblau\b/.test(lower) ? "blue" :
+              /\bgelb\b/.test(lower) ? "yellow" :
+              /\bpink\b/.test(lower) ? "pink" :
+              /\bgr(?:ü|ue)n(?:e|en|em|es)?\b/.test(lower) ? "green" :
+              /\borange(?:n|s)?\b/.test(lower) ? "orange" :
+              /\bt(?:ü|ue)rkis(?:e|en|em|es)?\b/.test(lower) ? "teal" :
+              /\brot(?:e|en|em|es)?\b/.test(lower) ? "red" :
+              /\bgrau(?:e|en|em|es)?\b/.test(lower) ? "gray" : null;
+            if (colorMatch) { setColorTheme(colorMatch as ColorTheme); return; }
             if (/\bdark\b|\bdunkel/.test(lower)) { setDarkMode(true); return; }
             if (/\blight\b|\bhell/.test(lower)) { setDarkMode(false); return; }
           }
@@ -491,18 +547,41 @@ const Index = () => {
       }
 
       // Nutrient info voice commands (weekly tab only)
-      if (!isInterim && activeTabRef.current === "weekly") {
+      if (activeTabRef.current === "weekly") {
         const lower = transcript.toLowerCase();
-        const nutrientMatch = matchNutrientVoice(lower);
-        if (nutrientMatch) {
-          window.dispatchEvent(new CustomEvent("mampflogger:nutrient-info", { detail: nutrientMatch }));
-          return;
-        }
-        // Close nutrient info
-        if (/\b(schließen|schliessen|zumachen|zuklappen)\b/i.test(lower)) {
-          window.dispatchEvent(new CustomEvent("mampflogger:nutrient-info", { detail: { key: "__close__", kind: "vitamins" } }));
-          window.dispatchEvent(new CustomEvent("mampflogger:nutrient-info", { detail: { key: "__close__", kind: "minerals" } }));
-          return;
+        const activeNutrientKind = getNutrientKindForSection(activeSectionRef.current);
+
+        // While a nutrient section is active, keep routing stable and ignore interim spillover.
+        if (activeNutrientKind && isInterim) return;
+
+        if (!isInterim) {
+          if (activeNutrientKind === "vitamins") {
+            const shortcutKey = matchActiveVitaminShortcut(lower);
+            if (shortcutKey) {
+              window.dispatchEvent(new CustomEvent("mampflogger:nutrient-info", { detail: { key: shortcutKey, kind: "vitamins" } }));
+              return;
+            }
+          }
+
+          const nutrientMatch = matchNutrientVoice(lower, activeNutrientKind ?? undefined);
+          if (nutrientMatch) {
+            window.dispatchEvent(new CustomEvent("mampflogger:nutrient-info", { detail: nutrientMatch }));
+            return;
+          }
+
+          // Close nutrient info (scope-aware when section is focused)
+          if (/\b(schließen|schliessen|zumachen|zuklappen)\b/i.test(lower)) {
+            if (activeNutrientKind) {
+              window.dispatchEvent(new CustomEvent("mampflogger:nutrient-info", { detail: { key: "__close__", kind: activeNutrientKind } }));
+            } else {
+              window.dispatchEvent(new CustomEvent("mampflogger:nutrient-info", { detail: { key: "__close__", kind: "vitamins" } }));
+              window.dispatchEvent(new CustomEvent("mampflogger:nutrient-info", { detail: { key: "__close__", kind: "minerals" } }));
+            }
+            return;
+          }
+
+          // In active nutrient scope, do not leak to neighbouring sections.
+          if (activeNutrientKind) return;
         }
       }
 
@@ -525,13 +604,44 @@ const Index = () => {
   const activeTabRef = useRef(activeTab);
   activeTabRef.current = activeTab;
 
+  // Mark active section from user interaction (click/tap/focus) for stable scoped voice control
+  useEffect(() => {
+    const markActiveFromTarget = (target: EventTarget | null) => {
+      const el = (target as HTMLElement | null)?.closest?.("[data-section][id]") as HTMLElement | null;
+      if (el?.id) sectionNav.setActiveSection(el.id);
+    };
+
+    const onPointerDown = (event: PointerEvent) => markActiveFromTarget(event.target);
+    const onFocusIn = (event: FocusEvent) => markActiveFromTarget(event.target);
+
+    document.addEventListener("pointerdown", onPointerDown, true);
+    document.addEventListener("focusin", onFocusIn, true);
+
+    return () => {
+      document.removeEventListener("pointerdown", onPointerDown, true);
+      document.removeEventListener("focusin", onFocusIn, true);
+    };
+  }, [sectionNav.setActiveSection]);
+
+  // Keep active section heading visually marked while focused/active
+  useEffect(() => {
+    const sections = document.querySelectorAll<HTMLElement>("[data-section][id]");
+    sections.forEach((section) => {
+      if (section.id === sectionNav.activeSection) {
+        section.setAttribute("data-section-active", "true");
+      } else {
+        section.removeAttribute("data-section-active");
+      }
+    });
+  }, [sectionNav.activeSection, activeTab]);
+
   const [darkMode, setDarkMode] = useState(() => {
     const saved = localStorage.getItem("mampflogger-dark-mode");
     if (saved !== null) return saved === "true";
     return false;
   });
   const [colorTheme, setColorTheme] = useState<ColorTheme>(() => {
-    return (localStorage.getItem("mampflogger-color-theme") as ColorTheme) || "orange";
+    return (localStorage.getItem("mampflogger-color-theme") as ColorTheme) || "yellow";
   });
 
   useEffect(() => {
@@ -541,8 +651,8 @@ const Index = () => {
 
   useEffect(() => {
     const el = document.documentElement;
-    el.classList.remove("theme-teal", "theme-red", "theme-gray");
-    if (colorTheme !== "orange") {
+    el.classList.remove("theme-yellow", "theme-blue", "theme-pink", "theme-orange", "theme-teal", "theme-red", "theme-gray");
+    if (colorTheme !== "green") {
       el.classList.add(`theme-${colorTheme}`);
     }
     localStorage.setItem("mampflogger-color-theme", colorTheme);
@@ -667,7 +777,7 @@ const Index = () => {
     setEditingEntry(null);
     setEditingActivity(null);
     setSelectedDate(formatDate(new Date()));
-    setColorTheme(gender === "female" ? "red" : "orange");
+    setColorTheme(gender === "female" ? "pink" : "yellow");
     setActiveTab("log");
     setStartupProfilePrompt(false);
   };
@@ -682,7 +792,7 @@ const Index = () => {
     setEditingEntry(null);
     setEditingActivity(null);
     setSelectedDate(formatDate(new Date()));
-    setColorTheme("orange");
+    setColorTheme("yellow");
     setActiveTab("log");
     setStartupProfilePrompt(true);
     setSettingsCurrentTab("profile");
@@ -831,6 +941,24 @@ const Index = () => {
                   {voiceCommands.isListening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
                 </Button>
               )}
+              <Button
+                variant="ghost"
+                size="icon"
+                className={`h-8 w-8 ${activeTab === "log" ? "ring-2 ring-primary bg-muted" : ""} ${highlightedTab === "log" ? "section-card-highlight rounded-lg" : ""}`}
+                onClick={() => setActiveTab("log")}
+                title="Eingabe"
+              >
+                <List className="w-4 h-4" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                className={`h-8 w-8 ${activeTab === "weekly" ? "ring-2 ring-primary bg-muted" : ""} ${highlightedTab === "weekly" ? "section-card-highlight rounded-lg" : ""}`}
+                onClick={() => setActiveTab("weekly")}
+                title="Statistik"
+              >
+                <BarChart3 className="w-4 h-4" />
+              </Button>
               <SettingsDialog
                 profile={profile}
                 onSaveProfile={handleSaveProfile}
@@ -876,20 +1004,11 @@ const Index = () => {
               <Button
                 variant="ghost"
                 size="icon"
-                className={`h-8 w-8 ${activeTab === "log" ? "bg-muted" : ""} ${highlightedTab === "log" ? "section-card-highlight rounded-lg" : ""}`}
-                onClick={() => setActiveTab("log")}
-                title="Eingabe"
+                className="h-8 w-8"
+                onClick={() => setHelpOpen(true)}
+                title="Hilfe"
               >
-                <List className="w-4 h-4" />
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                className={`h-8 w-8 ${activeTab === "weekly" ? "bg-muted" : ""} ${highlightedTab === "weekly" ? "section-card-highlight rounded-lg" : ""}`}
-                onClick={() => setActiveTab("weekly")}
-                title="Statistik"
-              >
-                <BarChart3 className="w-4 h-4" />
+                <HelpCircle className="w-4 h-4" />
               </Button>
             </div>
           </div>
@@ -900,6 +1019,7 @@ const Index = () => {
         {/* Date Navigation – sticky below header */}
         <div className="sticky top-[calc(env(safe-area-inset-top)+3.5rem)] z-[9] -mx-4 px-4 pt-3 pb-0 bg-background">
           <div className={`glass-card rounded-xl p-3 mb-3 transition-all duration-500 ${dateFocused ? "ring-2 ring-primary shadow-lg shadow-primary/20" : ""}`}>
+            <SectionHeading className="mb-1">Datum</SectionHeading>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-1">
                 <Button
@@ -942,15 +1062,13 @@ const Index = () => {
 
         {activeTab === "log" ? (
           <>
-            <div id="section-neuer-eintrag" data-section className={`glass-card rounded-xl p-3 mb-3 ${hl === "section-neuer-eintrag" ? "section-card-highlight" : ""}`}>
-              <div className="flex items-center justify-between mb-2">
-                <SectionHeading highlighted={hl === "section-neuer-eintrag"}>
-                  {editingEntry ? "Eintrag bearbeiten" : "Neuer Eintrag"}
-                </SectionHeading>
-                <div className="flex items-center gap-1">
-                  <PhotoToLog selectedDate={selectedDate} onAddEntries={handleAddMultiple} />
-                </div>
+            <div id="section-neuer-eintrag" data-section className={`glass-card rounded-xl p-3 mb-3 relative ${hl === "section-neuer-eintrag" ? "section-card-highlight" : ""}`}>
+              <div className="absolute top-2.5 right-2.5 flex items-center gap-1">
+                <PhotoToLog selectedDate={selectedDate} onAddEntries={handleAddMultiple} />
               </div>
+              <SectionHeading highlighted={hl === "section-neuer-eintrag"} className="mb-4">
+                {editingEntry ? "Eintrag bearbeiten" : "Neuer Eintrag"}
+              </SectionHeading>
               <NutritionForm
                 onAdd={handleAdd}
                 selectedDate={selectedDate}
@@ -959,7 +1077,8 @@ const Index = () => {
                 onNewFood={() => setOpenNewFood(true)}
                 voiceInputRef={nutritionVoiceRef}
                 isVoiceActive={voiceCommands.isListening}
-              />
+               />
+              <p className="text-muted-foreground/60 text-xs text-center mt-2">Gib ein neues Lebensmittel mit Name und Menge ein</p>
             </div>
 
             {todayEntries.length > 0 && (
@@ -1062,6 +1181,7 @@ const Index = () => {
           </>
         )}
       </main>
+      <HelpDialog open={helpOpen} onOpenChange={setHelpOpen} />
     </div>
   );
 };

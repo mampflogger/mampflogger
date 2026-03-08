@@ -25,7 +25,7 @@ import {
   Settings, Sun, Moon, Trash2, Upload, Download, UserCircle, Save, Check,
   AlertCircle, FileSpreadsheet, UtensilsCrossed, Palette, BarChart3, FileUp,
   ChevronLeft, ChevronRight, RefreshCw, List, Sparkles, Loader2, HardDrive, BookOpen, Search,
-  X, Mic, MicOff,
+  X, Mic, MicOff, HelpCircle,
 } from "lucide-react";
 import CookIcon from "@/components/CookIcon";
 import { supabase } from "@/integrations/supabase/client";
@@ -46,9 +46,13 @@ import RecipesTab from "@/components/RecipesTab";
 
 type SettingsTab = "profile" | "design" | "food" | "recipes" | "data";
 
-export type ColorTheme = "orange" | "teal" | "red" | "gray";
+export type ColorTheme = "yellow" | "blue" | "pink" | "green" | "orange" | "teal" | "red" | "gray";
 
 const THEME_COLORS: Record<ColorTheme, { label: string; primary: string; swatch: string }> = {
+  yellow: { label: "Gelb", primary: "hsl(45, 80%, 50%)", swatch: "#d4a017" },
+  blue: { label: "Blau", primary: "hsl(210, 70%, 50%)", swatch: "#2680c2" },
+  pink: { label: "Pink", primary: "hsl(330, 60%, 55%)", swatch: "#c74882" },
+  green: { label: "Grün", primary: "hsl(152, 55%, 42%)", swatch: "#3a9d6a" },
   orange: { label: "Orange", primary: "hsl(25, 95%, 53%)", swatch: "#f06820" },
   teal: { label: "Türkis", primary: "hsl(180, 65%, 42%)", swatch: "#25a1a1" },
   red: { label: "Rot", primary: "hsl(0, 75%, 50%)", swatch: "#df2020" },
@@ -1191,7 +1195,7 @@ const SettingsDialog = ({
   return (
     <Dialog open={open} onOpenChange={handleOpen}>
       <DialogTrigger asChild>
-        <Button variant="ghost" size="icon" className={`h-8 w-8 ${highlightedTab ? "section-card-highlight rounded-lg" : ""}`} title="Einstellungen">
+        <Button variant="ghost" size="icon" className={`h-8 w-8 ${open ? "ring-2 ring-primary bg-muted" : ""} ${highlightedTab ? "section-card-highlight rounded-lg" : ""}`} title="Einstellungen">
           <Settings className="w-4 h-4" />
         </Button>
       </DialogTrigger>
@@ -1234,14 +1238,17 @@ const SettingsDialog = ({
                     {isMicListening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
                   </Button>
                 )}
-                <Button variant="ghost" size="icon" className={`h-8 w-8 bg-muted ${highlightedTab ? "section-card-highlight rounded-lg" : ""}`} title="Einstellungen" onClick={() => handleOpen(false)}>
-                  <Settings className="w-4 h-4" />
-                </Button>
                 <Button variant="ghost" size="icon" className="h-8 w-8" title="Eingabe" onClick={() => { handleOpen(false); onSetActiveTab("log"); }}>
                   <List className="w-4 h-4" />
                 </Button>
                 <Button variant="ghost" size="icon" className="h-8 w-8" title="Statistik" onClick={() => { handleOpen(false); onSetActiveTab("weekly"); }}>
                   <BarChart3 className="w-4 h-4" />
+                </Button>
+                <Button variant="ghost" size="icon" className={`h-8 w-8 ring-2 ring-primary bg-muted ${highlightedTab ? "section-card-highlight rounded-lg" : ""}`} title="Einstellungen" onClick={() => handleOpen(false)}>
+                  <Settings className="w-4 h-4" />
+                </Button>
+                <Button variant="ghost" size="icon" className="h-8 w-8" title="Hilfe" onClick={() => handleOpen(false)}>
+                  <HelpCircle className="w-4 h-4" />
                 </Button>
               </div>
             </div>
