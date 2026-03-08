@@ -130,6 +130,7 @@ const SettingsDialog = ({
   isMicSupported, isMicListening, onMicToggle,
   voiceAction, onVoiceActionHandled,
   highlightedTab,
+  profileVoiceInputRef,
 }: SettingsDialogProps) => {
   const [open, setOpen] = useState(initialOpen ?? false);
   const [tab, setTab] = useState<SettingsTab>(initialTab ?? "profile");
