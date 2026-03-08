@@ -92,16 +92,26 @@ const HELP_TOPICS: Record<HelpTab, HelpTopic[]> = {
         "Der KI-Ernährungscoach analysiert dein Essverhalten der letzten 7 Tage und gibt dir personalisierte Tipps und Empfehlungen. Drücke auf 'Analysieren', um eine neue Auswertung zu starten.",
     },
   ],
-  mikro: [
+  sprache: [
     {
-      label: "Vitamine (Ø 7 Tage)",
+      label: "Mikrofon aktivieren",
       description:
-        "Zeigt deine geschätzte Vitaminabdeckung basierend auf den eingetragenen Lebensmitteln. Jeder Balken zeigt den Prozentsatz deines Tagesbedarfs. Tippe auf ein Vitamin für Details und Lebensmitteltipps.",
+        "Tippe auf das Mikrofon-Symbol im Header, um die Sprachsteuerung zu starten. Wenn das Mikrofon rot pulsiert, hört die App zu. Nochmal tippen schaltet es wieder aus.",
     },
     {
-      label: "Mineralstoffe & Spurenelemente (Ø 7 Tage)",
+      label: "Lebensmittel diktieren",
       description:
-        "Wie bei den Vitaminen, nur für Mineralstoffe und Spurenelemente. Zeigt dir, wo du gut versorgt bist und wo eventuell Lücken bestehen.",
+        "Sage z. B. '200 Gramm Hähnchenbrust' oder 'ein Apfel'. Die App erkennt das Lebensmittel und die Menge und trägt es automatisch ein.",
+    },
+    {
+      label: "Navigation per Sprache",
+      description:
+        "Du kannst per Sprache zwischen den Bereichen wechseln. Sage z. B. 'zeig mir die Statistik', 'öffne Einstellungen' oder 'gehe zur Eingabe'.",
+    },
+    {
+      label: "Weitere Sprachbefehle",
+      description:
+        "Du kannst auch Aktivitäten diktieren ('30 Minuten Joggen'), Einträge löschen ('lösche den letzten Eintrag') oder nach Informationen fragen ('wie viel Kalorien habe ich heute?').",
     },
   ],
   einstellungen: [
