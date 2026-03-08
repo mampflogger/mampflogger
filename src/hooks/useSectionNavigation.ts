@@ -4,11 +4,13 @@ const HEADER_OFFSET = 140; // sticky header + date nav
 
 export function useSectionNavigation() {
   const [highlightedSection, setHighlightedSection] = useState<string | null>(null);
+  const [activeSection, setActiveSection] = useState<string | null>(null);
   const highlightTimerRef = useRef<ReturnType<typeof setTimeout>>();
 
   const scrollToSection = useCallback((sectionId: string) => {
     if (highlightTimerRef.current) clearTimeout(highlightTimerRef.current);
 
+    setActiveSection(sectionId);
     setHighlightedSection(sectionId);
 
     setTimeout(() => {
