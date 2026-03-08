@@ -397,16 +397,18 @@ const Index = () => {
         if (!isInterim) {
           const lower = transcript.toLowerCase();
 
-          // Design tab: color keywords
+          // Design tab: color keywords — catch broadly to prevent food-input leaks
           if (currentTab === "design") {
-            if (/\bblau\b/.test(lower)) { setColorTheme("blue"); return; }
-            if (/\bgelb\b/.test(lower)) { setColorTheme("yellow"); return; }
-            if (/\bpink\b/.test(lower)) { setColorTheme("pink"); return; }
-            if (/\bgrün\b/.test(lower)) { setColorTheme("green"); return; }
-            if (/\borange\b/.test(lower)) { setColorTheme("orange"); return; }
-            if (/\bt(?:ü|ue)rkis\b/.test(lower)) { setColorTheme("teal"); return; }
-            if (/\brot\b/.test(lower)) { setColorTheme("red"); return; }
-            if (/\bgrau\b/.test(lower)) { setColorTheme("gray"); return; }
+            const colorMatch =
+              /\bblau\b/.test(lower) ? "blue" :
+              /\bgelb\b/.test(lower) ? "yellow" :
+              /\bpink\b/.test(lower) ? "pink" :
+              /\bgrün\b/.test(lower) ? "green" :
+              /\borange\b/.test(lower) ? "orange" :
+              /\bt(?:ü|ue)rkis\b/.test(lower) ? "teal" :
+              /\brot\b/.test(lower) ? "red" :
+              /\bgrau\b/.test(lower) ? "gray" : null;
+            if (colorMatch) { setColorTheme(colorMatch as ColorTheme); return; }
             if (/\bdark\b|\bdunkel/.test(lower)) { setDarkMode(true); return; }
             if (/\blight\b|\bhell/.test(lower)) { setDarkMode(false); return; }
           }
