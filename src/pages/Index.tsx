@@ -593,6 +593,37 @@ const Index = () => {
   const activeTabRef = useRef(activeTab);
   activeTabRef.current = activeTab;
 
+  // Mark active section from user interaction (click/tap/focus) for stable scoped voice control
+  useEffect(() => {
+    const markActiveFromTarget = (target: EventTarget | null) => {
+      const el = (target as HTMLElement | null)?.closest?.("[data-section][id]") as HTMLElement | null;
+      if (el?.id) sectionNav.setActiveSection(el.id);
+    };
+
+    const onPointerDown = (event: PointerEvent) => markActiveFromTarget(event.target);
+    const onFocusIn = (event: FocusEvent) => markActiveFromTarget(event.target);
+
+    document.addEventListener("pointerdown", onPointerDown, true);
+    document.addEventListener("focusin", onFocusIn, true);
+
+    return () => {
+      document.removeEventListener("pointerdown", onPointerDown, true);
+      document.removeEventListener("focusin", onFocusIn, true);
+    };
+  }, [sectionNav]);
+
+  // Keep active section heading visually marked while focused/active
+  useEffect(() => {
+    const sections = document.querySelectorAll<HTMLElement>("[data-section][id]");
+    sections.forEach((section) => {
+      if (section.id === sectionNav.activeSection) {
+        section.setAttribute("data-section-active", "true");
+      } else {
+        section.removeAttribute("data-section-active");
+      }
+    });
+  }, [sectionNav.activeSection, activeTab]);
+
   const [darkMode, setDarkMode] = useState(() => {
     const saved = localStorage.getItem("mampflogger-dark-mode");
     if (saved !== null) return saved === "true";
