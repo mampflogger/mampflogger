@@ -1062,7 +1062,7 @@ const Index = () => {
           <>
             <div id="section-neuer-eintrag" data-section className={`glass-card rounded-xl p-3 mb-3 ${hl === "section-neuer-eintrag" ? "section-card-highlight" : ""}`}>
               <div className="flex items-center justify-between mb-2">
-                <SectionHeading highlighted={hl === "section-neuer-eintrag"}>
+                <SectionHeading highlighted={hl === "section-neuer-eintrag"} className="mb-0">
                   {editingEntry ? "Eintrag bearbeiten" : "Neuer Eintrag"}
                 </SectionHeading>
                 <div className="flex items-center gap-1">
