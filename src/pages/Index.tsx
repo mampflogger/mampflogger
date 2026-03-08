@@ -253,6 +253,10 @@ const Index = () => {
       // Theme commands — context-aware: if in design tab, always apply theme
       else if (action === "theme:dark") setDarkMode(true);
       else if (action === "theme:light") setDarkMode(false);
+      else if (action === "theme:blue") setColorTheme("blue");
+      else if (action === "theme:yellow") setColorTheme("yellow");
+      else if (action === "theme:pink") setColorTheme("pink");
+      else if (action === "theme:green") setColorTheme("green");
       else if (action === "theme:orange") setColorTheme("orange");
       else if (action === "theme:teal") setColorTheme("teal");
       else if (action === "theme:red") setColorTheme("red");
