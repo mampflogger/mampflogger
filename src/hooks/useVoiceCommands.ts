@@ -156,6 +156,8 @@ const FUZZY_KEYWORD_MAP: [string, string][] = [
   ["heller modus", "theme:light"],
   ["kamera", "action:camera"],
   ["foto", "action:camera"],
+  ["mikro aus", "action:mic-off"],
+  ["mikrofon aus", "action:mic-off"],
 ];
 
 // Map section IDs to the page they belong to
