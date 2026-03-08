@@ -86,10 +86,43 @@ const NUTRIENT_VOICE_MAP: [RegExp, string, "vitamins" | "minerals"][] = [
   [/\bzink\b/i, "zink", "minerals"],
 ];
 
-function matchNutrientVoice(lower: string): { key: string; kind: "vitamins" | "minerals" } | null {
+function matchNutrientVoice(
+  lower: string,
+  kindFilter?: "vitamins" | "minerals",
+): { key: string; kind: "vitamins" | "minerals" } | null {
   for (const [pattern, key, kind] of NUTRIENT_VOICE_MAP) {
+    if (kindFilter && kind !== kindFilter) continue;
     if (pattern.test(lower)) return { key, kind };
   }
+  return null;
+}
+
+const ACTIVE_VITAMIN_SHORTCUTS: [RegExp, string][] = [
+  [/^\s*(?:vitamin\s*)?a(?:\s+bitte)?[.!?]?\s*$/i, "vitA"],
+  [/^\s*(?:vitamin\s*)?b\s*1(?:\s+bitte)?[.!?]?\s*$/i, "vitB1"],
+  [/^\s*(?:vitamin\s*)?b\s*2(?:\s+bitte)?[.!?]?\s*$/i, "vitB2"],
+  [/^\s*(?:vitamin\s*)?b\s*3(?:\s+bitte)?[.!?]?\s*$/i, "vitB3"],
+  [/^\s*(?:vitamin\s*)?b\s*5(?:\s+bitte)?[.!?]?\s*$/i, "vitB5"],
+  [/^\s*(?:vitamin\s*)?b\s*6(?:\s+bitte)?[.!?]?\s*$/i, "vitB6"],
+  [/^\s*(?:vitamin\s*)?b\s*7(?:\s+bitte)?[.!?]?\s*$/i, "vitB7"],
+  [/^\s*(?:vitamin\s*)?b\s*9(?:\s+bitte)?[.!?]?\s*$/i, "vitB9"],
+  [/^\s*(?:vitamin\s*)?b\s*12(?:\s+bitte)?[.!?]?\s*$/i, "vitB12"],
+  [/^\s*(?:vitamin\s*)?c(?:\s+bitte)?[.!?]?\s*$/i, "vitC"],
+  [/^\s*(?:vitamin\s*)?d(?:\s+bitte)?[.!?]?\s*$/i, "vitD"],
+  [/^\s*(?:vitamin\s*)?e(?:\s+bitte)?[.!?]?\s*$/i, "vitE"],
+  [/^\s*(?:vitamin\s*)?k(?:\s+bitte)?[.!?]?\s*$/i, "vitK"],
+];
+
+function matchActiveVitaminShortcut(lower: string): string | null {
+  for (const [pattern, key] of ACTIVE_VITAMIN_SHORTCUTS) {
+    if (pattern.test(lower)) return key;
+  }
+  return null;
+}
+
+function getNutrientKindForSection(sectionId: string | null): "vitamins" | "minerals" | null {
+  if (sectionId === "section-vitamine-7-tage") return "vitamins";
+  if (sectionId === "section-mineralstoffe-7-tage") return "minerals";
   return null;
 }
 
@@ -135,6 +168,8 @@ const Index = () => {
   const profileVoiceRef = useRef<((transcript: string, isInterim: boolean) => void) | undefined>();
   const activityVoiceCaptureUntilRef = useRef(0);
   const sectionNav = useSectionNavigation();
+  const activeSectionRef = useRef<string | null>(null);
+  activeSectionRef.current = sectionNav.activeSection;
 
   // Refs for use inside callbacks
   const settingsOpenRef = useRef(false);
@@ -340,6 +375,15 @@ const Index = () => {
         }
       }
       else if (action === "field:next" || action === "field:prev" || action === "field:clear" || action === "field:open-dropdown" || action === "field:close-dropdown") {
+        // Weekly nutrient scopes: close currently active nutrient info panel
+        if (!settingsOpenRef.current && action === "field:close-dropdown" && activeTabRef.current === "weekly") {
+          const activeNutrientKind = getNutrientKindForSection(activeSectionRef.current);
+          if (activeNutrientKind) {
+            window.dispatchEvent(new CustomEvent("mampflogger:nutrient-info", { detail: { key: "__close__", kind: activeNutrientKind } }));
+            return;
+          }
+        }
+
         // If settings is open, route dropdown commands to settings
         if (settingsOpenRef.current) {
           if (action === "field:open-dropdown") { setSettingsVoiceAction("open-dropdown"); return; }
@@ -501,18 +545,41 @@ const Index = () => {
       }
 
       // Nutrient info voice commands (weekly tab only)
-      if (!isInterim && activeTabRef.current === "weekly") {
+      if (activeTabRef.current === "weekly") {
         const lower = transcript.toLowerCase();
-        const nutrientMatch = matchNutrientVoice(lower);
-        if (nutrientMatch) {
-          window.dispatchEvent(new CustomEvent("mampflogger:nutrient-info", { detail: nutrientMatch }));
-          return;
-        }
-        // Close nutrient info
-        if (/\b(schließen|schliessen|zumachen|zuklappen)\b/i.test(lower)) {
-          window.dispatchEvent(new CustomEvent("mampflogger:nutrient-info", { detail: { key: "__close__", kind: "vitamins" } }));
-          window.dispatchEvent(new CustomEvent("mampflogger:nutrient-info", { detail: { key: "__close__", kind: "minerals" } }));
-          return;
+        const activeNutrientKind = getNutrientKindForSection(activeSectionRef.current);
+
+        // While a nutrient section is active, keep routing stable and ignore interim spillover.
+        if (activeNutrientKind && isInterim) return;
+
+        if (!isInterim) {
+          if (activeNutrientKind === "vitamins") {
+            const shortcutKey = matchActiveVitaminShortcut(lower);
+            if (shortcutKey) {
+              window.dispatchEvent(new CustomEvent("mampflogger:nutrient-info", { detail: { key: shortcutKey, kind: "vitamins" } }));
+              return;
+            }
+          }
+
+          const nutrientMatch = matchNutrientVoice(lower, activeNutrientKind ?? undefined);
+          if (nutrientMatch) {
+            window.dispatchEvent(new CustomEvent("mampflogger:nutrient-info", { detail: nutrientMatch }));
+            return;
+          }
+
+          // Close nutrient info (scope-aware when section is focused)
+          if (/\b(schließen|schliessen|zumachen|zuklappen)\b/i.test(lower)) {
+            if (activeNutrientKind) {
+              window.dispatchEvent(new CustomEvent("mampflogger:nutrient-info", { detail: { key: "__close__", kind: activeNutrientKind } }));
+            } else {
+              window.dispatchEvent(new CustomEvent("mampflogger:nutrient-info", { detail: { key: "__close__", kind: "vitamins" } }));
+              window.dispatchEvent(new CustomEvent("mampflogger:nutrient-info", { detail: { key: "__close__", kind: "minerals" } }));
+            }
+            return;
+          }
+
+          // In active nutrient scope, do not leak to neighbouring sections.
+          if (activeNutrientKind) return;
         }
       }
 
@@ -534,6 +601,37 @@ const Index = () => {
   // Keep a ref to activeTab for use in callbacks
   const activeTabRef = useRef(activeTab);
   activeTabRef.current = activeTab;
+
+  // Mark active section from user interaction (click/tap/focus) for stable scoped voice control
+  useEffect(() => {
+    const markActiveFromTarget = (target: EventTarget | null) => {
+      const el = (target as HTMLElement | null)?.closest?.("[data-section][id]") as HTMLElement | null;
+      if (el?.id) sectionNav.setActiveSection(el.id);
+    };
+
+    const onPointerDown = (event: PointerEvent) => markActiveFromTarget(event.target);
+    const onFocusIn = (event: FocusEvent) => markActiveFromTarget(event.target);
+
+    document.addEventListener("pointerdown", onPointerDown, true);
+    document.addEventListener("focusin", onFocusIn, true);
+
+    return () => {
+      document.removeEventListener("pointerdown", onPointerDown, true);
+      document.removeEventListener("focusin", onFocusIn, true);
+    };
+  }, [sectionNav.setActiveSection]);
+
+  // Keep active section heading visually marked while focused/active
+  useEffect(() => {
+    const sections = document.querySelectorAll<HTMLElement>("[data-section][id]");
+    sections.forEach((section) => {
+      if (section.id === sectionNav.activeSection) {
+        section.setAttribute("data-section-active", "true");
+      } else {
+        section.removeAttribute("data-section-active");
+      }
+    });
+  }, [sectionNav.activeSection, activeTab]);
 
   const [darkMode, setDarkMode] = useState(() => {
     const saved = localStorage.getItem("mampflogger-dark-mode");
