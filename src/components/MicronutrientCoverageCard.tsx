@@ -77,6 +77,7 @@ const MicronutrientCoverageCard = ({
     const handler = (e: Event) => {
       const detail = (e as CustomEvent).detail as { key: string; kind: string } | undefined;
       if (!detail || detail.kind !== kind) return;
+      if (detail.key === "__close__") { setExpandedKey(null); return; }
       setExpandedKey((prev) => (prev === detail.key ? null : detail.key));
     };
     window.addEventListener("mampflogger:nutrient-info", handler);
