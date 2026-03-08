@@ -63,6 +63,13 @@ const Index = () => {
   const [startupProfilePrompt, setStartupProfilePrompt] = useState(false);
    const [activityFocusRequestId, setActivityFocusRequestId] = useState<number | undefined>(undefined);
   const [dateFocused, setDateFocused] = useState(false);
+  const [highlightedTab, setHighlightedTab] = useState<string | null>(null);
+  const highlightTabTimerRef = useRef<ReturnType<typeof setTimeout>>();
+  const flashTab = useCallback((tab: string) => {
+    if (highlightTabTimerRef.current) clearTimeout(highlightTabTimerRef.current);
+    setHighlightedTab(tab);
+    highlightTabTimerRef.current = setTimeout(() => setHighlightedTab(null), 1500);
+  }, []);
   const dateFocusedRef = useRef(false);
   const nutritionVoiceRef = useRef<((transcript: string, isInterim: boolean) => void) | undefined>();
   const recipeVoiceRef = useRef<((transcript: string, isInterim: boolean) => void) | undefined>();
