@@ -156,7 +156,7 @@ const HelpDialog = ({ open, onOpenChange }: HelpDialogProps) => {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="flex flex-col overflow-hidden">
+      <DialogContent className="flex flex-col overflow-hidden pt-[calc(env(safe-area-inset-top)+1.5rem)]">
         {/* Fixed top area: header + tiles */}
         <div className="flex-shrink-0">
           <DialogHeader>
