@@ -1005,7 +1005,7 @@ const Index = () => {
                 variant="ghost"
                 size="icon"
                 className="h-8 w-8"
-                onClick={() => {/* TODO: Hilfe */}}
+                onClick={() => setHelpOpen(true)}
                 title="Hilfe"
               >
                 <HelpCircle className="w-4 h-4" />
