@@ -761,6 +761,7 @@ const Index = () => {
                 onMicToggle={voiceCommands.toggle}
                 voiceAction={settingsVoiceAction}
                 onVoiceActionHandled={() => setSettingsVoiceAction(null)}
+                highlightedTab={highlightedTab === "settings"}
               />
               <Button
                 variant="ghost"
