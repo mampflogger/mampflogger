@@ -99,6 +99,7 @@ const COMMANDS: VoiceCommand[] = [
   { patterns: [/\bescape\b/i], action: "field:close-dropdown" },
 
   // Actions
+  { patterns: [/\bmikro\s*aus\b/i, /\bmikrofon\s*aus\b/i, /\bmic\s*off\b/i], action: "action:mic-off" },
   { patterns: [/\bkamera\b/i, /\bfoto\b/i, /\bphoto\b/i, /\bbild\b/i], action: "action:camera" },
 ];
 
@@ -155,6 +156,8 @@ const FUZZY_KEYWORD_MAP: [string, string][] = [
   ["heller modus", "theme:light"],
   ["kamera", "action:camera"],
   ["foto", "action:camera"],
+  ["mikro aus", "action:mic-off"],
+  ["mikrofon aus", "action:mic-off"],
 ];
 
 // Map section IDs to the page they belong to

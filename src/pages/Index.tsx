@@ -206,6 +206,10 @@ const Index = () => {
           setSettingsVoiceAction("recipe-search");
         }
       }
+      else if (action === "action:mic-off") {
+        voiceCommands.stop();
+        return;
+      }
       else if (action === "action:camera") {
         if (settingsOpenRef.current && settingsTabRef.current === "recipes") {
           setSettingsVoiceAction("recipe-photo");
