@@ -51,10 +51,19 @@ const HELP_TOPICS: Record<HelpTab, HelpTopic[]> = {
   ],
 };
 
+interface FaqItem {
+  question: string;
+  answer: string;
+}
+
+const FAQ_ITEMS: FaqItem[] = [
+  { question: "Platzhalter-Frage 1?", answer: "Hier kommt die Antwort hin." },
+];
+
 const HelpContent = () => {
   const [activeCategory, setActiveCategory] = useState<HelpTab>("eingabe");
   const [openTopic, setOpenTopic] = useState<string | null>(null);
-
+  const [openFaq, setOpenFaq] = useState<string | null>(null);
   const topics = HELP_TOPICS[activeCategory];
 
   return (
