@@ -29,7 +29,7 @@ import FastingAnalysis from "@/components/FastingAnalysis";
 import SectionHeading from "@/components/SectionHeading";
 
 import SettingsDialog, { ColorTheme } from "@/components/SettingsDialog";
-import { ChevronLeft, ChevronRight, BarChart3, List, Mic, MicOff } from "lucide-react";
+import { ChevronLeft, ChevronRight, BarChart3, List, Mic, MicOff, HelpCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useVoiceCommands, SECTION_PAGE_MAP, SECTION_SETTINGS_TAB } from "@/hooks/useVoiceCommands";
 import { useSectionNavigation } from "@/hooks/useSectionNavigation";
