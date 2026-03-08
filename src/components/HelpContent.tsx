@@ -20,7 +20,7 @@ const HELP_TABS: { id: HelpTab; label: string }[] = [
 const HELP_TOPICS: Record<HelpTab, HelpTopic[]> = {
   eingabe: [
     { label: "Neuer Eintrag", description: "Hier gibst du ein neues Lebensmittel ein. Wähle die Uhrzeit, tippe den Namen des Lebensmittels und gib die Menge in Gramm oder Milliliter an. Du kannst auch das Kamera-Symbol nutzen, um ein Foto deiner Mahlzeit zu machen – die App erkennt automatisch, was auf dem Teller liegt." },
-    { label: "Makro Nährstoffverteilung", description: "Zeigt dir die prozentuale Verteilung von Eiweiß, Fett und Kohlenhydraten für den aktuellen Tag als Balkendiagramm an. So siehst du auf einen Blick, ob deine Makros im gewünschten Verhältnis liegen." },
+    { label: "Makro Nährstoffverteilung", description: "Zeigt dir die prozentuale Verteilung von Eiweiß, Fett, Kohlenhydraten und Ballaststoffen für den aktuellen Tag als Balkendiagramm an. So siehst du auf einen Blick, ob deine Makros im gewünschten Verhältnis liegen." },
     { label: "Tagesübersicht", description: "Listet alle Lebensmittel auf, die du heute eingetragen hast – inklusive Kalorien und Makronährstoffe. Du kannst Einträge bearbeiten oder löschen und siehst die Gesamtsumme unten." },
     { label: "Kalorienaufnahme 24 Stunden", description: "Ein Diagramm, das deine Kalorienaufnahme über die letzten 24 Stunden als Zeitverlauf darstellt. Hilft dir zu erkennen, wann du gegessen hast und wie sich die Kalorien über den Tag verteilen." },
     { label: "Fastenanalyse", description: "Analysiert deine Essenszeiten und zeigt dir, wie lange deine Fastenperioden sind. Besonders nützlich, wenn du Intervallfasten (z. B. 16:8) praktizierst." },
@@ -32,7 +32,7 @@ const HELP_TOPICS: Record<HelpTab, HelpTopic[]> = {
     { label: "Übersicht", description: "Zeigt dir die wichtigsten Kennzahlen der letzten 7 Tage auf einen Blick: Durchschnittsdefizit, durchschnittliche Kalorienaufnahme und wie viele Tage du noch bis zu deinem Zielgewicht brauchst." },
     { label: "Kalorien pro Tag", description: "Ein Balkendiagramm mit deiner täglichen Kalorienaufnahme der letzten 7 Tage. So erkennst du Trends und kannst Tage mit besonders hoher oder niedriger Aufnahme identifizieren." },
     { label: "Defizit pro Tag", description: "Zeigt dein tägliches Kaloriendefizit (oder -überschuss) als Balkendiagramm. Grüne Balken = Defizit (gut zum Abnehmen), rote Balken = Überschuss." },
-    { label: "Makros pro Tag", description: "Gestapeltes Balkendiagramm, das dir für jeden der letzten 7 Tage die Verteilung von Eiweiß, Fett und Kohlenhydraten in Gramm zeigt." },
+    { label: "Makros pro Tag", description: "Gestapeltes Balkendiagramm, das dir für jeden der letzten 7 Tage die Verteilung von Eiweiß, Fett, Kohlenhydraten und Ballaststoffen in Gramm zeigt." },
     { label: "Makro-Verteilung (7 Tage)", description: "Zeigt die durchschnittliche prozentuale Makronährstoffverteilung der letzten 7 Tage. Hilfreich, um zu prüfen, ob du langfristig im gewünschten Verhältnis isst." },
     { label: "KI-Coach", description: "Der KI-Ernährungscoach analysiert dein Essverhalten der letzten 7 Tage und gibt dir personalisierte Tipps und Empfehlungen. Drücke auf 'Analysieren', um eine neue Auswertung zu starten." },
   ],
