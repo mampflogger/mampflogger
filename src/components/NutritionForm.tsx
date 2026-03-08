@@ -612,6 +612,7 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
           {showSuggestions && dropdownRect && createPortal(
             <ul
               ref={listRef}
+              data-voice-dropdown-active
               style={{
                 position: "fixed",
                 top: dropdownRect.bottom + 4,
