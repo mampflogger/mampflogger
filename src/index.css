@@ -54,49 +54,49 @@
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
-  /* Yellow theme */
-  .theme-yellow {
-    --primary: 45 80% 50%;
+  /* Türkis theme */
+  .theme-teal {
+    --primary: 180 65% 42%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 45 35% 90%;
-    --secondary-foreground: 45 30% 15%;
-    --accent: 45 25% 94%;
-    --accent-foreground: 45 55% 30%;
-    --ring: 45 80% 50%;
-    --background: 45 25% 96%;
-    --border: 45 20% 86%;
-    --input: 45 20% 86%;
-    --muted: 45 20% 92%;
+    --secondary: 180 35% 90%;
+    --secondary-foreground: 180 30% 15%;
+    --accent: 180 25% 94%;
+    --accent-foreground: 180 55% 30%;
+    --ring: 180 65% 42%;
+    --background: 180 25% 96%;
+    --border: 180 20% 86%;
+    --input: 180 20% 86%;
+    --muted: 180 20% 92%;
   }
 
-  /* Blue theme */
-  .theme-blue {
-    --primary: 210 70% 50%;
+  /* Rot theme */
+  .theme-red {
+    --primary: 0 75% 50%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 210 35% 90%;
-    --secondary-foreground: 210 30% 15%;
-    --accent: 210 25% 94%;
-    --accent-foreground: 210 55% 30%;
-    --ring: 210 70% 50%;
-    --background: 210 25% 96%;
-    --border: 210 20% 86%;
-    --input: 210 20% 86%;
-    --muted: 210 20% 92%;
+    --secondary: 0 35% 90%;
+    --secondary-foreground: 0 30% 15%;
+    --accent: 0 25% 94%;
+    --accent-foreground: 0 55% 30%;
+    --ring: 0 75% 50%;
+    --background: 0 20% 96%;
+    --border: 0 15% 86%;
+    --input: 0 15% 86%;
+    --muted: 0 15% 92%;
   }
 
-  /* Pink theme */
-  .theme-pink {
-    --primary: 330 60% 55%;
+  /* Grau theme */
+  .theme-gray {
+    --primary: 220 10% 45%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 330 35% 90%;
-    --secondary-foreground: 330 30% 15%;
-    --accent: 330 25% 94%;
-    --accent-foreground: 330 55% 30%;
-    --ring: 330 60% 55%;
-    --background: 330 25% 96%;
-    --border: 330 20% 86%;
-    --input: 330 20% 86%;
-    --muted: 330 20% 92%;
+    --secondary: 220 8% 90%;
+    --secondary-foreground: 220 10% 15%;
+    --accent: 220 6% 94%;
+    --accent-foreground: 220 10% 30%;
+    --ring: 220 10% 45%;
+    --background: 220 8% 96%;
+    --border: 220 6% 86%;
+    --input: 220 6% 86%;
+    --muted: 220 6% 92%;
   }
 
   .dark {
