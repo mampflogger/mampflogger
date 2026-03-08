@@ -323,12 +323,14 @@ export function useVoiceCommands({ onCommand, onUnhandledSpeech }: UseVoiceComma
           }
         }
 
+        const scope = getVoiceCommandScope();
+
         // 1. Exact regex pattern matching (fast path)
         for (const cmd of COMMANDS) {
           for (const pattern of cmd.patterns) {
             if (pattern.test(lower)) {
               const action = typeof cmd.action === "function" ? cmd.action(lower) : cmd.action;
-              if (action) {
+              if (action && isActionAllowedInScope(action, scope)) {
                 onCommandRef.current(action);
                 return;
               }
@@ -336,14 +338,18 @@ export function useVoiceCommands({ onCommand, onUnhandledSpeech }: UseVoiceComma
           }
         }
 
-        // 2. Fuzzy fallback – tolerates dialect / imprecise speech
-        const keywords = FUZZY_KEYWORD_MAP.map(([kw]) => kw);
-        const { index, score } = bestFuzzyMatch(lower, keywords, 0.5);
-        if (index >= 0 && score >= 0.5) {
-          const action = FUZZY_KEYWORD_MAP[index][1];
-          console.debug(`[Voice] fuzzy match: "${lower}" → "${keywords[index]}" (${(score * 100).toFixed(0)}%) → ${action}`);
-          onCommandRef.current(action);
-          return;
+        // 2. Fuzzy fallback – only in global scope to avoid accidental tab/section jumps while typing
+        if (scope === "global") {
+          const keywords = FUZZY_KEYWORD_MAP.map(([kw]) => kw);
+          const { index, score } = bestFuzzyMatch(lower, keywords, 0.62);
+          if (index >= 0 && score >= 0.62) {
+            const action = FUZZY_KEYWORD_MAP[index][1];
+            if (isActionAllowedInScope(action, scope)) {
+              console.debug(`[Voice] fuzzy match: "${lower}" → "${keywords[index]}" (${(score * 100).toFixed(0)}%) → ${action}`);
+              onCommandRef.current(action);
+              return;
+            }
+          }
         }
       }
 
