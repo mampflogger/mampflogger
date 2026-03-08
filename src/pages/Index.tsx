@@ -432,6 +432,22 @@ const Index = () => {
         return; // Don't pass to food input when in settings
       }
 
+      // Nutrient info voice commands (weekly tab only)
+      if (!isInterim && activeTabRef.current === "weekly") {
+        const lower = transcript.toLowerCase();
+        const nutrientMatch = matchNutrientVoice(lower);
+        if (nutrientMatch) {
+          window.dispatchEvent(new CustomEvent("mampflogger:nutrient-info", { detail: nutrientMatch }));
+          return;
+        }
+        // Close nutrient info
+        if (/\b(schließen|schliessen|zumachen|zuklappen)\b/i.test(lower)) {
+          window.dispatchEvent(new CustomEvent("mampflogger:nutrient-info", { detail: { key: "__close__", kind: "vitamins" } }));
+          window.dispatchEvent(new CustomEvent("mampflogger:nutrient-info", { detail: { key: "__close__", kind: "minerals" } }));
+          return;
+        }
+      }
+
       const activeElement = document.activeElement as HTMLElement | null;
       const isActivityFocused = !!activeElement?.closest("#section-activity");
       const isNutritionFocused = !!activeElement?.closest("#section-neuer-eintrag");
