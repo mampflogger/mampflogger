@@ -980,8 +980,8 @@ const Index = () => {
                 onOpenToNewFoodHandled={() => setOpenNewFood(false)}
                 openToRecipes={openRecipes}
                 onOpenToRecipesHandled={() => setOpenRecipes(false)}
-                activeTab={activeTab}
-                onSetActiveTab={setActiveTab}
+                activeTab={activeTab === "help" ? "log" : activeTab}
+                onSetActiveTab={setActiveTab as (tab: "log" | "weekly") => void}
                 initialOpen={settingsParam === "profile" || startupProfilePrompt}
                 initialTab={settingsParam === "profile" || startupProfilePrompt ? "profile" : undefined}
                 selectedDate={selectedDate}
