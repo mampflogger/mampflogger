@@ -212,6 +212,17 @@ const SettingsDialog = ({
 
   const foodSearchRef = React.useRef<HTMLInputElement>(null);
   const [recipeVoiceIndex, setRecipeVoiceIndex] = useState<number | null>(null);
+  const [highlightedSettingsTab, setHighlightedSettingsTab] = useState<string | null>(null);
+  const highlightSettingsTimerRef = React.useRef<ReturnType<typeof setTimeout>>();
+
+  // Flash settings tab when opened via voice
+  useEffect(() => {
+    if (voiceOpenTab) {
+      if (highlightSettingsTimerRef.current) clearTimeout(highlightSettingsTimerRef.current);
+      setHighlightedSettingsTab(voiceOpenTab);
+      highlightSettingsTimerRef.current = setTimeout(() => setHighlightedSettingsTab(null), 1500);
+    }
+  }, [voiceOpenTab]);
 
   // State for individual food delete confirmation
   const [foodToDelete, setFoodToDelete] = useState<string | null>(null);
