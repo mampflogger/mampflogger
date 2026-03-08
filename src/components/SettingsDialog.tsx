@@ -128,6 +128,7 @@ const SettingsDialog = ({
   onOpenChange: onOpenChangeProp, onTabChange,
   isMicSupported, isMicListening, onMicToggle,
   voiceAction, onVoiceActionHandled,
+  highlightedTab,
 }: SettingsDialogProps) => {
   const [open, setOpen] = useState(initialOpen ?? false);
   const [tab, setTab] = useState<SettingsTab>(initialTab ?? "profile");
