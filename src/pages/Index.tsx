@@ -610,7 +610,7 @@ const Index = () => {
       document.removeEventListener("pointerdown", onPointerDown, true);
       document.removeEventListener("focusin", onFocusIn, true);
     };
-  }, [sectionNav]);
+  }, [sectionNav.setActiveSection]);
 
   // Keep active section heading visually marked while focused/active
   useEffect(() => {
