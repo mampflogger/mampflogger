@@ -146,9 +146,9 @@ const HelpDialog = ({ open, onOpenChange }: HelpDialogProps) => {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Hilfe</DialogTitle>
+          <DialogTitle>Hilfeseiten</DialogTitle>
           <DialogDescription>
-            Klicke an, zu welchem Stichwort du mehr Informationen brauchst.
+            Hier findest du mehr Informationen zu den einzelnen Funktionen. Bei welchem Thema brauchst du Hilfe?
           </DialogDescription>
         </DialogHeader>
 
