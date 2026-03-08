@@ -269,6 +269,7 @@ const LEGACY_FOOD_RENAMES: Record<string, string> = {
 
 const LEGACY_CATEGORY_RENAMES: Partial<Record<string, FoodCategory>> = {
   "Brot&Teigwaren": "Getreide und Teigwaren",
+  "Streetfood": "Fast Food",
 };
 
 const REMOVED_FOOD_NAMES = new Set([
