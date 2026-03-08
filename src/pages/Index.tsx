@@ -541,8 +541,8 @@ const Index = () => {
 
   useEffect(() => {
     const el = document.documentElement;
-    el.classList.remove("theme-yellow", "theme-blue", "theme-pink");
-    if (colorTheme !== "green") {
+    el.classList.remove("theme-teal", "theme-red", "theme-gray");
+    if (colorTheme !== "orange") {
       el.classList.add(`theme-${colorTheme}`);
     }
     localStorage.setItem("mampflogger-color-theme", colorTheme);
