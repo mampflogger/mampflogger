@@ -1004,8 +1004,8 @@ const Index = () => {
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-8 w-8"
-                onClick={() => setHelpOpen(true)}
+                className={`h-8 w-8 ${activeTab === "help" ? "ring-2 ring-primary bg-muted" : ""}`}
+                onClick={() => setActiveTab(activeTab === "help" ? "log" : "help")}
                 title="Hilfe"
               >
                 <HelpCircle className="w-4 h-4" />
