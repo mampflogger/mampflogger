@@ -256,6 +256,37 @@ interface StartVoiceOptions {
   silent?: boolean;
 }
 
+type VoiceCommandScope = "global" | "scoped-input";
+
+const SCOPED_INPUT_ALLOWED_PREFIXES = ["field:", "nav:"];
+const SCOPED_INPUT_ALLOWED_ACTIONS = new Set(["settings:open", "action:mic-off"]);
+
+function getVoiceCommandScope(): VoiceCommandScope {
+  const activeElement = document.activeElement as HTMLElement | null;
+  if (!activeElement) return "global";
+
+  const isTextEntryElement =
+    activeElement instanceof HTMLInputElement ||
+    activeElement instanceof HTMLTextAreaElement ||
+    activeElement.isContentEditable;
+
+  if (isTextEntryElement) return "scoped-input";
+
+  const isScopedContainerActive =
+    !!activeElement.closest('[data-voice-scope="manual-recipe"]') ||
+    !!activeElement.closest('[data-voice-scope="profile"]') ||
+    !!activeElement.closest("#section-neuer-eintrag") ||
+    !!activeElement.closest("#section-activity");
+
+  return isScopedContainerActive ? "scoped-input" : "global";
+}
+
+function isActionAllowedInScope(action: string, scope: VoiceCommandScope): boolean {
+  if (scope === "global") return true;
+  if (SCOPED_INPUT_ALLOWED_PREFIXES.some((prefix) => action.startsWith(prefix))) return true;
+  return SCOPED_INPUT_ALLOWED_ACTIONS.has(action);
+}
+
 export function useVoiceCommands({ onCommand, onUnhandledSpeech }: UseVoiceCommandsOptions) {
   const onCommandRef = useRef(onCommand);
   const onUnhandledRef = useRef(onUnhandledSpeech);
