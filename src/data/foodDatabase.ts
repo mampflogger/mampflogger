@@ -15,7 +15,7 @@ export const FOOD_CATEGORIES = [
   "Milchprodukte",
   "Süßwaren",
   "Fertiggerichte",
-  "Streetfood",
+  "Fast Food",
   "Gewürze",
   "Eigene",
   "Sonstiges",
@@ -191,7 +191,7 @@ export function guessCategory(name: string, aiCategory?: string): FoodCategory {
     [["apfel", "birne", "banane", "orange", "zitrone", "limette", "kiwi", "mango", "ananas", "erdbeere", "himbeere", "blaubeere", "heidelbeere", "kirsche", "traube", "melone", "pflaume", "pfirsich", "aprikose", "obst", "beere"], "Obst"],
     [["joghurt", "quark", "milch", "sahne", "rahm", "skyr", "buttermilch", "kefir", "schmand", "crème fraîche", "molke"], "Milchprodukte"],
     [["schokolade", "gummibärchen", "bonbon", "keks", "kuchen", "eis", "zucker", "honig", "marmelade", "nutella", "süß"], "Süßwaren"],
-    [["döner", "kebab", "burger", "hot dog", "burrito", "taco", "wrap", "falafel", "gyros pita", "pommes", "currywurst", "sandwich to go"], "Streetfood"],
+    [["döner", "kebab", "burger", "hot dog", "burrito", "taco", "wrap", "falafel", "gyros pita", "pommes", "currywurst", "sandwich to go", "big mac", "tasty", "mcflurry", "mcnuggets", "crispy"], "Fast Food"],
     [["salz", "pfeffer", "curry", "paprikapulver", "zimt", "kurkuma", "oregano", "basilikum", "thymian", "rosmarin", "kreuzkümmel", "muskat", "chili", "gewürz", "würzmischung"], "Gewürze"],
     [["tiefkühlpizza", "fertiggericht", "pizza tk", "lasagne tk", "tk-pizza", "mikrowelle", "fertig-", "convenience", "tk ", "tiefkühl", "asia-pfanne", "bami goreng", "nasi goreng", "cordon bleu", "cevapcici", "kroketten", "kartoffelpuffer", "chicken wings", "wedges", "taquitos", "backfisch", "rösti", "frikadellen", "cannelloni", "mac and cheese"], "Fertiggerichte"],
   ];
