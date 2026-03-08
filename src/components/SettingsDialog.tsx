@@ -1214,7 +1214,7 @@ const SettingsDialog = ({
             </div>
 
             {/* Goals Card */}
-            <div id="section-ziele" className="glass-card rounded-xl p-3 space-y-2">
+            <div id="section-ziele" className={`glass-card rounded-xl p-3 space-y-2 ${highlightedSettingsSection === "section-ziele" ? "section-card-highlight" : ""}`}>
               <h2 className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Ziele</h2>
               <div className="grid grid-cols-2 gap-2">
                 <div>
