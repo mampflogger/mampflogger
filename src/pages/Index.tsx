@@ -411,6 +411,9 @@ const Index = () => {
         if (currentTab === "recipes") {
           recipeVoiceRef.current?.(transcript, isInterim);
         }
+        if (currentTab === "profile") {
+          profileVoiceRef.current?.(transcript, isInterim);
+        }
         return; // Don't pass to food input when in settings
       }
 
