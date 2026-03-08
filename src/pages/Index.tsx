@@ -292,11 +292,14 @@ const Index = () => {
         const activeElement = document.activeElement as HTMLElement | null;
         const scope = activeElement?.closest('[data-voice-scope="manual-recipe"]')
           ? "manual-recipe"
-          : activeElement?.closest("#section-neuer-eintrag")
-            ? "nutrition"
-            : activeElement?.closest("#section-activity")
-              ? "activity"
-              : (settingsOpenRef.current && settingsTabRef.current === "recipes" ? "manual-recipe" : null);
+          : activeElement?.closest('[data-voice-scope="profile"]')
+            ? "profile"
+            : activeElement?.closest("#section-neuer-eintrag")
+              ? "nutrition"
+              : activeElement?.closest("#section-activity")
+                ? "activity"
+                : (settingsOpenRef.current && settingsTabRef.current === "recipes" ? "manual-recipe"
+                  : settingsOpenRef.current && settingsTabRef.current === "profile" ? "profile" : null);
 
         if (scope) {
           window.dispatchEvent(new CustomEvent("mampflogger:field-command", { detail: { action, scope } }));
