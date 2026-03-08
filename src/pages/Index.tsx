@@ -536,18 +536,41 @@ const Index = () => {
       }
 
       // Nutrient info voice commands (weekly tab only)
-      if (!isInterim && activeTabRef.current === "weekly") {
+      if (activeTabRef.current === "weekly") {
         const lower = transcript.toLowerCase();
-        const nutrientMatch = matchNutrientVoice(lower);
-        if (nutrientMatch) {
-          window.dispatchEvent(new CustomEvent("mampflogger:nutrient-info", { detail: nutrientMatch }));
-          return;
-        }
-        // Close nutrient info
-        if (/\b(schließen|schliessen|zumachen|zuklappen)\b/i.test(lower)) {
-          window.dispatchEvent(new CustomEvent("mampflogger:nutrient-info", { detail: { key: "__close__", kind: "vitamins" } }));
-          window.dispatchEvent(new CustomEvent("mampflogger:nutrient-info", { detail: { key: "__close__", kind: "minerals" } }));
-          return;
+        const activeNutrientKind = getNutrientKindForSection(activeSectionRef.current);
+
+        // While a nutrient section is active, keep routing stable and ignore interim spillover.
+        if (activeNutrientKind && isInterim) return;
+
+        if (!isInterim) {
+          if (activeNutrientKind === "vitamins") {
+            const shortcutKey = matchActiveVitaminShortcut(lower);
+            if (shortcutKey) {
+              window.dispatchEvent(new CustomEvent("mampflogger:nutrient-info", { detail: { key: shortcutKey, kind: "vitamins" } }));
+              return;
+            }
+          }
+
+          const nutrientMatch = matchNutrientVoice(lower, activeNutrientKind ?? undefined);
+          if (nutrientMatch) {
+            window.dispatchEvent(new CustomEvent("mampflogger:nutrient-info", { detail: nutrientMatch }));
+            return;
+          }
+
+          // Close nutrient info (scope-aware when section is focused)
+          if (/\b(schließen|schliessen|zumachen|zuklappen)\b/i.test(lower)) {
+            if (activeNutrientKind) {
+              window.dispatchEvent(new CustomEvent("mampflogger:nutrient-info", { detail: { key: "__close__", kind: activeNutrientKind } }));
+            } else {
+              window.dispatchEvent(new CustomEvent("mampflogger:nutrient-info", { detail: { key: "__close__", kind: "vitamins" } }));
+              window.dispatchEvent(new CustomEvent("mampflogger:nutrient-info", { detail: { key: "__close__", kind: "minerals" } }));
+            }
+            return;
+          }
+
+          // In active nutrient scope, do not leak to neighbouring sections.
+          if (activeNutrientKind) return;
         }
       }
 
