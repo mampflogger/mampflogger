@@ -1064,7 +1064,7 @@ const Index = () => {
               <div className="absolute top-2.5 right-2.5 flex items-center gap-1">
                 <PhotoToLog selectedDate={selectedDate} onAddEntries={handleAddMultiple} />
               </div>
-              <SectionHeading highlighted={hl === "section-neuer-eintrag"} className="mb-2">
+              <SectionHeading highlighted={hl === "section-neuer-eintrag"} className="mb-4">
                 {editingEntry ? "Eintrag bearbeiten" : "Neuer Eintrag"}
               </SectionHeading>
               <NutritionForm
