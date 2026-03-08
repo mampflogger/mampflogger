@@ -531,7 +531,7 @@ const Index = () => {
     return false;
   });
   const [colorTheme, setColorTheme] = useState<ColorTheme>(() => {
-    return (localStorage.getItem("mampflogger-color-theme") as ColorTheme) || "orange";
+    return (localStorage.getItem("mampflogger-color-theme") as ColorTheme) || "yellow";
   });
 
   useEffect(() => {
