@@ -107,7 +107,7 @@ const Index = () => {
   const voiceCommands = useVoiceCommands({
     onCommand: useCallback((action: string) => {
       // Deactivate date focus when a non-date command is used
-      if (action !== "action:date-focus" && action !== "action:date-today" && action !== "field:next" && action !== "field:prev") {
+      if (action !== "action:date-focus" && action !== "action:date-today") {
         if (dateFocusedRef.current) {
           setDateFocused(false);
           dateFocusedRef.current = false;
