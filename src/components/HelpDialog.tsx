@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { Badge } from "@/components/ui/badge";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { ChevronDown } from "lucide-react";
 
@@ -9,11 +8,12 @@ interface HelpTopic {
   description: string;
 }
 
-type HelpTab = "eingabe" | "statistik" | "einstellungen";
+type HelpTab = "eingabe" | "statistik" | "mikro" | "einstellungen";
 
 const HELP_TABS: { id: HelpTab; label: string }[] = [
   { id: "eingabe", label: "Eingabemaske" },
   { id: "statistik", label: "Statistik" },
+  { id: "mikro", label: "Mikronährstoffe" },
   { id: "einstellungen", label: "Einstellungen" },
 ];
 
@@ -87,6 +87,13 @@ const HELP_TOPICS: Record<HelpTab, HelpTopic[]> = {
         "Zeigt die durchschnittliche prozentuale Makronährstoffverteilung der letzten 7 Tage. Hilfreich, um zu prüfen, ob du langfristig im gewünschten Verhältnis isst.",
     },
     {
+      label: "KI-Coach",
+      description:
+        "Der KI-Ernährungscoach analysiert dein Essverhalten der letzten 7 Tage und gibt dir personalisierte Tipps und Empfehlungen. Drücke auf 'Analysieren', um eine neue Auswertung zu starten.",
+    },
+  ],
+  mikro: [
+    {
       label: "Vitamine (Ø 7 Tage)",
       description:
         "Zeigt deine geschätzte Vitaminabdeckung basierend auf den eingetragenen Lebensmitteln. Jeder Balken zeigt den Prozentsatz deines Tagesbedarfs. Tippe auf ein Vitamin für Details und Lebensmitteltipps.",
@@ -95,11 +102,6 @@ const HELP_TOPICS: Record<HelpTab, HelpTopic[]> = {
       label: "Mineralstoffe & Spurenelemente (Ø 7 Tage)",
       description:
         "Wie bei den Vitaminen, nur für Mineralstoffe und Spurenelemente. Zeigt dir, wo du gut versorgt bist und wo eventuell Lücken bestehen.",
-    },
-    {
-      label: "KI-Coach",
-      description:
-        "Der KI-Ernährungscoach analysiert dein Essverhalten der letzten 7 Tage und gibt dir personalisierte Tipps und Empfehlungen. Drücke auf 'Analysieren', um eine neue Auswertung zu starten.",
     },
   ],
   einstellungen: [
@@ -144,7 +146,7 @@ const HelpDialog = ({ open, onOpenChange }: HelpDialogProps) => {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="overflow-y-auto">
+      <DialogContent className="overflow-y-auto min-h-[85vh] md:min-h-[70vh]">
         <DialogHeader>
           <DialogTitle>Hilfeseiten</DialogTitle>
           <DialogDescription>
@@ -152,21 +154,27 @@ const HelpDialog = ({ open, onOpenChange }: HelpDialogProps) => {
           </DialogDescription>
         </DialogHeader>
 
-        {/* Tab pills */}
-        <div className="flex flex-wrap gap-2 mt-2">
-          {HELP_TABS.map((tab) => (
-            <Badge
-              key={tab.id}
-              variant={activeTab === tab.id ? "default" : "outline"}
-              className="cursor-pointer select-none text-xs px-3 py-1"
-              onClick={() => {
-                setActiveTab(tab.id);
-                setOpenTopic(null);
-              }}
-            >
-              {tab.label}
-            </Badge>
-          ))}
+        {/* Tab tiles – vitamin-style grid */}
+        <div className="grid grid-cols-2 gap-2 mt-2">
+          {HELP_TABS.map((tab) => {
+            const isActive = activeTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => {
+                  setActiveTab(tab.id);
+                  setOpenTopic(null);
+                }}
+                className={`rounded-xl px-3 py-2.5 text-xs font-semibold text-center transition-colors border ${
+                  isActive
+                    ? "bg-primary text-primary-foreground border-primary"
+                    : "bg-accent/50 text-foreground border-border hover:bg-accent"
+                }`}
+              >
+                {tab.label}
+              </button>
+            );
+          })}
         </div>
 
         {/* Topic badges with collapsible descriptions */}
@@ -180,18 +188,21 @@ const HelpDialog = ({ open, onOpenChange }: HelpDialogProps) => {
                 onOpenChange={(o) => setOpenTopic(o ? topic.label : null)}
               >
                 <CollapsibleTrigger asChild>
-                  <button className="flex items-center gap-2 w-full text-left group">
-                    <Badge
-                      variant="secondary"
-                      className="cursor-pointer select-none text-xs px-3 py-1.5 transition-colors group-hover:bg-primary group-hover:text-primary-foreground"
+                  <button className="flex items-center w-full text-left group">
+                    <span
+                      className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors cursor-pointer select-none ${
+                        isOpen
+                          ? "bg-primary text-primary-foreground border-primary"
+                          : "bg-secondary text-secondary-foreground border-transparent hover:bg-primary hover:text-primary-foreground"
+                      }`}
                     >
                       {topic.label}
-                    </Badge>
-                    <ChevronDown
-                      className={`w-3.5 h-3.5 text-muted-foreground transition-transform duration-200 ${
-                        isOpen ? "rotate-180" : ""
-                      }`}
-                    />
+                      <ChevronDown
+                        className={`w-3 h-3 transition-transform duration-200 ${
+                          isOpen ? "rotate-180" : ""
+                        }`}
+                      />
+                    </span>
                   </button>
                 </CollapsibleTrigger>
                 <CollapsibleContent>
