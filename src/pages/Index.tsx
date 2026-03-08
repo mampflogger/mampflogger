@@ -770,6 +770,7 @@ const Index = () => {
                 selectedDate={selectedDate}
                 onAddEntry={handleAdd}
                 recipeVoiceInputRef={recipeVoiceRef}
+                profileVoiceInputRef={profileVoiceRef}
                 voiceOpenTab={settingsVoiceTab}
                 onVoiceOpenTabHandled={() => setSettingsVoiceTab(null)}
                 voiceCloseRequest={settingsCloseRequest}
