@@ -332,6 +332,10 @@ const SettingsDialog = ({
       }
     } else if (voiceAction.startsWith("scroll:")) {
       const id = voiceAction.replace("scroll:", "");
+      setHighlightedSettingsTab(null); // clear tab highlight
+      setHighlightedSettingsSection(id);
+      if (highlightSettingsSectionTimerRef.current) clearTimeout(highlightSettingsSectionTimerRef.current);
+      highlightSettingsSectionTimerRef.current = setTimeout(() => setHighlightedSettingsSection(null), 3000);
       setTimeout(() => {
         const el = document.getElementById(id);
         el?.scrollIntoView({ behavior: "smooth", block: "start" });
