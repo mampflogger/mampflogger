@@ -212,6 +212,17 @@ const SettingsDialog = ({
 
   const foodSearchRef = React.useRef<HTMLInputElement>(null);
   const [recipeVoiceIndex, setRecipeVoiceIndex] = useState<number | null>(null);
+  const [highlightedSettingsTab, setHighlightedSettingsTab] = useState<string | null>(null);
+  const highlightSettingsTimerRef = React.useRef<ReturnType<typeof setTimeout>>();
+
+  // Flash settings tab when opened via voice
+  useEffect(() => {
+    if (voiceOpenTab) {
+      if (highlightSettingsTimerRef.current) clearTimeout(highlightSettingsTimerRef.current);
+      setHighlightedSettingsTab(voiceOpenTab);
+      highlightSettingsTimerRef.current = setTimeout(() => setHighlightedSettingsTab(null), 1500);
+    }
+  }, [voiceOpenTab]);
 
   // State for individual food delete confirmation
   const [foodToDelete, setFoodToDelete] = useState<string | null>(null);
@@ -1133,7 +1144,7 @@ const SettingsDialog = ({
                         tab === t.id
                           ? "bg-background text-foreground shadow-sm"
                           : "text-muted-foreground hover:text-foreground hover:bg-background/50"
-                      }`}
+                      } ${highlightedSettingsTab === t.id ? "section-card-highlight" : ""}`}
                     >
                       {t.icon}
                       <span className="w-full truncate text-center">{t.label}</span>
