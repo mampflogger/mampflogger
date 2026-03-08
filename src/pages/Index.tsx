@@ -245,22 +245,22 @@ const Index = () => {
         return;
       }
 
-      // Nutrient-specific voice commands: navigate to section + open info tile
+      // Nutrient-specific voice commands: only allowed on weekly tab
       if (action.startsWith("nutrient:")) {
+        if (activeTabRef.current !== "weekly") {
+          return;
+        }
+
         const parts = action.split(":");
         const nutrientKey = parts[1];
         const nutrientKind = parts[2] as "vitamins" | "minerals";
         const sectionId = nutrientKind === "vitamins" ? "section-vitamine-7-tage" : "section-mineralstoffe-7-tage";
 
         closeSettingsAndDo(() => {
-          const needsTabSwitch = activeTabRef.current !== "weekly";
-          if (needsTabSwitch) setActiveTab("weekly");
+          sectionNav.scrollToSection(sectionId);
           setTimeout(() => {
-            sectionNav.scrollToSection(sectionId);
-            setTimeout(() => {
-              window.dispatchEvent(new CustomEvent("mampflogger:nutrient-info", { detail: { key: nutrientKey, kind: nutrientKind } }));
-            }, 300);
-          }, needsTabSwitch ? 200 : 50);
+            window.dispatchEvent(new CustomEvent("mampflogger:nutrient-info", { detail: { key: nutrientKey, kind: nutrientKind } }));
+          }, 300);
         });
         return;
       }
