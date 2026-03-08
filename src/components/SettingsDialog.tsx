@@ -1144,7 +1144,7 @@ const SettingsDialog = ({
                         tab === t.id
                           ? "bg-background text-foreground shadow-sm"
                           : "text-muted-foreground hover:text-foreground hover:bg-background/50"
-                      }`}
+                      } ${highlightedSettingsTab === t.id ? "section-card-highlight" : ""}`}
                     >
                       {t.icon}
                       <span className="w-full truncate text-center">{t.label}</span>
