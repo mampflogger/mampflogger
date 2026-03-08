@@ -198,6 +198,15 @@ const Index = () => {
       else if (action === "theme:yellow") setColorTheme("yellow");
       else if (action === "theme:pink") setColorTheme("pink");
       else if (action === "theme:green") setColorTheme("green");
+      // Context-sensitive bare color words — only on design tab
+      else if (action.startsWith("ctx-color:")) {
+        if (settingsOpenRef.current && settingsTabRef.current === "design") {
+          const color = action.replace("ctx-color:", "") as "blue" | "yellow" | "pink" | "green";
+          setColorTheme(color);
+        }
+        // Otherwise ignore — don't let it fall through to fuzzy matching
+        return;
+      }
       else if (action === "action:recipe-search") {
         if (!settingsOpenRef.current || settingsTabRef.current !== "recipes") {
           setSettingsVoiceTab("recipes");
