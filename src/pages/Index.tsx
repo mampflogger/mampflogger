@@ -175,14 +175,14 @@ const Index = () => {
       }
 
       // Navigation — close settings first
-      if (action === "nav:log") closeSettingsAndDo(() => setActiveTab("log"));
-      else if (action === "nav:weekly") closeSettingsAndDo(() => setActiveTab("weekly"));
-      else if (action === "settings:open") setSettingsVoiceTab("profile");
-      else if (action === "settings:profile") setSettingsVoiceTab("profile");
-      else if (action === "settings:design") setSettingsVoiceTab("design");
-      else if (action === "settings:food") setSettingsVoiceTab("food");
-      else if (action === "settings:recipes") setSettingsVoiceTab("recipes");
-      else if (action === "settings:data") setSettingsVoiceTab("data");
+      if (action === "nav:log") closeSettingsAndDo(() => { setActiveTab("log"); flashTab("log"); });
+      else if (action === "nav:weekly") closeSettingsAndDo(() => { setActiveTab("weekly"); flashTab("weekly"); });
+      else if (action === "settings:open") { setSettingsVoiceTab("profile"); flashTab("settings"); }
+      else if (action === "settings:profile") { setSettingsVoiceTab("profile"); flashTab("settings"); }
+      else if (action === "settings:design") { setSettingsVoiceTab("design"); flashTab("settings"); }
+      else if (action === "settings:food") { setSettingsVoiceTab("food"); flashTab("settings"); }
+      else if (action === "settings:recipes") { setSettingsVoiceTab("recipes"); flashTab("settings"); }
+      else if (action === "settings:data") { setSettingsVoiceTab("data"); flashTab("settings"); }
       else if (action.startsWith("recipe:")) {
         if (!settingsOpenRef.current || settingsTabRef.current !== "recipes") {
           setSettingsVoiceTab("recipes");
