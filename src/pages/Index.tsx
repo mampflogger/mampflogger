@@ -27,7 +27,7 @@ import DailyCalorieChart from "@/components/DailyCalorieChart";
 import PhotoToLog from "@/components/PhotoToLog";
 import FastingAnalysis from "@/components/FastingAnalysis";
 import SectionHeading from "@/components/SectionHeading";
-import HelpDialog from "@/components/HelpDialog";
+import HelpContent from "@/components/HelpContent";
 
 import SettingsDialog, { ColorTheme } from "@/components/SettingsDialog";
 import { ChevronLeft, ChevronRight, BarChart3, List, Mic, MicOff, HelpCircle } from "lucide-react";
