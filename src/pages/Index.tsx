@@ -1066,7 +1066,9 @@ const Index = () => {
           </div>
         </div>
 
-        {activeTab === "log" ? (
+        {activeTab === "help" ? (
+          <HelpContent />
+        ) : activeTab === "log" ? (
           <>
             <div id="section-neuer-eintrag" data-section className={`glass-card rounded-xl p-3 mb-3 relative ${hl === "section-neuer-eintrag" ? "section-card-highlight" : ""}`}>
               <div className="absolute top-2.5 right-2.5 flex items-center gap-1">
