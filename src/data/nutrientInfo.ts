@@ -51,7 +51,7 @@ export const NUTRIENT_INFO: Record<string, NutrientInfo> = {
     foods: ["Paprika", "Brokkoli", "Kiwi", "Zitrusfrüchte", "Erdbeeren"],
   },
   vitD: {
-    description: "Das „Sonnenvitamin" – wichtig für Knochen, Zähne und Immunsystem. Wird durch Sonnenlicht in der Haut gebildet.",
+    description: "Das Sonnenvitamin – wichtig für Knochen, Zähne und Immunsystem. Wird durch Sonnenlicht in der Haut gebildet.",
     foods: ["Fetter Fisch (Lachs, Hering)", "Eigelb", "Pilze (UV-bestrahlt)", "Lebertran", "Angereicherte Milch"],
   },
   vitE: {
