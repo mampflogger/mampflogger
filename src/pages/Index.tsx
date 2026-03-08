@@ -939,6 +939,24 @@ const Index = () => {
                   {voiceCommands.isListening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
                 </Button>
               )}
+              <Button
+                variant="ghost"
+                size="icon"
+                className={`h-8 w-8 ${activeTab === "log" ? "bg-muted" : ""} ${highlightedTab === "log" ? "section-card-highlight rounded-lg" : ""}`}
+                onClick={() => setActiveTab("log")}
+                title="Eingabe"
+              >
+                <List className="w-4 h-4" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                className={`h-8 w-8 ${activeTab === "weekly" ? "bg-muted" : ""} ${highlightedTab === "weekly" ? "section-card-highlight rounded-lg" : ""}`}
+                onClick={() => setActiveTab("weekly")}
+                title="Statistik"
+              >
+                <BarChart3 className="w-4 h-4" />
+              </Button>
               <SettingsDialog
                 profile={profile}
                 onSaveProfile={handleSaveProfile}
@@ -980,27 +998,6 @@ const Index = () => {
                 voiceAction={settingsVoiceAction}
                 onVoiceActionHandled={() => setSettingsVoiceAction(null)}
                 highlightedTab={highlightedTab === "settings"}
-              />
-              <Button
-                variant="ghost"
-                size="icon"
-                className={`h-8 w-8 ${activeTab === "log" ? "bg-muted" : ""} ${highlightedTab === "log" ? "section-card-highlight rounded-lg" : ""}`}
-                onClick={() => setActiveTab("log")}
-                title="Eingabe"
-              >
-                <List className="w-4 h-4" />
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                className={`h-8 w-8 ${activeTab === "weekly" ? "bg-muted" : ""} ${highlightedTab === "weekly" ? "section-card-highlight rounded-lg" : ""}`}
-                onClick={() => setActiveTab("weekly")}
-                title="Statistik"
-              >
-                <BarChart3 className="w-4 h-4" />
-              </Button>
-              <SettingsDialog
-                {...settingsDialogProps}
               />
               <Button
                 variant="ghost"
