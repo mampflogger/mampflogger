@@ -155,6 +155,7 @@ const Index = () => {
   const [startupProfilePrompt, setStartupProfilePrompt] = useState(false);
    const [activityFocusRequestId, setActivityFocusRequestId] = useState<number | undefined>(undefined);
   const [dateFocused, setDateFocused] = useState(false);
+  const [helpOpen, setHelpOpen] = useState(false);
   const [highlightedTab, setHighlightedTab] = useState<string | null>(null);
   const highlightTabTimerRef = useRef<ReturnType<typeof setTimeout>>();
   const flashTab = useCallback((tab: string) => {
