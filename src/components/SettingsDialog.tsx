@@ -342,6 +342,12 @@ const SettingsDialog = ({
       setTimeout(() => {
         const el = document.getElementById(id);
         el?.scrollIntoView({ behavior: "smooth", block: "start" });
+        // Focus first input of the target section
+        if (id === "section-persoenliche-daten") {
+          setTimeout(() => nameInputRef.current?.focus(), 400);
+        } else if (id === "section-ziele") {
+          setTimeout(() => (document.getElementById("settings-goalweight") as HTMLInputElement)?.focus(), 400);
+        }
       }, 200);
     } else if (voiceAction.startsWith("recipe:")) {
       const idx = parseInt(voiceAction.replace("recipe:", ""), 10);
