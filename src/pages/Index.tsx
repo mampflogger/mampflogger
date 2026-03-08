@@ -1076,7 +1076,7 @@ const Index = () => {
                 voiceInputRef={nutritionVoiceRef}
                 isVoiceActive={voiceCommands.isListening}
                />
-              <p className="text-[10px] text-muted-foreground text-center mt-2">Gib ein neues Lebensmittel mit Name und Menge ein</p>
+              <p className="text-muted-foreground/60 text-xs text-center mt-2">Gib ein neues Lebensmittel mit Name und Menge ein</p>
             </div>
 
             {todayEntries.length > 0 && (
