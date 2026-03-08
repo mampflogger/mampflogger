@@ -399,6 +399,10 @@ const Index = () => {
 
           // Design tab: color keywords
           if (currentTab === "design") {
+            if (/\bblau\b/.test(lower)) { setColorTheme("blue"); return; }
+            if (/\bgelb\b/.test(lower)) { setColorTheme("yellow"); return; }
+            if (/\bpink\b/.test(lower)) { setColorTheme("pink"); return; }
+            if (/\bgrün\b/.test(lower)) { setColorTheme("green"); return; }
             if (/\borange\b/.test(lower)) { setColorTheme("orange"); return; }
             if (/\bt(?:ü|ue)rkis\b/.test(lower)) { setColorTheme("teal"); return; }
             if (/\brot\b/.test(lower)) { setColorTheme("red"); return; }
