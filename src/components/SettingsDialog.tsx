@@ -94,6 +94,7 @@ interface SettingsDialogProps {
   voiceAction?: string | null;
   onVoiceActionHandled?: () => void;
   highlightedTab?: boolean;
+  profileVoiceInputRef?: React.MutableRefObject<((transcript: string, isInterim: boolean) => void) | undefined>;
 }
 
 type ImportType = "csv-entries" | "csv-balance" | "csv-food";
