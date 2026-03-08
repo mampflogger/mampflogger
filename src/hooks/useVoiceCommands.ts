@@ -256,6 +256,37 @@ interface StartVoiceOptions {
   silent?: boolean;
 }
 
+type VoiceCommandScope = "global" | "scoped-input";
+
+const SCOPED_INPUT_ALLOWED_PREFIXES = ["field:", "nav:"];
+const SCOPED_INPUT_ALLOWED_ACTIONS = new Set(["settings:open", "action:mic-off"]);
+
+function getVoiceCommandScope(): VoiceCommandScope {
+  const activeElement = document.activeElement as HTMLElement | null;
+  if (!activeElement) return "global";
+
+  const isTextEntryElement =
+    activeElement instanceof HTMLInputElement ||
+    activeElement instanceof HTMLTextAreaElement ||
+    activeElement.isContentEditable;
+
+  if (isTextEntryElement) return "scoped-input";
+
+  const isScopedContainerActive =
+    !!activeElement.closest('[data-voice-scope="manual-recipe"]') ||
+    !!activeElement.closest('[data-voice-scope="profile"]') ||
+    !!activeElement.closest("#section-neuer-eintrag") ||
+    !!activeElement.closest("#section-activity");
+
+  return isScopedContainerActive ? "scoped-input" : "global";
+}
+
+function isActionAllowedInScope(action: string, scope: VoiceCommandScope): boolean {
+  if (scope === "global") return true;
+  if (SCOPED_INPUT_ALLOWED_PREFIXES.some((prefix) => action.startsWith(prefix))) return true;
+  return SCOPED_INPUT_ALLOWED_ACTIONS.has(action);
+}
+
 export function useVoiceCommands({ onCommand, onUnhandledSpeech }: UseVoiceCommandsOptions) {
   const onCommandRef = useRef(onCommand);
   const onUnhandledRef = useRef(onUnhandledSpeech);
@@ -292,12 +323,14 @@ export function useVoiceCommands({ onCommand, onUnhandledSpeech }: UseVoiceComma
           }
         }
 
+        const scope = getVoiceCommandScope();
+
         // 1. Exact regex pattern matching (fast path)
         for (const cmd of COMMANDS) {
           for (const pattern of cmd.patterns) {
             if (pattern.test(lower)) {
               const action = typeof cmd.action === "function" ? cmd.action(lower) : cmd.action;
-              if (action) {
+              if (action && isActionAllowedInScope(action, scope)) {
                 onCommandRef.current(action);
                 return;
               }
@@ -305,14 +338,18 @@ export function useVoiceCommands({ onCommand, onUnhandledSpeech }: UseVoiceComma
           }
         }
 
-        // 2. Fuzzy fallback – tolerates dialect / imprecise speech
-        const keywords = FUZZY_KEYWORD_MAP.map(([kw]) => kw);
-        const { index, score } = bestFuzzyMatch(lower, keywords, 0.5);
-        if (index >= 0 && score >= 0.5) {
-          const action = FUZZY_KEYWORD_MAP[index][1];
-          console.debug(`[Voice] fuzzy match: "${lower}" → "${keywords[index]}" (${(score * 100).toFixed(0)}%) → ${action}`);
-          onCommandRef.current(action);
-          return;
+        // 2. Fuzzy fallback – only in global scope to avoid accidental tab/section jumps while typing
+        if (scope === "global") {
+          const keywords = FUZZY_KEYWORD_MAP.map(([kw]) => kw);
+          const { index, score } = bestFuzzyMatch(lower, keywords, 0.62);
+          if (index >= 0 && score >= 0.62) {
+            const action = FUZZY_KEYWORD_MAP[index][1];
+            if (isActionAllowedInScope(action, scope)) {
+              console.debug(`[Voice] fuzzy match: "${lower}" → "${keywords[index]}" (${(score * 100).toFixed(0)}%) → ${action}`);
+              onCommandRef.current(action);
+              return;
+            }
+          }
         }
       }
 
