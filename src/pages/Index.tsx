@@ -765,7 +765,7 @@ const Index = () => {
               <Button
                 variant="ghost"
                 size="icon"
-                className={`h-8 w-8 ${activeTab === "log" ? "bg-muted" : ""}`}
+                className={`h-8 w-8 ${activeTab === "log" ? "bg-muted" : ""} ${highlightedTab === "log" ? "section-card-highlight rounded-lg" : ""}`}
                 onClick={() => setActiveTab("log")}
                 title="Eingabe"
               >
@@ -774,7 +774,7 @@ const Index = () => {
               <Button
                 variant="ghost"
                 size="icon"
-                className={`h-8 w-8 ${activeTab === "weekly" ? "bg-muted" : ""}`}
+                className={`h-8 w-8 ${activeTab === "weekly" ? "bg-muted" : ""} ${highlightedTab === "weekly" ? "section-card-highlight rounded-lg" : ""}`}
                 onClick={() => setActiveTab("weekly")}
                 title="Statistik"
               >
