@@ -233,6 +233,17 @@ export function useVoiceCommands({ onCommand, onUnhandledSpeech }: UseVoiceComma
       if (!isInterim) {
         const lower = transcript.toLowerCase().trim();
 
+        // 0. If a food dropdown is open and the transcript looks like a number selection,
+        //    skip global command matching and let the dropdown handler pick it up.
+        const dropdownActive = !!document.querySelector("[data-voice-dropdown-active]");
+        if (dropdownActive) {
+          const selIdx = parseSpokenSelectionIndex(lower, { allowBareNumber: true, keywords: ["nummer", "position", "nimm", "nehme", "zeige", "eintrag", "liste", "dropdown"] });
+          if (selIdx !== null) {
+            onUnhandledRef.current(transcript, isInterim);
+            return;
+          }
+        }
+
         // 1. Exact regex pattern matching (fast path)
         for (const cmd of COMMANDS) {
           for (const pattern of cmd.patterns) {
