@@ -999,6 +999,18 @@ const Index = () => {
               >
                 <BarChart3 className="w-4 h-4" />
               </Button>
+              <SettingsDialog
+                {...settingsDialogProps}
+              />
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8"
+                onClick={() => {/* TODO: Hilfe */}}
+                title="Hilfe"
+              >
+                <HelpCircle className="w-4 h-4" />
+              </Button>
             </div>
           </div>
         </div>
