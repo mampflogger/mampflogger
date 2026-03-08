@@ -278,17 +278,13 @@ const Index = () => {
         }
       }
       else if (action === "field:next" || action === "field:prev" || action === "field:clear" || action === "field:open-dropdown" || action === "field:close-dropdown") {
-        // Date navigation mode: next/prev navigate days
-        if (dateFocusedRef.current && (action === "field:next" || action === "field:prev")) {
-          const offset = action === "field:next" ? 1 : -1;
-          navigateDay(offset);
-          return;
-        }
         // If settings is open, route dropdown commands to settings
         if (settingsOpenRef.current) {
           if (action === "field:open-dropdown") { setSettingsVoiceAction("open-dropdown"); return; }
           if (action === "field:close-dropdown") { setSettingsVoiceAction("close-dropdown"); return; }
         }
+
+        // Determine scope from active element or settings state
         const activeElement = document.activeElement as HTMLElement | null;
         const scope = activeElement?.closest('[data-voice-scope="manual-recipe"]')
           ? "manual-recipe"
@@ -300,6 +296,19 @@ const Index = () => {
                 ? "activity"
                 : (settingsOpenRef.current && settingsTabRef.current === "recipes" ? "manual-recipe"
                   : settingsOpenRef.current && settingsTabRef.current === "profile" ? "profile" : null);
+
+        // Settings scopes take priority over date navigation
+        if (scope && (scope === "profile" || scope === "manual-recipe")) {
+          window.dispatchEvent(new CustomEvent("mampflogger:field-command", { detail: { action, scope } }));
+          return;
+        }
+
+        // Date navigation mode: next/prev navigate days
+        if (dateFocusedRef.current && (action === "field:next" || action === "field:prev")) {
+          const offset = action === "field:next" ? 1 : -1;
+          navigateDay(offset);
+          return;
+        }
 
         if (scope) {
           window.dispatchEvent(new CustomEvent("mampflogger:field-command", { detail: { action, scope } }));
