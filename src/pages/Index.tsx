@@ -375,6 +375,15 @@ const Index = () => {
         }
       }
       else if (action === "field:next" || action === "field:prev" || action === "field:clear" || action === "field:open-dropdown" || action === "field:close-dropdown") {
+        // Weekly nutrient scopes: close currently active nutrient info panel
+        if (!settingsOpenRef.current && action === "field:close-dropdown" && activeTabRef.current === "weekly") {
+          const activeNutrientKind = getNutrientKindForSection(activeSectionRef.current);
+          if (activeNutrientKind) {
+            window.dispatchEvent(new CustomEvent("mampflogger:nutrient-info", { detail: { key: "__close__", kind: activeNutrientKind } }));
+            return;
+          }
+        }
+
         // If settings is open, route dropdown commands to settings
         if (settingsOpenRef.current) {
           if (action === "field:open-dropdown") { setSettingsVoiceAction("open-dropdown"); return; }
