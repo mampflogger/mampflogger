@@ -9,12 +9,11 @@ interface HelpTopic {
   description: string;
 }
 
-type HelpTab = "eingabe" | "statistik" | "mikro" | "einstellungen";
+type HelpTab = "eingabe" | "statistik" | "einstellungen";
 
 const HELP_TABS: { id: HelpTab; label: string }[] = [
   { id: "eingabe", label: "Eingabemaske" },
   { id: "statistik", label: "Statistik" },
-  { id: "mikro", label: "Mikro" },
   { id: "einstellungen", label: "Einstellungen" },
 ];
 
