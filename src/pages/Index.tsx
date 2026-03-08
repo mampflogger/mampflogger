@@ -86,10 +86,43 @@ const NUTRIENT_VOICE_MAP: [RegExp, string, "vitamins" | "minerals"][] = [
   [/\bzink\b/i, "zink", "minerals"],
 ];
 
-function matchNutrientVoice(lower: string): { key: string; kind: "vitamins" | "minerals" } | null {
+function matchNutrientVoice(
+  lower: string,
+  kindFilter?: "vitamins" | "minerals",
+): { key: string; kind: "vitamins" | "minerals" } | null {
   for (const [pattern, key, kind] of NUTRIENT_VOICE_MAP) {
+    if (kindFilter && kind !== kindFilter) continue;
     if (pattern.test(lower)) return { key, kind };
   }
+  return null;
+}
+
+const ACTIVE_VITAMIN_SHORTCUTS: [RegExp, string][] = [
+  [/^\s*(?:vitamin\s*)?a\s*$/i, "vitA"],
+  [/^\s*(?:vitamin\s*)?b\s*1\s*$/i, "vitB1"],
+  [/^\s*(?:vitamin\s*)?b\s*2\s*$/i, "vitB2"],
+  [/^\s*(?:vitamin\s*)?b\s*3\s*$/i, "vitB3"],
+  [/^\s*(?:vitamin\s*)?b\s*5\s*$/i, "vitB5"],
+  [/^\s*(?:vitamin\s*)?b\s*6\s*$/i, "vitB6"],
+  [/^\s*(?:vitamin\s*)?b\s*7\s*$/i, "vitB7"],
+  [/^\s*(?:vitamin\s*)?b\s*9\s*$/i, "vitB9"],
+  [/^\s*(?:vitamin\s*)?b\s*12\s*$/i, "vitB12"],
+  [/^\s*(?:vitamin\s*)?c\s*$/i, "vitC"],
+  [/^\s*(?:vitamin\s*)?d\s*$/i, "vitD"],
+  [/^\s*(?:vitamin\s*)?e\s*$/i, "vitE"],
+  [/^\s*(?:vitamin\s*)?k\s*$/i, "vitK"],
+];
+
+function matchActiveVitaminShortcut(lower: string): string | null {
+  for (const [pattern, key] of ACTIVE_VITAMIN_SHORTCUTS) {
+    if (pattern.test(lower)) return key;
+  }
+  return null;
+}
+
+function getNutrientKindForSection(sectionId: string | null): "vitamins" | "minerals" | null {
+  if (sectionId === "section-vitamine-7-tage") return "vitamins";
+  if (sectionId === "section-mineralstoffe-7-tage") return "minerals";
   return null;
 }
 
