@@ -106,8 +106,8 @@ const Index = () => {
   // Global voice command system
   const voiceCommands = useVoiceCommands({
     onCommand: useCallback((action: string) => {
-      // Deactivate date focus when a non-date command is used
-      if (action !== "action:date-focus" && action !== "action:date-today") {
+      // Deactivate date focus when a non-date/non-navigation command is used
+      if (action !== "action:date-focus" && action !== "action:date-today" && action !== "field:next" && action !== "field:prev") {
         if (dateFocusedRef.current) {
           setDateFocused(false);
           dateFocusedRef.current = false;
@@ -324,6 +324,12 @@ const Index = () => {
       }
     }, [closeSettingsAndDo]),
     onUnhandledSpeech: useCallback((transcript: string, isInterim: boolean) => {
+      if (!isInterim && dateFocusedRef.current && /\b(okay|ok|fertig|beenden|schließen|schliessen)\b/i.test(transcript.toLowerCase())) {
+        setDateFocused(false);
+        dateFocusedRef.current = false;
+        return;
+      }
+
       if (settingsOpenRef.current) {
         const currentTab = settingsTabRef.current;
         if (!isInterim) {
