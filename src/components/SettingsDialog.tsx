@@ -215,6 +215,9 @@ const SettingsDialog = ({
   const [highlightedSettingsTab, setHighlightedSettingsTab] = useState<string | null>(null);
   const highlightSettingsTimerRef = React.useRef<ReturnType<typeof setTimeout>>();
 
+  const [highlightedSettingsSection, setHighlightedSettingsSection] = useState<string | null>(null);
+  const highlightSettingsSectionTimerRef = React.useRef<ReturnType<typeof setTimeout>>();
+
   // Flash settings tab when opened via voice
   useEffect(() => {
     if (voiceOpenTab) {
@@ -332,6 +335,10 @@ const SettingsDialog = ({
       }
     } else if (voiceAction.startsWith("scroll:")) {
       const id = voiceAction.replace("scroll:", "");
+      setHighlightedSettingsTab(null); // clear tab highlight
+      setHighlightedSettingsSection(id);
+      if (highlightSettingsSectionTimerRef.current) clearTimeout(highlightSettingsSectionTimerRef.current);
+      highlightSettingsSectionTimerRef.current = setTimeout(() => setHighlightedSettingsSection(null), 3000);
       setTimeout(() => {
         const el = document.getElementById(id);
         el?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -1158,7 +1165,7 @@ const SettingsDialog = ({
         {tab === "profile" && (
           <div className="space-y-3">
             {/* Profile Card */}
-            <div id="section-persoenliche-daten" className="glass-card rounded-xl p-3 space-y-2">
+            <div id="section-persoenliche-daten" className={`glass-card rounded-xl p-3 space-y-2 ${highlightedSettingsSection === "section-persoenliche-daten" ? "section-card-highlight" : ""}`}>
               <h2 className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Persönliche Daten</h2>
               <div>
                 <Label className="text-[10px] font-medium text-muted-foreground mb-0.5 block">Name</Label>
@@ -1207,7 +1214,7 @@ const SettingsDialog = ({
             </div>
 
             {/* Goals Card */}
-            <div id="section-ziele" className="glass-card rounded-xl p-3 space-y-2">
+            <div id="section-ziele" className={`glass-card rounded-xl p-3 space-y-2 ${highlightedSettingsSection === "section-ziele" ? "section-card-highlight" : ""}`}>
               <h2 className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Ziele</h2>
               <div className="grid grid-cols-2 gap-2">
                 <div>
@@ -1826,7 +1833,7 @@ const SettingsDialog = ({
           <div className="space-y-3">
 
             {/* IMPORT Section */}
-            <div id="section-import" className="glass-card rounded-xl p-3 space-y-1.5">
+            <div id="section-import" className={`glass-card rounded-xl p-3 space-y-1.5 ${highlightedSettingsSection === "section-import" ? "section-card-highlight" : ""}`}>
               <div className="flex items-center gap-1.5">
                 <Download className="w-3.5 h-3.5 text-primary" />
                 <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Import</h2>
@@ -1969,7 +1976,7 @@ const SettingsDialog = ({
             </div>
 
             {/* EXPORT Section */}
-            <div id="section-export" className="glass-card rounded-xl p-3 space-y-1.5">
+            <div id="section-export" className={`glass-card rounded-xl p-3 space-y-1.5 ${highlightedSettingsSection === "section-export" ? "section-card-highlight" : ""}`}>
               <div className="flex items-center gap-1.5">
                 <Upload className="w-3.5 h-3.5 text-primary" />
                 <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Export</h2>
@@ -1997,7 +2004,7 @@ const SettingsDialog = ({
 
 
             {/* BACKUP Section */}
-            <div id="section-backup" className="glass-card rounded-xl p-3 space-y-1.5">
+            <div id="section-backup" className={`glass-card rounded-xl p-3 space-y-1.5 ${highlightedSettingsSection === "section-backup" ? "section-card-highlight" : ""}`}>
               <div className="flex items-center gap-1.5">
                 <HardDrive className="w-3.5 h-3.5 text-primary" />
                 <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Backup</h2>
@@ -2088,7 +2095,7 @@ const SettingsDialog = ({
             </div>
 
             {/* DELETE Section */}
-            <div id="section-loeschen" className="glass-card rounded-xl p-3 space-y-1.5">
+            <div id="section-loeschen" className={`glass-card rounded-xl p-3 space-y-1.5 ${highlightedSettingsSection === "section-loeschen" ? "section-card-highlight" : ""}`}>
               <div className="flex items-center gap-1.5">
                 <Trash2 className="w-3.5 h-3.5 text-primary" />
                 <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Cancel</h2>
