@@ -255,12 +255,12 @@ const MicronutrientTile = ({ item, editing, draftValue, onDraftChange, gender, d
         aria-hidden="true"
       />
       <div className="relative z-10">
-        <div className="flex items-center justify-between">
-          <p className="text-[11px] font-medium text-muted-foreground">
+        <div className="flex items-center justify-between gap-1 min-w-0">
+          <p className="text-[11px] font-medium text-muted-foreground whitespace-nowrap flex-shrink-0">
             {item.label} ({item.unit})
           </p>
-          <div className="flex items-center gap-1">
-            <p className="text-[10px] text-muted-foreground/70 italic truncate ml-2">
+          <div className="flex items-center gap-1 min-w-0 overflow-hidden">
+            <p className="text-[10px] text-muted-foreground/70 italic truncate pr-0.5">
               {item.fullName}
             </p>
             {!editing && (
