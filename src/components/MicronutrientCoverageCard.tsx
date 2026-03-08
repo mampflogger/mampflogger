@@ -1,5 +1,5 @@
 import { useMemo, useState, useEffect, useCallback } from "react";
-import { Pencil, Check } from "lucide-react";
+import { Pencil, Check, ChevronDown } from "lucide-react";
 import type { NutritionEntry } from "@/types/nutrition";
 import SectionHeading from "@/components/SectionHeading";
 import {
@@ -11,6 +11,7 @@ import {
   type MicronutrientGender,
   VITAMIN_DEFINITIONS,
 } from "@/lib/micronutrients";
+import { NUTRIENT_INFO } from "@/data/nutrientInfo";
 
 const STORAGE_KEY = "mampflogger-custom-targets";
 
@@ -62,6 +63,7 @@ const MicronutrientCoverageCard = ({
   const [editing, setEditing] = useState(false);
   const [customTargets, setCustomTargets] = useState<CustomTargets>(() => loadCustomTargets(kind));
   const [draftTargets, setDraftTargets] = useState<CustomTargets>({});
+  const [expandedKey, setExpandedKey] = useState<string | null>(null);
 
   // Listen for external reset
   useEffect(() => {
@@ -69,6 +71,18 @@ const MicronutrientCoverageCard = ({
     window.addEventListener("mampflogger-custom-targets-reset", handler);
     return () => window.removeEventListener("mampflogger-custom-targets-reset", handler);
   }, []);
+
+  // Voice control: listen for nutrient-info toggle events
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const detail = (e as CustomEvent).detail as { key: string; kind: string } | undefined;
+      if (!detail || detail.kind !== kind) return;
+      if (detail.key === "__close__") { setExpandedKey(null); return; }
+      setExpandedKey((prev) => (prev === detail.key ? null : detail.key));
+    };
+    window.addEventListener("mampflogger:nutrient-info", handler);
+    return () => window.removeEventListener("mampflogger:nutrient-info", handler);
+  }, [kind]);
 
   const startEditing = useCallback(() => {
     setDraftTargets({ ...customTargets });
@@ -80,6 +94,11 @@ const MicronutrientCoverageCard = ({
     saveCustomTargets(kind, draftTargets);
     setEditing(false);
   }, [draftTargets, kind]);
+
+  const toggleExpand = useCallback((key: string) => {
+    if (editing) return;
+    setExpandedKey((prev) => (prev === key ? null : key));
+  }, [editing]);
 
   const visibleEntries = useMemo(() => {
     const endDate = new Date(`${selectedDate}T00:00:00`);
@@ -141,27 +160,56 @@ const MicronutrientCoverageCard = ({
       </div>
 
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-        {items.map((item) => (
-          <MicronutrientTile
-            key={item.key}
-            item={item}
-            editing={editing}
-            draftValue={draftTargets[item.key]}
-            onDraftChange={(val) =>
-              setDraftTargets((prev) => {
-                const next = { ...prev };
-                if (val === undefined || val === null) {
-                  delete next[item.key];
-                } else {
-                  next[item.key] = val;
+        {items.map((item) => {
+          const isExpanded = expandedKey === item.key;
+          const info = NUTRIENT_INFO[item.key];
+          return (
+            <div key={item.key} className={isExpanded ? "col-span-2 sm:col-span-3" : ""}>
+              <MicronutrientTile
+                item={item}
+                editing={editing}
+                draftValue={draftTargets[item.key]}
+                onDraftChange={(val) =>
+                  setDraftTargets((prev) => {
+                    const next = { ...prev };
+                    if (val === undefined || val === null) {
+                      delete next[item.key];
+                    } else {
+                      next[item.key] = val;
+                    }
+                    return next;
+                  })
                 }
-                return next;
-              })
-            }
-            gender={gender}
-            definitions={definitions}
-          />
-        ))}
+                gender={gender}
+                definitions={definitions}
+                isExpanded={isExpanded}
+                onToggle={() => toggleExpand(item.key)}
+              />
+              {isExpanded && info && (
+                <div className="mt-1 rounded-xl border border-border bg-accent/50 px-3 py-2.5 animate-in slide-in-from-top-2 fade-in duration-200">
+                  <p className="text-xs leading-relaxed text-foreground">
+                    {info.description}
+                  </p>
+                  <div className="mt-2">
+                    <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-1">
+                      Gute Quellen
+                    </p>
+                    <div className="flex flex-wrap gap-1">
+                      {info.foods.map((food) => (
+                        <span
+                          key={food}
+                          className="inline-block rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-medium text-primary"
+                        >
+                          {food}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          );
+        })}
       </div>
 
       {kind === "minerals" && (
@@ -184,16 +232,23 @@ interface MicronutrientTileProps {
   onDraftChange: (val: number | undefined) => void;
   gender: MicronutrientGender;
   definitions: readonly MicronutrientDefinition[];
+  isExpanded?: boolean;
+  onToggle?: () => void;
 }
 
-const MicronutrientTile = ({ item, editing, draftValue, onDraftChange, gender, definitions }: MicronutrientTileProps) => {
+const MicronutrientTile = ({ item, editing, draftValue, onDraftChange, gender, definitions, isExpanded, onToggle }: MicronutrientTileProps) => {
   const def = definitions.find((d) => d.key === item.key);
   const defaultTarget = def ? getMicronutrientTarget(def, gender) : null;
 
   const displayDraft = draftValue !== undefined ? draftValue : (defaultTarget ?? 0);
 
   return (
-    <div className="relative overflow-hidden rounded-[1.25rem] border border-border bg-background px-3 py-2">
+    <div
+      className={`relative overflow-hidden rounded-[1.25rem] border border-border bg-background px-3 py-2 transition-colors ${
+        !editing ? "cursor-pointer active:bg-accent/30" : ""
+      } ${isExpanded ? "ring-1 ring-primary/40" : ""}`}
+      onClick={!editing ? onToggle : undefined}
+    >
       <div
         className="absolute inset-y-0 left-0 bg-gradient-to-r from-primary/10 to-primary/20 transition-all duration-500"
         style={{ width: item.fillWidth }}
@@ -204,9 +259,18 @@ const MicronutrientTile = ({ item, editing, draftValue, onDraftChange, gender, d
           <p className="text-[11px] font-medium text-muted-foreground">
             {item.label} ({item.unit})
           </p>
-          <p className="text-[10px] text-muted-foreground/70 italic truncate ml-2 pr-2">
-            {item.fullName}
-          </p>
+          <div className="flex items-center gap-1">
+            <p className="text-[10px] text-muted-foreground/70 italic truncate ml-2">
+              {item.fullName}
+            </p>
+            {!editing && (
+              <ChevronDown
+                className={`w-3 h-3 text-muted-foreground/50 transition-transform duration-200 flex-shrink-0 ${
+                  isExpanded ? "rotate-180" : ""
+                }`}
+              />
+            )}
+          </div>
         </div>
         <p className="mt-1 text-xl font-semibold leading-none tabular-nums text-foreground">
           {formatMicronutrientValue(item.averageDaily)}
