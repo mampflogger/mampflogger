@@ -68,5 +68,5 @@ export function useSectionNavigation() {
     };
   }, []);
 
-  return { highlightedSection, scrollToSection, scrollDirection };
+  return { highlightedSection, activeSection, setActiveSection, scrollToSection, scrollDirection };
 }
