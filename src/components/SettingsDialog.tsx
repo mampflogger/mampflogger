@@ -1833,7 +1833,7 @@ const SettingsDialog = ({
           <div className="space-y-3">
 
             {/* IMPORT Section */}
-            <div id="section-import" className="glass-card rounded-xl p-3 space-y-1.5">
+            <div id="section-import" className={`glass-card rounded-xl p-3 space-y-1.5 ${highlightedSettingsSection === "section-import" ? "section-card-highlight" : ""}`}>
               <div className="flex items-center gap-1.5">
                 <Download className="w-3.5 h-3.5 text-primary" />
                 <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Import</h2>
@@ -1976,7 +1976,7 @@ const SettingsDialog = ({
             </div>
 
             {/* EXPORT Section */}
-            <div id="section-export" className="glass-card rounded-xl p-3 space-y-1.5">
+            <div id="section-export" className={`glass-card rounded-xl p-3 space-y-1.5 ${highlightedSettingsSection === "section-export" ? "section-card-highlight" : ""}`}>
               <div className="flex items-center gap-1.5">
                 <Upload className="w-3.5 h-3.5 text-primary" />
                 <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Export</h2>
@@ -2004,7 +2004,7 @@ const SettingsDialog = ({
 
 
             {/* BACKUP Section */}
-            <div id="section-backup" className="glass-card rounded-xl p-3 space-y-1.5">
+            <div id="section-backup" className={`glass-card rounded-xl p-3 space-y-1.5 ${highlightedSettingsSection === "section-backup" ? "section-card-highlight" : ""}`}>
               <div className="flex items-center gap-1.5">
                 <HardDrive className="w-3.5 h-3.5 text-primary" />
                 <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Backup</h2>
@@ -2095,7 +2095,7 @@ const SettingsDialog = ({
             </div>
 
             {/* DELETE Section */}
-            <div id="section-loeschen" className="glass-card rounded-xl p-3 space-y-1.5">
+            <div id="section-loeschen" className={`glass-card rounded-xl p-3 space-y-1.5 ${highlightedSettingsSection === "section-loeschen" ? "section-card-highlight" : ""}`}>
               <div className="flex items-center gap-1.5">
                 <Trash2 className="w-3.5 h-3.5 text-primary" />
                 <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Cancel</h2>
