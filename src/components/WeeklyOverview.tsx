@@ -62,7 +62,68 @@ const COLORS = {
   caloriesMuted: "hsl(var(--primary) / 0.85)",
 };
 
-const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [], highlightedSection, analyzeCoachRequestId }: WeeklyOverviewProps) => {
+const DailyMacroCard = ({ weekData, highlighted }: { weekData: DayData[]; highlighted: boolean }) => {
+  const [selectedIdx, setSelectedIdx] = useState(6); // default: today (last item)
+  const day = weekData[selectedIdx];
+  const totalG = day.protein + day.fat + day.carbs + day.fiber;
+
+  const macros = [
+    { label: "PRO", value: day.protein },
+    { label: "FAT", value: day.fat },
+    { label: "KH", value: day.carbs },
+    { label: "FIB", value: day.fiber },
+  ];
+
+  return (
+    <div id="section-makros-pro-tag" data-section className={`glass-card rounded-xl p-3 ${highlighted ? "section-card-highlight" : ""}`}>
+      <SectionHeading highlighted={highlighted} className="mb-2">
+        Makros pro Tag (g)
+      </SectionHeading>
+
+      {/* Horizontal macro bars for selected day */}
+      <div className="space-y-1.5 mb-3">
+        {macros.map((m) => {
+          const pct = totalG > 0 ? Math.round((m.value / totalG) * 100) : 0;
+          return (
+            <div key={m.label} className="flex items-center gap-2 text-[11px]">
+              <span className="w-7 font-semibold text-muted-foreground shrink-0">{m.label}</span>
+              <div className="flex-1 h-3 rounded-full overflow-hidden bg-muted">
+                <div
+                  className="h-full rounded-full transition-all duration-500"
+                  style={{
+                    width: `${pct}%`,
+                    background: "linear-gradient(90deg, hsl(var(--primary) / 0.9), hsl(var(--primary) / 0.35))",
+                  }}
+                />
+              </div>
+              <span className="w-14 text-right font-semibold tabular-nums text-foreground shrink-0">{m.value}g</span>
+              <span className="w-8 text-right font-semibold tabular-nums text-muted-foreground shrink-0">{pct}%</span>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Weekday badges */}
+      <div className="flex justify-center gap-2">
+        {weekData.map((d, i) => (
+          <button
+            key={d.date}
+            onClick={() => setSelectedIdx(i)}
+            className={`w-8 h-8 rounded-full text-[11px] font-semibold transition-all duration-200 ${
+              i === selectedIdx
+                ? "bg-primary text-primary-foreground shadow-sm"
+                : "bg-muted text-muted-foreground hover:bg-accent"
+            }`}
+          >
+            {d.label}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+
   const bmr = profile ? calculateBMR(profile) : null;
 
   const weekData = useMemo(() => {
