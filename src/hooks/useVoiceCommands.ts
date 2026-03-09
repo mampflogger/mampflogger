@@ -147,6 +147,7 @@ const COMMANDS: VoiceCommand[] = [
   { patterns: [/\b(?:escape|schließen|schliessen|zuklappen|zumachen)\b/i], action: "field:close-dropdown" },
 
   // Actions
+  { patterns: [/\bhilfe\b/i, /\bhelp\b/i], action: "action:help" },
   { patterns: [/\bmikro\s*aus\b/i, /\bmikrofon\s*aus\b/i, /\bmic\s*off\b/i], action: "action:mic-off" },
   { patterns: [/\bkamera\b/i, /\bfoto\b/i, /\bphoto\b/i, /\bbild\b/i], action: "action:camera" },
 ];
@@ -215,6 +216,8 @@ const FUZZY_KEYWORD_MAP: [string, string][] = [
   ["foto", "action:camera"],
   ["mikro aus", "action:mic-off"],
   ["mikrofon aus", "action:mic-off"],
+  ["hilfe", "action:help"],
+  ["help", "action:help"],
   ["home", "action:home"],
   ["start", "action:home"],
   ["startseite", "action:home"],

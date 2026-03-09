@@ -345,6 +345,14 @@ const Index = () => {
         });
         return;
       }
+      else if (action === "action:help") {
+        (document.activeElement as HTMLElement)?.blur?.();
+        closeSettingsAndDo(() => {
+          setActiveTab("help");
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        });
+        return;
+      }
       else if (action === "action:mic-off") {
         voiceCommands.stop();
         return;
