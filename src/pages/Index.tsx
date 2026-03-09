@@ -352,6 +352,7 @@ const Index = () => {
           window.scrollTo({ top: 0, behavior: "smooth" });
         });
         return;
+      }
       else if (action === "action:mic-off") {
         voiceCommands.stop();
         return;
