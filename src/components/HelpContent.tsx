@@ -34,6 +34,8 @@ const HELP_TOPICS: Record<HelpTab, HelpTopic[]> = {
     { label: "Defizit pro Tag", description: "Zeigt dein tägliches Kaloriendefizit (oder -überschuss) als Balkendiagramm. Grüne Balken = Defizit (gut zum Abnehmen), rote Balken = Überschuss." },
     { label: "Makros pro Tag", description: "Gestapeltes Balkendiagramm, das dir für jeden der letzten 7 Tage die Verteilung von Eiweiß, Fett, Kohlenhydraten und Ballaststoffen in Gramm zeigt." },
     { label: "Makro-Verteilung (7 Tage)", description: "Zeigt die durchschnittliche prozentuale Makronährstoffverteilung der letzten 7 Tage. Hilfreich, um zu prüfen, ob du langfristig im gewünschten Verhältnis isst." },
+    { label: "Vitamine", description: "Zeigt deine durchschnittliche Vitaminversorgung der letzten 7 Tage basierend auf DGE-Sollwerten. Jede Kachel zeigt den Durchschnittswert als Fortschrittsbalken. Tippe auf eine Kachel, um zu erfahren, wofür das Vitamin wichtig ist und in welchen Lebensmitteln es enthalten ist." },
+    { label: "Mineralstoffe & Spurenelemente", description: "Zeigt deine durchschnittliche Versorgung mit Mineralstoffen und Spurenelementen der letzten 7 Tage basierend auf DGE-Sollwerten. Jede Kachel zeigt den Durchschnittswert als Fortschrittsbalken. Tippe auf eine Kachel, um zu erfahren, wofür der Nährstoff wichtig ist und in welchen Lebensmitteln er enthalten ist." },
     { label: "KI-Coach", description: "Der KI-Ernährungscoach analysiert dein Essverhalten der letzten 7 Tage und gibt dir personalisierte Tipps und Empfehlungen. Drücke auf 'Analysieren', um eine neue Auswertung zu starten." },
   ],
   sprache: [
