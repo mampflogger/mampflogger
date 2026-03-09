@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { NutritionEntry, calculateDailySummary, formatDate } from "@/types/nutrition";
 import SectionHeading from "@/components/SectionHeading";
 import {
@@ -60,6 +60,67 @@ const MACRO_COLORS = {
 const COLORS = {
   calories: "hsl(var(--primary))",
   caloriesMuted: "hsl(var(--primary) / 0.85)",
+};
+
+const DailyMacroCard = ({ weekData, highlighted }: { weekData: DayData[]; highlighted: boolean }) => {
+  const [selectedIdx, setSelectedIdx] = useState(6); // default: today (last item)
+  const day = weekData[selectedIdx];
+  const totalG = day.protein + day.fat + day.carbs + day.fiber;
+
+  const macros = [
+    { label: "PRO", value: day.protein },
+    { label: "FAT", value: day.fat },
+    { label: "KH", value: day.carbs },
+    { label: "FIB", value: day.fiber },
+  ];
+
+  return (
+    <div id="section-makros-pro-tag" data-section className={`glass-card rounded-xl p-3 ${highlighted ? "section-card-highlight" : ""}`}>
+      <SectionHeading highlighted={highlighted} className="mb-2">
+        Makros pro Tag (g)
+      </SectionHeading>
+
+      {/* Horizontal macro bars for selected day */}
+      <div className="space-y-1.5 mb-3">
+        {macros.map((m) => {
+          const pct = totalG > 0 ? Math.round((m.value / totalG) * 100) : 0;
+          return (
+            <div key={m.label} className="flex items-center gap-2 text-[11px]">
+              <span className="w-7 font-semibold text-muted-foreground shrink-0">{m.label}</span>
+              <div className="flex-1 h-3 rounded-full overflow-hidden bg-muted">
+                <div
+                  className="h-full rounded-full transition-all duration-500"
+                  style={{
+                    width: `${pct}%`,
+                    background: "linear-gradient(90deg, hsl(var(--primary) / 0.9), hsl(var(--primary) / 0.35))",
+                  }}
+                />
+              </div>
+              <span className="w-14 text-right font-semibold tabular-nums text-foreground shrink-0">{m.value}g</span>
+              <span className="w-8 text-right font-semibold tabular-nums text-muted-foreground shrink-0">{pct}%</span>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Weekday badges */}
+      <div className="flex justify-center gap-2">
+        {weekData.map((d, i) => (
+          <button
+            key={d.date}
+            onClick={() => setSelectedIdx(i)}
+            className={`w-8 h-8 rounded-full text-[11px] font-semibold transition-all duration-200 ${
+              i === selectedIdx
+                ? "bg-primary text-primary-foreground shadow-sm"
+                : "bg-muted text-muted-foreground hover:bg-accent"
+            }`}
+          >
+            {d.label}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
 };
 
 const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [], highlightedSection, analyzeCoachRequestId }: WeeklyOverviewProps) => {
@@ -414,50 +475,8 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
         </div>
       )}
 
-      {/* Daily macro stacked bars */}
-      <div id="section-makros-pro-tag" data-section className={`glass-card rounded-xl p-3 ${hl === "section-makros-pro-tag" ? "section-card-highlight" : ""}`}>
-        <SectionHeading highlighted={hl === "section-makros-pro-tag"} className="mb-2">
-          Makros pro Tag (g)
-        </SectionHeading>
-        <div className="h-40">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={weekData} margin={{ top: 4, right: 0, left: -20, bottom: 0 }}>
-              <XAxis dataKey="label" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} />
-              <YAxis
-                axisLine={false}
-                tickLine={false}
-                ticks={macroTicks}
-                tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }}
-              />
-              {macroTicks.map((v) => (
-                <ReferenceLine key={v} y={v} stroke="hsl(var(--muted-foreground) / 0.25)" strokeWidth={0.5} />
-              ))}
-              <Tooltip
-                content={({ active, payload }) => {
-                  if (!active || !payload?.length) return null;
-                  const data = payload[0].payload as DayData;
-                  const d = new Date(data.date + "T00:00:00");
-                  const dateLabel = d.toLocaleDateString("de-DE", { day: "numeric", month: "short" });
-                  return (
-                    <div className="rounded-lg border border-border bg-popover px-3 py-2 shadow-md text-xs">
-                      <p className="font-semibold text-popover-foreground mb-1">{dateLabel}</p>
-                      <p><span style={{ color: MACRO_COLORS.pro }}>●</span> PRO: {data.protein}g</p>
-                      <p><span style={{ color: MACRO_COLORS.fat }}>●</span> FAT: {data.fat}g</p>
-                      <p><span style={{ color: MACRO_COLORS.kh }}>●</span> KH: {data.carbs}g</p>
-                      <p><span style={{ color: MACRO_COLORS.fib }}>●</span> FIB: {data.fiber}g</p>
-                    </div>
-                  );
-                }}
-                cursor={{ fill: "hsl(var(--accent) / 0.4)" }}
-              />
-              <Bar dataKey="protein" stackId="macros" fill={MACRO_COLORS.pro} radius={[0, 0, 0, 0]} maxBarSize={36} name="PRO" />
-              <Bar dataKey="fat" stackId="macros" fill={MACRO_COLORS.fat} radius={[0, 0, 0, 0]} maxBarSize={36} name="FAT" />
-              <Bar dataKey="carbs" stackId="macros" fill={MACRO_COLORS.kh} radius={[0, 0, 0, 0]} maxBarSize={36} name="KH" />
-              <Bar dataKey="fiber" stackId="macros" fill={MACRO_COLORS.fib} radius={[6, 6, 0, 0]} maxBarSize={36} name="FIB" />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-      </div>
+      {/* Daily macro with day selector */}
+      <DailyMacroCard weekData={weekData} highlighted={hl === "section-makros-pro-tag"} />
 
       {/* Macro Distribution */}
       <div id="section-makro-verteilung" data-section className={`glass-card rounded-xl p-3 ${hl === "section-makro-verteilung" ? "section-card-highlight" : ""}`}>
