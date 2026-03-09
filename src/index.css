@@ -324,13 +324,7 @@
     -moz-osx-font-smoothing: grayscale;
   }
 
-  /* Mobile-optimized inputs */
-  @media (max-width: 767px) {
-    input, select, textarea {
-      font-size: 16px !important; /* Prevents zoom on iOS */
-    }
-  }
-
+  /* Mobile inputs: zoom prevented via viewport meta tag */
   /* Hide number input spinners */
   input[type="number"]::-webkit-inner-spin-button,
   input[type="number"]::-webkit-outer-spin-button {
