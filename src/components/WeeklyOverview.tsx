@@ -434,6 +434,16 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
           <div className="h-44">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={deficitData} margin={{ top: 4, right: 0, left: -20, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="deficitGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="hsl(var(--primary) / 0.4)" />
+                    <stop offset="100%" stopColor="hsl(var(--primary) / 0.8)" />
+                  </linearGradient>
+                  <linearGradient id="surplusGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="hsl(var(--destructive) / 0.4)" />
+                    <stop offset="100%" stopColor="hsl(var(--destructive) / 0.8)" />
+                  </linearGradient>
+                </defs>
                 <XAxis dataKey="label" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} />
                 <YAxis
                   axisLine={false}
@@ -459,7 +469,7 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
                 <Tooltip content={<DeficitTooltip />} cursor={{ fill: "hsl(var(--accent) / 0.4)" }} />
                 <Bar dataKey="deficit" radius={[6, 6, 0, 0]} maxBarSize={36}>
                   {deficitData.map((entry, index) => (
-                    <Cell key={index} fill={entry.deficit >= 0 ? "hsl(var(--primary))" : "hsl(var(--destructive))"} />
+                    <Cell key={index} fill={entry.deficit >= 0 ? "url(#deficitGradient)" : "url(#surplusGradient)"} />
                   ))}
                 </Bar>
                 <ReferenceLine y={0} stroke="hsl(var(--border))" strokeWidth={0.5} />
