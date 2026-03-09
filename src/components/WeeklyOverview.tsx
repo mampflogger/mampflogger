@@ -123,7 +123,7 @@ const DailyMacroCard = ({ weekData, highlighted }: { weekData: DayData[]; highli
   );
 };
 
-
+const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [], highlightedSection, analyzeCoachRequestId }: WeeklyOverviewProps) => {
   const bmr = profile ? calculateBMR(profile) : null;
 
   const weekData = useMemo(() => {
