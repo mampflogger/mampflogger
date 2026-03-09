@@ -457,7 +457,7 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
                 <Tooltip content={<DeficitTooltip />} cursor={{ fill: "hsl(var(--accent) / 0.4)" }} />
                 <Bar dataKey="deficit" radius={[6, 6, 0, 0]} maxBarSize={36}>
                   {deficitData.map((entry, index) => (
-                    <Cell key={index} fill={entry.deficit >= 0 ? "hsl(var(--success))" : "hsl(var(--destructive))"} />
+                    <Cell key={index} fill={entry.deficit >= 0 ? "hsl(var(--primary))" : "hsl(var(--destructive))"} />
                   ))}
                 </Bar>
                 <ReferenceLine y={0} stroke="hsl(var(--border))" strokeWidth={0.5} />
