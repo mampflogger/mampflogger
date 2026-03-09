@@ -173,9 +173,9 @@ export const CloudBackupSettings = () => {
 
   return (
     <div className="space-y-2">
-      <div className="flex items-center gap-2 p-2 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
-        <div className="w-2 h-2 rounded-full bg-green-500"></div>
-        <span className="text-xs font-medium text-green-700 dark:text-green-300">Cloud-Backup aktiv</span>
+      <div className="flex items-center gap-2 p-2 bg-primary/10 rounded-lg border border-primary/20">
+        <div className="w-2 h-2 rounded-full bg-primary"></div>
+        <span className="text-xs font-medium text-primary">Cloud-Backup aktiv</span>
       </div>
       
       <div className="space-y-1">
