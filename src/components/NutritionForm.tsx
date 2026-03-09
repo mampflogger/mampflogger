@@ -587,10 +587,10 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
                placeholder="z.B. Haferflocken"
                value={food}
                onChange={(e) => handleFoodChange(e.target.value)}
-               onFocus={() => {
-                 setFocusedField("food");
-                 if (suggestions.length > 0) setShowSuggestions(true);
-               }}
+                onFocus={() => {
+                  setFocusedField("food");
+                  if (food.trim().length > 0 && suggestions.length > 0) setShowSuggestions(true);
+                }}
                onKeyDown={handleKeyDown}
                className={`h-8 text-[10px] font-semibold px-2 pr-7 ${isVoiceActive && focusedField === "food" ? "ring-2 ring-primary" : ""}`}
                autoComplete="off"
