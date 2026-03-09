@@ -414,50 +414,8 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
         </div>
       )}
 
-      {/* Daily macro stacked bars */}
-      <div id="section-makros-pro-tag" data-section className={`glass-card rounded-xl p-3 ${hl === "section-makros-pro-tag" ? "section-card-highlight" : ""}`}>
-        <SectionHeading highlighted={hl === "section-makros-pro-tag"} className="mb-2">
-          Makros pro Tag (g)
-        </SectionHeading>
-        <div className="h-40">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={weekData} margin={{ top: 4, right: 0, left: -20, bottom: 0 }}>
-              <XAxis dataKey="label" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} />
-              <YAxis
-                axisLine={false}
-                tickLine={false}
-                ticks={macroTicks}
-                tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }}
-              />
-              {macroTicks.map((v) => (
-                <ReferenceLine key={v} y={v} stroke="hsl(var(--muted-foreground) / 0.25)" strokeWidth={0.5} />
-              ))}
-              <Tooltip
-                content={({ active, payload }) => {
-                  if (!active || !payload?.length) return null;
-                  const data = payload[0].payload as DayData;
-                  const d = new Date(data.date + "T00:00:00");
-                  const dateLabel = d.toLocaleDateString("de-DE", { day: "numeric", month: "short" });
-                  return (
-                    <div className="rounded-lg border border-border bg-popover px-3 py-2 shadow-md text-xs">
-                      <p className="font-semibold text-popover-foreground mb-1">{dateLabel}</p>
-                      <p><span style={{ color: MACRO_COLORS.pro }}>●</span> PRO: {data.protein}g</p>
-                      <p><span style={{ color: MACRO_COLORS.fat }}>●</span> FAT: {data.fat}g</p>
-                      <p><span style={{ color: MACRO_COLORS.kh }}>●</span> KH: {data.carbs}g</p>
-                      <p><span style={{ color: MACRO_COLORS.fib }}>●</span> FIB: {data.fiber}g</p>
-                    </div>
-                  );
-                }}
-                cursor={{ fill: "hsl(var(--accent) / 0.4)" }}
-              />
-              <Bar dataKey="protein" stackId="macros" fill={MACRO_COLORS.pro} radius={[0, 0, 0, 0]} maxBarSize={36} name="PRO" />
-              <Bar dataKey="fat" stackId="macros" fill={MACRO_COLORS.fat} radius={[0, 0, 0, 0]} maxBarSize={36} name="FAT" />
-              <Bar dataKey="carbs" stackId="macros" fill={MACRO_COLORS.kh} radius={[0, 0, 0, 0]} maxBarSize={36} name="KH" />
-              <Bar dataKey="fiber" stackId="macros" fill={MACRO_COLORS.fib} radius={[6, 6, 0, 0]} maxBarSize={36} name="FIB" />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-      </div>
+      {/* Daily macro with day selector */}
+      <DailyMacroCard weekData={weekData} highlighted={hl === "section-makros-pro-tag"} />
 
       {/* Macro Distribution */}
       <div id="section-makro-verteilung" data-section className={`glass-card rounded-xl p-3 ${hl === "section-makro-verteilung" ? "section-card-highlight" : ""}`}>
