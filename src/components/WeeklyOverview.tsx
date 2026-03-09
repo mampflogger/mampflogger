@@ -318,7 +318,7 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
     return (
       <div className="rounded-lg border border-border bg-popover px-3 py-2 shadow-md text-xs">
         <p className="font-semibold text-popover-foreground">{dateLabel}</p>
-        <p style={{ color: data.deficit >= 0 ? "hsl(var(--success))" : "hsl(var(--destructive))" }}>
+        <p style={{ color: data.deficit >= 0 ? "hsl(var(--primary))" : "hsl(var(--destructive))" }}>
           <span className="font-bold">{data.deficit >= 0 ? `-${data.deficit}` : `+${Math.abs(data.deficit)}`}</span> kcal
         </p>
       </div>
