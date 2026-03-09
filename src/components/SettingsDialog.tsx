@@ -2217,6 +2217,15 @@ const SettingsDialog = ({
               <p className="text-[9px] text-muted-foreground">Speichert Profil, Protokoll, Aktivitäten, Lebensmittel & Einstellungen.</p>
             </div>
 
+            {/* CLOUD BACKUP Section */}
+            <div id="section-cloud-backup" className={`glass-card rounded-xl p-3 space-y-2 ${highlightedSettingsSection === "section-cloud-backup" ? "section-card-highlight" : ""}`}>
+              <div className="flex items-center gap-1.5">
+                <HardDrive className="w-3.5 h-3.5 text-primary" />
+                <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Cloud-Backup</h2>
+              </div>
+              <CloudBackupSettings />
+            </div>
+
             {/* DELETE Section */}
             <div id="section-loeschen" className={`glass-card rounded-xl p-3 space-y-1.5 ${highlightedSettingsSection === "section-loeschen" ? "section-card-highlight" : ""}`}>
               <div className="flex items-center gap-1.5">
