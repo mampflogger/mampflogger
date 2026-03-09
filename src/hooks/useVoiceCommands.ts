@@ -215,6 +215,10 @@ const FUZZY_KEYWORD_MAP: [string, string][] = [
   ["foto", "action:camera"],
   ["mikro aus", "action:mic-off"],
   ["mikrofon aus", "action:mic-off"],
+  ["home", "action:home"],
+  ["start", "action:home"],
+  ["startseite", "action:home"],
+  ["anfang", "action:home"],
 ];
 
 // Map section IDs to the page they belong to
