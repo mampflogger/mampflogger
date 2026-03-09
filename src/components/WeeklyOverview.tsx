@@ -348,11 +348,11 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
               <p className="text-xs text-muted-foreground font-medium">Ø Defizit</p>
               <div className="flex items-center justify-center gap-0.5 mt-0.5">
                 {avgDeficit7 > 0 ? (
-                  <TrendingDown className="w-3.5 h-3.5 shrink-0" style={{ color: "hsl(var(--success))" }} />
+                  <TrendingDown className="w-3.5 h-3.5 shrink-0" style={{ color: "hsl(var(--primary))" }} />
                 ) : (
                   <TrendingUp className="w-3.5 h-3.5 shrink-0" style={{ color: "hsl(var(--destructive))" }} />
                 )}
-                <p className="text-xl font-bold tabular-nums tracking-tight leading-tight" style={{ color: avgDeficit7 > 0 ? "hsl(var(--success))" : "hsl(var(--destructive))" }}>
+                <p className="text-xl font-bold tabular-nums tracking-tight leading-tight" style={{ color: avgDeficit7 > 0 ? "hsl(var(--primary))" : "hsl(var(--destructive))" }}>
                   {Math.abs(avgDeficit7)}
                 </p>
               </div>
