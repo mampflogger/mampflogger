@@ -1127,15 +1127,6 @@ const Index = () => {
               <p className="text-muted-foreground/60 text-xs text-center mt-2">Gib ein neues Lebensmittel mit Name und Menge ein</p>
             </div>
 
-            {todayEntries.length > 0 && (
-              <div id="section-makro-naehrstoffe" data-section className={`glass-card rounded-xl p-3 mb-3 ${hl === "section-makro-naehrstoffe" ? "section-card-highlight" : ""}`}>
-                <SectionHeading highlighted={hl === "section-makro-naehrstoffe"} className="mb-2">
-                  Makro Nährstoffverteilung
-                </SectionHeading>
-                <MacroBar summary={todaySummary} />
-              </div>
-            )}
-
             <div id="section-tagesuebersicht" data-section className={`glass-card rounded-xl p-3 mb-3 ${hl === "section-tagesuebersicht" ? "section-card-highlight" : ""}`}>
               <SectionHeading highlighted={hl === "section-tagesuebersicht"} className="mb-2">
                 Tagesübersicht
@@ -1147,6 +1138,15 @@ const Index = () => {
               </SectionHeading>
               <NutritionTable entries={todayEntries} onDelete={handleDelete} onEntryClick={handleEntryClick} />
             </div>
+
+            {todayEntries.length > 0 && (
+              <div id="section-makro-naehrstoffe" data-section className={`glass-card rounded-xl p-3 mb-3 ${hl === "section-makro-naehrstoffe" ? "section-card-highlight" : ""}`}>
+                <SectionHeading highlighted={hl === "section-makro-naehrstoffe"} className="mb-2">
+                  Makro Nährstoffverteilung
+                </SectionHeading>
+                <MacroBar summary={todaySummary} />
+              </div>
+            )}
 
             <div id="section-kalorienaufnahme" data-section className={`glass-card rounded-xl p-3 mb-3 ${hl === "section-kalorienaufnahme" ? "section-card-highlight" : ""}`}>
               <SectionHeading highlighted={hl === "section-kalorienaufnahme"} className="mb-2">
