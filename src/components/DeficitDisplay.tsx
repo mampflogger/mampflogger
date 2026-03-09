@@ -133,7 +133,7 @@ const DeficitDisplay = ({ profile, activityBonus, consumedCalories, goalDeficit 
             <span>
               <span className="font-bold">{consumedVsBudgetPercent}%</span> des Kalorienbudgets verbraucht.
             </span>
-            <span style={{ color: overBudget ? "hsl(var(--destructive) / 0.7)" : "hsl(var(--success) / 0.7)" }}>
+            <span style={{ color: overBudget ? "hsl(var(--destructive) / 0.7)" : "hsl(var(--primary) / 0.7)" }}>
               Defizit-Zone
             </span>
           </div>
