@@ -462,7 +462,7 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
       {/* Macro Distribution */}
       <div id="section-makro-verteilung" data-section className={`glass-card rounded-xl p-3 ${hl === "section-makro-verteilung" ? "section-card-highlight" : ""}`}>
         <SectionHeading highlighted={hl === "section-makro-verteilung"} className="mb-2">
-          Makro-Verteilung (7 Tage)
+          ø Makro-Verteilung (7 Tage)
         </SectionHeading>
         <div className="space-y-1.5">
           {[
