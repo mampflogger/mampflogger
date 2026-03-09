@@ -708,7 +708,7 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
                placeholder="0"
                value={field.value}
                onChange={(e) => field.setter(e.target.value)}
-               className="h-5 text-[9px] px-1 text-center tabular-nums rounded-full"
+               className="h-4 text-[7px] px-1 text-center tabular-nums rounded-full"
              />
            </div>
          ))}
