@@ -682,7 +682,7 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
                value={amount}
                onChange={(e) => handleAmountChange(e.target.value)}
                onFocus={() => setFocusedField("amount")}
-               className={`h-8 text-[10px] px-2 ${isVoiceActive && focusedField === "amount" ? "ring-2 ring-primary" : ""}`}
+               className={`h-8 text-[10px] font-semibold px-2 ${isVoiceActive && focusedField === "amount" ? "ring-2 ring-primary" : ""}`}
              />
            </div>
          </div>
