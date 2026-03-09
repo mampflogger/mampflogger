@@ -93,6 +93,9 @@ const COMMANDS: VoiceCommand[] = [
   { patterns: [/\brunter\b/i, /\bnach\s*unten\b/i, /\bunten\b/i, /\bscroll\s*runter\b/i], action: "scroll:down" },
   { patterns: [/\bhoch\b/i, /\brauf\b/i, /\bnach\s*oben\b/i, /\boben\b/i, /\bscroll\s*hoch\b/i], action: "scroll:up" },
 
+  // Global escape / home
+  { patterns: [/\bhome\b/i, /\bstart\b/i, /\bstartseite\b/i, /\bhauptseite\b/i, /\banfang\b/i], action: "action:home" },
+
   // Navigation
   { patterns: [/\bheute\b/i], action: "action:date-today" },
   { patterns: [/\bdatum\b/i], action: "action:date-focus" },
@@ -212,6 +215,10 @@ const FUZZY_KEYWORD_MAP: [string, string][] = [
   ["foto", "action:camera"],
   ["mikro aus", "action:mic-off"],
   ["mikrofon aus", "action:mic-off"],
+  ["home", "action:home"],
+  ["start", "action:home"],
+  ["startseite", "action:home"],
+  ["anfang", "action:home"],
 ];
 
 // Map section IDs to the page they belong to
@@ -258,8 +265,8 @@ interface StartVoiceOptions {
 
 type VoiceCommandScope = "global" | "scoped-input";
 
-const SCOPED_INPUT_ALLOWED_PREFIXES = ["field:", "nav:"];
-const SCOPED_INPUT_ALLOWED_ACTIONS = new Set(["settings:open", "action:mic-off"]);
+const SCOPED_INPUT_ALLOWED_PREFIXES = ["field:", "nav:", "settings:", "section:", "scroll:", "action:", "theme:", "nutrient:"];
+const SCOPED_INPUT_ALLOWED_ACTIONS = new Set(["action:mic-off", "action:home"]);
 
 function getVoiceCommandScope(): VoiceCommandScope {
   const activeElement = document.activeElement as HTMLElement | null;
