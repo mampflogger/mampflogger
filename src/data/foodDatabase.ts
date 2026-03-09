@@ -273,7 +273,6 @@ const LEGACY_FOOD_RENAMES: Record<string, string> = {
   "Bratwurst Lamm": "Bratwurst (Lamm)",
   "Bratwurst Rind": "Bratwurst (Rind)",
   "Bratwurst Schwein": "Bratwurst (Schwein)",
-  "Appenzeller 50 %": "Appenzeller 50 % i. Tr.",
 };
 
 const LEGACY_CATEGORY_RENAMES: Partial<Record<string, FoodCategory>> = {
