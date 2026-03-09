@@ -720,21 +720,21 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
            ref={submitButtonRef}
            type="submit"
            onFocus={() => setFocusedField("submit")}
-           className={`flex-1 h-8 rounded-full text-[9px] font-semibold transition-colors ${
+           className={`flex-1 h-7 rounded-full text-[10px] font-semibold transition-colors ${
              isVoiceActive && focusedField === "submit"
                ? "bg-primary text-primary-foreground ring-2 ring-primary"
                : "bg-primary text-primary-foreground hover:bg-primary/90"
            }`}
          >
            {isVoiceActive && (focusedField === "submit" || focusedField === "amount")
-             ? <span className="italic text-[8px]">Sag „Okay", „Ja" oder „Buchen"</span>
+             ? <span className="italic text-[9px]">Sag „Okay", „Ja" oder „Buchen"</span>
              : (editingEntry ? "Speichern" : "Hinzufügen")}
          </button>
          {editingEntry && (
            <button
              type="button"
              onClick={handleCancel}
-             className="h-8 px-4 rounded-full text-[9px] font-semibold text-muted-foreground bg-accent hover:bg-muted/80"
+             className="h-7 px-4 rounded-full text-[10px] font-semibold text-muted-foreground bg-accent hover:bg-muted/80"
            >
              Abbrechen
            </button>
