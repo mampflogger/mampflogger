@@ -318,7 +318,7 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
     return (
       <div className="rounded-lg border border-border bg-popover px-3 py-2 shadow-md text-xs">
         <p className="font-semibold text-popover-foreground">{dateLabel}</p>
-        <p style={{ color: data.deficit >= 0 ? "hsl(var(--success))" : "hsl(var(--destructive))" }}>
+        <p style={{ color: data.deficit >= 0 ? "hsl(var(--primary))" : "hsl(var(--destructive))" }}>
           <span className="font-bold">{data.deficit >= 0 ? `-${data.deficit}` : `+${Math.abs(data.deficit)}`}</span> kcal
         </p>
       </div>
@@ -348,11 +348,11 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
               <p className="text-xs text-muted-foreground font-medium">Ø Defizit</p>
               <div className="flex items-center justify-center gap-0.5 mt-0.5">
                 {avgDeficit7 > 0 ? (
-                  <TrendingDown className="w-3.5 h-3.5 shrink-0" style={{ color: "hsl(var(--success))" }} />
+                  <TrendingDown className="w-3.5 h-3.5 shrink-0" style={{ color: "hsl(var(--primary))" }} />
                 ) : (
                   <TrendingUp className="w-3.5 h-3.5 shrink-0" style={{ color: "hsl(var(--destructive))" }} />
                 )}
-                <p className="text-xl font-bold tabular-nums tracking-tight leading-tight" style={{ color: avgDeficit7 > 0 ? "hsl(var(--success))" : "hsl(var(--destructive))" }}>
+                <p className="text-xl font-bold tabular-nums tracking-tight leading-tight" style={{ color: avgDeficit7 > 0 ? "hsl(var(--primary))" : "hsl(var(--destructive))" }}>
                   {Math.abs(avgDeficit7)}
                 </p>
               </div>
@@ -457,7 +457,7 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
                 <Tooltip content={<DeficitTooltip />} cursor={{ fill: "hsl(var(--accent) / 0.4)" }} />
                 <Bar dataKey="deficit" radius={[6, 6, 0, 0]} maxBarSize={36}>
                   {deficitData.map((entry, index) => (
-                    <Cell key={index} fill={entry.deficit >= 0 ? "hsl(var(--success))" : "hsl(var(--destructive))"} />
+                    <Cell key={index} fill={entry.deficit >= 0 ? "hsl(var(--primary))" : "hsl(var(--destructive))"} />
                   ))}
                 </Bar>
                 <ReferenceLine y={0} stroke="hsl(var(--border))" strokeWidth={0.5} />
