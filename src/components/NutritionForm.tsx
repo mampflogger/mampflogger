@@ -716,32 +716,32 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
          </div>
        </div>
 
-      {/* Submit button */}
-      <div className="flex gap-2">
-        <button
-          ref={submitButtonRef}
-          type="submit"
-          onFocus={() => setFocusedField("submit")}
-          className={`flex-1 h-9 rounded-full text-sm font-semibold transition-colors ${
-            isVoiceActive && focusedField === "submit"
-              ? "bg-primary text-primary-foreground ring-2 ring-primary"
-              : "bg-primary text-primary-foreground hover:bg-primary/90"
-          }`}
-        >
-          {isVoiceActive && (focusedField === "submit" || focusedField === "amount")
-            ? <span className="italic">Sag „Okay", „Ja" oder „Buchen"</span>
-            : (editingEntry ? "Speichern" : "Hinzufügen")}
-        </button>
-        {editingEntry && (
-          <button
-            type="button"
-            onClick={handleCancel}
-            className="h-9 px-4 rounded-full text-sm font-semibold text-muted-foreground bg-accent hover:bg-muted/80"
-          >
-            Abbrechen
-          </button>
-        )}
-      </div>
+       {/* Submit button */}
+       <div className="flex gap-2">
+         <button
+           ref={submitButtonRef}
+           type="submit"
+           onFocus={() => setFocusedField("submit")}
+           className={`flex-1 h-8 rounded-full text-[9px] font-semibold transition-colors ${
+             isVoiceActive && focusedField === "submit"
+               ? "bg-primary text-primary-foreground ring-2 ring-primary"
+               : "bg-primary text-primary-foreground hover:bg-primary/90"
+           }`}
+         >
+           {isVoiceActive && (focusedField === "submit" || focusedField === "amount")
+             ? <span className="italic text-[8px]">Sag „Okay", „Ja" oder „Buchen"</span>
+             : (editingEntry ? "Speichern" : "Hinzufügen")}
+         </button>
+         {editingEntry && (
+           <button
+             type="button"
+             onClick={handleCancel}
+             className="h-8 px-4 rounded-full text-[9px] font-semibold text-muted-foreground bg-accent hover:bg-muted/80"
+           >
+             Abbrechen
+           </button>
+         )}
+       </div>
     </form>
   );
 };
