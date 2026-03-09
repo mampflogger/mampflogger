@@ -335,6 +335,16 @@ const Index = () => {
           setSettingsVoiceAction("recipe-search");
         }
       }
+      else if (action === "action:home") {
+        // Global escape: blur any focused input, close settings, go to log page top
+        (document.activeElement as HTMLElement)?.blur?.();
+        closeSettingsAndDo(() => {
+          setActiveTab("log");
+          window.scrollTo({ top: 0, behavior: "smooth" });
+          focusFoodField(300);
+        });
+        return;
+      }
       else if (action === "action:mic-off") {
         voiceCommands.stop();
         return;
