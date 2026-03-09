@@ -309,6 +309,17 @@ function loadFoodDatabase(): FoodItem[] {
     const cleanedStored: FoodItem[] = [];
     const seenStoredNames = new Set<string>();
     for (const item of stored) {
+      // Clean cheese names
+      if (item.name.toLowerCase().includes('i. tr') || item.name.toLowerCase().includes('i.tr')) {
+        item.name = item.name
+            .replace(/\s*Fett\s*i\.?\s*Tr\.?/gi, '')
+            .replace(/\s*i\.?\s*Tr\.?/gi, '')
+            .replace(/\(\s*(\d+\s*%)\s*\)/g, '$1')
+            .replace(/\s+/g, ' ')
+            .trim();
+        changed = true;
+      }
+
       const key = item.name.toLowerCase();
       if (!remoteSyncEnabled && item.isRemote) {
         changed = true;
