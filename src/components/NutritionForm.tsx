@@ -556,9 +556,9 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
   return (
     <form onSubmit={handleSubmit} className="animate-fade-in relative">
        {/* Row 1: Time (1), Food (3), Amount (1) → 5 cols total */}
-       <div className="grid grid-cols-5 gap-2 mb-2">
+       <div className="grid grid-cols-5 gap-2 mb-1.5">
          <div className="col-span-1">
-           <Label htmlFor="time" className="text-[8px] font-medium text-muted-foreground mb-1 block">
+           <Label htmlFor="time" className="text-[9px] font-medium text-muted-foreground mb-0.5 block">
              Uhrzeit
            </Label>
            <Input
@@ -570,13 +570,13 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
              value={time}
              onChange={(e) => handleTimeChange(e.target.value)}
              onFocus={() => setFocusedField("time")}
-             className="h-8 text-[8px] px-1 min-w-0 text-center"
+             className="h-8 text-[10px] px-1 min-w-0 text-center"
              autoCorrect="off"
              spellCheck={false}
            />
          </div>
          <div ref={wrapperRef} className="relative col-span-3">
-           <Label htmlFor="food" className="text-[8px] font-medium text-muted-foreground mb-1 block truncate">
+           <Label htmlFor="food" className="text-[9px] font-medium text-muted-foreground mb-0.5 block truncate">
              Lebensmittel
            </Label>
            <div className="relative">
@@ -592,7 +592,7 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
                  if (suggestions.length > 0) setShowSuggestions(true);
                }}
                onKeyDown={handleKeyDown}
-               className={`h-8 text-[9px] px-2 pr-7 ${isVoiceActive && focusedField === "food" ? "ring-2 ring-primary" : ""}`}
+               className={`h-8 text-[10px] px-2 pr-7 ${isVoiceActive && focusedField === "food" ? "ring-2 ring-primary" : ""}`}
                autoComplete="off"
                autoCorrect="off"
                spellCheck={false}
@@ -624,7 +624,7 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
              >
                {onNewFood && (
                  <li
-                   className={`flex items-center px-3 py-2 text-[9px] cursor-pointer transition-colors font-semibold text-primary hover:bg-muted/60 ${
+                   className={`flex items-center px-3 py-2 text-[10px] cursor-pointer transition-colors font-semibold text-primary hover:bg-muted/60 ${
                      highlightIndex === -2 ? "bg-accent text-accent-foreground" : ""
                    }`}
                    onMouseDown={(e) => {
@@ -642,7 +642,7 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
                  return (
                    <li
                      key={item.name}
-                     className={`flex items-center justify-between px-3 py-2 text-[9px] cursor-pointer transition-colors ${
+                     className={`flex items-center justify-between px-3 py-2 text-[10px] cursor-pointer transition-colors ${
                        index === highlightIndex
                          ? "bg-accent text-accent-foreground"
                          : "hover:bg-muted/60"
@@ -668,7 +668,7 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
            )}
          </div>
          <div className="col-span-1">
-           <Label htmlFor="amount" className="text-[8px] font-medium text-muted-foreground mb-1 block truncate">
+           <Label htmlFor="amount" className="text-[9px] font-medium text-muted-foreground mb-0.5 block truncate">
              {selectedFood ? (selectedFood.baseUnit.startsWith("1 ") ? selectedFood.baseUnit.substring(2) : "g/ml") : "g/ml"}
            </Label>
            <div className="relative">
@@ -682,38 +682,36 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
                value={amount}
                onChange={(e) => handleAmountChange(e.target.value)}
                onFocus={() => setFocusedField("amount")}
-               className={`h-8 text-[9px] px-2 ${isVoiceActive && focusedField === "amount" ? "ring-2 ring-primary" : ""}`}
+               className={`h-8 text-[10px] px-2 ${isVoiceActive && focusedField === "amount" ? "ring-2 ring-primary" : ""}`}
              />
            </div>
          </div>
        </div>
 
-       {/* Row 2: Calories + Macros */}
-       <div className="grid grid-cols-6 gap-1 mb-2">
-         <div>
-           <Label htmlFor="calories" className="text-[7px] font-medium text-muted-foreground mb-0.5 block">kcal</Label>
-           <Input id="calories" type="number" inputMode="decimal" step="any" placeholder="0" value={calories} onChange={(e) => setCalories(e.target.value)} className="h-8 text-[8px] px-1 text-center tabular-nums" />
-         </div>
-         <div>
-           <Label htmlFor="protein" className="text-[7px] font-medium text-muted-foreground mb-0.5 block">PRO</Label>
-           <Input id="protein" type="number" inputMode="decimal" step="any" placeholder="0" value={protein} onChange={(e) => setProtein(e.target.value)} className="h-8 text-[8px] px-1 text-center tabular-nums" />
-         </div>
-         <div>
-           <Label htmlFor="fat" className="text-[7px] font-medium text-muted-foreground mb-0.5 block">FAT</Label>
-           <Input id="fat" type="number" inputMode="decimal" step="any" placeholder="0" value={fat} onChange={(e) => setFat(e.target.value)} className="h-8 text-[8px] px-1 text-center tabular-nums" />
-         </div>
-         <div>
-           <Label htmlFor="carbs" className="text-[7px] font-medium text-muted-foreground mb-0.5 block">KH</Label>
-           <Input id="carbs" type="number" inputMode="decimal" step="any" placeholder="0" value={carbs} onChange={(e) => setCarbs(e.target.value)} className="h-8 text-[8px] px-1 text-center tabular-nums" />
-         </div>
-         <div>
-           <Label htmlFor="fiber" className="text-[7px] font-medium text-muted-foreground mb-0.5 block">FIB</Label>
-           <Input id="fiber" type="number" inputMode="decimal" step="any" placeholder="0" value={fiber} onChange={(e) => setFiber(e.target.value)} className="h-8 text-[8px] px-1 text-center tabular-nums" />
-         </div>
-         <div>
-           <Label htmlFor="gi" className="text-[7px] font-medium text-muted-foreground mb-0.5 block">GI</Label>
-           <Input id="gi" type="number" inputMode="decimal" step="any" placeholder="0" value={gi} onChange={(e) => setGi(e.target.value)} className="h-8 text-[8px] px-1 text-center tabular-nums" />
-         </div>
+       {/* Row 2: Calories + Macros – compact pill badges */}
+       <div className="grid grid-cols-6 gap-1 mb-1.5">
+         {[
+           { id: "calories", label: "kcal", value: calories, setter: setCalories },
+           { id: "protein", label: "PRO", value: protein, setter: setProtein },
+           { id: "fat", label: "FAT", value: fat, setter: setFat },
+           { id: "carbs", label: "KH", value: carbs, setter: setCarbs },
+           { id: "fiber", label: "FIB", value: fiber, setter: setFiber },
+           { id: "gi", label: "GI", value: gi, setter: setGi },
+         ].map((field) => (
+           <div key={field.id} className="flex flex-col items-center">
+             <span className="text-[7px] font-medium text-muted-foreground mb-0.5">{field.label}</span>
+             <Input
+               id={field.id}
+               type="number"
+               inputMode="decimal"
+               step="any"
+               placeholder="0"
+               value={field.value}
+               onChange={(e) => field.setter(e.target.value)}
+               className="h-5 text-[9px] px-1 text-center tabular-nums rounded-full"
+             />
+           </div>
+         ))}
        </div>
 
        {/* Submit button */}
