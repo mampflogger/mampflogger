@@ -101,7 +101,7 @@ const DeficitDisplay = ({ profile, activityBonus, consumedCalories, goalDeficit 
                 width: `${deficitZonePct}%`,
                 backgroundColor: overBudget
                   ? "hsl(var(--destructive) / 0.20)"
-                  : "hsl(var(--success) / 0.25)",
+                  : "hsl(var(--primary) / 0.20)",
               }}
             />
             {/* Orange consumed bar – grows left to right, stops at eatingBudget boundary */}
