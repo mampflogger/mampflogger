@@ -38,7 +38,7 @@ const HELP_TOPICS: Record<HelpTab, HelpTopic[]> = {
   ],
   sprache: [
     { label: "Mikrofon aktivieren", description: "Tippe auf das Mikrofon-Symbol im Header, um die Sprachsteuerung zu starten. Wenn das Mikrofon rot pulsiert, hört die App zu. Nochmal tippen schaltet es wieder aus." },
-    { label: "Lebensmittel diktieren", description: "Sage z. B. '200 Gramm Hähnchenbrust' oder 'ein Apfel'. Die App erkennt das Lebensmittel und die Menge und trägt es automatisch ein." },
+    { label: "Lebensmittel diktieren", description: "Im Lebensmittel-Feld sagst du den Namen, z. B. 'Hähnchenbrust'. Die App sucht passende Treffer und wählt den besten aus. Dann springt der Fokus automatisch ins Mengenfeld – dort sagst du die Menge, z. B. '200'. Anschließend bestätigst du mit 'Okay' oder 'Buchen'." },
     { label: "Navigation per Sprache", description: "Du kannst per Sprache zwischen den Bereichen wechseln. Sage z. B. 'zeig mir die Statistik', 'öffne Einstellungen' oder 'gehe zur Eingabe'." },
     { label: "Weitere Sprachbefehle", description: "Du kannst auch Aktivitäten diktieren ('30 Minuten Joggen'), Einträge löschen ('lösche den letzten Eintrag') oder nach Informationen fragen ('wie viel Kalorien habe ich heute?')." },
   ],
