@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { NutritionEntry, calculateDailySummary, formatDate } from "@/types/nutrition";
 import SectionHeading from "@/components/SectionHeading";
 import {
