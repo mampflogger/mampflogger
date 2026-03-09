@@ -699,7 +699,7 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
            { id: "gi", label: "GI", value: gi, setter: setGi },
          ].map((field) => (
            <div key={field.id} className="flex flex-col items-center">
-             <span className="text-[7px] font-medium text-muted-foreground mb-0.5">{field.label}</span>
+             <span className="text-[6px] font-medium text-muted-foreground mb-0.5">{field.label}</span>
              <Input
                id={field.id}
                type="number"
