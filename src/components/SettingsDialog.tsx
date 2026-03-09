@@ -43,6 +43,7 @@ import { toast } from "sonner";
 import { syncRemoteFoodDatabase, loadRemoteUrl } from "@/lib/remoteFoodSync";
 import RecipeGenerator from "@/components/RecipeGenerator";
 import RecipesTab from "@/components/RecipesTab";
+import { CloudBackupSettings } from "@/components/CloudBackupSettings";
 
 type SettingsTab = "profile" | "design" | "food" | "recipes" | "data";
 
@@ -2125,10 +2126,19 @@ const SettingsDialog = ({
             </div>
 
 
+            {/* CLOUD BACKUP Section */}
+            <div id="section-cloud-backup" className={`glass-card rounded-xl p-3 space-y-2 ${highlightedSettingsSection === "section-cloud-backup" ? "section-card-highlight" : ""}`}>
+              <div className="flex items-center gap-1.5">
+                <HardDrive className="w-3.5 h-3.5 text-primary" />
+                <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Cloud-Backup</h2>
+              </div>
+              <CloudBackupSettings />
+            </div>
+
             {/* BACKUP Section */}
             <div id="section-backup" className={`glass-card rounded-xl p-3 space-y-1.5 ${highlightedSettingsSection === "section-backup" ? "section-card-highlight" : ""}`}>
               <div className="flex items-center gap-1.5">
-                <HardDrive className="w-3.5 h-3.5 text-primary" />
+                <Download className="w-3.5 h-3.5 text-primary" />
                 <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Backup</h2>
               </div>
               <div className="grid grid-cols-2 gap-1.5">

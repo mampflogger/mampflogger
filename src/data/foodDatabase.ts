@@ -109,8 +109,18 @@ function parseDefaultFoodsCsv(csv: string): FoodItem[] {
   for (let i = 1; i < lines.length; i++) {
     const cols = lines[i].split(";").map(c => c.trim().replace(/^"|"$/g, ""));
     if (cols.length < 7) continue;
-    const name = cols[0];
+    let name = cols[0];
     if (!name) continue;
+
+    // Clean cheese names (e.g. "Gouda 45% Fett i. Tr." -> "Gouda 45%")
+    if (name.toLowerCase().includes('i. tr') || name.toLowerCase().includes('i.tr')) {
+      name = name
+          .replace(/\s*Fett\s*i\.?\s*Tr\.?/gi, '')
+          .replace(/\s*i\.?\s*Tr\.?/gi, '')
+          .replace(/\(\s*(\d+\s*%)\s*\)/g, '$1')
+          .replace(/\s+/g, ' ')
+          .trim();
+    }
 
     const baseUnit = cols[1] || "100g";
     const baseAmount = baseUnit.includes("Stk") ? 1 : 100;
@@ -134,7 +144,6 @@ function parseDefaultFoodsCsv(csv: string): FoodItem[] {
       if (v !== undefined && !isNaN(v) && v > 0) { (minerals as any)[k] = v; hasMinerals = true; }
     });
 
-    // Dietary flags start at column 37 (after 12 mineral cols starting at 25)
     const dietary: FoodDietaryFlags = {};
     let hasDietary = false;
     DIETARY_FLAG_KEYS.forEach((k, idx) => {
@@ -264,7 +273,6 @@ const LEGACY_FOOD_RENAMES: Record<string, string> = {
   "Bratwurst Lamm": "Bratwurst (Lamm)",
   "Bratwurst Rind": "Bratwurst (Rind)",
   "Bratwurst Schwein": "Bratwurst (Schwein)",
-  "Appenzeller 50 %": "Appenzeller 50 % i. Tr.",
 };
 
 const LEGACY_CATEGORY_RENAMES: Partial<Record<string, FoodCategory>> = {
@@ -301,6 +309,17 @@ function loadFoodDatabase(): FoodItem[] {
     const cleanedStored: FoodItem[] = [];
     const seenStoredNames = new Set<string>();
     for (const item of stored) {
+      // Clean cheese names
+      if (item.name.toLowerCase().includes('i. tr') || item.name.toLowerCase().includes('i.tr')) {
+        item.name = item.name
+            .replace(/\s*Fett\s*i\.?\s*Tr\.?/gi, '')
+            .replace(/\s*i\.?\s*Tr\.?/gi, '')
+            .replace(/\(\s*(\d+\s*%)\s*\)/g, '$1')
+            .replace(/\s+/g, ' ')
+            .trim();
+        changed = true;
+      }
+
       const key = item.name.toLowerCase();
       if (!remoteSyncEnabled && item.isRemote) {
         changed = true;

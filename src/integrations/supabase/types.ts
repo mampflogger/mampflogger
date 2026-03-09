@@ -14,6 +14,24 @@ export type Database = {
   }
   public: {
     Tables: {
+      cloud_backups: {
+        Row: {
+          data: Json
+          id: string
+          updated_at: string | null
+        }
+        Insert: {
+          data: Json
+          id: string
+          updated_at?: string | null
+        }
+        Update: {
+          data?: Json
+          id?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       comments: {
         Row: {
           created_at: string
