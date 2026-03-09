@@ -504,6 +504,21 @@ const ActivityInput = ({
           setSelectedTypeId(activityTypes[0]?.id || "");
           selectTriggerRef.current?.focus();
         }
+      } else if (cmd === "field:open-dropdown") {
+        // Open the activity type dropdown
+        if (current === "type" || focusedFieldRef.current === "type") {
+          setIsTypeOpen(true);
+        } else {
+          // Focus type field first, then open dropdown
+          setFocusedField("type");
+          setTimeout(() => {
+            selectTriggerRef.current?.focus();
+            setIsTypeOpen(true);
+          }, 50);
+        }
+      } else if (cmd === "field:close-dropdown") {
+        setIsTypeOpen(false);
+        selectTriggerRef.current?.focus();
       }
     };
     window.addEventListener("mampflogger:field-command", handler);
