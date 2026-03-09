@@ -93,6 +93,9 @@ const COMMANDS: VoiceCommand[] = [
   { patterns: [/\brunter\b/i, /\bnach\s*unten\b/i, /\bunten\b/i, /\bscroll\s*runter\b/i], action: "scroll:down" },
   { patterns: [/\bhoch\b/i, /\brauf\b/i, /\bnach\s*oben\b/i, /\boben\b/i, /\bscroll\s*hoch\b/i], action: "scroll:up" },
 
+  // Global escape / home
+  { patterns: [/\bhome\b/i, /\bstart\b/i, /\bstartseite\b/i, /\bhauptseite\b/i, /\banfang\b/i], action: "action:home" },
+
   // Navigation
   { patterns: [/\bheute\b/i], action: "action:date-today" },
   { patterns: [/\bdatum\b/i], action: "action:date-focus" },
