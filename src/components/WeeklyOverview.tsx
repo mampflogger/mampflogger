@@ -464,26 +464,25 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
         <SectionHeading highlighted={hl === "section-makro-verteilung"} className="mb-2">
           Makro-Verteilung (7 Tage)
         </SectionHeading>
-        <div className="flex gap-1 h-4 rounded-full overflow-hidden bg-background">
-          {weekTotals.proteinPercent > 0 && <div className="rounded-full transition-all duration-500" style={{ width: `${weekTotals.proteinPercent}%`, backgroundColor: MACRO_COLORS.pro }} />}
-          {weekTotals.fatPercent > 0 && <div className="rounded-full transition-all duration-500" style={{ width: `${weekTotals.fatPercent}%`, backgroundColor: MACRO_COLORS.fat }} />}
-          {weekTotals.carbsPercent > 0 && <div className="rounded-full transition-all duration-500" style={{ width: `${weekTotals.carbsPercent}%`, backgroundColor: MACRO_COLORS.kh }} />}
-          {weekTotals.fiberPercent > 0 && <div className="rounded-full transition-all duration-500" style={{ width: `${weekTotals.fiberPercent}%`, backgroundColor: MACRO_COLORS.fib }} />}
-        </div>
-        <div className="grid grid-cols-4 gap-2 mt-3">
+        <div className="space-y-1.5">
           {[
-            { key: "pro", label: "PRO", percent: weekTotals.proteinPercent, grams: weekTotals.protein },
-            { key: "fat", label: "FAT", percent: weekTotals.fatPercent, grams: weekTotals.fat },
-            { key: "kh", label: "KH", percent: weekTotals.carbsPercent, grams: weekTotals.carbs },
-            { key: "fib", label: "FIB", percent: weekTotals.fiberPercent, grams: weekTotals.fiber },
+            { label: "PRO", percent: weekTotals.proteinPercent },
+            { label: "FAT", percent: weekTotals.fatPercent },
+            { label: "KH", percent: weekTotals.carbsPercent },
+            { label: "FIB", percent: weekTotals.fiberPercent },
           ].map((m) => (
-            <div key={m.key} className="flex items-center gap-2 text-xs">
-              <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: MACRO_COLORS[m.key as keyof typeof MACRO_COLORS] }} />
-              <div>
-                <span className="font-semibold">{m.percent}%</span>
-                <span className="text-muted-foreground ml-1">{m.label}</span>
-                <p className="text-muted-foreground">{m.grams}g</p>
+            <div key={m.label} className="flex items-center gap-2 text-[11px]">
+              <span className="w-7 font-semibold text-muted-foreground shrink-0">{m.label}</span>
+              <div className="flex-1 h-3 rounded-full overflow-hidden bg-muted">
+                <div
+                  className="h-full rounded-full transition-all duration-500"
+                  style={{
+                    width: `${m.percent}%`,
+                    background: "linear-gradient(90deg, hsl(var(--primary) / 0.9), hsl(var(--primary) / 0.35))",
+                  }}
+                />
               </div>
+              <span className="w-8 text-right font-semibold tabular-nums text-foreground shrink-0">{m.percent}%</span>
             </div>
           ))}
         </div>
