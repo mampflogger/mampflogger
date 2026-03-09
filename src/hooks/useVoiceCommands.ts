@@ -258,8 +258,8 @@ interface StartVoiceOptions {
 
 type VoiceCommandScope = "global" | "scoped-input";
 
-const SCOPED_INPUT_ALLOWED_PREFIXES = ["field:", "nav:"];
-const SCOPED_INPUT_ALLOWED_ACTIONS = new Set(["settings:open", "action:mic-off"]);
+const SCOPED_INPUT_ALLOWED_PREFIXES = ["field:", "nav:", "settings:", "section:", "scroll:", "action:", "theme:", "nutrient:"];
+const SCOPED_INPUT_ALLOWED_ACTIONS = new Set(["action:mic-off", "action:home"]);
 
 function getVoiceCommandScope(): VoiceCommandScope {
   const activeElement = document.activeElement as HTMLElement | null;
