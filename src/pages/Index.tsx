@@ -1184,6 +1184,15 @@ const Index = () => {
               </div>
             )}
 
+            {todayEntries.length > 0 && (
+              <div id="section-makro-naehrstoffe" data-section className={`glass-card rounded-xl p-3 mb-3 ${hl === "section-makro-naehrstoffe" ? "section-card-highlight" : ""}`}>
+                <SectionHeading highlighted={hl === "section-makro-naehrstoffe"} className="mb-2">
+                  Makro Nährstoffverteilung
+                </SectionHeading>
+                <MacroBar summary={todaySummary} />
+              </div>
+            )}
+
             {profile && (
               <div id="section-fluessigkeit" data-section className={`glass-card rounded-xl p-3 mb-3 ${hl === "section-fluessigkeit" ? "section-card-highlight" : ""}`}>
                 <SectionHeading highlighted={hl === "section-fluessigkeit"} className="mb-2">
