@@ -982,7 +982,7 @@ const Index = () => {
               <Button
                 variant="ghost"
                 size="icon"
-                className={`h-8 w-8 ${activeTab === "log" ? "ring-2 ring-primary bg-muted" : ""} ${highlightedTab === "log" ? "section-card-highlight rounded-lg" : ""}`}
+                className={`h-8 w-8 ${activeTab === "log" && !settingsOpen ? "ring-2 ring-primary bg-muted" : ""} ${highlightedTab === "log" ? "section-card-highlight rounded-lg" : ""}`}
                 onClick={() => { setActiveTab("log"); window.scrollTo({ top: 0, behavior: "smooth" }); }}
                 title="Eingabe"
               >
@@ -991,7 +991,7 @@ const Index = () => {
               <Button
                 variant="ghost"
                 size="icon"
-                className={`h-8 w-8 ${activeTab === "weekly" ? "ring-2 ring-primary bg-muted" : ""} ${highlightedTab === "weekly" ? "section-card-highlight rounded-lg" : ""}`}
+                className={`h-8 w-8 ${activeTab === "weekly" && !settingsOpen ? "ring-2 ring-primary bg-muted" : ""} ${highlightedTab === "weekly" ? "section-card-highlight rounded-lg" : ""}`}
                 onClick={() => { setActiveTab("weekly"); window.scrollTo({ top: 0, behavior: "smooth" }); }}
                 title="Statistik"
               >
@@ -1042,7 +1042,7 @@ const Index = () => {
               <Button
                 variant="ghost"
                 size="icon"
-                className={`h-8 w-8 ${activeTab === "help" ? "ring-2 ring-primary bg-muted" : ""}`}
+                className={`h-8 w-8 ${activeTab === "help" && !settingsOpen ? "ring-2 ring-primary bg-muted" : ""}`}
                 onClick={() => { const next = activeTab === "help" ? "log" : "help"; setActiveTab(next); window.scrollTo({ top: 0, behavior: "smooth" }); }}
                 title="Hilfe"
               >
