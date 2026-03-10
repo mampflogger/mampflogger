@@ -1004,10 +1004,10 @@ const Index = () => {
                   variant="ghost"
                   size="icon"
                   onClick={voiceCommands.toggle}
-                  className={`h-8 w-8 ${voiceCommands.isListening ? "bg-destructive/15 text-destructive animate-pulse" : ""}`}
+                  className={`h-8 w-8 ${voiceCommands.isListening ? "ring-2 ring-primary animate-pulse" : ""}`}
                   title={voiceCommands.isListening ? "Mikrofon aus" : "Sprachsteuerung"}
                 >
-                  {voiceCommands.isListening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
+                  <Mic className="w-4 h-4" />
                 </Button>
               )}
               <Button
