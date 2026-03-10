@@ -1043,7 +1043,7 @@ const Index = () => {
                 variant="ghost"
                 size="icon"
                 className={`h-8 w-8 ${activeTab === "help" ? "ring-2 ring-primary bg-muted" : ""}`}
-                onClick={() => setActiveTab(activeTab === "help" ? "log" : "help")}
+                onClick={() => { const next = activeTab === "help" ? "log" : "help"; setActiveTab(next); window.scrollTo({ top: 0, behavior: "smooth" }); }}
                 title="Hilfe"
               >
                 <HelpCircle className="w-4 h-4" />
