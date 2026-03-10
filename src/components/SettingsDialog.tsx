@@ -2145,6 +2145,7 @@ const SettingsDialog = ({
               </div>
               <div className="grid grid-cols-2 gap-1.5">
                 <Button
+                  id="backup-create-btn"
                   variant="outline"
                   size="sm"
                   className="h-9 text-xs gap-1.5"
