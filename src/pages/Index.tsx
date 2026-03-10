@@ -589,6 +589,27 @@ const Index = () => {
         const lower = transcript.toLowerCase();
         const activeNutrientKind = getNutrientKindForSection(activeSectionRef.current);
 
+        // Weekday selection for "Makros pro Tag" section
+        if (!isInterim && activeSectionRef.current === "section-makros-pro-tag") {
+          const weekdayMap: Record<string, string> = {
+            montag: "Mo", dienstag: "Di", mittwoch: "Mi", donnerstag: "Do",
+            freitag: "Fr", samstag: "Sa", sonnabend: "Sa", sonntag: "So",
+          };
+          for (const [spoken, short] of Object.entries(weekdayMap)) {
+            if (lower.includes(spoken)) {
+              // Find index in current weekData by matching label
+              const badges = document.querySelectorAll("#section-makros-pro-tag button");
+              for (let i = 0; i < badges.length; i++) {
+                if (badges[i].textContent?.trim() === short) {
+                  window.dispatchEvent(new CustomEvent("mampflogger:macro-day-select", { detail: { index: i } }));
+                  break;
+                }
+              }
+              return;
+            }
+          }
+        }
+
         // While a nutrient section is active, keep routing stable and ignore interim spillover.
         if (activeNutrientKind && isInterim) return;
 
