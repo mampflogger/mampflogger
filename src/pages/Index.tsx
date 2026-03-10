@@ -291,8 +291,8 @@ const Index = () => {
       }
 
       // Navigation — close settings first
-      if (action === "nav:log") closeSettingsAndDo(() => { setActiveTab("log"); flashTab("log"); });
-      else if (action === "nav:weekly") closeSettingsAndDo(() => { setActiveTab("weekly"); flashTab("weekly"); });
+      if (action === "nav:log") closeSettingsAndDo(() => { setActiveTab("log"); flashTab("log"); window.scrollTo({ top: 0, behavior: "smooth" }); });
+      else if (action === "nav:weekly") closeSettingsAndDo(() => { setActiveTab("weekly"); flashTab("weekly"); window.scrollTo({ top: 0, behavior: "smooth" }); });
       else if (action === "settings:open") { setSettingsVoiceTab("profile"); flashTab("settings"); }
       else if (action === "settings:profile") { setSettingsVoiceTab("profile"); flashTab("settings"); }
       else if (action === "settings:design") { setSettingsVoiceTab("design"); flashTab("settings"); }
