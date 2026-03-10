@@ -983,7 +983,7 @@ const Index = () => {
                 variant="ghost"
                 size="icon"
                 className={`h-8 w-8 ${activeTab === "log" ? "ring-2 ring-primary bg-muted" : ""} ${highlightedTab === "log" ? "section-card-highlight rounded-lg" : ""}`}
-                onClick={() => setActiveTab("log")}
+                onClick={() => { setActiveTab("log"); window.scrollTo({ top: 0, behavior: "smooth" }); }}
                 title="Eingabe"
               >
                 <List className="w-4 h-4" />
