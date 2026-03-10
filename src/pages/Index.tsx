@@ -756,21 +756,7 @@ const Index = () => {
     }
   }, [focusFoodField]);
 
-  // Auto-start voice (silent) – skip only right after a PWA update reload
-  const hasAutoStartedRef = useRef(false);
-  useEffect(() => {
-    if (!voiceCommands.isSupported || hasAutoStartedRef.current) return;
-    hasAutoStartedRef.current = true;
-
-    // Right after a PWA update the backup key is still in sessionStorage;
-    // the browser won't grant mic without a gesture, so skip auto-start.
-    if (sessionStorage.getItem("mampflogger-pwa-backup") !== null) {
-      console.info("[Voice] Skipping auto-start after PWA update (no user gesture)");
-      return;
-    }
-
-    voiceCommands.start({ silent: true });
-  }, [voiceCommands.isSupported, voiceCommands.start]);
+   // Voice auto-start removed – mic starts inactive, user activates manually
 
   const todayEntries = useMemo(
     () => entries.filter((e) => e.date === selectedDate),
