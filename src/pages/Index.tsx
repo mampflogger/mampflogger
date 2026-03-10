@@ -1042,7 +1042,7 @@ const Index = () => {
               <Button
                 variant="ghost"
                 size="icon"
-                className={`h-8 w-8 ${activeTab === "help" ? "ring-2 ring-primary bg-muted" : ""}`}
+                className={`h-8 w-8 ${activeTab === "help" && !settingsOpen ? "ring-2 ring-primary bg-muted" : ""}`}
                 onClick={() => { const next = activeTab === "help" ? "log" : "help"; setActiveTab(next); window.scrollTo({ top: 0, behavior: "smooth" }); }}
                 title="Hilfe"
               >
