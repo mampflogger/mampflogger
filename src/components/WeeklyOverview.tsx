@@ -108,8 +108,8 @@ const DailyMacroCard = ({ weekData, highlighted }: { weekData: DayData[]; highli
                   }}
                 />
               </div>
-              <span className="w-14 text-right font-semibold tabular-nums text-foreground shrink-0">{m.value}g</span>
-              <span className="w-8 text-right font-semibold tabular-nums text-muted-foreground shrink-0">{pct}%</span>
+              <span className="w-10 text-right font-semibold tabular-nums text-foreground shrink-0">{m.value}g</span>
+              <span className="w-8 text-right tabular-nums text-muted-foreground shrink-0">{pct}%</span>
             </div>
           );
         })}
