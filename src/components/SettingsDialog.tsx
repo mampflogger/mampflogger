@@ -25,7 +25,7 @@ import {
   Settings, Sun, Moon, Trash2, Upload, Download, UserCircle, Save, Check,
   AlertCircle, FileSpreadsheet, UtensilsCrossed, Palette, BarChart3, FileUp,
   ChevronLeft, ChevronRight, RefreshCw, List, Sparkles, Loader2, HardDrive, BookOpen, Search,
-  X, Mic, MicOff, HelpCircle,
+  X, Mic, HelpCircle,
 } from "lucide-react";
 import CookIcon from "@/components/CookIcon";
 import { supabase } from "@/integrations/supabase/client";
@@ -1244,10 +1244,10 @@ const SettingsDialog = ({
                     variant="ghost"
                     size="icon"
                     onClick={onMicToggle}
-                    className={`h-8 w-8 ${isMicListening ? "bg-destructive/15 text-destructive animate-pulse" : ""}`}
+                    className={`h-8 w-8 ${isMicListening ? "ring-2 ring-primary animate-pulse" : ""}`}
                     title={isMicListening ? "Mikrofon aus" : "Sprachsteuerung"}
                   >
-                    {isMicListening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
+                    <Mic className="w-4 h-4" />
                   </Button>
                 )}
                 <Button variant="ghost" size="icon" className="h-8 w-8" title="Eingabe" onClick={() => { handleOpen(false); onSetActiveTab("log"); }}>

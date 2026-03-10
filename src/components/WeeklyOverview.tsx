@@ -208,6 +208,7 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
     );
     const avgCalories = daysWithData.length > 0 ? Math.round(totals.calories / daysWithData.length) : 0;
     const totalMacroWeight = totals.protein + totals.carbs + totals.fat + totals.fiber;
+    const dCount = daysWithData.length || 1;
     return {
       avgCalories,
       totalCalories: totals.calories,
@@ -219,6 +220,10 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
       carbs: Math.round(totals.carbs),
       fat: Math.round(totals.fat),
       fiber: Math.round(totals.fiber),
+      avgProtein: Math.round(totals.protein / dCount),
+      avgCarbs: Math.round(totals.carbs / dCount),
+      avgFat: Math.round(totals.fat / dCount),
+      avgFiber: Math.round(totals.fiber / dCount),
     };
   }, [weekData]);
 
@@ -509,10 +514,10 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
         </SectionHeading>
         <div className="space-y-1.5">
           {[
-            { label: "PRO", percent: weekTotals.proteinPercent },
-            { label: "FAT", percent: weekTotals.fatPercent },
-            { label: "KH", percent: weekTotals.carbsPercent },
-            { label: "FIB", percent: weekTotals.fiberPercent },
+            { label: "PRO", percent: weekTotals.proteinPercent, grams: weekTotals.avgProtein },
+            { label: "FAT", percent: weekTotals.fatPercent, grams: weekTotals.avgFat },
+            { label: "KH", percent: weekTotals.carbsPercent, grams: weekTotals.avgCarbs },
+            { label: "FIB", percent: weekTotals.fiberPercent, grams: weekTotals.avgFiber },
           ].map((m) => (
             <div key={m.label} className="flex items-center gap-2 text-[11px]">
               <span className="w-7 font-semibold text-muted-foreground shrink-0">{m.label}</span>
@@ -525,7 +530,8 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
                   }}
                 />
               </div>
-              <span className="w-8 text-right font-semibold tabular-nums text-foreground shrink-0">{m.percent}%</span>
+              <span className="w-10 text-right font-semibold tabular-nums text-foreground shrink-0">{m.grams}g</span>
+              <span className="w-8 text-right tabular-nums text-muted-foreground shrink-0">{m.percent}%</span>
             </div>
           ))}
         </div>
