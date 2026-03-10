@@ -208,6 +208,7 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
     );
     const avgCalories = daysWithData.length > 0 ? Math.round(totals.calories / daysWithData.length) : 0;
     const totalMacroWeight = totals.protein + totals.carbs + totals.fat + totals.fiber;
+    const dCount = daysWithData.length || 1;
     return {
       avgCalories,
       totalCalories: totals.calories,
@@ -219,6 +220,10 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
       carbs: Math.round(totals.carbs),
       fat: Math.round(totals.fat),
       fiber: Math.round(totals.fiber),
+      avgProtein: Math.round(totals.protein / dCount),
+      avgCarbs: Math.round(totals.carbs / dCount),
+      avgFat: Math.round(totals.fat / dCount),
+      avgFiber: Math.round(totals.fiber / dCount),
     };
   }, [weekData]);
 
