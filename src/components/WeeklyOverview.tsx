@@ -63,7 +63,19 @@ const COLORS = {
 };
 
 const DailyMacroCard = ({ weekData, highlighted }: { weekData: DayData[]; highlighted: boolean }) => {
-  const [selectedIdx, setSelectedIdx] = useState(6); // default: today (last item)
+  const [selectedIdx, setSelectedIdx] = useState(6);
+
+  // Listen for voice-driven day selection
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const idx = (e as CustomEvent).detail?.index;
+      if (typeof idx === "number" && idx >= 0 && idx < weekData.length) {
+        setSelectedIdx(idx);
+      }
+    };
+    window.addEventListener("mampflogger:macro-day-select", handler);
+    return () => window.removeEventListener("mampflogger:macro-day-select", handler);
+  }, [weekData.length]);
   const day = weekData[selectedIdx];
   const totalG = day.protein + day.fat + day.carbs + day.fiber;
 
