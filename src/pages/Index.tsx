@@ -291,8 +291,8 @@ const Index = () => {
       }
 
       // Navigation — close settings first
-      if (action === "nav:log") closeSettingsAndDo(() => { setActiveTab("log"); flashTab("log"); });
-      else if (action === "nav:weekly") closeSettingsAndDo(() => { setActiveTab("weekly"); flashTab("weekly"); });
+      if (action === "nav:log") closeSettingsAndDo(() => { setActiveTab("log"); flashTab("log"); window.scrollTo({ top: 0, behavior: "smooth" }); });
+      else if (action === "nav:weekly") closeSettingsAndDo(() => { setActiveTab("weekly"); flashTab("weekly"); window.scrollTo({ top: 0, behavior: "smooth" }); });
       else if (action === "settings:open") { setSettingsVoiceTab("profile"); flashTab("settings"); }
       else if (action === "settings:profile") { setSettingsVoiceTab("profile"); flashTab("settings"); }
       else if (action === "settings:design") { setSettingsVoiceTab("design"); flashTab("settings"); }
@@ -983,7 +983,7 @@ const Index = () => {
                 variant="ghost"
                 size="icon"
                 className={`h-8 w-8 ${activeTab === "log" ? "ring-2 ring-primary bg-muted" : ""} ${highlightedTab === "log" ? "section-card-highlight rounded-lg" : ""}`}
-                onClick={() => setActiveTab("log")}
+                onClick={() => { setActiveTab("log"); window.scrollTo({ top: 0, behavior: "smooth" }); }}
                 title="Eingabe"
               >
                 <List className="w-4 h-4" />
@@ -992,7 +992,7 @@ const Index = () => {
                 variant="ghost"
                 size="icon"
                 className={`h-8 w-8 ${activeTab === "weekly" ? "ring-2 ring-primary bg-muted" : ""} ${highlightedTab === "weekly" ? "section-card-highlight rounded-lg" : ""}`}
-                onClick={() => setActiveTab("weekly")}
+                onClick={() => { setActiveTab("weekly"); window.scrollTo({ top: 0, behavior: "smooth" }); }}
                 title="Statistik"
               >
                 <BarChart3 className="w-4 h-4" />
@@ -1043,7 +1043,7 @@ const Index = () => {
                 variant="ghost"
                 size="icon"
                 className={`h-8 w-8 ${activeTab === "help" ? "ring-2 ring-primary bg-muted" : ""}`}
-                onClick={() => setActiveTab(activeTab === "help" ? "log" : "help")}
+                onClick={() => { const next = activeTab === "help" ? "log" : "help"; setActiveTab(next); window.scrollTo({ top: 0, behavior: "smooth" }); }}
                 title="Hilfe"
               >
                 <HelpCircle className="w-4 h-4" />
