@@ -296,6 +296,17 @@ const SettingsDialog = ({
       if (tab === "food" && editingFood && editFoodName.trim()) {
         handleAiLookup();
       }
+    } else if (voiceAction === "backup-create") {
+      setTab("data");
+      setTimeout(() => {
+        const btn = document.getElementById("backup-create-btn") as HTMLButtonElement;
+        btn?.click();
+      }, 100);
+    } else if (voiceAction === "backup-load") {
+      setTab("data");
+      setTimeout(() => {
+        backupInputRef.current?.click();
+      }, 100);
     } else if (voiceAction.startsWith("category:")) {
       const cat = voiceAction.replace("category:", "");
       if (cat === "alle") {
@@ -2134,6 +2145,7 @@ const SettingsDialog = ({
               </div>
               <div className="grid grid-cols-2 gap-1.5">
                 <Button
+                  id="backup-create-btn"
                   variant="outline"
                   size="sm"
                   className="h-9 text-xs gap-1.5"
