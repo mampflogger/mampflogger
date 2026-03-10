@@ -548,6 +548,16 @@ const Index = () => {
             }
           }
 
+          // Data tab: backup commands
+          if (currentTab === "data") {
+            if (/\bbackup\s*erstellen\b/i.test(lower) || /\bsicherung\s*erstellen\b/i.test(lower)) {
+              setSettingsVoiceAction("backup-create"); return;
+            }
+            if (/\bbackup\s*laden\b/i.test(lower) || /\bsicherung\s*laden\b/i.test(lower) || /\bbackup\s*wiederherstellen\b/i.test(lower)) {
+              setSettingsVoiceAction("backup-load"); return;
+            }
+          }
+
           // Recipes tab: show/close and number selection
           if (currentTab === "recipes") {
             // If manual recipe form is open, don't intercept numbers – let them flow to the form

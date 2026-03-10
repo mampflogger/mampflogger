@@ -296,6 +296,17 @@ const SettingsDialog = ({
       if (tab === "food" && editingFood && editFoodName.trim()) {
         handleAiLookup();
       }
+    } else if (voiceAction === "backup-create") {
+      setTab("data");
+      setTimeout(() => {
+        const btn = document.getElementById("backup-create-btn") as HTMLButtonElement;
+        btn?.click();
+      }, 100);
+    } else if (voiceAction === "backup-load") {
+      setTab("data");
+      setTimeout(() => {
+        backupInputRef.current?.click();
+      }, 100);
     } else if (voiceAction.startsWith("category:")) {
       const cat = voiceAction.replace("category:", "");
       if (cat === "alle") {
