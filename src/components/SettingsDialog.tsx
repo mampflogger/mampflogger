@@ -737,6 +737,10 @@ const SettingsDialog = ({
     setGoalDeficit("");
     setGoalActivityBonus("");
     setGoalWeightKg("");
+    setGoalProteinG("");
+    setGoalFatG("");
+    setGoalCarbsG("");
+    setGoalFiberG("");
   };
 
   const handleOpen = (isOpen: boolean) => {
