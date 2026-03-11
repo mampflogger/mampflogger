@@ -757,6 +757,10 @@ const SettingsDialog = ({
         setGoalDeficit(profile.goalDeficit ? String(profile.goalDeficit) : "");
         setGoalActivityBonus(profile.goalActivityBonus ? String(profile.goalActivityBonus) : "");
         setGoalWeightKg(profile.goalWeightKg ? String(profile.goalWeightKg) : "");
+        setGoalProteinG(profile.goalProteinG ? String(profile.goalProteinG) : "");
+        setGoalFatG(profile.goalFatG ? String(profile.goalFatG) : "");
+        setGoalCarbsG(profile.goalCarbsG ? String(profile.goalCarbsG) : "");
+        setGoalFiberG(profile.goalFiberG ? String(profile.goalFiberG) : "");
       } else {
         resetProfileForm();
       }
