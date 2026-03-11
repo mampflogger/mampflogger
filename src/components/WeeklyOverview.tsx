@@ -17,7 +17,7 @@ import {
   Cell,
   ReferenceLine,
 } from "recharts";
-import { TrendingDown, TrendingUp, Target } from "lucide-react";
+import { TrendingDown, TrendingUp, Target, RefreshCw } from "lucide-react";
 import NutritionCoach from "./NutritionCoach";
 import MicronutrientCoverageCard from "./MicronutrientCoverageCard";
 
