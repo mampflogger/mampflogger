@@ -159,6 +159,10 @@ const SettingsDialog = ({
   const [goalDeficit, setGoalDeficit] = useState("");
   const [goalActivityBonus, setGoalActivityBonus] = useState("");
   const [goalWeightKg, setGoalWeightKg] = useState("");
+  const [goalProteinG, setGoalProteinG] = useState("");
+  const [goalFatG, setGoalFatG] = useState("");
+  const [goalCarbsG, setGoalCarbsG] = useState("");
+  const [goalFiberG, setGoalFiberG] = useState("");
 
   // Import state
   const [importType, setImportType] = useState<ImportType | null>(null);
@@ -733,6 +737,10 @@ const SettingsDialog = ({
     setGoalDeficit("");
     setGoalActivityBonus("");
     setGoalWeightKg("");
+    setGoalProteinG("");
+    setGoalFatG("");
+    setGoalCarbsG("");
+    setGoalFiberG("");
   };
 
   const handleOpen = (isOpen: boolean) => {
@@ -749,6 +757,10 @@ const SettingsDialog = ({
         setGoalDeficit(profile.goalDeficit ? String(profile.goalDeficit) : "");
         setGoalActivityBonus(profile.goalActivityBonus ? String(profile.goalActivityBonus) : "");
         setGoalWeightKg(profile.goalWeightKg ? String(profile.goalWeightKg) : "");
+        setGoalProteinG(profile.goalProteinG ? String(profile.goalProteinG) : "");
+        setGoalFatG(profile.goalFatG ? String(profile.goalFatG) : "");
+        setGoalCarbsG(profile.goalCarbsG ? String(profile.goalCarbsG) : "");
+        setGoalFiberG(profile.goalFiberG ? String(profile.goalFiberG) : "");
       } else {
         resetProfileForm();
       }
@@ -785,6 +797,10 @@ const SettingsDialog = ({
           goalDeficit: goalDeficit ? parseInt(goalDeficit) : undefined,
           goalActivityBonus: goalActivityBonus ? parseInt(goalActivityBonus) : undefined,
           goalWeightKg: goalWeightKg ? parseFloat(goalWeightKg) : undefined,
+          goalProteinG: goalProteinG ? parseInt(goalProteinG) : undefined,
+          goalFatG: goalFatG ? parseInt(goalFatG) : undefined,
+          goalCarbsG: goalCarbsG ? parseInt(goalCarbsG) : undefined,
+          goalFiberG: goalFiberG ? parseInt(goalFiberG) : undefined,
         }
       : null;
 
@@ -793,6 +809,7 @@ const SettingsDialog = ({
   const profileFieldOrder = [
     "settings-name", "settings-birth", "settings-height", "settings-weight",
     "settings-goalweight", "settings-fluid", "settings-deficit", "settings-activity",
+    "settings-goalpro", "settings-goalfat", "settings-goalkh", "settings-goalfib",
     "settings-save",
   ];
 
@@ -865,6 +882,10 @@ const SettingsDialog = ({
       "settings-fluid": setGoalFluidMl,
       "settings-deficit": setGoalDeficit,
       "settings-activity": setGoalActivityBonus,
+      "settings-goalpro": setGoalProteinG,
+      "settings-goalfat": setGoalFatG,
+      "settings-goalkh": setGoalCarbsG,
+      "settings-goalfib": setGoalFiberG,
     };
 
     const setter = setters[fieldId];
@@ -907,6 +928,8 @@ const SettingsDialog = ({
             "settings-height": setHeightCm, "settings-weight": setWeightKg,
             "settings-goalweight": setGoalWeightKg, "settings-fluid": setGoalFluidMl,
             "settings-deficit": setGoalDeficit, "settings-activity": setGoalActivityBonus,
+            "settings-goalpro": setGoalProteinG, "settings-goalfat": setGoalFatG,
+            "settings-goalkh": setGoalCarbsG, "settings-goalfib": setGoalFiberG,
           };
           setters[fieldId]?.("");
         }
@@ -1410,6 +1433,24 @@ const SettingsDialog = ({
                 <div>
                   <Label className="text-[10px] font-medium text-muted-foreground mb-0.5 block">Activity Bonus pro Tag (kcal)</Label>
                   <Input id="settings-activity" type="number" inputMode="numeric" value={goalActivityBonus} onChange={(e) => setGoalActivityBonus(e.target.value)} onKeyDown={(e) => handleProfileKeyDown(e, "settings-activity")} placeholder="300" className="h-8 text-sm" />
+                </div>
+              </div>
+              <div className="grid grid-cols-4 gap-2">
+                <div>
+                  <Label className="text-[10px] font-medium text-muted-foreground mb-0.5 block">PRO (g)</Label>
+                  <Input id="settings-goalpro" type="number" inputMode="numeric" value={goalProteinG} onChange={(e) => setGoalProteinG(e.target.value)} onKeyDown={(e) => handleProfileKeyDown(e, "settings-goalpro")} placeholder="120" className="h-8 text-sm" />
+                </div>
+                <div>
+                  <Label className="text-[10px] font-medium text-muted-foreground mb-0.5 block">FAT (g)</Label>
+                  <Input id="settings-goalfat" type="number" inputMode="numeric" value={goalFatG} onChange={(e) => setGoalFatG(e.target.value)} onKeyDown={(e) => handleProfileKeyDown(e, "settings-goalfat")} placeholder="70" className="h-8 text-sm" />
+                </div>
+                <div>
+                  <Label className="text-[10px] font-medium text-muted-foreground mb-0.5 block">KH (g)</Label>
+                  <Input id="settings-goalkh" type="number" inputMode="numeric" value={goalCarbsG} onChange={(e) => setGoalCarbsG(e.target.value)} onKeyDown={(e) => handleProfileKeyDown(e, "settings-goalkh")} placeholder="200" className="h-8 text-sm" />
+                </div>
+                <div>
+                  <Label className="text-[10px] font-medium text-muted-foreground mb-0.5 block">FIB (g)</Label>
+                  <Input id="settings-goalfib" type="number" inputMode="numeric" value={goalFiberG} onChange={(e) => setGoalFiberG(e.target.value)} onKeyDown={(e) => handleProfileKeyDown(e, "settings-goalfib")} placeholder="30" className="h-8 text-sm" />
                 </div>
               </div>
             </div>
