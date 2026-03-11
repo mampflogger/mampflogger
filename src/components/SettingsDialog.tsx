@@ -227,7 +227,33 @@ const SettingsDialog = ({
   const [activeSettingsSection, setActiveSettingsSection] = useState<string | null>(null);
   const highlightSettingsSectionTimerRef = React.useRef<ReturnType<typeof setTimeout>>();
 
-  // Flash settings tab when opened via voice
+  // Keep active settings section heading colored
+  useEffect(() => {
+    const container = document.querySelector('[role="dialog"]');
+    if (!container) return;
+    container.querySelectorAll<HTMLElement>("[id^='section-']").forEach((el) => {
+      if (el.id === activeSettingsSection) {
+        el.setAttribute("data-section-active", "true");
+      } else {
+        el.removeAttribute("data-section-active");
+      }
+    });
+  }, [activeSettingsSection]);
+
+  // Track active section on click/focus within settings
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const target = (e.target as HTMLElement)?.closest?.("[id^='section-']") as HTMLElement | null;
+      if (target?.id) setActiveSettingsSection(target.id);
+    };
+    document.addEventListener("focusin", handler, true);
+    document.addEventListener("click", handler, true);
+    return () => {
+      document.removeEventListener("focusin", handler, true);
+      document.removeEventListener("click", handler, true);
+    };
+  }, []);
+
   useEffect(() => {
     if (voiceOpenTab) {
       if (highlightSettingsTimerRef.current) clearTimeout(highlightSettingsTimerRef.current);
