@@ -414,8 +414,8 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
               </div>
               <p className="text-xs text-muted-foreground">{daysToGoal === 0 ? "Erreicht!" : showGoalDate ? "" : "Tagen"}</p>
             </div>);
-          })()
-          )}
+          })()}
+
         </div>
       </div>
 
