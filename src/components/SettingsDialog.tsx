@@ -928,6 +928,8 @@ const SettingsDialog = ({
             "settings-height": setHeightCm, "settings-weight": setWeightKg,
             "settings-goalweight": setGoalWeightKg, "settings-fluid": setGoalFluidMl,
             "settings-deficit": setGoalDeficit, "settings-activity": setGoalActivityBonus,
+            "settings-goalpro": setGoalProteinG, "settings-goalfat": setGoalFatG,
+            "settings-goalkh": setGoalCarbsG, "settings-goalfib": setGoalFiberG,
           };
           setters[fieldId]?.("");
         }
