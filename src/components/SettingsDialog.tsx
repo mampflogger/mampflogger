@@ -2184,7 +2184,7 @@ const SettingsDialog = ({
                   }}
                 >
                   <Upload className="w-3.5 h-3.5" />
-                  Backup erstellen
+                  Sichern
                 </Button>
                 <Button
                   variant="outline"
