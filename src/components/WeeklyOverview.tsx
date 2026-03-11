@@ -517,7 +517,7 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
       )}
 
       {/* Daily macro with day selector */}
-      <DailyMacroCard weekData={weekData} highlighted={hl === "section-makros-pro-tag"} />
+      <DailyMacroCard weekData={weekData} highlighted={hl === "section-makros-pro-tag"} profile={profile} />
 
       {/* Macro Distribution */}
       <div id="section-makro-verteilung" data-section className={`glass-card rounded-xl p-3 ${hl === "section-makro-verteilung" ? "section-card-highlight" : ""}`}>
