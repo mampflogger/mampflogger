@@ -85,8 +85,8 @@ const COMMANDS: VoiceCommand[] = [
   { patterns: [/\bimport\b/i], action: "section:import" },
   { patterns: [/\bexport\b/i], action: "section:export" },
   { patterns: [/\bbackup\b/i, /\bsicherung\b/i], action: "section:backup" },
-  { patterns: [/\bsichern\b/i], action: "backup-create" },
-  { patterns: [/\bladen\b/i], action: "backup-load" },
+  { patterns: [/\bsichern\b/i, /\bupload\b/i], action: "backup-create" },
+  { patterns: [/\bladen\b/i, /\bdownload\b/i], action: "backup-load" },
   { patterns: [/\bcancel\b/i], action: "section:loeschen" },
 
   // Scroll up/down
@@ -202,7 +202,9 @@ const FUZZY_KEYWORD_MAP: [string, string][] = [
   ["backup", "section:backup"],
   ["sicherung", "section:backup"],
   ["sichern", "backup-create"],
+  ["upload", "backup-create"],
   ["laden", "backup-load"],
+  ["download", "backup-load"],
   ["einstellungen", "settings:open"],
   ["settings", "settings:open"],
   ["statistik", "nav:weekly"],
@@ -273,7 +275,7 @@ interface StartVoiceOptions {
 type VoiceCommandScope = "global" | "scoped-input";
 
 const SCOPED_INPUT_ALLOWED_PREFIXES = ["field:", "nav:", "settings:", "section:", "scroll:", "action:", "theme:", "nutrient:"];
-const SCOPED_INPUT_ALLOWED_ACTIONS = new Set(["action:mic-off", "action:home"]);
+const SCOPED_INPUT_ALLOWED_ACTIONS = new Set(["action:mic-off", "action:home", "backup-create", "backup-load"]);
 
 function getVoiceCommandScope(): VoiceCommandScope {
   const activeElement = document.activeElement as HTMLElement | null;
