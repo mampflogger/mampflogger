@@ -62,7 +62,7 @@ const COLORS = {
   caloriesMuted: "hsl(var(--primary) / 0.85)",
 };
 
-const DailyMacroCard = ({ weekData, highlighted }: { weekData: DayData[]; highlighted: boolean }) => {
+const DailyMacroCard = ({ weekData, highlighted, profile }: { weekData: DayData[]; highlighted: boolean; profile?: UserProfile | null }) => {
   const [selectedIdx, setSelectedIdx] = useState(6);
 
   // Listen for voice-driven day selection
@@ -80,10 +80,10 @@ const DailyMacroCard = ({ weekData, highlighted }: { weekData: DayData[]; highli
   const totalG = day.protein + day.fat + day.carbs + day.fiber;
 
   const macros = [
-    { label: "PRO", value: day.protein },
-    { label: "FAT", value: day.fat },
-    { label: "KH", value: day.carbs },
-    { label: "FIB", value: day.fiber },
+    { label: "PRO", value: day.protein, goal: profile?.goalProteinG },
+    { label: "FAT", value: day.fat, goal: profile?.goalFatG },
+    { label: "KH", value: day.carbs, goal: profile?.goalCarbsG },
+    { label: "FIB", value: day.fiber, goal: profile?.goalFiberG },
   ];
 
   return (
@@ -96,10 +96,13 @@ const DailyMacroCard = ({ weekData, highlighted }: { weekData: DayData[]; highli
       <div className="space-y-1.5 mb-3">
         {macros.map((m) => {
           const pct = totalG > 0 ? Math.round((m.value / totalG) * 100) : 0;
+          // Goal marker: position as percentage of the bar based on grams
+          // The bar width = pct% of the track. The goal position relative to totalG:
+          const goalPct = m.goal && totalG > 0 ? Math.round((m.goal / totalG) * 100) : null;
           return (
             <div key={m.label} className="flex items-center gap-2 text-[11px]">
               <span className="w-7 font-semibold text-muted-foreground shrink-0">{m.label}</span>
-              <div className="flex-1 h-3 rounded-full overflow-hidden bg-muted">
+              <div className="relative flex-1 h-3 rounded-full overflow-hidden bg-muted">
                 <div
                   className="h-full rounded-full transition-all duration-500"
                   style={{
@@ -107,6 +110,15 @@ const DailyMacroCard = ({ weekData, highlighted }: { weekData: DayData[]; highli
                     background: "linear-gradient(90deg, hsl(var(--primary) / 0.9), hsl(var(--primary) / 0.35))",
                   }}
                 />
+                {goalPct !== null && goalPct > 0 && goalPct <= 100 && (
+                  <div
+                    className="absolute top-0 bottom-0 w-[2px]"
+                    style={{
+                      left: `${goalPct}%`,
+                      backgroundColor: "hsl(var(--destructive))",
+                    }}
+                  />
+                )}
               </div>
               <span className="w-10 text-right font-semibold tabular-nums text-foreground shrink-0">{m.value}g</span>
               <span className="w-8 text-right tabular-nums text-muted-foreground shrink-0">{pct}%</span>
