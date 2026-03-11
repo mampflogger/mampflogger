@@ -408,7 +408,7 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
               </p>
               <div className="flex items-center justify-center gap-1 mt-0.5">
                 <Target className="w-3.5 h-3.5 shrink-0 text-primary" />
-                <p className={`font-bold text-primary tabular-nums tracking-tight leading-tight ${showGoalDate ? "text-base" : "text-xl"}`}>
+                <p className="text-xl font-bold text-primary tabular-nums tracking-tight leading-tight">
                   {daysToGoal === 0 ? "✓" : showGoalDate ? goalDateStr : daysToGoal}
                 </p>
               </div>
