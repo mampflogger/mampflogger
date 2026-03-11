@@ -809,6 +809,7 @@ const SettingsDialog = ({
   const profileFieldOrder = [
     "settings-name", "settings-birth", "settings-height", "settings-weight",
     "settings-goalweight", "settings-fluid", "settings-deficit", "settings-activity",
+    "settings-goalpro", "settings-goalfat", "settings-goalkh", "settings-goalfib",
     "settings-save",
   ];
 
