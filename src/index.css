@@ -390,7 +390,7 @@
 }
 
 [data-section-active="true"] h2 {
-  color: hsl(var(--primary));
+  color: hsl(var(--primary)) !important;
 }
 
 /* Card-level highlight glow when navigated to */
