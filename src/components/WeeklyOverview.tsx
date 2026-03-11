@@ -149,6 +149,7 @@ const DailyMacroCard = ({ weekData, highlighted, profile }: { weekData: DayData[
 
 const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [], highlightedSection, analyzeCoachRequestId }: WeeklyOverviewProps) => {
   const bmr = profile ? calculateBMR(profile) : null;
+  const [showGoalDate, setShowGoalDate] = useState(false);
 
   const weekData = useMemo(() => {
     const today = new Date(selectedDate + "T00:00:00");
