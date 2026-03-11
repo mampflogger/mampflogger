@@ -882,6 +882,10 @@ const SettingsDialog = ({
       "settings-fluid": setGoalFluidMl,
       "settings-deficit": setGoalDeficit,
       "settings-activity": setGoalActivityBonus,
+      "settings-goalpro": setGoalProteinG,
+      "settings-goalfat": setGoalFatG,
+      "settings-goalkh": setGoalCarbsG,
+      "settings-goalfib": setGoalFiberG,
     };
 
     const setter = setters[fieldId];
