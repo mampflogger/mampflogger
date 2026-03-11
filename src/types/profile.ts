@@ -8,6 +8,10 @@ export interface UserProfile {
   goalDeficit?: number;
   goalActivityBonus?: number;
   goalWeightKg?: number;
+  goalProteinG?: number;
+  goalFatG?: number;
+  goalCarbsG?: number;
+  goalFiberG?: number;
 }
 
 export interface ActivityType {

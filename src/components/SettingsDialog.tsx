@@ -1429,6 +1429,24 @@ const SettingsDialog = ({
                   <Input id="settings-activity" type="number" inputMode="numeric" value={goalActivityBonus} onChange={(e) => setGoalActivityBonus(e.target.value)} onKeyDown={(e) => handleProfileKeyDown(e, "settings-activity")} placeholder="300" className="h-8 text-sm" />
                 </div>
               </div>
+              <div className="grid grid-cols-4 gap-2">
+                <div>
+                  <Label className="text-[10px] font-medium text-muted-foreground mb-0.5 block">PRO (g)</Label>
+                  <Input id="settings-goalpro" type="number" inputMode="numeric" value={goalProteinG} onChange={(e) => setGoalProteinG(e.target.value)} onKeyDown={(e) => handleProfileKeyDown(e, "settings-goalpro")} placeholder="120" className="h-8 text-sm" />
+                </div>
+                <div>
+                  <Label className="text-[10px] font-medium text-muted-foreground mb-0.5 block">FAT (g)</Label>
+                  <Input id="settings-goalfat" type="number" inputMode="numeric" value={goalFatG} onChange={(e) => setGoalFatG(e.target.value)} onKeyDown={(e) => handleProfileKeyDown(e, "settings-goalfat")} placeholder="70" className="h-8 text-sm" />
+                </div>
+                <div>
+                  <Label className="text-[10px] font-medium text-muted-foreground mb-0.5 block">KH (g)</Label>
+                  <Input id="settings-goalkh" type="number" inputMode="numeric" value={goalCarbsG} onChange={(e) => setGoalCarbsG(e.target.value)} onKeyDown={(e) => handleProfileKeyDown(e, "settings-goalkh")} placeholder="200" className="h-8 text-sm" />
+                </div>
+                <div>
+                  <Label className="text-[10px] font-medium text-muted-foreground mb-0.5 block">FIB (g)</Label>
+                  <Input id="settings-goalfib" type="number" inputMode="numeric" value={goalFiberG} onChange={(e) => setGoalFiberG(e.target.value)} onKeyDown={(e) => handleProfileKeyDown(e, "settings-goalfib")} placeholder="30" className="h-8 text-sm" />
+                </div>
+              </div>
             </div>
 
             <div className="space-y-2">
