@@ -17,7 +17,7 @@ import {
   Cell,
   ReferenceLine,
 } from "recharts";
-import { TrendingDown, TrendingUp, Target } from "lucide-react";
+import { TrendingDown, TrendingUp, Target, RefreshCw } from "lucide-react";
 import NutritionCoach from "./NutritionCoach";
 import MicronutrientCoverageCard from "./MicronutrientCoverageCard";
 
@@ -149,6 +149,7 @@ const DailyMacroCard = ({ weekData, highlighted, profile }: { weekData: DayData[
 
 const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [], highlightedSection, analyzeCoachRequestId }: WeeklyOverviewProps) => {
   const bmr = profile ? calculateBMR(profile) : null;
+  const [showGoalDate, setShowGoalDate] = useState(false);
 
   const weekData = useMemo(() => {
     const today = new Date(selectedDate + "T00:00:00");
@@ -388,18 +389,33 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
               <p className="text-xs text-muted-foreground">kcal</p>
             </div>
           )}
-          {daysToGoal !== null && (
-            <div className="rounded-xl bg-background p-3 text-center">
-              <p className="text-xs text-muted-foreground font-medium">Zielgewicht in</p>
+          {daysToGoal !== null && (() => {
+            const goalDate = daysToGoal > 0 ? new Date(Date.now() + daysToGoal * 86400000) : null;
+            const goalDateStr = goalDate ? `${goalDate.getDate().toString().padStart(2, "0")}.${(goalDate.getMonth() + 1).toString().padStart(2, "0")}.${goalDate.getFullYear()}` : null;
+            return (
+            <div className="rounded-xl bg-background p-3 text-center relative">
+              {daysToGoal > 0 && (
+                <button
+                  onClick={() => setShowGoalDate(d => !d)}
+                  className="absolute top-1.5 right-1.5 p-0.5 rounded-md text-muted-foreground/40 hover:text-muted-foreground transition-colors"
+                  title="Tage / Datum umschalten"
+                >
+                  <RefreshCw className="w-3 h-3" />
+                </button>
+              )}
+              <p className="text-xs text-muted-foreground font-medium">
+                {daysToGoal === 0 ? "Zielgewicht" : showGoalDate ? "Zielgewicht am" : "Zielgewicht in"}
+              </p>
               <div className="flex items-center justify-center gap-1 mt-0.5">
                 <Target className="w-3.5 h-3.5 shrink-0 text-primary" />
-                <p className="text-xl font-bold text-primary tabular-nums tracking-tight leading-tight">
-                  {daysToGoal === 0 ? "✓" : daysToGoal}
+                <p className={`font-bold text-primary tabular-nums tracking-tight leading-tight ${showGoalDate ? "text-base" : "text-xl"}`}>
+                  {daysToGoal === 0 ? "✓" : showGoalDate ? goalDateStr : daysToGoal}
                 </p>
               </div>
-              <p className="text-xs text-muted-foreground">{daysToGoal === 0 ? "Erreicht!" : "Tagen"}</p>
-            </div>
-          )}
+              <p className="text-xs text-muted-foreground">{daysToGoal === 0 ? "Erreicht!" : showGoalDate ? "" : "Tagen"}</p>
+            </div>);
+          })()}
+
         </div>
       </div>
 
