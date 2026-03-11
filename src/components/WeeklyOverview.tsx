@@ -110,11 +110,11 @@ const DailyMacroCard = ({ weekData, highlighted, profile }: { weekData: DayData[
                     background: "linear-gradient(90deg, hsl(var(--primary) / 0.9), hsl(var(--primary) / 0.35))",
                   }}
                 />
-                {goalPct !== null && goalPct > 0 && goalPct <= 100 && (
+                {goalPct !== null && goalPct > 0 && (
                   <div
                     className="absolute top-0 bottom-0 w-[2px]"
                     style={{
-                      left: `${goalPct}%`,
+                      left: `${Math.min(goalPct, 100)}%`,
                       backgroundColor: "hsl(var(--destructive))",
                     }}
                   />
