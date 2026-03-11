@@ -159,6 +159,10 @@ const SettingsDialog = ({
   const [goalDeficit, setGoalDeficit] = useState("");
   const [goalActivityBonus, setGoalActivityBonus] = useState("");
   const [goalWeightKg, setGoalWeightKg] = useState("");
+  const [goalProteinG, setGoalProteinG] = useState("");
+  const [goalFatG, setGoalFatG] = useState("");
+  const [goalCarbsG, setGoalCarbsG] = useState("");
+  const [goalFiberG, setGoalFiberG] = useState("");
 
   // Import state
   const [importType, setImportType] = useState<ImportType | null>(null);
