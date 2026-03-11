@@ -797,6 +797,10 @@ const SettingsDialog = ({
           goalDeficit: goalDeficit ? parseInt(goalDeficit) : undefined,
           goalActivityBonus: goalActivityBonus ? parseInt(goalActivityBonus) : undefined,
           goalWeightKg: goalWeightKg ? parseFloat(goalWeightKg) : undefined,
+          goalProteinG: goalProteinG ? parseInt(goalProteinG) : undefined,
+          goalFatG: goalFatG ? parseInt(goalFatG) : undefined,
+          goalCarbsG: goalCarbsG ? parseInt(goalCarbsG) : undefined,
+          goalFiberG: goalFiberG ? parseInt(goalFiberG) : undefined,
         }
       : null;
 
