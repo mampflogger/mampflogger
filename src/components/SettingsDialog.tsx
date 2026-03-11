@@ -335,8 +335,21 @@ const SettingsDialog = ({
     } else if (voiceAction === "backup-load") {
       setTab("data");
       setTimeout(() => {
-        backupInputRef.current?.click();
-      }, 100);
+        // Scroll to backup section and highlight the load button
+        const backupSection = document.getElementById("section-backup");
+        backupSection?.scrollIntoView({ behavior: "smooth", block: "start" });
+        setActiveSettingsSection("section-backup");
+        setHighlightedSettingsSection("section-backup");
+        if (highlightSettingsSectionTimerRef.current) clearTimeout(highlightSettingsSectionTimerRef.current);
+        highlightSettingsSectionTimerRef.current = setTimeout(() => setHighlightedSettingsSection(null), 3000);
+        // Try programmatic click – may be blocked by browser security
+        const clicked = backupInputRef.current;
+        if (clicked) {
+          try { clicked.click(); } catch { /* ignored */ }
+        }
+        // Always show a toast as fallback since browsers often block programmatic file dialogs from non-user-gesture contexts
+        toast("📂 Bitte tippe auf 'Laden', um eine Backup-Datei auszuwählen.", { duration: 4000 });
+      }, 200);
     } else if (voiceAction.startsWith("category:")) {
       const cat = voiceAction.replace("category:", "");
       if (cat === "alle") {
