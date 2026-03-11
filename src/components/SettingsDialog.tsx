@@ -2193,7 +2193,7 @@ const SettingsDialog = ({
                   onClick={() => backupInputRef.current?.click()}
                 >
                   <Download className="w-3.5 h-3.5" />
-                  Backup laden
+                  Laden
                 </Button>
               </div>
               <input
