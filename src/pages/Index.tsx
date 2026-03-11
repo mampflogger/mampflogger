@@ -414,6 +414,22 @@ const Index = () => {
           setSettingsVoiceAction("food-search");
         }
       }
+      else if (action === "backup-create") {
+        if (!settingsOpenRef.current) {
+          setSettingsVoiceTab("data");
+          setTimeout(() => setSettingsVoiceAction("backup-create"), 300);
+        } else {
+          setSettingsVoiceAction("backup-create");
+        }
+      }
+      else if (action === "backup-load") {
+        if (!settingsOpenRef.current) {
+          setSettingsVoiceTab("data");
+          setTimeout(() => setSettingsVoiceAction("backup-load"), 300);
+        } else {
+          setSettingsVoiceAction("backup-load");
+        }
+      }
       else if (action === "field:next" || action === "field:prev" || action === "field:clear" || action === "field:open-dropdown" || action === "field:close-dropdown") {
         // Weekly nutrient scopes: close currently active nutrient info panel
         if (!settingsOpenRef.current && action === "field:close-dropdown" && activeTabRef.current === "weekly") {
