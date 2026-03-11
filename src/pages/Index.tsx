@@ -693,7 +693,14 @@ const Index = () => {
   useEffect(() => {
     const markActiveFromTarget = (target: EventTarget | null) => {
       const el = (target as HTMLElement | null)?.closest?.("[data-section][id]") as HTMLElement | null;
-      if (el?.id) sectionNav.setActiveSection(el.id);
+      if (el?.id) {
+        sectionNav.setActiveSection(el.id);
+        // Clear date focus when user interacts with a content section
+        if (dateFocusedRef.current) {
+          setDateFocused(false);
+          dateFocusedRef.current = false;
+        }
+      }
     };
 
     const onPointerDown = (event: PointerEvent) => markActiveFromTarget(event.target);
