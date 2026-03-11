@@ -85,6 +85,8 @@ const COMMANDS: VoiceCommand[] = [
   { patterns: [/\bimport\b/i], action: "section:import" },
   { patterns: [/\bexport\b/i], action: "section:export" },
   { patterns: [/\bbackup\b/i, /\bsicherung\b/i], action: "section:backup" },
+  { patterns: [/\bsichern\b/i], action: "backup-create" },
+  { patterns: [/\bladen\b/i], action: "backup-load" },
   { patterns: [/\bcancel\b/i], action: "section:loeschen" },
 
   // Scroll up/down
