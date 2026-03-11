@@ -357,6 +357,7 @@ const SettingsDialog = ({
       const id = voiceAction.replace("scroll:", "");
       setHighlightedSettingsTab(null); // clear tab highlight
       setHighlightedSettingsSection(id);
+      setActiveSettingsSection(id);
       if (highlightSettingsSectionTimerRef.current) clearTimeout(highlightSettingsSectionTimerRef.current);
       highlightSettingsSectionTimerRef.current = setTimeout(() => setHighlightedSettingsSection(null), 3000);
       setTimeout(() => {
