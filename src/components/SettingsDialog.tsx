@@ -243,7 +243,10 @@ const SettingsDialog = ({
   // Track active section on click/focus within settings
   useEffect(() => {
     const handler = (e: Event) => {
-      const target = (e.target as HTMLElement)?.closest?.("[id^='section-']") as HTMLElement | null;
+      const el = e.target as HTMLElement;
+      // Only handle events within the settings dialog
+      if (!el?.closest?.('[role="dialog"]')) return;
+      const target = el.closest?.("[id^='section-']") as HTMLElement | null;
       if (target?.id) setActiveSettingsSection(target.id);
     };
     document.addEventListener("focusin", handler, true);
