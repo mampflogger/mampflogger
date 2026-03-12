@@ -94,8 +94,9 @@ export function fuzzyScore(query: string, target: string): number {
       }
     }
   }
-  // Require that at least half of query words AND target words are covered
-  if (wordHits > 0 && qWords.length > 0 && wordHits / Math.max(qWords.length, tWords.length) >= 0.5) {
+  // Require that most of query and target words are covered
+  const coverageRatio = wordHits / Math.max(qWords.length, tWords.length);
+  if (wordHits > 0 && qWords.length > 0 && coverageRatio > 0.5) {
     const wordScore = 0.7 + 0.2 * (wordHits / qWords.length);
     return wordScore;
   }
