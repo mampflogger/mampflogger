@@ -85,13 +85,17 @@ export function fuzzyScore(query: string, target: string): number {
   for (const qw of qWords) {
     if (qw.length < 2) continue;
     for (const tw of tWords) {
-      if (tw.includes(qw) || qw.includes(tw)) {
+      // Require reasonable overlap: short query words must nearly match the target word
+      const minLen = Math.min(qw.length, tw.length);
+      const maxLen = Math.max(qw.length, tw.length);
+      if ((tw.includes(qw) || qw.includes(tw)) && minLen / maxLen >= 0.6) {
         wordHits++;
         break;
       }
     }
   }
-  if (wordHits > 0 && qWords.length > 0) {
+  // Require that at least half of query words AND target words are covered
+  if (wordHits > 0 && qWords.length > 0 && wordHits / Math.max(qWords.length, tWords.length) >= 0.5) {
     const wordScore = 0.7 + 0.2 * (wordHits / qWords.length);
     return wordScore;
   }
