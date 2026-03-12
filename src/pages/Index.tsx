@@ -725,6 +725,16 @@ const Index = () => {
         section.removeAttribute("data-section-active");
       }
     });
+    // Auto-focus food input when "Neuer Eintrag" section becomes active
+    if (sectionNav.activeSection === "section-neuer-eintrag") {
+      requestAnimationFrame(() => {
+        const section = document.getElementById("section-neuer-eintrag");
+        const input = section?.querySelector<HTMLInputElement>("input[placeholder*='Haferflocken']");
+        if (input && document.activeElement !== input) {
+          input.focus();
+        }
+      });
+    }
   }, [sectionNav.activeSection, activeTab]);
 
   const [darkMode, setDarkMode] = useState(() => {
