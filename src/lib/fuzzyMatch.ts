@@ -74,9 +74,9 @@ export function fuzzyScore(query: string, target: string): number {
 
   if (!nq || !nt) return 0;
 
-  // Exact substring → highest score
-  if (nt.includes(nq)) return 1.0;
-  if (nq.includes(nt)) return 0.95;
+  // Exact substring → highest score (but only if lengths are comparable)
+  if (nt.includes(nq) && nq.length / nt.length >= 0.5) return 1.0;
+  if (nq.includes(nt) && nt.length / nq.length >= 0.5) return 0.95;
 
   // Word-level: check if any query word is a substring of target
   const qWords = nq.split(" ");
