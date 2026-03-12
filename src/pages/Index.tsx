@@ -446,18 +446,22 @@ const Index = () => {
           if (action === "field:close-dropdown") { setSettingsVoiceAction("close-dropdown"); return; }
         }
 
-        // Determine scope from active element or settings state
+        // Determine scope: settings state takes priority over DOM ancestry
         const activeElement = document.activeElement as HTMLElement | null;
-        const scope = activeElement?.closest('[data-voice-scope="manual-recipe"]')
-          ? "manual-recipe"
-          : activeElement?.closest('[data-voice-scope="profile"]')
-            ? "profile"
-            : activeElement?.closest("#section-neuer-eintrag")
-              ? "nutrition"
-              : activeElement?.closest("#section-activity")
-                ? "activity"
-                : (settingsOpenRef.current && settingsTabRef.current === "recipes" ? "manual-recipe"
-                  : settingsOpenRef.current && settingsTabRef.current === "profile" ? "profile" : null);
+        const settingsScope = settingsOpenRef.current
+          ? (settingsTabRef.current === "recipes" ? "manual-recipe"
+            : settingsTabRef.current === "profile" ? "profile" : null)
+          : null;
+        const scope = settingsScope
+          ?? (activeElement?.closest('[data-voice-scope="manual-recipe"]')
+            ? "manual-recipe"
+            : activeElement?.closest('[data-voice-scope="profile"]')
+              ? "profile"
+              : activeElement?.closest("#section-neuer-eintrag")
+                ? "nutrition"
+                : activeElement?.closest("#section-activity")
+                  ? "activity"
+                  : null);
 
         // Settings scopes take priority over date navigation
         if (scope && (scope === "profile" || scope === "manual-recipe")) {
