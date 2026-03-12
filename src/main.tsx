@@ -4,9 +4,15 @@ import "./index.css";
 
 const LOVABLE_TOKEN_PARAM = "__lovable_token";
 const LOVABLE_TOKEN_SESSION_KEY = "mampflogger-lovable-preview-token";
-const LOVABLE_TOKEN_LOCAL_KEY_PREFIX = "mampflogger-lovable-preview-token-v2";
+const LOVABLE_TOKEN_LOCAL_KEY_PREFIX = "mampflogger-lovable-preview-token-v3";
 const PREVIEW_BUST_PARAM = "__preview_bust";
-const PREVIEW_CACHE_RESET_KEY_PREFIX = "mampflogger-preview-cache-reset-v3";
+const PREVIEW_CACHE_RESET_KEY_PREFIX = "mampflogger-preview-cache-reset-v4";
+const PREVIEW_TOKEN_MAX_AGE_MS = 30 * 60 * 1000;
+
+type StoredPreviewToken = {
+  token: string;
+  savedAt: number;
+};
 
 function isLovablePreviewHost(): boolean {
   const host = window.location.hostname;
@@ -18,12 +24,38 @@ function getPreviewTokenStorageKey(): string {
 }
 
 function readStoredPreviewToken(): string | null {
-  return sessionStorage.getItem(LOVABLE_TOKEN_SESSION_KEY) ?? localStorage.getItem(getPreviewTokenStorageKey());
+  const sessionToken = sessionStorage.getItem(LOVABLE_TOKEN_SESSION_KEY);
+  if (sessionToken) return sessionToken;
+
+  const localKey = getPreviewTokenStorageKey();
+  const localTokenRaw = localStorage.getItem(localKey);
+  if (!localTokenRaw) return null;
+
+  try {
+    const parsed = JSON.parse(localTokenRaw) as StoredPreviewToken;
+    const isValid =
+      typeof parsed?.token === "string" &&
+      parsed.token.length > 0 &&
+      typeof parsed?.savedAt === "number" &&
+      Date.now() - parsed.savedAt <= PREVIEW_TOKEN_MAX_AGE_MS;
+
+    if (!isValid) {
+      localStorage.removeItem(localKey);
+      return null;
+    }
+
+    return parsed.token;
+  } catch {
+    // Legacy plain-string token format: treat as stale to avoid pinning old previews
+    localStorage.removeItem(localKey);
+    return null;
+  }
 }
 
 function persistPreviewToken(token: string): void {
   sessionStorage.setItem(LOVABLE_TOKEN_SESSION_KEY, token);
-  localStorage.setItem(getPreviewTokenStorageKey(), token);
+  const payload: StoredPreviewToken = { token, savedAt: Date.now() };
+  localStorage.setItem(getPreviewTokenStorageKey(), JSON.stringify(payload));
 }
 
 function getPreviewToken(): string {
