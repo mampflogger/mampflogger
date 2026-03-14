@@ -20,7 +20,7 @@ function isLovablePreviewHost(): boolean {
 }
 
 function getPreviewTokenStorageKey(): string {
-  return `${LOVABLE_TOKEN_LOCAL_KEY_PREFIX}:${window.location.hostname}:${window.location.pathname}`;
+  return `${LOVABLE_TOKEN_LOCAL_KEY_PREFIX}:${window.location.hostname}`;
 }
 
 function readStoredPreviewToken(): string | null {
@@ -72,13 +72,16 @@ function handleLovablePreviewToken(): boolean {
 
   const params = new URLSearchParams(window.location.search);
   const currentToken = params.get(LOVABLE_TOKEN_PARAM);
+  const storedToken = readStoredPreviewToken();
 
   if (currentToken) {
-    persistPreviewToken(currentToken);
+    // Avoid refreshing stale tokens that we re-injected ourselves.
+    if (currentToken !== storedToken) {
+      persistPreviewToken(currentToken);
+    }
     return false;
   }
 
-  const storedToken = readStoredPreviewToken();
   if (!storedToken) return false;
 
   params.set(LOVABLE_TOKEN_PARAM, storedToken);
