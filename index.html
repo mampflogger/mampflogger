@@ -37,6 +37,41 @@
 
   <body>
     <div id="root"></div>
+    <!-- Aggressive SW/cache nuke for Lovable preview – runs BEFORE any module JS -->
+    <script>
+      (function(){
+        var host = location.hostname;
+        var isPreview = host.indexOf('lovableproject.com') !== -1
+          || (host.indexOf('.lovable.app') !== -1 && host.indexOf('--') !== -1);
+        if (!isPreview) return;
+        var DONE_KEY = 'mampflogger-sw-nuke-v5:' + host;
+        if (sessionStorage.getItem(DONE_KEY) === '1') return;
+        sessionStorage.setItem(DONE_KEY, '1');
+        // Nuke service workers + caches, then hard-reload
+        var tasks = [];
+        if ('serviceWorker' in navigator) {
+          tasks.push(navigator.serviceWorker.getRegistrations().then(function(regs){
+            return Promise.all(regs.map(function(r){ return r.unregister(); }));
+          }));
+        }
+        if ('caches' in window) {
+          tasks.push(caches.keys().then(function(keys){
+            return Promise.all(keys.map(function(k){ return caches.delete(k); }));
+          }));
+        }
+        if (tasks.length === 0) return;
+        Promise.all(tasks).then(function(){
+          var u = new URL(location.href);
+          u.searchParams.set('__preview_bust', Date.now());
+          location.replace(u.href);
+        }).catch(function(){ /* proceed normally */ });
+        // Block module script until reload happens (max 3s fallback)
+        var s = document.createElement('style');
+        s.textContent = '#root{display:none}';
+        document.head.appendChild(s);
+        setTimeout(function(){ s.remove(); }, 3000);
+      })();
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
