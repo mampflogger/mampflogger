@@ -67,28 +67,20 @@ function getPreviewCacheResetKey(token: string): string {
   return `${PREVIEW_CACHE_RESET_KEY_PREFIX}:${token}`;
 }
 
-function handleLovablePreviewToken(): boolean {
-  if (!isLovablePreviewHost()) return false;
+function handleLovablePreviewToken(): void {
+  if (!isLovablePreviewHost()) return;
 
   const params = new URLSearchParams(window.location.search);
   const currentToken = params.get(LOVABLE_TOKEN_PARAM);
-  const storedToken = readStoredPreviewToken();
 
   if (currentToken) {
-    // Avoid refreshing stale tokens that we re-injected ourselves.
-    if (currentToken !== storedToken) {
-      persistPreviewToken(currentToken);
-    }
-    return false;
+    persistPreviewToken(currentToken);
+    return;
   }
 
-  if (!storedToken) return false;
-
-  params.set(LOVABLE_TOKEN_PARAM, storedToken);
-  const search = params.toString();
-  const nextUrl = `${window.location.pathname}${search ? `?${search}` : ""}${window.location.hash}`;
-  window.location.replace(nextUrl);
-  return true;
+  // Never re-inject an old token: this can pin the preview to an ancient build.
+  sessionStorage.removeItem(LOVABLE_TOKEN_SESSION_KEY);
+  localStorage.removeItem(getPreviewTokenStorageKey());
 }
 
 async function resetPreviewCacheOnce(): Promise<boolean> {
