@@ -2269,7 +2269,7 @@ const SettingsDialog = ({
                   }}
                 >
                   <Upload className="w-3.5 h-3.5" />
-                  Sichern
+                  Speichern
                 </Button>
                 <Button
                   variant="outline"
