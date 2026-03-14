@@ -114,7 +114,7 @@ async function resetPreviewCacheOnce(): Promise<boolean> {
 }
 
 async function bootstrap() {
-  if (handleLovablePreviewToken()) return;
+  handleLovablePreviewToken();
   if (await resetPreviewCacheOnce()) return;
 
   createRoot(document.getElementById("root")!).render(<App />);
