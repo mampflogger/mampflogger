@@ -546,7 +546,17 @@ const ManualRecipeForm = ({ onSave, onCancel, voiceInputRef, isVoiceActive = fal
             type="text"
             inputMode="decimal"
             value={newIngredientAmount}
-            onChange={(e) => setNewIngredientAmount(e.target.value)}
+            onChange={(e) => {
+              const val = e.target.value;
+              setNewIngredientAmount(val);
+              // Auto-jump to ingredient name when a valid number is entered
+              if (val.trim() && /^\d+([.,]\d+)?$/.test(val.trim())) {
+                setTimeout(() => {
+                  ingredientNameRef.current?.focus();
+                  setFocusedField("ingredientName");
+                }, 0);
+              }
+            }}
             onFocus={() => setFocusedField("ingredientAmount")}
             placeholder="Menge"
             className={`h-6 text-[11px] px-2 w-16 shrink-0 ${ringClass("ingredientAmount")}`}
