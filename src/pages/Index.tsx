@@ -583,7 +583,7 @@ const Index = () => {
             // If manual recipe form is open, don't intercept numbers – let them flow to the form
             const manualFormOpen = !!document.querySelector('[data-voice-scope="manual-recipe"]');
 
-            if (/\b(?:schließen|schliessen|zumachen|zuklappen)\b/i.test(lower)) {
+            if (/\b(?:schließen|schliessen|zumachen|zuklappen|zurück|zurueck)\b/i.test(lower)) {
               setSettingsVoiceAction("recipe:-1");
               return;
             }
