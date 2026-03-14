@@ -165,10 +165,11 @@ const ManualRecipeForm = ({ onSave, onCancel, voiceInputRef, isVoiceActive = fal
         break;
       }
       case "ingredientAmount": {
-        // Could be a number or text like "200g"
         const num = parseGermanSpokenNumber(text);
         if (num !== null && num > 0) {
           setNewIngredientAmount(String(num));
+          // Auto-jump to ingredient name field after valid number
+          setTimeout(() => focusField("ingredientName"), 50);
         } else {
           setNewIngredientAmount(text);
         }
