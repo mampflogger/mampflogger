@@ -440,6 +440,18 @@ const Index = () => {
           }
         }
 
+        // If settings is open on recipes tab, close-dropdown / prev should close expanded recipe
+        if (settingsOpenRef.current && settingsTabRef.current === "recipes") {
+          if (action === "field:close-dropdown" || action === "field:prev") {
+            // Only close recipe if one is expanded (not in manual form)
+            const manualFormOpen = !!document.querySelector('[data-voice-scope="manual-recipe"]');
+            if (!manualFormOpen) {
+              setSettingsVoiceAction("recipe:-1");
+              return;
+            }
+          }
+        }
+
         // If settings is open, route dropdown commands to settings
         if (settingsOpenRef.current) {
           if (action === "field:open-dropdown") { setSettingsVoiceAction("open-dropdown"); return; }
