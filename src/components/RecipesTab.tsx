@@ -248,14 +248,36 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry, voiceExpandIndex, onVoi
   }, []);
 
   const handleVoiceInput = useCallback((transcript: string, isInterim: boolean) => {
-    // Delegate to manual form if open
+    if (!isInterim) {
+      if (isRecipeCameraVoiceCommand(transcript)) {
+        handlePhotoCaptureClick();
+        return;
+      }
+
+      if (isRecipeCloseVoiceCommand(transcript)) {
+        if (showPhotoDialog) {
+          setShowPhotoDialog(false);
+          return;
+        }
+        if (showManualForm) {
+          setShowManualForm(false);
+          return;
+        }
+        if (expandedId) {
+          setExpandedId(null);
+          return;
+        }
+      }
+    }
+
     if (showManualForm && manualFormVoiceRef.current) {
       manualFormVoiceRef.current(transcript, isInterim);
       return;
     }
+
     if (document.activeElement !== searchInputRef.current) return;
     setRecipeSearch(transcript);
-  }, [showManualForm]);
+  }, [expandedId, handlePhotoCaptureClick, showManualForm, showPhotoDialog]);
 
   useEffect(() => {
     if (voiceInputRef) {

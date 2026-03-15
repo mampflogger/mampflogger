@@ -478,7 +478,7 @@ const ManualRecipeForm = ({ onSave, onCancel, voiceInputRef, isVoiceActive = fal
       {/* Header with close */}
       <div className="flex items-center justify-between">
         <h3 className="text-[11px] font-semibold text-foreground uppercase tracking-wider">Neues Rezept</h3>
-        <button onClick={onCancel} className="p-1 rounded text-muted-foreground hover:text-foreground transition-colors">
+        <button type="button" data-voice-close="current" onClick={onCancel} className="p-1 rounded text-muted-foreground hover:text-foreground transition-colors">
           <X className="w-3.5 h-3.5" />
         </button>
       </div>
