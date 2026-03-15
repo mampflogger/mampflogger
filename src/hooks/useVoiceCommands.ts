@@ -27,7 +27,7 @@ function parseRecipeVoiceAction(transcript: string): string | null {
 const COMMANDS: VoiceCommand[] = [
   // === Section navigation (most specific first) ===
   // Log page sections
-  { patterns: [/\bneue[rn]?\s+eintrag\s+(?:foto|photo|kamera|bild)\b/i, /\beingabe\s+(?:foto|photo|kamera|bild)\b/i], action: "action:entry+camera" },
+  { patterns: [/\bneue[rn]?\s+eintrag\s+(?:foto|photo|kamera|bild|camera)\b/i, /\beingabe\s+(?:foto|photo|kamera|bild|camera)\b/i], action: "action:entry+camera" },
   { patterns: [/\bneue[rn]?\s+eintrag\b/i, /\bneue\s+eingabe\b/i], action: "section:neuer-eintrag" },
   { patterns: [/\bnährstoff/i], action: "section:makro-naehrstoffe" },
   { patterns: [/\btagesübersicht\b/i], action: "section:tagesuebersicht" },
@@ -154,7 +154,8 @@ const COMMANDS: VoiceCommand[] = [
   // Actions
   { patterns: [/\bhilfe\b/i, /\bhelp\b/i], action: "action:help" },
   { patterns: [/\bmikro\s*aus\b/i, /\bmikrofon\s*aus\b/i, /\bmic\s*off\b/i], action: "action:mic-off" },
-  { patterns: [/\bkamera\b/i, /\bfoto\b/i, /\bphoto\b/i, /\bbild\b/i], action: "action:camera" },
+  { patterns: [/\bkamera\s*foto\b/i, /\bkamera\s*bild\b/i, /\bfoto\s*kamera\b/i], action: "action:camera" },
+  { patterns: [/\bkamera\b/i, /\bcamera\b/i, /\bfoto\b/i, /\bphoto\b/i, /\bbild\b/i, /\bfoto(?:s|grafie)?\b/i], action: "action:camera" },
 ];
 
 // Fuzzy keyword → action map for fallback matching when regex fails
@@ -222,7 +223,16 @@ const FUZZY_KEYWORD_MAP: [string, string][] = [
   ["light mode", "theme:light"],
   ["heller modus", "theme:light"],
   ["kamera", "action:camera"],
+  ["kamerafoto", "action:camera"],
+  ["kamerabild", "action:camera"],
   ["foto", "action:camera"],
+  ["photo", "action:camera"],
+  ["bild", "action:camera"],
+  ["fotokamera", "action:camera"],
+  ["bild aufnehmen", "action:camera"],
+  ["foto aufnehmen", "action:camera"],
+  ["foto machen", "action:camera"],
+  ["bild machen", "action:camera"],
   ["mikro aus", "action:mic-off"],
   ["mikrofon aus", "action:mic-off"],
   ["hilfe", "action:help"],
