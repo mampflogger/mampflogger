@@ -113,6 +113,8 @@ const COMMANDS: VoiceCommand[] = [
   { patterns: [/\bnew\s*food\b/i], action: "click:new-food" },
   { patterns: [/\blebensmittel\s+suchen\b/i], action: "click:food-search" },
   { patterns: [/\blebensmittel\b/i], action: "settings:food" },
+  { patterns: [/\brezepte?\s+neu\b/i, /\bneue?s?\s+rezepte?\b/i], action: "settings:recipes+new" },
+  { patterns: [/\brezepte?\s+kamera\b/i, /\brezepte?\s+foto\b/i], action: "settings:recipes+camera" },
   { patterns: [/\brezepte?\b/i], action: "settings:recipes" },
   { patterns: [/\bdaten\b/i], action: "settings:data" },
 
