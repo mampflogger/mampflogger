@@ -27,7 +27,7 @@ function parseRecipeVoiceAction(transcript: string): string | null {
 const COMMANDS: VoiceCommand[] = [
   // === Section navigation (most specific first) ===
   // Log page sections
-  { patterns: [/\bneue[rn]?\s+eintrag\s+(?:foto|photo|kamera|bild)\b/i, /\beingabe\s+(?:foto|photo|kamera|bild)\b/i], action: "action:entry+camera" },
+  { patterns: [/\bneue[rn]?\s+eintrag\s+(?:foto|photo|kamera|bild|camera)\b/i, /\beingabe\s+(?:foto|photo|kamera|bild|camera)\b/i], action: "action:entry+camera" },
   { patterns: [/\bneue[rn]?\s+eintrag\b/i, /\bneue\s+eingabe\b/i], action: "section:neuer-eintrag" },
   { patterns: [/\bnährstoff/i], action: "section:makro-naehrstoffe" },
   { patterns: [/\btagesübersicht\b/i], action: "section:tagesuebersicht" },
