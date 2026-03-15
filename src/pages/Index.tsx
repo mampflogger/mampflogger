@@ -367,8 +367,8 @@ const Index = () => {
         voiceCommands.stop();
         return;
       }
-      else if (action === "action:camera") {
-        if (settingsOpenRef.current && settingsTabRef.current === "recipes") {
+      else if (action === "action:camera" || action === "action:entry+camera") {
+        if (settingsOpenRef.current && settingsTabRef.current === "recipes" && action === "action:camera") {
           setSettingsVoiceAction("recipe-photo");
         } else {
           closeSettingsAndDo(() => {
