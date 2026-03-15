@@ -369,16 +369,17 @@ const Index = () => {
       }
       else if (action === "action:camera" || action === "action:entry+camera") {
         if (settingsOpenRef.current && settingsTabRef.current === "recipes" && action === "action:camera") {
-          setSettingsVoiceAction("recipe-photo");
-        } else {
-          closeSettingsAndDo(() => {
-            const needsTabSwitch = activeTabRef.current !== "log";
-            if (needsTabSwitch) setActiveTab("log");
-            setTimeout(() => {
-              window.dispatchEvent(new Event("mampflogger:open-photo-log"));
-            }, needsTabSwitch ? 250 : 50);
-          });
+          window.dispatchEvent(new Event("mampflogger:open-recipe-photo"));
+          return;
         }
+
+        closeSettingsAndDo(() => {
+          const needsTabSwitch = activeTabRef.current !== "log";
+          if (needsTabSwitch) setActiveTab("log");
+          setTimeout(() => {
+            window.dispatchEvent(new Event("mampflogger:open-photo-log"));
+          }, needsTabSwitch ? 250 : 50);
+        });
       }
       else if (action === "action:date-focus") {
         closeSettingsAndDo(() => {

@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useMemo, useCallback, type MutableRefObjec
 import { ensureCompatibleImage, resizeImageToDataUrl } from "@/lib/imageUtils";
 import { NutritionEntry, generateId } from "@/types/nutrition";
 import { estimateRecipeMicronutrients } from "@/lib/micronutrients";
+import { bestFuzzyMatch } from "@/lib/fuzzyMatch";
 import { Trash2, ChevronDown, ChevronUp, Sparkles, Pencil, Check, Plus, Loader2, Share2, PlusCircle, MessageCircle, Camera, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -47,6 +48,58 @@ const SAVED_RECIPES_KEY = "mampflogger-saved-recipes";
 const FOCUS_RECIPE_SEARCH_EVENT = "mampflogger:focus-recipe-search";
 const OPEN_RECIPE_PHOTO_EVENT = "mampflogger:open-recipe-photo";
 const OPEN_NEW_RECIPE_EVENT = "mampflogger:open-new-recipe";
+const RECIPE_CAMERA_VOICE_PATTERNS = [
+  /\b(?:kamera|camera|foto|photo|bild|picture)\b/,
+  /\bkamera\s*(?:foto|bild)\b/,
+  /\b(?:foto|photo|bild|picture)\s*(?:machen|aufnehmen|oeffnen|öffnen|starten)\b/,
+  /\b(?:kamera|camera)\s*(?:oeffnen|öffnen|starten)\b/,
+];
+const RECIPE_CAMERA_FUZZY_TERMS = [
+  "kamera",
+  "camera",
+  "foto",
+  "photo",
+  "bild",
+  "picture",
+  "kamerafoto",
+  "kamerabild",
+  "bild aufnehmen",
+  "foto aufnehmen",
+  "picture aufnehmen",
+  "bild machen",
+  "foto machen",
+  "picture machen",
+  "kamera starten",
+  "kamera oeffnen",
+];
+const RECIPE_CLOSE_VOICE_PATTERNS = [
+  /^\s*(?:x|iks|ix|ex)\s*$/i,
+  /\b(?:schließen|schliessen|zumachen|zuklappen|abbrechen|storno|verwerfen|kreuz)\b/i,
+];
+
+function normalizeRecipeVoice(text: string): string {
+  return text
+    .toLowerCase()
+    .replace(/ä/g, "ae")
+    .replace(/ö/g, "oe")
+    .replace(/ü/g, "ue")
+    .replace(/ß/g, "ss")
+    .replace(/[^a-z0-9 ]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function isRecipeCameraVoiceCommand(text: string): boolean {
+  const normalized = normalizeRecipeVoice(text);
+  if (!normalized) return false;
+  if (RECIPE_CAMERA_VOICE_PATTERNS.some((pattern) => pattern.test(normalized))) return true;
+  const { index, score } = bestFuzzyMatch(normalized, RECIPE_CAMERA_FUZZY_TERMS, 0.58);
+  return index >= 0 && score >= 0.58;
+}
+
+function isRecipeCloseVoiceCommand(text: string): boolean {
+  return RECIPE_CLOSE_VOICE_PATTERNS.some((pattern) => pattern.test(text));
+}
 
 function loadSavedRecipes(): SavedRecipe[] {
   try {
