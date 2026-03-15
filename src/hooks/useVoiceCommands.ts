@@ -154,7 +154,8 @@ const COMMANDS: VoiceCommand[] = [
   // Actions
   { patterns: [/\bhilfe\b/i, /\bhelp\b/i], action: "action:help" },
   { patterns: [/\bmikro\s*aus\b/i, /\bmikrofon\s*aus\b/i, /\bmic\s*off\b/i], action: "action:mic-off" },
-  { patterns: [/\bkamera\b/i, /\bfoto\b/i, /\bphoto\b/i, /\bbild\b/i], action: "action:camera" },
+  { patterns: [/\bkamera\s*foto\b/i, /\bkamera\s*bild\b/i, /\bfoto\s*kamera\b/i], action: "action:camera" },
+  { patterns: [/\bkamera\b/i, /\bcamera\b/i, /\bfoto\b/i, /\bphoto\b/i, /\bbild\b/i, /\bfoto(?:s|grafie)?\b/i], action: "action:camera" },
 ];
 
 // Fuzzy keyword → action map for fallback matching when regex fails
