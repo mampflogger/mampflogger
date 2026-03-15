@@ -298,6 +298,16 @@ const Index = () => {
       else if (action === "settings:design") { setSettingsVoiceTab("design"); flashTab("settings"); }
       else if (action === "settings:food") { setSettingsVoiceTab("food"); flashTab("settings"); }
       else if (action === "settings:recipes") { setSettingsVoiceTab("recipes"); flashTab("settings"); }
+      else if (action === "settings:recipes+new") {
+        setSettingsVoiceTab("recipes");
+        flashTab("settings");
+        setTimeout(() => setSettingsVoiceAction("new-recipe"), 400);
+      }
+      else if (action === "settings:recipes+camera") {
+        setSettingsVoiceTab("recipes");
+        flashTab("settings");
+        setTimeout(() => setSettingsVoiceAction("recipe-photo"), 400);
+      }
       else if (action === "settings:data") { setSettingsVoiceTab("data"); flashTab("settings"); }
       else if (action.startsWith("recipe:")) {
         if (!settingsOpenRef.current || settingsTabRef.current !== "recipes") {
