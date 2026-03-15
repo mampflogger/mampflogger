@@ -315,6 +315,9 @@ const ManualRecipeForm = ({ onSave, onCancel, voiceInputRef, isVoiceActive = fal
           if (current) flushVoiceBuffer(current);
           focusField(prev);
         }
+      } else if (cmd === "field:close-dropdown") {
+        clearVoiceBuffer();
+        onCancel();
       } else if (cmd === "field:clear") {
         clearVoiceBuffer();
         switch (current) {
