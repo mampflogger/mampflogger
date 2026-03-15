@@ -451,15 +451,18 @@ const Index = () => {
           }
         }
 
-        // If settings is open on recipes tab, close-dropdown / prev should close expanded recipe
+        // If settings is open on recipes tab, keep close actions local to the current recipe UI
         if (settingsOpenRef.current && settingsTabRef.current === "recipes") {
-          if (action === "field:close-dropdown" || action === "field:prev") {
-            // Only close recipe if one is expanded (not in manual form)
-            const manualFormOpen = !!document.querySelector('[data-voice-scope="manual-recipe"]');
-            if (!manualFormOpen) {
-              setSettingsVoiceAction("recipe:-1");
-              return;
-            }
+          const manualFormOpen = !!document.querySelector('[data-voice-scope="manual-recipe"]');
+
+          if (action === "field:close-dropdown" && manualFormOpen) {
+            window.dispatchEvent(new CustomEvent("mampflogger:field-command", { detail: { action, scope: "manual-recipe" } }));
+            return;
+          }
+
+          if ((action === "field:close-dropdown" || action === "field:prev") && !manualFormOpen) {
+            setSettingsVoiceAction("recipe:-1");
+            return;
           }
         }
 
