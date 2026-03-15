@@ -369,16 +369,17 @@ const Index = () => {
       }
       else if (action === "action:camera" || action === "action:entry+camera") {
         if (settingsOpenRef.current && settingsTabRef.current === "recipes" && action === "action:camera") {
-          setSettingsVoiceAction("recipe-photo");
-        } else {
-          closeSettingsAndDo(() => {
-            const needsTabSwitch = activeTabRef.current !== "log";
-            if (needsTabSwitch) setActiveTab("log");
-            setTimeout(() => {
-              window.dispatchEvent(new Event("mampflogger:open-photo-log"));
-            }, needsTabSwitch ? 250 : 50);
-          });
+          window.dispatchEvent(new Event("mampflogger:open-recipe-photo"));
+          return;
         }
+
+        closeSettingsAndDo(() => {
+          const needsTabSwitch = activeTabRef.current !== "log";
+          if (needsTabSwitch) setActiveTab("log");
+          setTimeout(() => {
+            window.dispatchEvent(new Event("mampflogger:open-photo-log"));
+          }, needsTabSwitch ? 250 : 50);
+        });
       }
       else if (action === "action:date-focus") {
         closeSettingsAndDo(() => {
@@ -450,15 +451,18 @@ const Index = () => {
           }
         }
 
-        // If settings is open on recipes tab, close-dropdown / prev should close expanded recipe
+        // If settings is open on recipes tab, keep close actions local to the current recipe UI
         if (settingsOpenRef.current && settingsTabRef.current === "recipes") {
-          if (action === "field:close-dropdown" || action === "field:prev") {
-            // Only close recipe if one is expanded (not in manual form)
-            const manualFormOpen = !!document.querySelector('[data-voice-scope="manual-recipe"]');
-            if (!manualFormOpen) {
-              setSettingsVoiceAction("recipe:-1");
-              return;
-            }
+          const manualFormOpen = !!document.querySelector('[data-voice-scope="manual-recipe"]');
+
+          if (action === "field:close-dropdown" && manualFormOpen) {
+            window.dispatchEvent(new CustomEvent("mampflogger:field-command", { detail: { action, scope: "manual-recipe" } }));
+            return;
+          }
+
+          if ((action === "field:close-dropdown" || action === "field:prev") && !manualFormOpen) {
+            setSettingsVoiceAction("recipe:-1");
+            return;
           }
         }
 
@@ -602,14 +606,14 @@ const Index = () => {
 
           // Recipes tab: show/close and number selection
           if (currentTab === "recipes") {
-            // If manual recipe form is open, don't intercept numbers – let them flow to the form
+            // If manual recipe form is open, keep close commands inside the active recipe UI.
             const manualFormOpen = !!document.querySelector('[data-voice-scope="manual-recipe"]');
 
-            if (/\b(?:schließen|schliessen|zumachen|zuklappen|zurück|zurueck)\b/i.test(lower)) {
+            if (!manualFormOpen && /\b(?:schließen|schliessen|zumachen|zuklappen|zurück|zurueck)\b/i.test(lower)) {
               setSettingsVoiceAction("recipe:-1");
               return;
             }
-            if (/\b(?:neues?\s+rezept|neu)\b/i.test(lower)) {
+            if (!manualFormOpen && /\b(?:neues?\s+rezept|neu)\b/i.test(lower)) {
               setSettingsVoiceAction("new-recipe");
               return;
             }
