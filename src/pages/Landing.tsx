@@ -76,6 +76,7 @@ const Landing = () => {
           <VisitorCounter />
           <a href="mailto:email@mampflogger.de" className="hover:text-foreground transition-colors">Kontakt: email@mampflogger.de</a>
           <a href="/impressum" className="hover:text-foreground transition-colors">Impressum</a>
+          <a href="/datenschutz" className="hover:text-foreground transition-colors">Datenschutz</a>
           <span>© {new Date().getFullYear()} MampfLogger</span>
         </div>
       </footer>

@@ -12,6 +12,7 @@ const Landing = lazy(() => import("./pages/Landing"));
 const LearnMore = lazy(() => import("./pages/LearnMore"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const Impressum = lazy(() => import("./pages/Impressum"));
+const Datenschutz = lazy(() => import("./pages/Datenschutz"));
 
 const PageLoader = () => (
   <div className="min-h-screen flex items-center justify-center bg-background">
@@ -68,6 +69,7 @@ const App = () => {
               <Route path="/more" element={<LearnMore />} />
               <Route path="/app" element={<Index />} />
               <Route path="/impressum" element={<Impressum />} />
+              <Route path="/datenschutz" element={<Datenschutz />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
