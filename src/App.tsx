@@ -58,6 +58,7 @@ const App = () => {
       <TooltipProvider>
         <Toaster />
         <Sonner />
+        <DisclaimerModal />
         {pwaEnabled && <PwaUpdateBanner />}
         <BrowserRouter>
           <Suspense fallback={<PageLoader />}>
