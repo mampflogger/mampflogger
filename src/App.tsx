@@ -11,6 +11,7 @@ const Index = lazy(() => import("./pages/Index"));
 const Landing = lazy(() => import("./pages/Landing"));
 const LearnMore = lazy(() => import("./pages/LearnMore"));
 const NotFound = lazy(() => import("./pages/NotFound"));
+const Impressum = lazy(() => import("./pages/Impressum"));
 
 const PageLoader = () => (
   <div className="min-h-screen flex items-center justify-center bg-background">
