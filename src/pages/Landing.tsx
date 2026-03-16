@@ -43,20 +43,20 @@ const Landing = () => {
       </header>
 
       {/* Hero */}
-      <section className="max-w-2xl mx-auto px-5 pt-16 pb-12 text-center flex-1 flex flex-col justify-center">
-        <div className="inline-block mb-5 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-semibold uppercase tracking-widest mx-auto">
+      <section className="max-w-2xl mx-auto px-5 pt-8 pb-8 text-center flex-1 flex flex-col justify-center">
+        <div className="inline-block mb-4 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-semibold uppercase tracking-widest mx-auto">
           Free · No Account · No Ads
         </div>
-        <p className="text-muted-foreground text-base sm:text-lg leading-relaxed mb-6">
+        <p className="text-muted-foreground text-sm sm:text-lg leading-relaxed mb-5">
           <strong className="text-foreground">MampfLogger</strong> ist deine kostenlose Ernährungs-App mit super smarten KI-Funktionen. Damit zählst du nicht nur stumpf Kalorien, sondern checkst genau, ob dein Körper alle Nährstoffe bekommt, die er braucht.{" "}
           <strong className="text-foreground">MampfLogger</strong> liefert dir präzise Daten und mit dem KI-Coach hast du{" "}
           <strong className="text-foreground">volle Kontrolle</strong> über deinen Körper und erreichst sicher deine Ernährungsziele.
         </p>
-        <h1 className="text-4xl sm:text-5xl font-extrabold leading-tight tracking-tight mb-5">
+        <h1 className="text-3xl sm:text-5xl font-extrabold leading-tight tracking-tight mb-4">
           EAT SMARTER<br />
           <span className="text-primary">and GET CONTROL</span>
         </h1>
-        <p className="text-muted-foreground text-sm mb-8 italic">
+        <p className="text-muted-foreground text-sm mb-6 italic">
           Lass dir keinen Bullshit erzählen. Check es selbst!
         </p>
         <Button
