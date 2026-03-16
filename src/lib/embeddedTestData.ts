@@ -222,6 +222,7 @@ export function applyEmbeddedTestDataset(gender: TestDataGender): EmbeddedTestDa
   saveProfile(dataset.profile);
   saveEntries(dataset.entries);
   saveBookedActivities(dataset.bookedActivities);
+  saveDefaultRecipes();
   localStorage.removeItem("nutrition-log-activities");
 
   return dataset;
