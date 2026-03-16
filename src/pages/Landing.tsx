@@ -31,11 +31,11 @@ const Landing = () => {
             </div>
             <span className="text-lg font-bold tracking-tight">MampfLogger</span>
           </div>
-          <div className="flex items-center gap-1.5">
-            <Button size="sm" variant="outline" className="px-2.5 text-xs" onClick={() => navigate("/more")}>
+          <div className="flex items-center gap-1">
+            <Button size="sm" variant="outline" className="h-8 px-2 text-xs" onClick={() => navigate("/more")}>
               Learn more
             </Button>
-            <Button size="sm" className="px-2.5 text-xs" onClick={() => navigate("/app")}>
+            <Button size="sm" className="h-8 px-2 text-xs" onClick={() => navigate("/app")}>
               App öffnen
             </Button>
           </div>
@@ -43,7 +43,7 @@ const Landing = () => {
       </header>
 
       {/* Hero */}
-      <section className="max-w-2xl mx-auto px-5 pt-8 pb-8 text-center flex-1 flex flex-col justify-center">
+      <section className="max-w-2xl mx-auto px-5 pt-5 pb-6 text-center flex-1 flex flex-col justify-center">
         <div className="inline-block mb-4 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-semibold uppercase tracking-widest mx-auto">
           Free · No Account · No Ads
         </div>
