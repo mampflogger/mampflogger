@@ -904,6 +904,7 @@ const Index = () => {
     clearProfile();
     saveEntries([]);
     saveBookedActivities([]);
+    localStorage.removeItem("mampflogger-saved-recipes");
     setProfile(null);
     setEntries([]);
     setBookedActivities([]);

@@ -2,6 +2,7 @@ import { saveEntries } from "@/lib/storage";
 import { hydrateEntryDerivedData } from "@/lib/entryDerivedData";
 import { BookedActivity, saveBookedActivities, saveProfile, UserProfile } from "@/types/profile";
 import { formatDate, generateId, NutritionEntry } from "@/types/nutrition";
+import { DEFAULT_RECIPES, saveDefaultRecipes } from "@/lib/defaultRecipes";
 
 export type TestDataGender = "male" | "female";
 
@@ -221,6 +222,7 @@ export function applyEmbeddedTestDataset(gender: TestDataGender): EmbeddedTestDa
   saveProfile(dataset.profile);
   saveEntries(dataset.entries);
   saveBookedActivities(dataset.bookedActivities);
+  saveDefaultRecipes();
   localStorage.removeItem("nutrition-log-activities");
 
   return dataset;

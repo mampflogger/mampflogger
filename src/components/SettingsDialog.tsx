@@ -1491,7 +1491,7 @@ const SettingsDialog = ({
                 <AlertDialogHeader>
                   <AlertDialogTitle>Alle Daten löschen?</AlertDialogTitle>
                   <AlertDialogDescription>
-                    Dadurch werden Profil, Tagesprotokoll und Aktivitäten entfernt und die App zurück auf den Startzustand gesetzt.
+                    Dadurch werden Profil, Tagesprotokoll, Aktivitäten und Rezepte entfernt und die App zurück auf den Startzustand gesetzt.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
