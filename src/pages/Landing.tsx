@@ -75,6 +75,7 @@ const Landing = () => {
           <span>Keine Anmeldung · Keine Werbung · Keine Kosten</span>
           <VisitorCounter />
           <a href="mailto:email@mampflogger.de" className="hover:text-foreground transition-colors">Kontakt: email@mampflogger.de</a>
+          <a href="/impressum" className="hover:text-foreground transition-colors">Impressum</a>
           <span>© {new Date().getFullYear()} MampfLogger</span>
         </div>
       </footer>
