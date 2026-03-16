@@ -31,11 +31,11 @@ const Landing = () => {
             </div>
             <span className="text-lg font-bold tracking-tight">MampfLogger</span>
           </div>
-          <div className="flex items-center gap-1.5">
-            <Button size="sm" variant="outline" className="px-2.5 text-xs" onClick={() => navigate("/more")}>
+          <div className="flex items-center gap-1">
+            <Button size="sm" variant="outline" className="h-8 px-2 text-xs" onClick={() => navigate("/more")}>
               Learn more
             </Button>
-            <Button size="sm" className="px-2.5 text-xs" onClick={() => navigate("/app")}>
+            <Button size="sm" className="h-8 px-2 text-xs" onClick={() => navigate("/app")}>
               App öffnen
             </Button>
           </div>
