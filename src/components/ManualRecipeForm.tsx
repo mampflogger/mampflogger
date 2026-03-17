@@ -48,7 +48,7 @@ type FocusedField = "recipeName" | "servings" | "prepTime" | "ingredientAmount" 
 const FIELD_ORDER: FocusedField[] = [
   "recipeName", "servings", "prepTime",
   "ingredientAmount", "ingredientName",
-  "steps", "aiCheckbox", "save",
+  "aiCheckbox", "steps", "save",
 ];
 
 const ManualRecipeForm = ({ onSave, onCancel, voiceInputRef, isVoiceActive = false }: ManualRecipeFormProps) => {
