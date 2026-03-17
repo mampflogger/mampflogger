@@ -718,17 +718,19 @@ const Index = () => {
         }
       }
 
-      // Table sorting voice commands when Tagesübersicht is active
+      // Table voice commands when Tagesübersicht is active
       if (!isInterim) {
         const lower2 = transcript.toLowerCase();
-        const normalizedSortTranscript = lower2
+        const normalizedTableTranscript = lower2
           .replace(/[.,;:!?]/g, " ")
           .replace(/\beiweiß\b/g, "eiweiss")
           .replace(/\beiweis\b/g, "eiweiss")
+          .replace(/\bt[\s.-]*i[\s.-]*m[\s.-]*e\b/g, "time")
           .replace(/\bp[\s.-]*r[\s.-]*o\b/g, "pro")
           .replace(/\bf[\s.-]*a[\s.-]*t\b/g, "fat")
           .replace(/\bk[\s.-]*h\b/g, "kh")
           .replace(/\bf[\s.-]*i[\s.-]*b\b/g, "fib")
+          .replace(/\bpfeffer\b/g, "fiber")
           .replace(/\s+/g, " ")
           .trim();
         const tagesSection = document.getElementById("section-tagesuebersicht");
@@ -746,18 +748,31 @@ const Index = () => {
             tagesVisible);
 
         if (isTagesVoiceScopeActive) {
-          const sortMap: [RegExp, string][] = [
+          if (/\b(?:detail(?:ansicht)?|einzel(?:ansicht)?|liste)\b/i.test(normalizedTableTranscript)) {
+            setTableViewMode("detail");
+            return;
+          }
+
+          if (/\b(?:summen?(?:ansicht)?|kompakt|komprimiert)\b/i.test(normalizedTableTranscript)) {
+            setTableViewMode("summen");
+            return;
+          }
+
+          const sortMap: [RegExp, "time" | "food" | "count" | "amount" | "calories" | "protein" | "fat" | "carbs" | "fiber"][] = [
             [/\b(?:zeit|uhrzeit|time|tim|taim)\b/i, "time"],
             [/\b(?:lebensmittel|food|alphabetisch)\b/i, "food"],
+            [/\b(?:anz(?:ahl)?|count|haeufigkeit|häufigkeit)\b/i, "count"],
             [/\b(?:gramm|g(?:\s*\/\s*|\s+pro\s+)ml|menge)\b/i, "amount"],
             [/\b(?:kcal|kalorien|kilokalorien|calories)\b/i, "calories"],
             [/\b(?:pro|protein(?:e|en)?|eiweiss)\b/i, "protein"],
             [/\b(?:fat|fett(?:e)?)\b/i, "fat"],
             [/\b(?:kh|kohlenhydrate?|carbs?|carbohydrates?)\b/i, "carbs"],
-            [/\b(?:fib|fiber|fibre|ballaststoffe?|ballast|faser(?:n)?)\b/i, "fiber"],
+            [/\b(?:fib|fiber|fibre|pfeffer|ballaststoffe?|ballast|faser(?:n)?)\b/i, "fiber"],
           ];
           for (const [re, key] of sortMap) {
-            if (re.test(normalizedSortTranscript)) {
+            if (key === "time" && tableViewMode === "summen") continue;
+            if (key === "count" && tableViewMode !== "summen") continue;
+            if (re.test(normalizedTableTranscript)) {
               window.dispatchEvent(new CustomEvent("mampflogger:table-sort", { detail: { key } }));
               return;
             }
@@ -777,7 +792,7 @@ const Index = () => {
       }
 
       nutritionVoiceRef.current?.(transcript, isInterim);
-    }, []),
+    }, [tableViewMode]),
   });
 
   // Keep a ref to activeTab for use in callbacks

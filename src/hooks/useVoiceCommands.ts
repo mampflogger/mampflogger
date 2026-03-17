@@ -356,8 +356,8 @@ export function useVoiceCommands({ onCommand, onUnhandledSpeech }: UseVoiceComma
 
         const scope = getVoiceCommandScope();
 
-        // 0b. If Tagesübersicht is active and transcript matches a sort keyword,
-        //     skip global commands and let onUnhandledSpeech handle the sort.
+        // 0b. If Tagesübersicht is active and transcript matches a table keyword,
+        //     skip global commands and let onUnhandledSpeech handle table sorting/view changes.
         const activeElement = document.activeElement as HTMLElement | null;
         const tagesSection = document.getElementById("section-tagesuebersicht");
         const tagesRect = tagesSection?.getBoundingClientRect();
@@ -365,14 +365,16 @@ export function useVoiceCommands({ onCommand, onUnhandledSpeech }: UseVoiceComma
           !!tagesRect &&
           tagesRect.bottom > Math.min(window.innerHeight * 0.2, 120) &&
           tagesRect.top < window.innerHeight - Math.min(window.innerHeight * 0.2, 120);
-        const normalizedSortTranscript = lower
+        const normalizedTableTranscript = lower
           .replace(/[.,;:!?]/g, " ")
           .replace(/\beiweiß\b/g, "eiweiss")
           .replace(/\beiweis\b/g, "eiweiss")
+          .replace(/\bt[\s.-]*i[\s.-]*m[\s.-]*e\b/g, "time")
           .replace(/\bp[\s.-]*r[\s.-]*o\b/g, "pro")
           .replace(/\bf[\s.-]*a[\s.-]*t\b/g, "fat")
           .replace(/\bk[\s.-]*h\b/g, "kh")
           .replace(/\bf[\s.-]*i[\s.-]*b\b/g, "fib")
+          .replace(/\bpfeffer\b/g, "fiber")
           .replace(/\s+/g, " ")
           .trim();
         const tagesActive =
@@ -381,9 +383,9 @@ export function useVoiceCommands({ onCommand, onUnhandledSpeech }: UseVoiceComma
             tagesSection.getAttribute("data-section-active") === "true" ||
             !!activeElement?.closest("#section-tagesuebersicht") ||
             tagesVisible);
-        const TABLE_SORT_RE =
-          /\b(?:zeit|uhrzeit|time|tim|taim|lebensmittel|food|alphabetisch|gramm|g(?:\s*\/\s*|\s+pro\s+)ml|menge|kcal|kalorien|kilokalorien|calories|pro|protein(?:e|en)?|eiweiss|fat|fett(?:e)?|kh|kohlenhydrate?|carbs?|carbohydrates?|fib|fiber|fibre|ballaststoffe?|ballast|faser(?:n)?)\b/i;
-        if (tagesActive && TABLE_SORT_RE.test(normalizedSortTranscript)) {
+        const TABLE_VOICE_RE =
+          /\b(?:detail(?:ansicht)?|summen?(?:ansicht)?|kompakt|komprimiert|zeit|uhrzeit|time|tim|taim|lebensmittel|food|alphabetisch|anz(?:ahl)?|count|haeufigkeit|häufigkeit|gramm|g(?:\s*\/\s*|\s+pro\s+)ml|menge|kcal|kalorien|kilokalorien|calories|pro|protein(?:e|en)?|eiweiss|fat|fett(?:e)?|kh|kohlenhydrate?|carbs?|carbohydrates?|fib|fiber|fibre|pfeffer|ballaststoffe?|ballast|faser(?:n)?)\b/i;
+        if (tagesActive && TABLE_VOICE_RE.test(normalizedTableTranscript)) {
           onUnhandledRef.current(transcript, isInterim);
           return;
         }
