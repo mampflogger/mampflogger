@@ -30,7 +30,7 @@ const COMMANDS: VoiceCommand[] = [
   { patterns: [/\bneue[rn]?\s+eintrag\s+(?:foto|photo|kamera|bild|camera)\b/i, /\beingabe\s+(?:foto|photo|kamera|bild|camera)\b/i], action: "action:entry+camera" },
   { patterns: [/\bneue[rn]?\s+eintrag\b/i, /\bneue\s+eingabe\b/i], action: "section:neuer-eintrag" },
   { patterns: [/\bnährstoff/i], action: "section:makro-naehrstoffe" },
-  { patterns: [/\btagesübersicht\b/i], action: "section:tagesuebersicht" },
+  { patterns: [/\btagesübersicht\b/i, /\btagesprotokoll\b/i, /\bprotokoll\b/i], action: "section:tagesuebersicht" },
   { patterns: [/\bkalorienaufnahme\b/i], action: "section:kalorienaufnahme" },
   { patterns: [/\bfasten/i], action: "section:fastenanalyse" },
   { patterns: [/\bactivit/i, /\baktivität/i, /\baktivitaet\b/i, /\baktivitäten\b/i, /\bworkout\b/i, /\bworkouts\b/i], action: "section:activity" },
