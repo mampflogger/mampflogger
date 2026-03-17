@@ -789,6 +789,13 @@ const SettingsDialog = ({
   const handleTabChange = (newTab: SettingsTab) => {
     setTab(newTab);
     onTabChange?.(newTab);
+    // Highlight the main section heading when switching to a tab
+    if (newTab === "food") {
+      setHighlightedSettingsSection("section-lebensmittelliste");
+      setActiveSettingsSection("section-lebensmittelliste");
+      if (highlightSettingsSectionTimerRef.current) clearTimeout(highlightSettingsSectionTimerRef.current);
+      highlightSettingsSectionTimerRef.current = setTimeout(() => setHighlightedSettingsSection(null), 3000);
+    }
   };
 
   const currentProfile: UserProfile | null =
