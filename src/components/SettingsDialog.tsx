@@ -341,6 +341,10 @@ const SettingsDialog = ({
       if (tab === "food" && editingFood && editFoodName.trim()) {
         handleAiLookup();
       }
+    } else if (voiceAction === "rezept-speichern") {
+      // Click the save button inside the manual recipe form
+      const btn = document.querySelector('[data-voice-scope="manual-recipe"] button[data-voice-action="save"]') as HTMLButtonElement;
+      btn?.click();
     } else if (voiceAction === "backup-create") {
       setTab("data");
       setTimeout(() => {
