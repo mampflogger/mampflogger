@@ -147,8 +147,34 @@ const NutritionTable = ({ entries, onDelete, onEntryClick, viewMode, onViewModeC
   // Sort summen rows by calories desc by default
   const sortedSummen = [...summenRows].sort((a, b) => b.calories - a.calories);
 
+  const viewToggle = (
+    <div className="flex gap-1 mb-2">
+      <button
+        onClick={() => onViewModeChange("detail")}
+        className={`px-2.5 py-0.5 rounded-full text-[10px] font-semibold border transition-colors ${
+          viewMode === "detail"
+            ? "border-primary/40 bg-primary/10 text-primary"
+            : "border-border/60 bg-transparent hover:border-primary/30 hover:bg-muted/40 text-muted-foreground"
+        }`}
+      >
+        Detail
+      </button>
+      <button
+        onClick={() => onViewModeChange("summen")}
+        className={`px-2.5 py-0.5 rounded-full text-[10px] font-semibold border transition-colors ${
+          viewMode === "summen"
+            ? "border-primary/40 bg-primary/10 text-primary"
+            : "border-border/60 bg-transparent hover:border-primary/30 hover:bg-muted/40 text-muted-foreground"
+        }`}
+      >
+        Summen
+      </button>
+    </div>
+  );
+
   return (
     <div className="animate-slide-up">
+      {viewToggle}
       <div className="overflow-x-auto -mx-1 px-1">
         <table className="w-full text-[10px] sm:text-[11px]">
           <thead>
