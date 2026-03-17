@@ -235,21 +235,23 @@ const ManualRecipeForm = ({ onSave, onCancel, voiceInputRef, isVoiceActive = fal
       return;
     }
 
-    // "Okay" when in ingredient fields → move to steps
+    // "Okay" when in ingredient fields → move to aiCheckbox
     if (!isInterim && isBookingCommand(transcript) && (current === "ingredientAmount" || current === "ingredientName")) {
       clearVoiceBuffer();
       // Add pending ingredient first if any
       if (newIngredientName.trim()) {
         handleAddIngredientInternal();
       }
-      focusField("steps");
+      focusField("aiCheckbox");
       return;
     }
 
-    // "Okay" on aiCheckbox → toggle it
+    // "Okay" on aiCheckbox → toggle it and advance to steps
     if (!isInterim && current === "aiCheckbox" && isBookingCommand(transcript)) {
       clearVoiceBuffer();
       setAiGenerateSteps((prev) => !prev);
+      // After toggling, advance to steps
+      setTimeout(() => focusField("steps"), 100);
       return;
     }
 
