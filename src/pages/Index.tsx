@@ -641,6 +641,9 @@ const Index = () => {
         if (currentTab === "profile") {
           profileVoiceRef.current?.(transcript, isInterim);
         }
+        if (currentTab === "food" && isInterim) {
+          setSettingsVoiceAction(`food-search-text:${transcript}`);
+        }
         return; // Don't pass to food input when in settings
       }
 
