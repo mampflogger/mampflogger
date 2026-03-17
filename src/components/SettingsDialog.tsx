@@ -284,6 +284,12 @@ const SettingsDialog = ({
     } else if (voiceAction === "food-search") {
       setTab("food");
       setTimeout(() => foodSearchRef.current?.focus(), 100);
+    } else if (voiceAction.startsWith("food-search-text:")) {
+      const text = voiceAction.replace("food-search-text:", "");
+      setTab("food");
+      setEditingFood(null);
+      setFoodSearch(text);
+      setTimeout(() => foodSearchRef.current?.focus(), 100);
     } else if (voiceAction === "recipe-search") {
       setOpen(true);
       onOpenChangeProp?.(true);

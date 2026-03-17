@@ -592,6 +592,10 @@ const Index = () => {
               setSettingsVoiceAction(`food-item:${selectionIndex}`);
               return;
             }
+
+            // Fallback: route unmatched speech to food search field
+            setSettingsVoiceAction(`food-search-text:${transcript}`);
+            return;
           }
 
           // Data tab: backup commands
@@ -636,6 +640,9 @@ const Index = () => {
         }
         if (currentTab === "profile") {
           profileVoiceRef.current?.(transcript, isInterim);
+        }
+        if (currentTab === "food" && isInterim) {
+          setSettingsVoiceAction(`food-search-text:${transcript}`);
         }
         return; // Don't pass to food input when in settings
       }
