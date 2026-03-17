@@ -2064,7 +2064,8 @@ const SettingsDialog = ({
 
         {/* Recipes Tab */}
         {tab === "recipes" && (
-          <div className="space-y-3">
+          <div id="section-gespeicherte-rezepte" className={`space-y-3 ${highlightedSettingsSection === "section-gespeicherte-rezepte" ? "section-card-highlight" : ""}`} data-section-active={activeSettingsSection === "section-gespeicherte-rezepte" || tab === "recipes" ? "true" : undefined}>
+            <h2 className={`text-[10px] font-semibold uppercase tracking-wider transition-colors duration-300 ${highlightedSettingsSection === "section-gespeicherte-rezepte" || activeSettingsSection === "section-gespeicherte-rezepte" || tab === "recipes" ? "text-primary section-heading-highlight" : "text-muted-foreground"}`}>Rezepte</h2>
             <RecipesTab entries={entries} selectedDate={selectedDate} onAddEntry={onAddEntry} voiceExpandIndex={recipeVoiceIndex} onVoiceExpandHandled={() => setRecipeVoiceIndex(null)} voiceInputRef={recipeVoiceInputRef} />
           </div>
         )}
