@@ -111,7 +111,7 @@ const COMMANDS: VoiceCommand[] = [
   { patterns: [new RegExp(`\\brezept\\b.*\\b(?:\\d{1,2}|${RECIPE_NUMBER_PATTERN})\\b`, "i"), new RegExp(`\\b(?:öffne|zeige)\\s+rezept\\b.*\\b(?:\\d{1,2}|${RECIPE_NUMBER_PATTERN})\\b`, "i")], action: parseRecipeVoiceAction },
   { patterns: [/\bprofil\s+speichern\b/i], action: "click:profil-speichern" },
   { patterns: [/\bprofil\b/i], action: "settings:profile" },
-  { patterns: [/\bnew\s*food\b/i], action: "click:new-food" },
+  { patterns: [/\bnew\s*food\b/i, /\bneue?s?\s+lebensmittel\b/i], action: "click:new-food" },
   { patterns: [/\blebensmittel\s+suchen\b/i], action: "click:food-search" },
   { patterns: [/\blebensmittel\b/i], action: "settings:food" },
   { patterns: [/\brezepte?\s+neu\b/i, /\bneue?s?\s+rezepte?\b/i], action: "settings:recipes+new" },

@@ -281,6 +281,11 @@ const SettingsDialog = ({
     } else if (voiceAction === "new-food") {
       setTab("food");
       setTimeout(() => handleNewFood(), 100);
+    } else if (voiceAction === "food-clear-search") {
+      setTab("food");
+      setEditingFood(null);
+      setFoodSearch("");
+      setTimeout(() => foodSearchRef.current?.focus(), 100);
     } else if (voiceAction === "food-search") {
       setTab("food");
       setTimeout(() => foodSearchRef.current?.focus(), 100);
