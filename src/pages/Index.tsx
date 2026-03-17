@@ -545,7 +545,9 @@ const Index = () => {
 
           // Food tab: categories, filters, numbered selection, food editor commands
           if (currentTab === "food") {
-            if (/\bneu\b/i.test(lower)) { setSettingsVoiceAction("new-food"); return; }
+            // X / clear search field
+            if (/^\s*(?:x|iks|ix|ex)\s*$/i.test(lower) || /\b(?:kreuz|löschen)\b/i.test(lower)) { setSettingsVoiceAction("food-clear-search"); return; }
+            if (/\bneu\b/i.test(lower) || /\bnew\s*food\b/i.test(lower) || /\bneue?s?\s+lebensmittel\b/i.test(lower)) { setSettingsVoiceAction("new-food"); return; }
             if (/\bsuchen\b/i.test(lower)) { setSettingsVoiceAction("food-search"); return; }
             if (/\balle\b/i.test(lower)) { setSettingsVoiceAction("category:alle"); return; }
             // Food editor voice commands
