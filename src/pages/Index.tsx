@@ -17,7 +17,7 @@ import { loadEntries, saveEntries } from "@/lib/storage";
 import { applyEmbeddedTestDataset, hasConfiguredPersonalProfile, TestDataGender } from "@/lib/embeddedTestData";
 import { reloadFoodDatabase } from "@/data/foodDatabase";
 import NutritionForm from "@/components/NutritionForm";
-import NutritionTable from "@/components/NutritionTable";
+import NutritionTable, { TableViewMode } from "@/components/NutritionTable";
 import MacroBar from "@/components/MacroBar";
 import WeeklyOverview from "@/components/WeeklyOverview";
 import ActivityInput from "@/components/ActivityInput";
