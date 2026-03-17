@@ -1801,9 +1801,9 @@ const SettingsDialog = ({
             ) : (
               <div className="flex flex-col min-h-0 flex-1">
                 {/* Fixed controls area */}
-                <div className="shrink-0 space-y-1.5">
+                <div id="section-lebensmittelliste" className={`shrink-0 space-y-1.5 ${highlightedSettingsSection === "section-lebensmittelliste" ? "section-card-highlight" : ""}`} data-section-active={activeSettingsSection === "section-lebensmittelliste" ? "true" : undefined}>
                   <div className="flex items-center justify-between">
-                    <h2 className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Lebensmittelliste</h2>
+                    <h2 className={`text-[10px] font-semibold uppercase tracking-wider transition-colors duration-300 ${highlightedSettingsSection === "section-lebensmittelliste" || activeSettingsSection === "section-lebensmittelliste" ? "text-primary section-heading-highlight" : "text-muted-foreground"}`}>Lebensmittelliste</h2>
                     <button
                       onClick={handleNewFood}
                       className="text-xs text-primary font-medium hover:underline"
