@@ -1253,7 +1253,7 @@ const Index = () => {
               <p className="text-muted-foreground/60 text-xs text-center mt-2">Gib ein neues Lebensmittel mit Name und Menge ein</p>
             </div>
 
-            <div id="section-tagesuebersicht" data-section className={`glass-card rounded-xl p-3 mb-3 ${hl === "section-tagesuebersicht" ? "section-card-highlight" : ""}`}>
+            <div id="section-tagesuebersicht" data-section data-voice-active-section={sectionNav.activeSection === "section-tagesuebersicht" ? "true" : undefined} className={`glass-card rounded-xl p-3 mb-3 ${hl === "section-tagesuebersicht" ? "section-card-highlight" : ""}`}>
               <SectionHeading highlighted={hl === "section-tagesuebersicht"} className="mb-2">
                 Tagesübersicht
                 {todayEntries.length > 0 && (

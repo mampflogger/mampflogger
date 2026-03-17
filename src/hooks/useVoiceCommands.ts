@@ -358,8 +358,7 @@ export function useVoiceCommands({ onCommand, onUnhandledSpeech }: UseVoiceComma
 
         // 0b. If Tagesübersicht is active and transcript matches a sort keyword,
         //     skip global commands and let onUnhandledSpeech handle the sort.
-        const tagesActive = !!document.querySelector("#section-tagesuebersicht.active-section, #section-tagesuebersicht [data-active-section]") ||
-          document.querySelector("#section-tagesuebersicht")?.classList.contains("card-glow");
+        const tagesActive = !!document.querySelector('#section-tagesuebersicht[data-voice-active-section="true"]');
         const TABLE_SORT_RE = /\b(?:zeit|time|uhrzeit|lebensmittel|food|alphabetisch|gramm|menge|kcal|kalorien|kilokalorien|calories|pro(?:tein)?e?|eiweiß|eiweiss|fat|fett|kh|kohlenhydrate?|fib(?:er)?|ballaststoffe?|ballast)\b/i;
         if (tagesActive && TABLE_SORT_RE.test(lower)) {
           onUnhandledRef.current(transcript, isInterim);
