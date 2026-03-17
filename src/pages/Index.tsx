@@ -1299,7 +1299,7 @@ const Index = () => {
                   </span>
                 )}
               </SectionHeading>
-              <NutritionTable entries={todayEntries} onDelete={handleDelete} onEntryClick={handleEntryClick} />
+              <NutritionTable entries={todayEntries} onDelete={handleDelete} onEntryClick={handleEntryClick} viewMode={tableViewMode} onViewModeChange={setTableViewMode} />
             </div>
 
             <div id="section-kalorienaufnahme" data-section className={`glass-card rounded-xl p-3 mb-3 ${hl === "section-kalorienaufnahme" ? "section-card-highlight" : ""}`}>
