@@ -592,6 +592,10 @@ const Index = () => {
               setSettingsVoiceAction(`food-item:${selectionIndex}`);
               return;
             }
+
+            // Fallback: route unmatched speech to food search field
+            setSettingsVoiceAction(`food-search-text:${transcript}`);
+            return;
           }
 
           // Data tab: backup commands
