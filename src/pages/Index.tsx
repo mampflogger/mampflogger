@@ -464,6 +464,12 @@ const Index = () => {
         if (settingsOpenRef.current && settingsTabRef.current === "recipes") {
           const manualFormOpen = !!document.querySelector('[data-voice-scope="manual-recipe"]');
 
+          // Keep field:next inside manual recipe form
+          if (action === "field:next" && manualFormOpen) {
+            window.dispatchEvent(new CustomEvent("mampflogger:field-command", { detail: { action, scope: "manual-recipe" } }));
+            return;
+          }
+
           if (action === "field:close-dropdown" && manualFormOpen) {
             window.dispatchEvent(new CustomEvent("mampflogger:field-command", { detail: { action, scope: "manual-recipe" } }));
             return;
