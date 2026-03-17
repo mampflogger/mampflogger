@@ -218,21 +218,12 @@ const NutritionTable = ({ entries, onDelete, onEntryClick, viewMode, onViewModeC
     previousEntryCountRef.current = entries.length;
   }, [entries.length, onViewModeChange]);
 
-  if (entries.length === 0) {
-    return (
-      <div className="text-center py-8 animate-fade-in">
-        <p className="text-muted-foreground text-sm">Noch keine Einträge für heute.</p>
-        <p className="text-muted-foreground/60 text-xs mt-1">Füge dein erstes Lebensmittel hinzu!</p>
-      </div>
-    );
-  }
-
   const detailSortKey: DetailSortKey = sortKey === "count" ? "time" : sortKey;
   const detailSortDir: SortDir = sortKey === "count" ? "desc" : sortDir;
   const summarySortKey: SummarySortKey = sortKey === "time" ? "calories" : sortKey;
   const summarySortDir: SortDir = sortKey === "time" ? "desc" : sortDir;
 
-  const summary = calculateDailySummary(entries);
+  const summary = useMemo(() => calculateDailySummary(entries), [entries]);
   const sortedEntries = useMemo(
     () => [...entries].sort((a, b) => compareEntries(a, b, detailSortKey, detailSortDir)),
     [detailSortDir, detailSortKey, entries],
@@ -241,6 +232,15 @@ const NutritionTable = ({ entries, onDelete, onEntryClick, viewMode, onViewModeC
     () => [...groupEntries(entries)].sort((a, b) => compareSummenRows(a, b, summarySortKey, summarySortDir)),
     [entries, summarySortDir, summarySortKey],
   );
+
+  if (entries.length === 0) {
+    return (
+      <div className="text-center py-8 animate-fade-in">
+        <p className="text-muted-foreground text-sm">Noch keine Einträge für heute.</p>
+        <p className="text-muted-foreground/60 text-xs mt-1">Füge dein erstes Lebensmittel hinzu!</p>
+      </div>
+    );
+  }
 
   const renderSortButton = (field: { key: SortKey; label: string; color?: string }, isActive: boolean) => (
     <button
