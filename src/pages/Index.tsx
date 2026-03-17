@@ -236,6 +236,14 @@ const Index = () => {
               activityVoiceCaptureUntilRef.current = 0;
               focusFoodField(300);
             }
+            if (sectionId === "section-tagesuebersicht") {
+              setTimeout(() => {
+                const sectionEl = document.getElementById("section-tagesuebersicht");
+                if (sectionEl instanceof HTMLElement) {
+                  sectionEl.focus({ preventScroll: true });
+                }
+              }, needsTabSwitch ? 420 : 160);
+            }
             if (sectionId === "section-activity") {
               activityVoiceCaptureUntilRef.current = Date.now() + (needsTabSwitch ? 6000 : 4000);
               setTimeout(() => setActivityFocusRequestId((prev) => (prev ?? 0) + 1), needsTabSwitch ? 350 : 120);
