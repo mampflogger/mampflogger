@@ -12,10 +12,14 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
+export type TableViewMode = "detail" | "summen";
+
 interface NutritionTableProps {
   entries: NutritionEntry[];
   onDelete: (id: string) => void;
   onEntryClick?: (entry: NutritionEntry) => void;
+  viewMode: TableViewMode;
+  onViewModeChange: (mode: TableViewMode) => void;
 }
 
 const MACRO_COLORS = {
