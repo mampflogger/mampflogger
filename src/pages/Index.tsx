@@ -720,27 +720,43 @@ const Index = () => {
       // Table sorting voice commands when Tagesübersicht is active
       if (!isInterim) {
         const lower2 = transcript.toLowerCase();
+        const normalizedSortTranscript = lower2
+          .replace(/[.,;:!?]/g, " ")
+          .replace(/\beiweiß\b/g, "eiweiss")
+          .replace(/\beiweis\b/g, "eiweiss")
+          .replace(/\bp[\s.-]*r[\s.-]*o\b/g, "pro")
+          .replace(/\bf[\s.-]*a[\s.-]*t\b/g, "fat")
+          .replace(/\bk[\s.-]*h\b/g, "kh")
+          .replace(/\bf[\s.-]*i[\s.-]*b\b/g, "fib")
+          .replace(/\s+/g, " ")
+          .trim();
         const tagesSection = document.getElementById("section-tagesuebersicht");
+        const tagesRect = tagesSection?.getBoundingClientRect();
+        const tagesVisible =
+          !!tagesRect &&
+          tagesRect.bottom > Math.min(window.innerHeight * 0.2, 120) &&
+          tagesRect.top < window.innerHeight - Math.min(window.innerHeight * 0.2, 120);
         const isTagesVoiceScopeActive =
           !!tagesSection &&
           (activeSectionRef.current === "section-tagesuebersicht" ||
             tagesSection.getAttribute("data-voice-active-section") === "true" ||
             tagesSection.getAttribute("data-section-active") === "true" ||
-            !!(document.activeElement as HTMLElement | null)?.closest?.("#section-tagesuebersicht"));
+            !!(document.activeElement as HTMLElement | null)?.closest?.("#section-tagesuebersicht") ||
+            tagesVisible);
 
         if (isTagesVoiceScopeActive) {
           const sortMap: [RegExp, string][] = [
-            [/\b(?:zeit|time|uhrzeit)\b/i, "time"],
+            [/\b(?:zeit|uhrzeit|time|tim|taim)\b/i, "time"],
             [/\b(?:lebensmittel|food|alphabetisch)\b/i, "food"],
             [/\b(?:gramm|g(?:\s*\/\s*|\s+pro\s+)ml|menge)\b/i, "amount"],
             [/\b(?:kcal|kalorien|kilokalorien|calories)\b/i, "calories"],
-            [/\b(?:pro|protein(?:e)?|eiweiß|eiweiss)\b/i, "protein"],
-            [/\b(?:fat|fett)\b/i, "fat"],
-            [/\b(?:kh|k[\s.-]*h|kohlenhydrate?|carbs?)\b/i, "carbs"],
-            [/\b(?:fib|fiber|fibre|f[\s.-]*i[\s.-]*b|ballaststoffe?|ballast)\b/i, "fiber"],
+            [/\b(?:pro|protein(?:e|en)?|eiweiss)\b/i, "protein"],
+            [/\b(?:fat|fett(?:e)?)\b/i, "fat"],
+            [/\b(?:kh|kohlenhydrate?|carbs?|carbohydrates?)\b/i, "carbs"],
+            [/\b(?:fib|fiber|fibre|ballaststoffe?|ballast|faser(?:n)?)\b/i, "fiber"],
           ];
           for (const [re, key] of sortMap) {
-            if (re.test(lower2)) {
+            if (re.test(normalizedSortTranscript)) {
               window.dispatchEvent(new CustomEvent("mampflogger:table-sort", { detail: { key } }));
               return;
             }

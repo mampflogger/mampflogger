@@ -360,13 +360,30 @@ export function useVoiceCommands({ onCommand, onUnhandledSpeech }: UseVoiceComma
         //     skip global commands and let onUnhandledSpeech handle the sort.
         const activeElement = document.activeElement as HTMLElement | null;
         const tagesSection = document.getElementById("section-tagesuebersicht");
+        const tagesRect = tagesSection?.getBoundingClientRect();
+        const tagesVisible =
+          !!tagesRect &&
+          tagesRect.bottom > Math.min(window.innerHeight * 0.2, 120) &&
+          tagesRect.top < window.innerHeight - Math.min(window.innerHeight * 0.2, 120);
+        const normalizedSortTranscript = lower
+          .replace(/[.,;:!?]/g, " ")
+          .replace(/\beiweiß\b/g, "eiweiss")
+          .replace(/\beiweis\b/g, "eiweiss")
+          .replace(/\bp[\s.-]*r[\s.-]*o\b/g, "pro")
+          .replace(/\bf[\s.-]*a[\s.-]*t\b/g, "fat")
+          .replace(/\bk[\s.-]*h\b/g, "kh")
+          .replace(/\bf[\s.-]*i[\s.-]*b\b/g, "fib")
+          .replace(/\s+/g, " ")
+          .trim();
         const tagesActive =
           !!tagesSection &&
           (tagesSection.getAttribute("data-voice-active-section") === "true" ||
             tagesSection.getAttribute("data-section-active") === "true" ||
-            !!activeElement?.closest("#section-tagesuebersicht"));
-        const TABLE_SORT_RE = /\b(?:zeit|time|uhrzeit|lebensmittel|food|alphabetisch|gramm|g(?:\s*\/\s*|\s+pro\s+)ml|menge|kcal|kalorien|kilokalorien|calories|pro|protein(?:e)?|eiweiß|eiweiss|fat|fett|kh|k[\s.-]*h|kohlenhydrate?|carbs?|fib|fiber|fibre|f[\s.-]*i[\s.-]*b|ballaststoffe?|ballast)\b/i;
-        if (tagesActive && TABLE_SORT_RE.test(lower)) {
+            !!activeElement?.closest("#section-tagesuebersicht") ||
+            tagesVisible);
+        const TABLE_SORT_RE =
+          /\b(?:zeit|uhrzeit|time|tim|taim|lebensmittel|food|alphabetisch|gramm|g(?:\s*\/\s*|\s+pro\s+)ml|menge|kcal|kalorien|kilokalorien|calories|pro|protein(?:e|en)?|eiweiss|fat|fett(?:e)?|kh|kohlenhydrate?|carbs?|carbohydrates?|fib|fiber|fibre|ballaststoffe?|ballast|faser(?:n)?)\b/i;
+        if (tagesActive && TABLE_SORT_RE.test(normalizedSortTranscript)) {
           onUnhandledRef.current(transcript, isInterim);
           return;
         }
