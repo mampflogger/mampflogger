@@ -236,6 +236,14 @@ const Index = () => {
               activityVoiceCaptureUntilRef.current = 0;
               focusFoodField(300);
             }
+            if (sectionId === "section-tagesuebersicht") {
+              setTimeout(() => {
+                const sectionEl = document.getElementById("section-tagesuebersicht");
+                if (sectionEl instanceof HTMLElement) {
+                  sectionEl.focus({ preventScroll: true });
+                }
+              }, needsTabSwitch ? 420 : 160);
+            }
             if (sectionId === "section-activity") {
               activityVoiceCaptureUntilRef.current = Date.now() + (needsTabSwitch ? 6000 : 4000);
               setTimeout(() => setActivityFocusRequestId((prev) => (prev ?? 0) + 1), needsTabSwitch ? 350 : 120);
@@ -710,22 +718,32 @@ const Index = () => {
       }
 
       // Table sorting voice commands when Tagesübersicht is active
-      if (!isInterim && activeSectionRef.current === "section-tagesuebersicht") {
+      if (!isInterim) {
         const lower2 = transcript.toLowerCase();
-        const sortMap: [RegExp, string][] = [
-          [/\b(?:zeit|time|uhrzeit)\b/i, "time"],
-          [/\b(?:lebensmittel|food|alphabetisch)\b/i, "food"],
-          [/\b(?:gramm|g\/ml|menge)\b/i, "amount"],
-          [/\b(?:kcal|kalorien|kilokalorien|calories)\b/i, "calories"],
-          [/\b(?:pro(?:tein)?e?|eiweiß|eiweiss)\b/i, "protein"],
-          [/\b(?:fat|fett)\b/i, "fat"],
-          [/\b(?:kh|kohlenhydrate?)\b/i, "carbs"],
-          [/\b(?:fib(?:er)?|ballaststoffe?|ballast)\b/i, "fiber"],
-        ];
-        for (const [re, key] of sortMap) {
-          if (re.test(lower2)) {
-            window.dispatchEvent(new CustomEvent("mampflogger:table-sort", { detail: { key } }));
-            return;
+        const tagesSection = document.getElementById("section-tagesuebersicht");
+        const isTagesVoiceScopeActive =
+          !!tagesSection &&
+          (activeSectionRef.current === "section-tagesuebersicht" ||
+            tagesSection.getAttribute("data-voice-active-section") === "true" ||
+            tagesSection.getAttribute("data-section-active") === "true" ||
+            !!(document.activeElement as HTMLElement | null)?.closest?.("#section-tagesuebersicht"));
+
+        if (isTagesVoiceScopeActive) {
+          const sortMap: [RegExp, string][] = [
+            [/\b(?:zeit|time|uhrzeit)\b/i, "time"],
+            [/\b(?:lebensmittel|food|alphabetisch)\b/i, "food"],
+            [/\b(?:gramm|g(?:\s*\/\s*|\s+pro\s+)ml|menge)\b/i, "amount"],
+            [/\b(?:kcal|kalorien|kilokalorien|calories)\b/i, "calories"],
+            [/\b(?:pro|protein(?:e)?|eiweiß|eiweiss)\b/i, "protein"],
+            [/\b(?:fat|fett)\b/i, "fat"],
+            [/\b(?:kh|k[\s.-]*h|kohlenhydrate?|carbs?)\b/i, "carbs"],
+            [/\b(?:fib|fiber|fibre|f[\s.-]*i[\s.-]*b|ballaststoffe?|ballast)\b/i, "fiber"],
+          ];
+          for (const [re, key] of sortMap) {
+            if (re.test(lower2)) {
+              window.dispatchEvent(new CustomEvent("mampflogger:table-sort", { detail: { key } }));
+              return;
+            }
           }
         }
       }
@@ -1253,7 +1271,7 @@ const Index = () => {
               <p className="text-muted-foreground/60 text-xs text-center mt-2">Gib ein neues Lebensmittel mit Name und Menge ein</p>
             </div>
 
-            <div id="section-tagesuebersicht" data-section data-voice-active-section={sectionNav.activeSection === "section-tagesuebersicht" ? "true" : undefined} className={`glass-card rounded-xl p-3 mb-3 ${hl === "section-tagesuebersicht" ? "section-card-highlight" : ""}`}>
+            <div id="section-tagesuebersicht" data-section tabIndex={-1} data-voice-active-section={sectionNav.activeSection === "section-tagesuebersicht" ? "true" : undefined} className={`glass-card rounded-xl p-3 mb-3 ${hl === "section-tagesuebersicht" ? "section-card-highlight" : ""}`}>
               <SectionHeading highlighted={hl === "section-tagesuebersicht"} className="mb-2">
                 Tagesübersicht
                 {todayEntries.length > 0 && (
