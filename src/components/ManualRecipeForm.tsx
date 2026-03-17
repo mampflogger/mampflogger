@@ -658,6 +658,7 @@ const ManualRecipeForm = ({ onSave, onCancel, voiceInputRef, isVoiceActive = fal
         onClick={handleSave}
         onFocus={() => setFocusedField("save")}
         disabled={saving}
+        data-voice-action="save"
         className={`w-full h-9 text-xs gap-1.5 ${ringClass("save")}`}
       >
         {saving ? (
