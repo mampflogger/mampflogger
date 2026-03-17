@@ -165,6 +165,8 @@ const FUZZY_KEYWORD_MAP: [string, string][] = [
   ["naehrstoffe", "section:makro-naehrstoffe"],
   ["naehrstoff", "section:makro-naehrstoffe"],
   ["tagesuebersicht", "section:tagesuebersicht"],
+  ["tagesprotokoll", "section:tagesuebersicht"],
+  ["protokoll", "section:tagesuebersicht"],
   ["kalorienaufnahme", "section:kalorienaufnahme"],
   ["fastenanalyse", "section:fastenanalyse"],
   ["fasten", "section:fastenanalyse"],
