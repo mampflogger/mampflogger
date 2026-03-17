@@ -911,6 +911,8 @@ const Index = () => {
     const updated = [...entries, entry];
       setEntries(updated);
       saveEntries(updated);
+      // Reset table to detail view sorted by time descending
+      setTableViewMode("detail");
     }
   };
 
