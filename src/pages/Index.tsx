@@ -812,7 +812,7 @@ const Index = () => {
     setStartupProfilePrompt(!hasProfile);
 
     if (hasProfile) {
-      focusFoodField(120);
+      focusFoodField(350);
     }
 
     const remoteUrl = loadRemoteUrl();
