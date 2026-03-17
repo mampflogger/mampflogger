@@ -17,7 +17,7 @@ import { loadEntries, saveEntries } from "@/lib/storage";
 import { applyEmbeddedTestDataset, hasConfiguredPersonalProfile, TestDataGender } from "@/lib/embeddedTestData";
 import { reloadFoodDatabase } from "@/data/foodDatabase";
 import NutritionForm from "@/components/NutritionForm";
-import NutritionTable from "@/components/NutritionTable";
+import NutritionTable, { TableViewMode } from "@/components/NutritionTable";
 import MacroBar from "@/components/MacroBar";
 import WeeklyOverview from "@/components/WeeklyOverview";
 import ActivityInput from "@/components/ActivityInput";
@@ -155,6 +155,7 @@ const Index = () => {
   const [startupProfilePrompt, setStartupProfilePrompt] = useState(false);
    const [activityFocusRequestId, setActivityFocusRequestId] = useState<number | undefined>(undefined);
   const [dateFocused, setDateFocused] = useState(false);
+  const [tableViewMode, setTableViewMode] = useState<TableViewMode>("detail");
   
   const [highlightedTab, setHighlightedTab] = useState<string | null>(null);
   const highlightTabTimerRef = useRef<ReturnType<typeof setTimeout>>();
@@ -910,6 +911,8 @@ const Index = () => {
     const updated = [...entries, entry];
       setEntries(updated);
       saveEntries(updated);
+      // Reset table to detail view sorted by time descending
+      setTableViewMode("detail");
     }
   };
 
@@ -1296,7 +1299,7 @@ const Index = () => {
                   </span>
                 )}
               </SectionHeading>
-              <NutritionTable entries={todayEntries} onDelete={handleDelete} onEntryClick={handleEntryClick} />
+              <NutritionTable entries={todayEntries} onDelete={handleDelete} onEntryClick={handleEntryClick} viewMode={tableViewMode} onViewModeChange={setTableViewMode} />
             </div>
 
             <div id="section-kalorienaufnahme" data-section className={`glass-card rounded-xl p-3 mb-3 ${hl === "section-kalorienaufnahme" ? "section-card-highlight" : ""}`}>
