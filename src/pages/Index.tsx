@@ -418,6 +418,14 @@ const Index = () => {
           setSettingsVoiceAction("profil-speichern");
         }
       }
+      else if (action === "click:rezept-speichern") {
+        if (!settingsOpenRef.current) {
+          setSettingsVoiceTab("recipes");
+          setTimeout(() => setSettingsVoiceAction("rezept-speichern"), 300);
+        } else {
+          setSettingsVoiceAction("rezept-speichern");
+        }
+      }
       else if (action === "click:new-food") {
         if (!settingsOpenRef.current) {
           setSettingsVoiceTab("food");
@@ -463,6 +471,12 @@ const Index = () => {
         // If settings is open on recipes tab, keep close actions local to the current recipe UI
         if (settingsOpenRef.current && settingsTabRef.current === "recipes") {
           const manualFormOpen = !!document.querySelector('[data-voice-scope="manual-recipe"]');
+
+          // Keep field:next inside manual recipe form
+          if (action === "field:next" && manualFormOpen) {
+            window.dispatchEvent(new CustomEvent("mampflogger:field-command", { detail: { action, scope: "manual-recipe" } }));
+            return;
+          }
 
           if (action === "field:close-dropdown" && manualFormOpen) {
             window.dispatchEvent(new CustomEvent("mampflogger:field-command", { detail: { action, scope: "manual-recipe" } }));

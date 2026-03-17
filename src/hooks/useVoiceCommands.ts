@@ -109,6 +109,7 @@ const COMMANDS: VoiceCommand[] = [
   { patterns: [/\beinstellung/i, /\bsettings?\b/i], action: "settings:open" },
   { patterns: [/\brezept\s+suchen\b/i], action: "action:recipe-search" },
   { patterns: [new RegExp(`\\brezept\\b.*\\b(?:\\d{1,2}|${RECIPE_NUMBER_PATTERN})\\b`, "i"), new RegExp(`\\b(?:öffne|zeige)\\s+rezept\\b.*\\b(?:\\d{1,2}|${RECIPE_NUMBER_PATTERN})\\b`, "i")], action: parseRecipeVoiceAction },
+  { patterns: [/\brezept\s+speichern\b/i], action: "click:rezept-speichern" },
   { patterns: [/\bprofil\s+speichern\b/i], action: "click:profil-speichern" },
   { patterns: [/\bprofil\b/i], action: "settings:profile" },
   { patterns: [/\bnew\s*food\b/i, /\bneue?s?\s+lebensmittel\b/i], action: "click:new-food" },
@@ -290,7 +291,7 @@ interface StartVoiceOptions {
 type VoiceCommandScope = "global" | "scoped-input";
 
 const SCOPED_INPUT_ALLOWED_PREFIXES = ["field:", "nav:", "settings:", "section:", "scroll:", "action:", "theme:", "nutrient:"];
-const SCOPED_INPUT_ALLOWED_ACTIONS = new Set(["action:mic-off", "action:home", "backup-create", "backup-load"]);
+const SCOPED_INPUT_ALLOWED_ACTIONS = new Set(["action:mic-off", "action:home", "backup-create", "backup-load", "click:rezept-speichern"]);
 
 function getVoiceCommandScope(): VoiceCommandScope {
   const activeElement = document.activeElement as HTMLElement | null;
