@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { NutritionEntry, calculateDailySummary } from "@/types/nutrition";
-import { Trash2 } from "lucide-react";
+import { Trash2, ArrowUp, ArrowDown } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -25,8 +25,77 @@ const MACRO_COLORS = {
   fib: "hsl(var(--macro-fib))",
 };
 
+type SortKey = "time" | "food" | "amount" | "calories" | "protein" | "fat" | "carbs" | "fiber";
+type SortDir = "asc" | "desc";
+
+const SORT_FIELDS: { key: SortKey; label: string; color?: string }[] = [
+  { key: "time", label: "Zeit" },
+  { key: "food", label: "Lebensmittel" },
+  { key: "amount", label: "g/ml" },
+  { key: "calories", label: "kcal" },
+  { key: "protein", label: "PRO", color: MACRO_COLORS.pro },
+  { key: "fat", label: "FAT", color: MACRO_COLORS.fat },
+  { key: "carbs", label: "KH", color: MACRO_COLORS.kh },
+  { key: "fiber", label: "FIB", color: MACRO_COLORS.fib },
+];
+
+function compareEntries(a: NutritionEntry, b: NutritionEntry, key: SortKey, dir: SortDir): number {
+  let cmp = 0;
+  switch (key) {
+    case "time":
+      cmp = a.time.localeCompare(b.time) || a.id.localeCompare(b.id);
+      break;
+    case "food":
+      cmp = a.food.localeCompare(b.food, "de");
+      break;
+    case "amount":
+      cmp = a.amount - b.amount;
+      break;
+    case "calories":
+      cmp = a.calories - b.calories;
+      break;
+    case "protein":
+      cmp = a.protein - b.protein;
+      break;
+    case "fat":
+      cmp = a.fat - b.fat;
+      break;
+    case "carbs":
+      cmp = a.carbs - b.carbs;
+      break;
+    case "fiber":
+      cmp = a.fiber - b.fiber;
+      break;
+  }
+  return dir === "asc" ? cmp : -cmp;
+}
+
 const NutritionTable = ({ entries, onDelete, onEntryClick }: NutritionTableProps) => {
   const [deleteEntry, setDeleteEntry] = useState<NutritionEntry | null>(null);
+  const [sortKey, setSortKey] = useState<SortKey>("time");
+  const [sortDir, setSortDir] = useState<SortDir>("desc");
+
+  const toggleSort = useCallback((key: SortKey) => {
+    setSortKey((prev) => {
+      if (prev === key) {
+        setSortDir((d) => (d === "desc" ? "asc" : "desc"));
+        return key;
+      }
+      // Default direction: desc for numbers, asc for food/time
+      setSortDir(key === "food" ? "asc" : "desc");
+      return key;
+    });
+  }, []);
+
+  // Listen for voice sort commands
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const detail = (e as CustomEvent).detail as { key: SortKey };
+      if (detail?.key) toggleSort(detail.key);
+    };
+    window.addEventListener("mampflogger:table-sort", handler);
+    return () => window.removeEventListener("mampflogger:table-sort", handler);
+  }, [toggleSort]);
 
   if (entries.length === 0) {
     return (
@@ -38,7 +107,7 @@ const NutritionTable = ({ entries, onDelete, onEntryClick }: NutritionTableProps
   }
 
   const summary = calculateDailySummary(entries);
-  const sortedEntries = [...entries].sort((a, b) => b.time.localeCompare(a.time) || b.id.localeCompare(a.id));
+  const sortedEntries = [...entries].sort((a, b) => compareEntries(a, b, sortKey, sortDir));
 
   return (
     <div className="animate-slide-up">
@@ -46,14 +115,33 @@ const NutritionTable = ({ entries, onDelete, onEntryClick }: NutritionTableProps
         <table className="w-full text-[10px] sm:text-[11px]">
           <thead>
             <tr className="border-b border-border">
-              <th className="text-left py-1 pr-1 font-semibold text-muted-foreground">Zeit</th>
-              <th className="text-left py-1 pr-1 font-semibold text-muted-foreground">Lebensmittel</th>
-              <th className="text-right py-1 px-0.5 font-semibold text-muted-foreground">g/ml</th>
-              <th className="text-right py-1 px-0.5 font-semibold text-muted-foreground">kcal</th>
-              <th className="text-right py-1 px-0.5 font-semibold" style={{ color: MACRO_COLORS.pro }}>PRO</th>
-              <th className="text-right py-1 px-0.5 font-semibold" style={{ color: MACRO_COLORS.fat }}>FAT</th>
-              <th className="text-right py-1 px-0.5 font-semibold" style={{ color: MACRO_COLORS.kh }}>KH</th>
-              <th className="text-right py-1 px-0.5 font-semibold" style={{ color: MACRO_COLORS.fib }}>FIB</th>
+              {SORT_FIELDS.map((field) => {
+                const isActive = sortKey === field.key;
+                const isRight = field.key !== "time" && field.key !== "food";
+                return (
+                  <th
+                    key={field.key}
+                    className={`py-1 px-0.5 font-semibold ${isRight ? "text-right" : "text-left"} ${field.key === "time" ? "pr-1" : ""} ${field.key === "food" ? "pr-1" : ""}`}
+                  >
+                    <button
+                      onClick={() => toggleSort(field.key)}
+                      className={`inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full border transition-colors text-[10px] sm:text-[11px] font-semibold leading-tight whitespace-nowrap ${
+                        isActive
+                          ? "border-primary/40 bg-primary/10 text-primary"
+                          : "border-border/60 bg-transparent hover:border-primary/30 hover:bg-muted/40"
+                      }`}
+                      style={field.color && !isActive ? { color: field.color } : undefined}
+                    >
+                      {field.label}
+                      {isActive && (
+                        sortDir === "asc"
+                          ? <ArrowUp className="w-2.5 h-2.5 shrink-0" />
+                          : <ArrowDown className="w-2.5 h-2.5 shrink-0" />
+                      )}
+                    </button>
+                  </th>
+                );
+              })}
               <th className="w-5 pl-1.5"></th>
             </tr>
           </thead>

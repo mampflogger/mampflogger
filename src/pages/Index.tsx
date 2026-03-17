@@ -709,6 +709,27 @@ const Index = () => {
         }
       }
 
+      // Table sorting voice commands when Tagesübersicht is active
+      if (!isInterim && activeSectionRef.current === "section-tagesuebersicht") {
+        const lower2 = transcript.toLowerCase();
+        const sortMap: [RegExp, string][] = [
+          [/\b(?:zeit|time|uhrzeit)\b/i, "time"],
+          [/\b(?:lebensmittel|food|alphabetisch)\b/i, "food"],
+          [/\b(?:gramm|g\/ml|menge)\b/i, "amount"],
+          [/\b(?:kcal|kalorien|kilokalorien|calories)\b/i, "calories"],
+          [/\b(?:pro(?:tein)?e?|eiweiß|eiweiss)\b/i, "protein"],
+          [/\b(?:fat|fett)\b/i, "fat"],
+          [/\b(?:kh|kohlenhydrate?)\b/i, "carbs"],
+          [/\b(?:fib(?:er)?|ballaststoffe?|ballast)\b/i, "fiber"],
+        ];
+        for (const [re, key] of sortMap) {
+          if (re.test(lower2)) {
+            window.dispatchEvent(new CustomEvent("mampflogger:table-sort", { detail: { key } }));
+            return;
+          }
+        }
+      }
+
       const activeElement = document.activeElement as HTMLElement | null;
       const isActivityFocused = !!activeElement?.closest("#section-activity");
       const isNutritionFocused = !!activeElement?.closest("#section-neuer-eintrag");
