@@ -1062,7 +1062,22 @@ const Index = () => {
                 <Button
                   variant="ghost"
                   size="icon"
-                  onClick={voiceCommands.toggle}
+                  onPointerDown={(e) => {
+                    // Remember the previously focused element before the button steals focus
+                    const prev = document.activeElement as HTMLElement | null;
+                    if (prev && prev !== e.currentTarget) {
+                      (e.currentTarget as HTMLElement).dataset.restoreFocus = prev.id || "";
+                    }
+                  }}
+                  onClick={(e) => {
+                    voiceCommands.toggle();
+                    // Restore focus to the previously focused input
+                    const restoreId = (e.currentTarget as HTMLElement).dataset.restoreFocus;
+                    if (restoreId) {
+                      setTimeout(() => document.getElementById(restoreId)?.focus(), 50);
+                      delete (e.currentTarget as HTMLElement).dataset.restoreFocus;
+                    }
+                  }}
                   className={`h-8 w-8 ${voiceCommands.isListening ? "ring-2 ring-primary animate-pulse" : ""}`}
                   title={voiceCommands.isListening ? "Mikrofon aus" : "Sprachsteuerung"}
                 >
