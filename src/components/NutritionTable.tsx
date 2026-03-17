@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { NutritionEntry, calculateDailySummary } from "@/types/nutrition";
 import { Trash2, ArrowUp, ArrowDown } from "lucide-react";
 import {
@@ -29,10 +29,12 @@ const MACRO_COLORS = {
   fib: "hsl(var(--macro-fib))",
 };
 
-type SortKey = "time" | "food" | "amount" | "calories" | "protein" | "fat" | "carbs" | "fiber";
+type SortKey = "time" | "food" | "count" | "amount" | "calories" | "protein" | "fat" | "carbs" | "fiber";
+type DetailSortKey = Exclude<SortKey, "count">;
+type SummarySortKey = Exclude<SortKey, "time">;
 type SortDir = "asc" | "desc";
 
-const SORT_FIELDS: { key: SortKey; label: string; color?: string }[] = [
+const DETAIL_SORT_FIELDS: { key: DetailSortKey; label: string; color?: string }[] = [
   { key: "time", label: "Zeit" },
   { key: "food", label: "Lebensmittel" },
   { key: "amount", label: "g/ml" },
@@ -43,7 +45,18 @@ const SORT_FIELDS: { key: SortKey; label: string; color?: string }[] = [
   { key: "fiber", label: "FIB", color: MACRO_COLORS.fib },
 ];
 
-function compareEntries(a: NutritionEntry, b: NutritionEntry, key: SortKey, dir: SortDir): number {
+const SUMMARY_SORT_FIELDS: { key: SummarySortKey; label: string; color?: string }[] = [
+  { key: "food", label: "Lebensmittel" },
+  { key: "count", label: "Anz." },
+  { key: "amount", label: "g/ml" },
+  { key: "calories", label: "kcal" },
+  { key: "protein", label: "PRO", color: MACRO_COLORS.pro },
+  { key: "fat", label: "FAT", color: MACRO_COLORS.fat },
+  { key: "carbs", label: "KH", color: MACRO_COLORS.kh },
+  { key: "fiber", label: "FIB", color: MACRO_COLORS.fib },
+];
+
+function compareEntries(a: NutritionEntry, b: NutritionEntry, key: DetailSortKey, dir: SortDir): number {
   let cmp = 0;
   switch (key) {
     case "time":
@@ -71,6 +84,7 @@ function compareEntries(a: NutritionEntry, b: NutritionEntry, key: SortKey, dir:
       cmp = a.fiber - b.fiber;
       break;
   }
+
   return dir === "asc" ? cmp : -cmp;
 }
 
@@ -85,23 +99,70 @@ interface SummenRow {
   count: number;
 }
 
+function compareSummenRows(a: SummenRow, b: SummenRow, key: SummarySortKey, dir: SortDir): number {
+  let cmp = 0;
+  switch (key) {
+    case "food":
+      cmp = a.food.localeCompare(b.food, "de");
+      break;
+    case "count":
+      cmp = a.count - b.count;
+      break;
+    case "amount":
+      cmp = a.amount - b.amount;
+      break;
+    case "calories":
+      cmp = a.calories - b.calories;
+      break;
+    case "protein":
+      cmp = a.protein - b.protein;
+      break;
+    case "fat":
+      cmp = a.fat - b.fat;
+      break;
+    case "carbs":
+      cmp = a.carbs - b.carbs;
+      break;
+    case "fiber":
+      cmp = a.fiber - b.fiber;
+      break;
+  }
+
+  if (cmp === 0 && key !== "food") {
+    cmp = a.food.localeCompare(b.food, "de");
+  }
+
+  return dir === "asc" ? cmp : -cmp;
+}
+
 function groupEntries(entries: NutritionEntry[]): SummenRow[] {
   const map = new Map<string, SummenRow>();
-  for (const e of entries) {
-    const key = e.food;
-    const existing = map.get(key);
+
+  for (const entry of entries) {
+    const existing = map.get(entry.food);
+
     if (existing) {
-      existing.amount += e.amount;
-      existing.calories += e.calories;
-      existing.protein += e.protein;
-      existing.fat += e.fat;
-      existing.carbs += e.carbs;
-      existing.fiber += e.fiber;
+      existing.amount += entry.amount;
+      existing.calories += entry.calories;
+      existing.protein += entry.protein;
+      existing.fat += entry.fat;
+      existing.carbs += entry.carbs;
+      existing.fiber += entry.fiber;
       existing.count += 1;
     } else {
-      map.set(key, { food: key, amount: e.amount, calories: e.calories, protein: e.protein, fat: e.fat, carbs: e.carbs, fiber: e.fiber, count: 1 });
+      map.set(entry.food, {
+        food: entry.food,
+        amount: entry.amount,
+        calories: entry.calories,
+        protein: entry.protein,
+        fat: entry.fat,
+        carbs: entry.carbs,
+        fiber: entry.fiber,
+        count: 1,
+      });
     }
   }
+
   return Array.from(map.values());
 }
 
@@ -109,27 +170,53 @@ const NutritionTable = ({ entries, onDelete, onEntryClick, viewMode, onViewModeC
   const [deleteEntry, setDeleteEntry] = useState<NutritionEntry | null>(null);
   const [sortKey, setSortKey] = useState<SortKey>("time");
   const [sortDir, setSortDir] = useState<SortDir>("desc");
+  const previousEntryCountRef = useRef(entries.length);
 
   const toggleSort = useCallback((key: SortKey) => {
     setSortKey((prev) => {
       if (prev === key) {
-        setSortDir((d) => (d === "desc" ? "asc" : "desc"));
+        setSortDir((currentDir) => (currentDir === "desc" ? "asc" : "desc"));
         return key;
       }
+
       setSortDir(key === "food" ? "asc" : "desc");
       return key;
     });
   }, []);
 
-  // Listen for voice sort commands
   useEffect(() => {
-    const handler = (e: Event) => {
-      const detail = (e as CustomEvent).detail as { key: SortKey };
-      if (detail?.key) toggleSort(detail.key);
+    const sortHandler = (event: Event) => {
+      const detail = (event as CustomEvent).detail as { key?: SortKey };
+      if (detail?.key) {
+        toggleSort(detail.key);
+      }
     };
-    window.addEventListener("mampflogger:table-sort", handler);
-    return () => window.removeEventListener("mampflogger:table-sort", handler);
-  }, [toggleSort]);
+
+    const viewHandler = (event: Event) => {
+      const detail = (event as CustomEvent).detail as { mode?: TableViewMode };
+      if (detail?.mode) {
+        onViewModeChange(detail.mode);
+      }
+    };
+
+    window.addEventListener("mampflogger:table-sort", sortHandler);
+    window.addEventListener("mampflogger:table-view", viewHandler);
+
+    return () => {
+      window.removeEventListener("mampflogger:table-sort", sortHandler);
+      window.removeEventListener("mampflogger:table-view", viewHandler);
+    };
+  }, [onViewModeChange, toggleSort]);
+
+  useEffect(() => {
+    if (entries.length > previousEntryCountRef.current) {
+      setSortKey("time");
+      setSortDir("desc");
+      onViewModeChange("detail");
+    }
+
+    previousEntryCountRef.current = entries.length;
+  }, [entries.length, onViewModeChange]);
 
   if (entries.length === 0) {
     return (
@@ -140,12 +227,36 @@ const NutritionTable = ({ entries, onDelete, onEntryClick, viewMode, onViewModeC
     );
   }
 
-  const summary = calculateDailySummary(entries);
-  const sortedEntries = [...entries].sort((a, b) => compareEntries(a, b, sortKey, sortDir));
-  const summenRows = groupEntries(entries);
+  const detailSortKey: DetailSortKey = sortKey === "count" ? "time" : sortKey;
+  const detailSortDir: SortDir = sortKey === "count" ? "desc" : sortDir;
+  const summarySortKey: SummarySortKey = sortKey === "time" ? "calories" : sortKey;
+  const summarySortDir: SortDir = sortKey === "time" ? "desc" : sortDir;
 
-  // Sort summen rows by calories desc by default
-  const sortedSummen = [...summenRows].sort((a, b) => b.calories - a.calories);
+  const summary = calculateDailySummary(entries);
+  const sortedEntries = useMemo(
+    () => [...entries].sort((a, b) => compareEntries(a, b, detailSortKey, detailSortDir)),
+    [detailSortDir, detailSortKey, entries],
+  );
+  const sortedSummen = useMemo(
+    () => [...groupEntries(entries)].sort((a, b) => compareSummenRows(a, b, summarySortKey, summarySortDir)),
+    [entries, summarySortDir, summarySortKey],
+  );
+
+  const renderSortButton = (field: { key: SortKey; label: string; color?: string }, isActive: boolean) => (
+    <button
+      onClick={() => toggleSort(field.key)}
+      className={`inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full border transition-colors text-[10px] sm:text-[11px] font-semibold leading-tight whitespace-nowrap ${
+        isActive
+          ? "border-primary/40 bg-primary/10 text-primary"
+          : "border-border/60 bg-transparent hover:border-primary/30 hover:bg-muted/40"
+      }`}
+      style={field.color && !isActive ? { color: field.color } : undefined}
+      type="button"
+    >
+      {field.label}
+      {isActive && (sortDir === "asc" ? <ArrowUp className="w-2.5 h-2.5 shrink-0" /> : <ArrowDown className="w-2.5 h-2.5 shrink-0" />)}
+    </button>
+  );
 
   const viewToggle = (
     <div className="flex gap-1 mb-2">
@@ -156,6 +267,7 @@ const NutritionTable = ({ entries, onDelete, onEntryClick, viewMode, onViewModeC
             ? "border-primary/40 bg-primary/10 text-primary"
             : "border-border/60 bg-transparent hover:border-primary/30 hover:bg-muted/40 text-muted-foreground"
         }`}
+        type="button"
       >
         Detail
       </button>
@@ -166,6 +278,7 @@ const NutritionTable = ({ entries, onDelete, onEntryClick, viewMode, onViewModeC
             ? "border-primary/40 bg-primary/10 text-primary"
             : "border-border/60 bg-transparent hover:border-primary/30 hover:bg-muted/40 text-muted-foreground"
         }`}
+        type="button"
       >
         Summen
       </button>
@@ -181,30 +294,14 @@ const NutritionTable = ({ entries, onDelete, onEntryClick, viewMode, onViewModeC
             <tr className="border-b border-border">
               {viewMode === "detail" ? (
                 <>
-                  {SORT_FIELDS.map((field) => {
-                    const isActive = sortKey === field.key;
+                  {DETAIL_SORT_FIELDS.map((field) => {
                     const isRight = field.key !== "time" && field.key !== "food";
                     return (
                       <th
                         key={field.key}
                         className={`py-1 px-0.5 font-semibold ${isRight ? "text-right" : "text-left"} ${field.key === "time" ? "pr-1" : ""} ${field.key === "food" ? "pr-1" : ""}`}
                       >
-                        <button
-                          onClick={() => toggleSort(field.key)}
-                          className={`inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full border transition-colors text-[10px] sm:text-[11px] font-semibold leading-tight whitespace-nowrap ${
-                            isActive
-                              ? "border-primary/40 bg-primary/10 text-primary"
-                              : "border-border/60 bg-transparent hover:border-primary/30 hover:bg-muted/40"
-                          }`}
-                          style={field.color && !isActive ? { color: field.color } : undefined}
-                        >
-                          {field.label}
-                          {isActive && (
-                            sortDir === "asc"
-                              ? <ArrowUp className="w-2.5 h-2.5 shrink-0" />
-                              : <ArrowDown className="w-2.5 h-2.5 shrink-0" />
-                          )}
-                        </button>
+                        {renderSortButton(field, detailSortKey === field.key)}
                       </th>
                     );
                   })}
@@ -212,14 +309,17 @@ const NutritionTable = ({ entries, onDelete, onEntryClick, viewMode, onViewModeC
                 </>
               ) : (
                 <>
-                  <th className="py-1 px-0.5 text-left font-semibold">Lebensmittel</th>
-                  <th className="py-1 px-0.5 text-right font-semibold text-muted-foreground">Anz.</th>
-                  <th className="py-1 px-0.5 text-right font-semibold">g/ml</th>
-                  <th className="py-1 px-0.5 text-right font-semibold">kcal</th>
-                  <th className="py-1 px-0.5 text-right font-semibold" style={{ color: MACRO_COLORS.pro }}>PRO</th>
-                  <th className="py-1 px-0.5 text-right font-semibold" style={{ color: MACRO_COLORS.fat }}>FAT</th>
-                  <th className="py-1 px-0.5 text-right font-semibold" style={{ color: MACRO_COLORS.kh }}>KH</th>
-                  <th className="py-1 px-0.5 text-right font-semibold" style={{ color: MACRO_COLORS.fib }}>FIB</th>
+                  {SUMMARY_SORT_FIELDS.map((field) => {
+                    const isRight = field.key !== "food";
+                    return (
+                      <th
+                        key={field.key}
+                        className={`py-1 px-0.5 font-semibold ${isRight ? "text-right" : "text-left"} ${field.key === "food" ? "pr-1" : ""}`}
+                      >
+                        {renderSortButton(field, summarySortKey === field.key)}
+                      </th>
+                    );
+                  })}
                 </>
               )}
             </tr>
@@ -242,12 +342,13 @@ const NutritionTable = ({ entries, onDelete, onEntryClick, viewMode, onViewModeC
                   <td className="py-1 px-0.5 text-right">{Math.round(entry.fiber)}</td>
                   <td className="py-1 pl-1.5 pr-0">
                     <button
-                      onClick={(e) => {
-                        e.stopPropagation();
+                      onClick={(event) => {
+                        event.stopPropagation();
                         setDeleteEntry(entry);
                       }}
                       className="p-0.5 rounded-full text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
                       aria-label="Eintrag löschen"
+                      type="button"
                     >
                       <Trash2 className="w-3 h-3" />
                     </button>
@@ -271,8 +372,7 @@ const NutritionTable = ({ entries, onDelete, onEntryClick, viewMode, onViewModeC
           </tbody>
           <tfoot>
             <tr className="border-t-2 border-primary/20 bg-background">
-              <td className="py-1 px-0.5 font-bold" colSpan={viewMode === "detail" ? 3 : 3}>Summe</td>
-              {viewMode === "summen" && <td></td>}
+              <td className="py-1 px-0.5 font-bold" colSpan={3}>Summe</td>
               <td className="py-1 px-0.5 text-right font-bold">{summary.totalCalories}</td>
               <td className="py-1 px-0.5 text-right font-bold" style={{ color: MACRO_COLORS.pro }}>{summary.totalProtein}</td>
               <td className="py-1 px-0.5 text-right font-bold" style={{ color: MACRO_COLORS.fat }}>{summary.totalFat}</td>
@@ -284,7 +384,7 @@ const NutritionTable = ({ entries, onDelete, onEntryClick, viewMode, onViewModeC
         </table>
       </div>
 
-      <AlertDialog open={!!deleteEntry} onOpenChange={(v) => { if (!v) setDeleteEntry(null); }}>
+      <AlertDialog open={!!deleteEntry} onOpenChange={(open) => { if (!open) setDeleteEntry(null); }}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Wirklich löschen?</AlertDialogTitle>
