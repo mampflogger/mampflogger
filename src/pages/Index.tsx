@@ -418,6 +418,14 @@ const Index = () => {
           setSettingsVoiceAction("profil-speichern");
         }
       }
+      else if (action === "click:rezept-speichern") {
+        if (!settingsOpenRef.current) {
+          setSettingsVoiceTab("recipes");
+          setTimeout(() => setSettingsVoiceAction("rezept-speichern"), 300);
+        } else {
+          setSettingsVoiceAction("rezept-speichern");
+        }
+      }
       else if (action === "click:new-food") {
         if (!settingsOpenRef.current) {
           setSettingsVoiceTab("food");
