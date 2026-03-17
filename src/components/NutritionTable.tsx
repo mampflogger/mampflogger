@@ -74,7 +74,38 @@ function compareEntries(a: NutritionEntry, b: NutritionEntry, key: SortKey, dir:
   return dir === "asc" ? cmp : -cmp;
 }
 
-const NutritionTable = ({ entries, onDelete, onEntryClick }: NutritionTableProps) => {
+interface SummenRow {
+  food: string;
+  amount: number;
+  calories: number;
+  protein: number;
+  fat: number;
+  carbs: number;
+  fiber: number;
+  count: number;
+}
+
+function groupEntries(entries: NutritionEntry[]): SummenRow[] {
+  const map = new Map<string, SummenRow>();
+  for (const e of entries) {
+    const key = e.food;
+    const existing = map.get(key);
+    if (existing) {
+      existing.amount += e.amount;
+      existing.calories += e.calories;
+      existing.protein += e.protein;
+      existing.fat += e.fat;
+      existing.carbs += e.carbs;
+      existing.fiber += e.fiber;
+      existing.count += 1;
+    } else {
+      map.set(key, { food: key, amount: e.amount, calories: e.calories, protein: e.protein, fat: e.fat, carbs: e.carbs, fiber: e.fiber, count: 1 });
+    }
+  }
+  return Array.from(map.values());
+}
+
+const NutritionTable = ({ entries, onDelete, onEntryClick, viewMode, onViewModeChange }: NutritionTableProps) => {
   const [deleteEntry, setDeleteEntry] = useState<NutritionEntry | null>(null);
   const [sortKey, setSortKey] = useState<SortKey>("time");
   const [sortDir, setSortDir] = useState<SortDir>("desc");
@@ -85,7 +116,6 @@ const NutritionTable = ({ entries, onDelete, onEntryClick }: NutritionTableProps
         setSortDir((d) => (d === "desc" ? "asc" : "desc"));
         return key;
       }
-      // Default direction: desc for numbers, asc for food/time
       setSortDir(key === "food" ? "asc" : "desc");
       return key;
     });
@@ -112,6 +142,10 @@ const NutritionTable = ({ entries, onDelete, onEntryClick }: NutritionTableProps
 
   const summary = calculateDailySummary(entries);
   const sortedEntries = [...entries].sort((a, b) => compareEntries(a, b, sortKey, sortDir));
+  const summenRows = groupEntries(entries);
+
+  // Sort summen rows by calories desc by default
+  const sortedSummen = [...summenRows].sort((a, b) => b.calories - a.calories);
 
   return (
     <div className="animate-slide-up">
