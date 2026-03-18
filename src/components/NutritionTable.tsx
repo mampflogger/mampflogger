@@ -364,7 +364,7 @@ const NutritionTable = ({ entries, onDelete, onEntryClick, viewMode, onViewModeC
           </tbody>
           <tfoot>
             <tr className="border-t-2 border-primary/20 bg-background">
-              <td className="py-1 px-0.5 font-bold" colSpan={3}>Summe</td>
+              <td className="py-1 px-0.5 font-bold" colSpan={viewMode === "detail" ? 3 : 2}>Summe</td>
               <td className="py-1 px-0.5 text-right font-bold">{summary.totalCalories}</td>
               <td className="py-1 px-0.5 text-right font-bold" style={{ color: MACRO_COLORS.pro }}>{summary.totalProtein}</td>
               <td className="py-1 px-0.5 text-right font-bold" style={{ color: MACRO_COLORS.fat }}>{summary.totalFat}</td>
