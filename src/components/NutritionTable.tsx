@@ -351,8 +351,7 @@ const NutritionTable = ({ entries, onDelete, onEntryClick, viewMode, onViewModeC
             ) : (
               sortedSummen.map((row) => (
                 <tr key={row.food} className="border-b border-border/50 hover:bg-muted/30 transition-colors">
-                  <td className="py-1 pr-1 font-medium max-w-[100px] truncate">{row.food}</td>
-                  <td className="py-1 px-0.5 text-right text-muted-foreground tabular-nums">{row.count}×</td>
+                  <td className="py-1 pr-1 font-medium max-w-[80px] truncate">{row.food}</td>
                   <td className="py-1 px-0.5 text-right text-muted-foreground tabular-nums">{Math.round(row.amount)}</td>
                   <td className="py-1 px-0.5 text-right font-semibold">{Math.round(row.calories)}</td>
                   <td className="py-1 px-0.5 text-right">{Math.round(row.protein)}</td>
