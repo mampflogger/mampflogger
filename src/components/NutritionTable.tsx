@@ -29,31 +29,28 @@ const MACRO_COLORS = {
   fib: "hsl(var(--macro-fib))",
 };
 
-type SortKey = "time" | "food" | "count" | "amount" | "calories" | "protein" | "fat" | "carbs" | "fiber";
-type DetailSortKey = Exclude<SortKey, "count">;
-type SummarySortKey = Exclude<SortKey, "time">;
+type SortKey = "time" | "food" | "amount" | "calories" | "protein" | "fat" | "carbs" | "fiber";
 type SortDir = "asc" | "desc";
 
-const DETAIL_SORT_FIELDS: { key: DetailSortKey; label: string; color?: string }[] = [
+const DETAIL_SORT_FIELDS: { key: SortKey; label: string; color?: string }[] = [
   { key: "time", label: "Zeit" },
-  { key: "food", label: "Lebensmittel" },
-  { key: "amount", label: "g/ml" },
+  { key: "food", label: "LM" },
+  { key: "amount", label: "g" },
   { key: "calories", label: "kcal" },
-  { key: "protein", label: "PRO", color: MACRO_COLORS.pro },
-  { key: "fat", label: "FAT", color: MACRO_COLORS.fat },
-  { key: "carbs", label: "KH", color: MACRO_COLORS.kh },
-  { key: "fiber", label: "FIB", color: MACRO_COLORS.fib },
+  { key: "protein", label: "P", color: MACRO_COLORS.pro },
+  { key: "fat", label: "F", color: MACRO_COLORS.fat },
+  { key: "carbs", label: "K", color: MACRO_COLORS.kh },
+  { key: "fiber", label: "B", color: MACRO_COLORS.fib },
 ];
 
-const SUMMARY_SORT_FIELDS: { key: SummarySortKey; label: string; color?: string }[] = [
-  { key: "food", label: "Lebensmittel" },
-  { key: "count", label: "Anz." },
-  { key: "amount", label: "g/ml" },
+const SUMMARY_SORT_FIELDS: { key: SortKey; label: string; color?: string }[] = [
+  { key: "food", label: "LM" },
+  { key: "amount", label: "g" },
   { key: "calories", label: "kcal" },
-  { key: "protein", label: "PRO", color: MACRO_COLORS.pro },
-  { key: "fat", label: "FAT", color: MACRO_COLORS.fat },
-  { key: "carbs", label: "KH", color: MACRO_COLORS.kh },
-  { key: "fiber", label: "FIB", color: MACRO_COLORS.fib },
+  { key: "protein", label: "P", color: MACRO_COLORS.pro },
+  { key: "fat", label: "F", color: MACRO_COLORS.fat },
+  { key: "carbs", label: "K", color: MACRO_COLORS.kh },
+  { key: "fiber", label: "B", color: MACRO_COLORS.fib },
 ];
 
 function compareEntries(a: NutritionEntry, b: NutritionEntry, key: DetailSortKey, dir: SortDir): number {
