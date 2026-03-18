@@ -1229,7 +1229,7 @@ const Index = () => {
                 onOpenChange={setSettingsOpen}
                 onTabChange={setSettingsCurrentTab}
                 isMicSupported={voiceCommands.isSupported}
-                isMicListening={voiceCommands.isListening}
+                isMicListening={voiceCommands.isArmed}
                 onMicToggle={voiceCommands.toggle}
                 voiceAction={settingsVoiceAction}
                 onVoiceActionHandled={() => setSettingsVoiceAction(null)}
