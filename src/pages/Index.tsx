@@ -373,7 +373,11 @@ const Index = () => {
         return;
       }
       else if (action === "action:mic-off") {
-        voiceCommands.stop();
+        voiceCommands.disarm();
+        return;
+      }
+      else if (action === "action:mic-on") {
+        voiceCommands.arm();
         return;
       }
       else if (action === "action:camera" || action === "action:entry+camera") {
