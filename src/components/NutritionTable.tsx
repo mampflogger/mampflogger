@@ -141,7 +141,7 @@ function groupEntries(entries: NutritionEntry[]): SummenRow[] {
       existing.fat += entry.fat;
       existing.carbs += entry.carbs;
       existing.fiber += entry.fiber;
-      existing.count += 1;
+      
     } else {
       map.set(entry.food, {
         food: entry.food,
