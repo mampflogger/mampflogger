@@ -390,15 +390,12 @@ export function useVoiceCommands({ onCommand, onUnhandledSpeech }: UseVoiceComma
 
         const scope = getVoiceCommandScope();
 
-        // 0b. If Tagesübersicht is active and transcript matches a table keyword,
+        // 0b. If Tagesübersicht is actively focused/selected and transcript matches a table keyword,
         //     skip global commands and let onUnhandledSpeech handle table sorting/view changes.
+        //     NOTE: We intentionally do NOT include a "visible on screen" fallback here,
+        //     because that would let sort commands fire while another section (e.g. Neuer Eintrag) is active.
         const activeElement = document.activeElement as HTMLElement | null;
         const tagesSection = document.getElementById("section-tagesuebersicht");
-        const tagesRect = tagesSection?.getBoundingClientRect();
-        const tagesVisible =
-          !!tagesRect &&
-          tagesRect.bottom > Math.min(window.innerHeight * 0.2, 120) &&
-          tagesRect.top < window.innerHeight - Math.min(window.innerHeight * 0.2, 120);
         const normalizedTableTranscript = lower
           .replace(/[.,;:!?]/g, " ")
           .replace(/\beiweiß\b/g, "eiweiss")
@@ -413,10 +410,8 @@ export function useVoiceCommands({ onCommand, onUnhandledSpeech }: UseVoiceComma
           .trim();
         const tagesActive =
           !!tagesSection &&
-          (tagesSection.getAttribute("data-voice-active-section") === "true" ||
-            tagesSection.getAttribute("data-section-active") === "true" ||
-            !!activeElement?.closest("#section-tagesuebersicht") ||
-            tagesVisible);
+          (tagesSection.getAttribute("data-section-active") === "true" ||
+            !!activeElement?.closest("#section-tagesuebersicht"));
         const TABLE_VOICE_RE =
           /\b(?:detail(?:ansicht)?|summen?(?:ansicht)?|kompakt|komprimiert|zeit|uhrzeit|time|tim|taim|lebensmittel|food|alphabetisch|anz(?:ahl)?|count|haeufigkeit|häufigkeit|gramm|g(?:\s*\/\s*|\s+pro\s+)ml|menge|kcal|kalorien|kilokalorien|calories|pro|protein(?:e|en)?|eiweiss|fat|fett(?:e)?|kh|kohlenhydrate?|carbs?|carbohydrates?|fib|fiber|fibre|pfeffer|ballaststoffe?|ballast|faser(?:n)?)\b/i;
         if (tagesActive && TABLE_VOICE_RE.test(normalizedTableTranscript)) {
