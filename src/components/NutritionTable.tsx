@@ -29,34 +29,31 @@ const MACRO_COLORS = {
   fib: "hsl(var(--macro-fib))",
 };
 
-type SortKey = "time" | "food" | "count" | "amount" | "calories" | "protein" | "fat" | "carbs" | "fiber";
-type DetailSortKey = Exclude<SortKey, "count">;
-type SummarySortKey = Exclude<SortKey, "time">;
+type SortKey = "time" | "food" | "amount" | "calories" | "protein" | "fat" | "carbs" | "fiber";
 type SortDir = "asc" | "desc";
 
-const DETAIL_SORT_FIELDS: { key: DetailSortKey; label: string; color?: string }[] = [
+const DETAIL_SORT_FIELDS: { key: SortKey; label: string; color?: string }[] = [
   { key: "time", label: "Zeit" },
-  { key: "food", label: "Lebensmittel" },
-  { key: "amount", label: "g/ml" },
+  { key: "food", label: "LM" },
+  { key: "amount", label: "g" },
   { key: "calories", label: "kcal" },
-  { key: "protein", label: "PRO", color: MACRO_COLORS.pro },
-  { key: "fat", label: "FAT", color: MACRO_COLORS.fat },
-  { key: "carbs", label: "KH", color: MACRO_COLORS.kh },
-  { key: "fiber", label: "FIB", color: MACRO_COLORS.fib },
+  { key: "protein", label: "P", color: MACRO_COLORS.pro },
+  { key: "fat", label: "F", color: MACRO_COLORS.fat },
+  { key: "carbs", label: "K", color: MACRO_COLORS.kh },
+  { key: "fiber", label: "B", color: MACRO_COLORS.fib },
 ];
 
-const SUMMARY_SORT_FIELDS: { key: SummarySortKey; label: string; color?: string }[] = [
-  { key: "food", label: "Lebensmittel" },
-  { key: "count", label: "Anz." },
-  { key: "amount", label: "g/ml" },
+const SUMMARY_SORT_FIELDS: { key: SortKey; label: string; color?: string }[] = [
+  { key: "food", label: "LM" },
+  { key: "amount", label: "g" },
   { key: "calories", label: "kcal" },
-  { key: "protein", label: "PRO", color: MACRO_COLORS.pro },
-  { key: "fat", label: "FAT", color: MACRO_COLORS.fat },
-  { key: "carbs", label: "KH", color: MACRO_COLORS.kh },
-  { key: "fiber", label: "FIB", color: MACRO_COLORS.fib },
+  { key: "protein", label: "P", color: MACRO_COLORS.pro },
+  { key: "fat", label: "F", color: MACRO_COLORS.fat },
+  { key: "carbs", label: "K", color: MACRO_COLORS.kh },
+  { key: "fiber", label: "B", color: MACRO_COLORS.fib },
 ];
 
-function compareEntries(a: NutritionEntry, b: NutritionEntry, key: DetailSortKey, dir: SortDir): number {
+function compareEntries(a: NutritionEntry, b: NutritionEntry, key: SortKey, dir: SortDir): number {
   let cmp = 0;
   switch (key) {
     case "time":
@@ -96,17 +93,13 @@ interface SummenRow {
   fat: number;
   carbs: number;
   fiber: number;
-  count: number;
 }
 
-function compareSummenRows(a: SummenRow, b: SummenRow, key: SummarySortKey, dir: SortDir): number {
+function compareSummenRows(a: SummenRow, b: SummenRow, key: SortKey, dir: SortDir): number {
   let cmp = 0;
   switch (key) {
     case "food":
       cmp = a.food.localeCompare(b.food, "de");
-      break;
-    case "count":
-      cmp = a.count - b.count;
       break;
     case "amount":
       cmp = a.amount - b.amount;
@@ -148,7 +141,7 @@ function groupEntries(entries: NutritionEntry[]): SummenRow[] {
       existing.fat += entry.fat;
       existing.carbs += entry.carbs;
       existing.fiber += entry.fiber;
-      existing.count += 1;
+      
     } else {
       map.set(entry.food, {
         food: entry.food,
@@ -158,7 +151,7 @@ function groupEntries(entries: NutritionEntry[]): SummenRow[] {
         fat: entry.fat,
         carbs: entry.carbs,
         fiber: entry.fiber,
-        count: 1,
+        
       });
     }
   }
@@ -218,9 +211,9 @@ const NutritionTable = ({ entries, onDelete, onEntryClick, viewMode, onViewModeC
     previousEntryCountRef.current = entries.length;
   }, [entries.length, onViewModeChange]);
 
-  const detailSortKey: DetailSortKey = sortKey === "count" ? "time" : sortKey;
-  const detailSortDir: SortDir = sortKey === "count" ? "desc" : sortDir;
-  const summarySortKey: SummarySortKey = sortKey === "time" ? "calories" : sortKey;
+  const detailSortKey: SortKey = sortKey;
+  const detailSortDir: SortDir = sortDir;
+  const summarySortKey: SortKey = sortKey === "time" ? "calories" : sortKey;
   const summarySortDir: SortDir = sortKey === "time" ? "desc" : sortDir;
 
   const summary = useMemo(() => calculateDailySummary(entries), [entries]);
@@ -288,8 +281,8 @@ const NutritionTable = ({ entries, onDelete, onEntryClick, viewMode, onViewModeC
   return (
     <div className="animate-slide-up">
       {viewToggle}
-      <div className="overflow-x-auto -mx-1 px-1">
-        <table className="w-full text-[10px] sm:text-[11px]">
+      <div className="overflow-hidden -mx-1 px-1">
+        <table className="w-full table-fixed text-[10px] sm:text-[11px]">
           <thead>
             <tr className="border-b border-border">
               {viewMode === "detail" ? (
@@ -358,8 +351,7 @@ const NutritionTable = ({ entries, onDelete, onEntryClick, viewMode, onViewModeC
             ) : (
               sortedSummen.map((row) => (
                 <tr key={row.food} className="border-b border-border/50 hover:bg-muted/30 transition-colors">
-                  <td className="py-1 pr-1 font-medium max-w-[100px] truncate">{row.food}</td>
-                  <td className="py-1 px-0.5 text-right text-muted-foreground tabular-nums">{row.count}×</td>
+                  <td className="py-1 pr-1 font-medium max-w-[80px] truncate">{row.food}</td>
                   <td className="py-1 px-0.5 text-right text-muted-foreground tabular-nums">{Math.round(row.amount)}</td>
                   <td className="py-1 px-0.5 text-right font-semibold">{Math.round(row.calories)}</td>
                   <td className="py-1 px-0.5 text-right">{Math.round(row.protein)}</td>
@@ -372,7 +364,7 @@ const NutritionTable = ({ entries, onDelete, onEntryClick, viewMode, onViewModeC
           </tbody>
           <tfoot>
             <tr className="border-t-2 border-primary/20 bg-background">
-              <td className="py-1 px-0.5 font-bold" colSpan={3}>Summe</td>
+              <td className="py-1 px-0.5 font-bold" colSpan={viewMode === "detail" ? 3 : 2}>Summe</td>
               <td className="py-1 px-0.5 text-right font-bold">{summary.totalCalories}</td>
               <td className="py-1 px-0.5 text-right font-bold" style={{ color: MACRO_COLORS.pro }}>{summary.totalProtein}</td>
               <td className="py-1 px-0.5 text-right font-bold" style={{ color: MACRO_COLORS.fat }}>{summary.totalFat}</td>

@@ -776,10 +776,9 @@ const Index = () => {
             return;
           }
 
-          const sortMap: [RegExp, "time" | "food" | "count" | "amount" | "calories" | "protein" | "fat" | "carbs" | "fiber"][] = [
+          const sortMap: [RegExp, "time" | "food" | "amount" | "calories" | "protein" | "fat" | "carbs" | "fiber"][] = [
             [/\b(?:zeit|uhrzeit|time|tim|taim)\b/i, "time"],
             [/\b(?:lebensmittel|food|alphabetisch)\b/i, "food"],
-            [/\b(?:anz(?:ahl)?|count|haeufigkeit|häufigkeit)\b/i, "count"],
             [/\b(?:gramm|g(?:\s*\/\s*|\s+pro\s+)ml|menge)\b/i, "amount"],
             [/\b(?:kcal|kalorien|kilokalorien|calories)\b/i, "calories"],
             [/\b(?:pro|protein(?:e|en)?|eiweiss)\b/i, "protein"],
@@ -789,7 +788,6 @@ const Index = () => {
           ];
           for (const [re, key] of sortMap) {
             if (key === "time" && tableViewMode === "summen") continue;
-            if (key === "count" && tableViewMode !== "summen") continue;
             if (re.test(normalizedTableTranscript)) {
               window.dispatchEvent(new CustomEvent("mampflogger:table-sort", { detail: { key } }));
               return;
