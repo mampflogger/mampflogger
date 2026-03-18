@@ -151,7 +151,7 @@ function groupEntries(entries: NutritionEntry[]): SummenRow[] {
         fat: entry.fat,
         carbs: entry.carbs,
         fiber: entry.fiber,
-        count: 1,
+        
       });
     }
   }
