@@ -93,7 +93,6 @@ interface SummenRow {
   fat: number;
   carbs: number;
   fiber: number;
-  count: number;
 }
 
 function compareSummenRows(a: SummenRow, b: SummenRow, key: SummarySortKey, dir: SortDir): number {
