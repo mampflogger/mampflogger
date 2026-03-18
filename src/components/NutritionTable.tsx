@@ -95,7 +95,7 @@ interface SummenRow {
   fiber: number;
 }
 
-function compareSummenRows(a: SummenRow, b: SummenRow, key: SummarySortKey, dir: SortDir): number {
+function compareSummenRows(a: SummenRow, b: SummenRow, key: SortKey, dir: SortDir): number {
   let cmp = 0;
   switch (key) {
     case "food":
