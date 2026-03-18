@@ -101,9 +101,6 @@ function compareSummenRows(a: SummenRow, b: SummenRow, key: SortKey, dir: SortDi
     case "food":
       cmp = a.food.localeCompare(b.food, "de");
       break;
-    case "count":
-      cmp = a.count - b.count;
-      break;
     case "amount":
       cmp = a.amount - b.amount;
       break;
