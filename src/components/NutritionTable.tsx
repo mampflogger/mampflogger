@@ -53,7 +53,7 @@ const SUMMARY_SORT_FIELDS: { key: SortKey; label: string; color?: string }[] = [
   { key: "fiber", label: "B", color: MACRO_COLORS.fib },
 ];
 
-function compareEntries(a: NutritionEntry, b: NutritionEntry, key: DetailSortKey, dir: SortDir): number {
+function compareEntries(a: NutritionEntry, b: NutritionEntry, key: SortKey, dir: SortDir): number {
   let cmp = 0;
   switch (key) {
     case "time":
