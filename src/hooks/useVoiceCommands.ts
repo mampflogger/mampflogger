@@ -294,7 +294,10 @@ interface StartVoiceOptions {
 type VoiceCommandScope = "global" | "scoped-input";
 
 const SCOPED_INPUT_ALLOWED_PREFIXES = ["field:", "nav:", "settings:", "section:", "scroll:", "action:", "theme:", "nutrient:"];
-const SCOPED_INPUT_ALLOWED_ACTIONS = new Set(["action:mic-off", "action:home", "backup-create", "backup-load", "click:rezept-speichern"]);
+const SCOPED_INPUT_ALLOWED_ACTIONS = new Set(["action:mic-off", "action:mic-on", "action:home", "backup-create", "backup-load", "click:rezept-speichern"]);
+
+// Patterns that activate the mic from standby
+const ACTIVATION_RE = /\bmikro\s*an\b|\bmikrofon\s*an\b|\bmic\s*on\b|\bmicro\s*on\b/i;
 
 function getVoiceCommandScope(): VoiceCommandScope {
   const activeElement = document.activeElement as HTMLElement | null;
@@ -328,19 +331,46 @@ export function useVoiceCommands({ onCommand, onUnhandledSpeech }: UseVoiceComma
   onCommandRef.current = onCommand;
   onUnhandledRef.current = onUnhandledSpeech;
 
+  const [isArmed, setIsArmed] = useState(false);
+  const isArmedRef = useRef(false);
+
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const stopFnRef = useRef<() => void>(() => {});
 
-  const resetTimeout = useCallback(() => {
-    if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    timeoutRef.current = setTimeout(() => {
-      stopFnRef.current();
-      toast("🎤 Mikrofon nach 1 Min. Inaktivität deaktiviert.");
-    }, INACTIVITY_TIMEOUT_MS);
+  const clearInactivityTimeout = useCallback(() => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
   }, []);
+
+  const resetTimeout = useCallback(() => {
+    clearInactivityTimeout();
+    // Only auto-disarm after inactivity when armed
+    if (isArmedRef.current) {
+      timeoutRef.current = setTimeout(() => {
+        isArmedRef.current = false;
+        setIsArmed(false);
+        clearInactivityTimeout();
+        toast("🎤 Mikrofon nach 1 Min. Inaktivität in Standby.");
+      }, INACTIVITY_TIMEOUT_MS);
+    }
+  }, [clearInactivityTimeout]);
 
   const voice = useSpeechRecognition({
     onResult: useCallback((transcript: string, isInterim: boolean) => {
+      // In standby mode: only listen for activation commands
+      if (!isArmedRef.current) {
+        if (!isInterim) {
+          const lower = transcript.toLowerCase().trim();
+          if (ACTIVATION_RE.test(lower)) {
+            onCommandRef.current("action:mic-on");
+          }
+          // Ignore everything else in standby
+        }
+        return;
+      }
+
       resetTimeout();
 
       // Try matching commands (only on final results)
@@ -442,25 +472,69 @@ export function useVoiceCommands({ onCommand, onUnhandledSpeech }: UseVoiceComma
 
   stopFnRef.current = voice.stop;
 
+  const arm = useCallback(() => {
+    isArmedRef.current = true;
+    setIsArmed(true);
+    // Start listening if not already
+    if (!voice.isListening) {
+      voice.start({ silent: true });
+    }
+    resetTimeout();
+    toast("🎤 Mikrofon aktiv");
+  }, [voice.start, voice.isListening, resetTimeout]);
+
+  const disarm = useCallback(() => {
+    isArmedRef.current = false;
+    setIsArmed(false);
+    clearInactivityTimeout();
+    toast("🎤 Mikrofon Standby");
+    // Keep listening in background for activation commands
+  }, [clearInactivityTimeout]);
+
   const start = useCallback((options?: StartVoiceOptions) => {
     voice.start(options);
-    resetTimeout();
+    if (!options?.silent) {
+      isArmedRef.current = true;
+      setIsArmed(true);
+      resetTimeout();
+    }
   }, [voice.start, resetTimeout]);
 
   const stop = useCallback(() => {
-    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    clearInactivityTimeout();
+    isArmedRef.current = false;
+    setIsArmed(false);
     voice.stop();
-  }, [voice.stop]);
+  }, [voice.stop, clearInactivityTimeout]);
 
   const toggle = useCallback(() => {
-    voice.isListening ? stop() : start();
-  }, [voice.isListening, start, stop]);
+    if (voice.isListening) {
+      if (isArmedRef.current) {
+        // Disarm to standby (keep listening)
+        disarm();
+      } else {
+        // Arm from standby
+        arm();
+      }
+    } else {
+      // Start fresh and arm
+      start();
+    }
+  }, [voice.isListening, start, arm, disarm]);
+
+  // Auto-start in standby mode on mount
+  useEffect(() => {
+    if (voice.isSupported && !voice.isListening) {
+      voice.start({ silent: true });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     return () => {
-      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+      clearInactivityTimeout();
     };
-  }, []);
+  }, [clearInactivityTimeout]);
 
-  return { isListening: voice.isListening, toggle, start, stop, isSupported: voice.isSupported };
+  return { isListening: voice.isListening, isArmed, toggle, start, stop, arm, disarm, isSupported: voice.isSupported };
 }
