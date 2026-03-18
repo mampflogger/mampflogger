@@ -917,7 +917,7 @@ const Index = () => {
     }
   }, [focusFoodField]);
 
-   // Voice auto-start removed – mic starts inactive, user activates manually
+   // Voice auto-start handled in useVoiceCommands hook (standby mode)
 
   const todayEntries = useMemo(
     () => entries.filter((e) => e.date === selectedDate),
