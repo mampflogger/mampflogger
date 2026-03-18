@@ -238,6 +238,8 @@ const FUZZY_KEYWORD_MAP: [string, string][] = [
   ["bild machen", "action:camera"],
   ["mikro aus", "action:mic-off"],
   ["mikrofon aus", "action:mic-off"],
+  ["mikro an", "action:mic-on"],
+  ["mikrofon an", "action:mic-on"],
   ["hilfe", "action:help"],
   ["help", "action:help"],
   ["home", "action:home"],
