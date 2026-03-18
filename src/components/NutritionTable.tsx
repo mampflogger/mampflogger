@@ -211,9 +211,9 @@ const NutritionTable = ({ entries, onDelete, onEntryClick, viewMode, onViewModeC
     previousEntryCountRef.current = entries.length;
   }, [entries.length, onViewModeChange]);
 
-  const detailSortKey: DetailSortKey = sortKey === "count" ? "time" : sortKey;
-  const detailSortDir: SortDir = sortKey === "count" ? "desc" : sortDir;
-  const summarySortKey: SummarySortKey = sortKey === "time" ? "calories" : sortKey;
+  const detailSortKey: SortKey = sortKey;
+  const detailSortDir: SortDir = sortDir;
+  const summarySortKey: SortKey = sortKey === "time" ? "calories" : sortKey;
   const summarySortDir: SortDir = sortKey === "time" ? "desc" : sortDir;
 
   const summary = useMemo(() => calculateDailySummary(entries), [entries]);
