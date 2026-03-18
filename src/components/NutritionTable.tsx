@@ -281,8 +281,8 @@ const NutritionTable = ({ entries, onDelete, onEntryClick, viewMode, onViewModeC
   return (
     <div className="animate-slide-up">
       {viewToggle}
-      <div className="overflow-x-auto -mx-1 px-1">
-        <table className="w-full text-[10px] sm:text-[11px]">
+      <div className="overflow-hidden -mx-1 px-1">
+        <table className="w-full table-fixed text-[10px] sm:text-[11px]">
           <thead>
             <tr className="border-b border-border">
               {viewMode === "detail" ? (
