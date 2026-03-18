@@ -434,6 +434,10 @@ const SettingsDialog = ({
     } else if (voiceAction.startsWith("recipe:")) {
       const idx = parseInt(voiceAction.replace("recipe:", ""), 10);
       if (!isNaN(idx)) setRecipeVoiceIndex(idx);
+    } else if (voiceAction.startsWith("switch-tab:")) {
+      const newTab = voiceAction.replace("switch-tab:", "") as SettingsTab;
+      setTab(newTab);
+      onTabChange?.(newTab);
     }
     onVoiceActionHandled?.();
   }, [voiceAction, showCategoryDropdown, onVoiceActionHandled]);

@@ -303,10 +303,22 @@ const Index = () => {
       if (action === "nav:log") closeSettingsAndDo(() => { setActiveTab("log"); flashTab("log"); window.scrollTo({ top: 0, behavior: "smooth" }); });
       else if (action === "nav:weekly") closeSettingsAndDo(() => { setActiveTab("weekly"); flashTab("weekly"); window.scrollTo({ top: 0, behavior: "smooth" }); });
       else if (action === "settings:open") { setSettingsVoiceTab("profile"); flashTab("settings"); }
-      else if (action === "settings:profile") { setSettingsVoiceTab("profile"); flashTab("settings"); }
-      else if (action === "settings:design") { setSettingsVoiceTab("design"); flashTab("settings"); }
-      else if (action === "settings:food") { setSettingsVoiceTab("food"); flashTab("settings"); }
-      else if (action === "settings:recipes") { setSettingsVoiceTab("recipes"); flashTab("settings"); }
+      else if (action === "settings:profile") {
+        if (settingsOpenRef.current) { setSettingsVoiceAction("switch-tab:profile"); } else { setSettingsVoiceTab("profile"); }
+        flashTab("settings");
+      }
+      else if (action === "settings:design") {
+        if (settingsOpenRef.current) { setSettingsVoiceAction("switch-tab:design"); } else { setSettingsVoiceTab("design"); }
+        flashTab("settings");
+      }
+      else if (action === "settings:food") {
+        if (settingsOpenRef.current) { setSettingsVoiceAction("switch-tab:food"); } else { setSettingsVoiceTab("food"); }
+        flashTab("settings");
+      }
+      else if (action === "settings:recipes") {
+        if (settingsOpenRef.current) { setSettingsVoiceAction("switch-tab:recipes"); } else { setSettingsVoiceTab("recipes"); }
+        flashTab("settings");
+      }
       else if (action === "settings:recipes+new") {
         setSettingsVoiceTab("recipes");
         flashTab("settings");
@@ -317,7 +329,10 @@ const Index = () => {
         flashTab("settings");
         setTimeout(() => setSettingsVoiceAction("recipe-photo"), 400);
       }
-      else if (action === "settings:data") { setSettingsVoiceTab("data"); flashTab("settings"); }
+      else if (action === "settings:data") {
+        if (settingsOpenRef.current) { setSettingsVoiceAction("switch-tab:data"); } else { setSettingsVoiceTab("data"); }
+        flashTab("settings");
+      }
       else if (action.startsWith("recipe:")) {
         if (!settingsOpenRef.current || settingsTabRef.current !== "recipes") {
           setSettingsVoiceTab("recipes");
