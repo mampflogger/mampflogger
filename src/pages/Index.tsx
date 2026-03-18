@@ -1169,8 +1169,8 @@ const Index = () => {
                       delete (e.currentTarget as HTMLElement).dataset.restoreFocus;
                     }
                   }}
-                  className={`h-8 w-8 ${voiceCommands.isListening ? "ring-2 ring-primary animate-pulse" : ""}`}
-                  title={voiceCommands.isListening ? "Mikrofon aus" : "Sprachsteuerung"}
+                  className={`h-8 w-8 ${voiceCommands.isArmed ? "ring-2 ring-primary animate-pulse" : ""}`}
+                  title={voiceCommands.isArmed ? "Mikrofon aus (Standby)" : "Sprachsteuerung aktivieren"}
                 >
                   <Mic className="w-4 h-4" />
                 </Button>
