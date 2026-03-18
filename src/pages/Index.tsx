@@ -373,7 +373,11 @@ const Index = () => {
         return;
       }
       else if (action === "action:mic-off") {
-        voiceCommands.stop();
+        voiceCommands.disarm();
+        return;
+      }
+      else if (action === "action:mic-on") {
+        voiceCommands.arm();
         return;
       }
       else if (action === "action:camera" || action === "action:entry+camera") {
@@ -913,7 +917,7 @@ const Index = () => {
     }
   }, [focusFoodField]);
 
-   // Voice auto-start removed – mic starts inactive, user activates manually
+   // Voice auto-start handled in useVoiceCommands hook (standby mode)
 
   const todayEntries = useMemo(
     () => entries.filter((e) => e.date === selectedDate),
@@ -1165,8 +1169,8 @@ const Index = () => {
                       delete (e.currentTarget as HTMLElement).dataset.restoreFocus;
                     }
                   }}
-                  className={`h-8 w-8 ${voiceCommands.isListening ? "ring-2 ring-primary animate-pulse" : ""}`}
-                  title={voiceCommands.isListening ? "Mikrofon aus" : "Sprachsteuerung"}
+                  className={`h-8 w-8 ${voiceCommands.isArmed ? "ring-2 ring-primary animate-pulse" : ""}`}
+                  title={voiceCommands.isArmed ? "Mikrofon aus (Standby)" : "Sprachsteuerung aktivieren"}
                 >
                   <Mic className="w-4 h-4" />
                 </Button>
@@ -1225,7 +1229,7 @@ const Index = () => {
                 onOpenChange={setSettingsOpen}
                 onTabChange={setSettingsCurrentTab}
                 isMicSupported={voiceCommands.isSupported}
-                isMicListening={voiceCommands.isListening}
+                isMicListening={voiceCommands.isArmed}
                 onMicToggle={voiceCommands.toggle}
                 voiceAction={settingsVoiceAction}
                 onVoiceActionHandled={() => setSettingsVoiceAction(null)}
