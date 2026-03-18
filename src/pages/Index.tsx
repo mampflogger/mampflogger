@@ -788,7 +788,6 @@ const Index = () => {
           ];
           for (const [re, key] of sortMap) {
             if (key === "time" && tableViewMode === "summen") continue;
-            if (key === "count" && tableViewMode !== "summen") continue;
             if (re.test(normalizedTableTranscript)) {
               window.dispatchEvent(new CustomEvent("mampflogger:table-sort", { detail: { key } }));
               return;
