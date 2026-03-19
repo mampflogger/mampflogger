@@ -775,10 +775,8 @@ const Index = () => {
         const isTagesVoiceScopeActive =
           !!tagesSection &&
           (activeSectionRef.current === "section-tagesuebersicht" ||
-            tagesSection.getAttribute("data-voice-active-section") === "true" ||
             tagesSection.getAttribute("data-section-active") === "true" ||
-            !!(document.activeElement as HTMLElement | null)?.closest?.("#section-tagesuebersicht") ||
-            tagesVisible);
+            !!(document.activeElement as HTMLElement | null)?.closest?.("#section-tagesuebersicht"));
 
         if (isTagesVoiceScopeActive) {
           if (/\b(?:detail(?:ansicht)?|einzel(?:ansicht)?|liste)\b/i.test(normalizedTableTranscript)) {
