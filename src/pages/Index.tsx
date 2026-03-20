@@ -766,17 +766,10 @@ const Index = () => {
           .replace(/\bpfeffer\b/g, "fiber")
           .replace(/\s+/g, " ")
           .trim();
-        const tagesSection = document.getElementById("section-tagesuebersicht");
-        const tagesRect = tagesSection?.getBoundingClientRect();
-        const tagesVisible =
-          !!tagesRect &&
-          tagesRect.bottom > Math.min(window.innerHeight * 0.2, 120) &&
-          tagesRect.top < window.innerHeight - Math.min(window.innerHeight * 0.2, 120);
+        const activeElement = document.activeElement as HTMLElement | null;
         const isTagesVoiceScopeActive =
-          !!tagesSection &&
-          (activeSectionRef.current === "section-tagesuebersicht" ||
-            tagesSection.getAttribute("data-section-active") === "true" ||
-            !!(document.activeElement as HTMLElement | null)?.closest?.("#section-tagesuebersicht"));
+          !!document.getElementById("section-tagesuebersicht") &&
+          !!activeElement?.closest?.("#section-tagesuebersicht");
 
         if (isTagesVoiceScopeActive) {
           if (/\b(?:detail(?:ansicht)?|einzel(?:ansicht)?|liste)\b/i.test(normalizedTableTranscript)) {
