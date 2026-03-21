@@ -383,6 +383,12 @@ const ActivityInput = ({
       valueVoiceDeferredRef.current = false;
       valueVoiceBufferRef.current = mergeSpokenValueBuffer(valueVoiceBufferRef.current, chunk);
 
+      // Show interim preview so user sees what's being recognized
+      const previewParsed = parseGermanSpokenNumber(valueVoiceBufferRef.current);
+      if (previewParsed !== null && previewParsed > 0) {
+        setValue(String(previewParsed));
+      }
+
       if (valueVoiceTimerRef.current !== null) {
         window.clearTimeout(valueVoiceTimerRef.current);
       }
@@ -391,12 +397,12 @@ const ActivityInput = ({
         valueVoiceTimerRef.current = window.setTimeout(() => {
           valueVoiceTimerRef.current = null;
           flushSpokenValueBuffer();
-        }, 1600);
+        }, 1800);
       } else {
         valueVoiceTimerRef.current = window.setTimeout(() => {
           valueVoiceTimerRef.current = null;
           flushSpokenValueBuffer();
-        }, 1800);
+        }, 2200);
       }
       return;
     }
