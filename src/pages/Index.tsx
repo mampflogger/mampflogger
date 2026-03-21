@@ -477,7 +477,7 @@ const Index = () => {
           setSettingsVoiceAction("backup-load");
         }
       }
-      else if (action === "field:next" || action === "field:prev" || action === "field:clear" || action === "field:open-dropdown" || action === "field:close-dropdown") {
+      else if (action === "field:next" || action === "field:prev" || action === "field:clear" || action === "field:open-dropdown" || action === "field:close-dropdown" || action === "field:storno") {
         // Weekly nutrient scopes: close currently active nutrient info panel
         if (!settingsOpenRef.current && action === "field:close-dropdown" && activeTabRef.current === "weekly") {
           const activeNutrientKind = getNutrientKindForSection(activeSectionRef.current);
@@ -520,6 +520,9 @@ const Index = () => {
           ? (settingsTabRef.current === "recipes" ? "manual-recipe"
             : settingsTabRef.current === "profile" ? "profile" : null)
           : null;
+        // When the activity dropdown (Radix portal) is open, focus moves outside #section-activity.
+        // Detect this via the data-dropdown-open attribute set by ActivityInput.
+        const activityDropdownOpen = !!document.querySelector("#section-activity[data-dropdown-open]");
         const scope = settingsScope
           ?? (activeElement?.closest('[data-voice-scope="manual-recipe"]')
             ? "manual-recipe"
@@ -527,7 +530,7 @@ const Index = () => {
               ? "profile"
               : activeElement?.closest("#section-neuer-eintrag")
                 ? "nutrition"
-                : activeElement?.closest("#section-activity")
+                : (activeElement?.closest("#section-activity") || activityDropdownOpen)
                   ? "activity"
                   : null);
 
@@ -806,8 +809,9 @@ const Index = () => {
 
       const activeElement = document.activeElement as HTMLElement | null;
       const isActivityFocused = !!activeElement?.closest("#section-activity");
+      const activityDropdownOpen = !!document.querySelector("#section-activity[data-dropdown-open]");
       const isNutritionFocused = !!activeElement?.closest("#section-neuer-eintrag");
-      const shouldRouteToActivity = isActivityFocused || (!isNutritionFocused && Date.now() < activityVoiceCaptureUntilRef.current);
+      const shouldRouteToActivity = isActivityFocused || activityDropdownOpen || (!isNutritionFocused && Date.now() < activityVoiceCaptureUntilRef.current);
 
       if (shouldRouteToActivity) {
         activityVoiceCaptureUntilRef.current = Date.now() + 4000;

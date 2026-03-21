@@ -156,6 +156,7 @@ const ActivityInput = ({
     const combined = `${previous} ${next}`.trim();
     const combinedParsed = parseGermanSpokenNumber(combined);
 
+    // If combining produces a valid larger number, keep the combination
     if (
       combinedParsed !== null &&
       combinedParsed > 0 &&
@@ -166,6 +167,12 @@ const ActivityInput = ({
       )
     ) {
       return combined;
+    }
+
+    // If the next chunk alone is a bigger number than the previous, prefer it
+    // (recognizer may have self-corrected e.g. "acht" → "achthundert")
+    if (nextParsed !== null && previousParsed !== null && nextParsed > previousParsed) {
+      return next;
     }
 
     return next;
@@ -232,6 +239,8 @@ const ActivityInput = ({
     setValue("");
     setSelectedTypeId(activityTypes[0]?.id || "");
     setIsTypeOpen(false);
+    const sectionEl = document.getElementById("section-activity");
+    sectionEl?.removeAttribute("data-dropdown-open");
     pendingTypeIgnoreNumericUntilRef.current = 0;
     valueVoiceBufferRef.current = "";
     valueVoiceDeferredRef.current = false;
@@ -374,6 +383,12 @@ const ActivityInput = ({
       valueVoiceDeferredRef.current = false;
       valueVoiceBufferRef.current = mergeSpokenValueBuffer(valueVoiceBufferRef.current, chunk);
 
+      // Show interim preview so user sees what's being recognized
+      const previewParsed = parseGermanSpokenNumber(valueVoiceBufferRef.current);
+      if (previewParsed !== null && previewParsed > 0) {
+        setValue(String(previewParsed));
+      }
+
       if (valueVoiceTimerRef.current !== null) {
         window.clearTimeout(valueVoiceTimerRef.current);
       }
@@ -382,12 +397,12 @@ const ActivityInput = ({
         valueVoiceTimerRef.current = window.setTimeout(() => {
           valueVoiceTimerRef.current = null;
           flushSpokenValueBuffer();
-        }, 1600);
+        }, 1800);
       } else {
         valueVoiceTimerRef.current = window.setTimeout(() => {
           valueVoiceTimerRef.current = null;
           flushSpokenValueBuffer();
-        }, 1800);
+        }, 2200);
       }
       return;
     }
@@ -576,12 +591,21 @@ const ActivityInput = ({
         }
       } else if (cmd === "field:close-dropdown") {
         setIsTypeOpen(false);
+        const sectionEl = document.getElementById("section-activity");
+        sectionEl?.removeAttribute("data-dropdown-open");
         selectTriggerRef.current?.focus();
+      } else if (cmd === "field:storno") {
+        // Full reset: close dropdown, clear value, reset type, focus value field
+        setIsTypeOpen(false);
+        const sectionEl = document.getElementById("section-activity");
+        sectionEl?.removeAttribute("data-dropdown-open");
+        playConfirmationTone();
+        resetActivityInput(true);
       }
     };
     window.addEventListener("mampflogger:field-command", handler);
     return () => window.removeEventListener("mampflogger:field-command", handler);
-  }, [activityTypes]);
+  }, [activityTypes, playConfirmationTone, resetActivityInput]);
 
   const handleSubmit = () => {
     const type = activityTypes.find((t) => t.id === selectedTypeId);
@@ -690,11 +714,19 @@ const ActivityInput = ({
             onOpenChange={(open) => {
               setIsTypeOpen(open);
               if (open) setFocusedField("type");
+              // Mark activity dropdown state globally so voice scope detection works
+              const sectionEl = document.getElementById("section-activity");
+              if (sectionEl) {
+                if (open) sectionEl.setAttribute("data-dropdown-open", "true");
+                else sectionEl.removeAttribute("data-dropdown-open");
+              }
             }}
             value={selectedTypeId}
             onValueChange={(val) => {
               setSelectedTypeId(val);
               setIsTypeOpen(false);
+              const sectionEl = document.getElementById("section-activity");
+              sectionEl?.removeAttribute("data-dropdown-open");
               focusSubmitButton();
             }}
           >
