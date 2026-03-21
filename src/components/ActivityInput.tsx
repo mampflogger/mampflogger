@@ -576,7 +576,16 @@ const ActivityInput = ({
         }
       } else if (cmd === "field:close-dropdown") {
         setIsTypeOpen(false);
+        const sectionEl = document.getElementById("section-activity");
+        sectionEl?.removeAttribute("data-dropdown-open");
         selectTriggerRef.current?.focus();
+      } else if (cmd === "field:storno") {
+        // Full reset: close dropdown, clear value, reset type, focus value field
+        setIsTypeOpen(false);
+        const sectionEl = document.getElementById("section-activity");
+        sectionEl?.removeAttribute("data-dropdown-open");
+        playConfirmationTone();
+        resetActivityInput(true);
       }
     };
     window.addEventListener("mampflogger:field-command", handler);
