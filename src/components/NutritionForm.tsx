@@ -314,6 +314,22 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
           setGi("");
           amountInputRef.current?.focus();
         }
+      } else if (cmd === "field:storno") {
+        // Clear everything in nutrition form
+        setTime("");
+        setFood("");
+        setSelectedFood(null);
+        setSuggestions([]);
+        setShowSuggestions(false);
+        setAmount("");
+        setCalories("");
+        setProtein("");
+        setCarbs("");
+        setFat("");
+        setFiber("");
+        setGi("");
+        setFocusedField("time");
+        setTimeout(() => timeInputRef.current?.focus(), 0);
       }
     };
     window.addEventListener("mampflogger:field-command", handler);
