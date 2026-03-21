@@ -156,6 +156,7 @@ const ActivityInput = ({
     const combined = `${previous} ${next}`.trim();
     const combinedParsed = parseGermanSpokenNumber(combined);
 
+    // If combining produces a valid larger number, keep the combination
     if (
       combinedParsed !== null &&
       combinedParsed > 0 &&
@@ -166,6 +167,12 @@ const ActivityInput = ({
       )
     ) {
       return combined;
+    }
+
+    // If the next chunk alone is a bigger number than the previous, prefer it
+    // (recognizer may have self-corrected e.g. "acht" → "achthundert")
+    if (nextParsed !== null && previousParsed !== null && nextParsed > previousParsed) {
+      return next;
     }
 
     return next;
