@@ -605,7 +605,7 @@ const ActivityInput = ({
     };
     window.addEventListener("mampflogger:field-command", handler);
     return () => window.removeEventListener("mampflogger:field-command", handler);
-  }, [activityTypes]);
+  }, [activityTypes, playConfirmationTone, resetActivityInput]);
 
   const handleSubmit = () => {
     const type = activityTypes.find((t) => t.id === selectedTypeId);
