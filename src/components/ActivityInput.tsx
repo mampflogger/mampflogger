@@ -232,6 +232,8 @@ const ActivityInput = ({
     setValue("");
     setSelectedTypeId(activityTypes[0]?.id || "");
     setIsTypeOpen(false);
+    const sectionEl = document.getElementById("section-activity");
+    sectionEl?.removeAttribute("data-dropdown-open");
     pendingTypeIgnoreNumericUntilRef.current = 0;
     valueVoiceBufferRef.current = "";
     valueVoiceDeferredRef.current = false;
