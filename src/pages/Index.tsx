@@ -809,8 +809,9 @@ const Index = () => {
 
       const activeElement = document.activeElement as HTMLElement | null;
       const isActivityFocused = !!activeElement?.closest("#section-activity");
+      const activityDropdownOpen = !!document.querySelector("#section-activity[data-dropdown-open]");
       const isNutritionFocused = !!activeElement?.closest("#section-neuer-eintrag");
-      const shouldRouteToActivity = isActivityFocused || (!isNutritionFocused && Date.now() < activityVoiceCaptureUntilRef.current);
+      const shouldRouteToActivity = isActivityFocused || activityDropdownOpen || (!isNutritionFocused && Date.now() < activityVoiceCaptureUntilRef.current);
 
       if (shouldRouteToActivity) {
         activityVoiceCaptureUntilRef.current = Date.now() + 4000;
