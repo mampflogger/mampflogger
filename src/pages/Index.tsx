@@ -477,7 +477,7 @@ const Index = () => {
           setSettingsVoiceAction("backup-load");
         }
       }
-      else if (action === "field:next" || action === "field:prev" || action === "field:clear" || action === "field:open-dropdown" || action === "field:close-dropdown") {
+      else if (action === "field:next" || action === "field:prev" || action === "field:clear" || action === "field:open-dropdown" || action === "field:close-dropdown" || action === "field:storno") {
         // Weekly nutrient scopes: close currently active nutrient info panel
         if (!settingsOpenRef.current && action === "field:close-dropdown" && activeTabRef.current === "weekly") {
           const activeNutrientKind = getNutrientKindForSection(activeSectionRef.current);
