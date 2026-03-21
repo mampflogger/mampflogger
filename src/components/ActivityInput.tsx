@@ -46,6 +46,9 @@ const DEFERRED_SINGLE_NUMBER_WORDS = new Set([
   "neun",
 ]);
 
+const SCALE_WORD_RE = /\b(?:hundert|tausend)\b/;
+const LATE_SCALE_WORD_RE = /^(hundert|tausend)$/;
+
 interface ActivityInputProps {
   bookedActivities: BookedActivity[];
   selectedDate: string;
@@ -132,6 +135,42 @@ const ActivityInput = ({
       .trim()
   ), []);
 
+  const mergeSpokenValueBuffer = useCallback((previousBuffer: string, nextChunk: string) => {
+    const previous = previousBuffer.trim();
+    const next = nextChunk.trim();
+
+    if (!previous) return next;
+    if (!next) return previous;
+
+    const previousNormalized = normalizeForVoice(previous);
+    const nextNormalized = normalizeForVoice(next);
+
+    if (!previousNormalized) return next;
+    if (!nextNormalized) return previous;
+    if (previousNormalized === nextNormalized) return next.length >= previous.length ? next : previous;
+    if (nextNormalized.includes(previousNormalized)) return next;
+    if (previousNormalized.includes(nextNormalized)) return previous;
+
+    const previousParsed = parseGermanSpokenNumber(previousNormalized);
+    const nextParsed = parseGermanSpokenNumber(nextNormalized);
+    const combined = `${previous} ${next}`.trim();
+    const combinedParsed = parseGermanSpokenNumber(combined);
+
+    if (
+      combinedParsed !== null &&
+      combinedParsed > 0 &&
+      (
+        SCALE_WORD_RE.test(nextNormalized) ||
+        (previousParsed !== null && combinedParsed !== previousParsed) ||
+        (nextParsed !== null && combinedParsed !== nextParsed)
+      )
+    ) {
+      return combined;
+    }
+
+    return next;
+  }, [normalizeForVoice]);
+
   const isBookingCommand = useCallback((text: string) => /\b(?:okay|ja|buchen)\b/i.test(text), []);
   const isStornoCommand = useCallback((text: string) => /\b(?:storno|abbrechen|reset|leer|clear)\b/i.test(text), []);
   const isOptionsCommand = useCallback((text: string) => /\b(?:optionen|option|ausklappen|dropdown|liste)\b/i.test(text), []);
@@ -141,7 +180,7 @@ const ActivityInput = ({
     if (!Number.isInteger(parsed) || parsed < 1 || parsed > 9) return false;
 
     const normalized = normalizeForVoice(buffer);
-    if (!normalized || /\b(?:hundert|tausend)\b/.test(normalized)) return false;
+    if (!normalized || SCALE_WORD_RE.test(normalized)) return false;
 
     const tokens = normalized.split(/\s+/).filter(Boolean);
     if (tokens.length !== 1) return false;
@@ -330,9 +369,10 @@ const ActivityInput = ({
       const chunk = transcript.trim();
       if (!chunk) return;
 
-      // Replace buffer with latest transcript (speech API sends cumulative interim results)
+      // Keep cumulative transcripts, but also merge late scale words like
+      // "acht" -> "hundert" / "tausend" when the recognizer splits them.
       valueVoiceDeferredRef.current = false;
-      valueVoiceBufferRef.current = chunk;
+      valueVoiceBufferRef.current = mergeSpokenValueBuffer(valueVoiceBufferRef.current, chunk);
 
       if (valueVoiceTimerRef.current !== null) {
         window.clearTimeout(valueVoiceTimerRef.current);
@@ -356,9 +396,27 @@ const ActivityInput = ({
     if (isInterim) return;
     if (currentField !== "type") return;
 
+    const normalizedTranscript = normalizeForVoice(transcript);
     const hasSelectionKeyword = /\b(?:nummer|position|nimm|nehme|zeige|liste|auswahl|dropdown|option|optionen)\b/i.test(transcript);
     if (!hasSelectionKeyword && !isTypeOpen && Date.now() < pendingTypeIgnoreNumericUntilRef.current) {
-      const carryOverNumber = parseGermanSpokenNumber(transcript);
+      const lateScaleWord = normalizedTranscript.match(LATE_SCALE_WORD_RE)?.[1];
+      const currentValueNumber = Number.parseInt(value, 10);
+
+      if (
+        lateScaleWord &&
+        Number.isInteger(currentValueNumber) &&
+        currentValueNumber >= 1 &&
+        currentValueNumber <= 9
+      ) {
+        setValue(String(lateScaleWord === "tausend" ? currentValueNumber * 1000 : currentValueNumber * 100));
+        pendingTypeIgnoreNumericUntilRef.current = Date.now() + 1500;
+        valueVoiceBufferRef.current = "";
+        valueVoiceDeferredRef.current = false;
+        playConfirmationTone();
+        return;
+      }
+
+      const carryOverNumber = parseGermanSpokenNumber(normalizedTranscript);
       if (carryOverNumber !== null) {
         return;
       }
@@ -376,12 +434,12 @@ const ActivityInput = ({
       return;
     }
 
-    const normalizedTranscript = normalizeForVoice(transcript)
+    const searchTranscript = normalizedTranscript
       .replace(/\b(?:bitte|nimm|nehme|waehle|waehl|aktivitaet|activity|auswahl|nummer|position|option|optionen)\b/g, " ")
       .replace(/\s+/g, " ")
       .trim();
 
-    const searchTerm = normalizedTranscript || normalizeForVoice(transcript);
+    const searchTerm = searchTranscript || normalizedTranscript;
     if (searchTerm.length > 0) {
       let matches = activityTypes.filter((type) => {
         const normalizedName = normalizeForVoice(type.name);
@@ -419,7 +477,7 @@ const ActivityInput = ({
       selectTriggerRef.current?.focus();
       setFocusedField("type");
     }, 0);
-  }, [activityTypes, flushSpokenValueBuffer, focusSubmitButton, isBookingCommand, isEscapeCommand, isOptionsCommand, isStornoCommand, isTypeOpen, normalizeForVoice, playConfirmationTone, resetActivityInput, selectActivityTypeByIndex, selectedTypeId, value]);
+  }, [activityTypes, flushSpokenValueBuffer, focusSubmitButton, isBookingCommand, isEscapeCommand, isOptionsCommand, isStornoCommand, isTypeOpen, mergeSpokenValueBuffer, normalizeForVoice, playConfirmationTone, resetActivityInput, selectActivityTypeByIndex, selectedTypeId, value]);
 
   useEffect(() => {
     if (!voiceInputRef) return;
