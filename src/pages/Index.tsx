@@ -520,6 +520,9 @@ const Index = () => {
           ? (settingsTabRef.current === "recipes" ? "manual-recipe"
             : settingsTabRef.current === "profile" ? "profile" : null)
           : null;
+        // When the activity dropdown (Radix portal) is open, focus moves outside #section-activity.
+        // Detect this via the data-dropdown-open attribute set by ActivityInput.
+        const activityDropdownOpen = !!document.querySelector("#section-activity[data-dropdown-open]");
         const scope = settingsScope
           ?? (activeElement?.closest('[data-voice-scope="manual-recipe"]')
             ? "manual-recipe"
@@ -527,7 +530,7 @@ const Index = () => {
               ? "profile"
               : activeElement?.closest("#section-neuer-eintrag")
                 ? "nutrition"
-                : activeElement?.closest("#section-activity")
+                : (activeElement?.closest("#section-activity") || activityDropdownOpen)
                   ? "activity"
                   : null);
 
