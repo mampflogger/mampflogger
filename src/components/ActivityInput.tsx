@@ -690,11 +690,19 @@ const ActivityInput = ({
             onOpenChange={(open) => {
               setIsTypeOpen(open);
               if (open) setFocusedField("type");
+              // Mark activity dropdown state globally so voice scope detection works
+              const sectionEl = document.getElementById("section-activity");
+              if (sectionEl) {
+                if (open) sectionEl.setAttribute("data-dropdown-open", "true");
+                else sectionEl.removeAttribute("data-dropdown-open");
+              }
             }}
             value={selectedTypeId}
             onValueChange={(val) => {
               setSelectedTypeId(val);
               setIsTypeOpen(false);
+              const sectionEl = document.getElementById("section-activity");
+              sectionEl?.removeAttribute("data-dropdown-open");
               focusSubmitButton();
             }}
           >
