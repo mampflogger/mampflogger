@@ -805,6 +805,39 @@ const Index = () => {
             }
           }
         }
+
+        // --- Wochenansicht voice scope ---
+        const isWochenVoiceScopeActive =
+          !!document.getElementById("section-wochenansicht") &&
+          !!activeElement?.closest?.("#section-wochenansicht");
+
+        if (isWochenVoiceScopeActive) {
+          if (/\b(?:detail(?:ansicht)?|einzel(?:ansicht)?|liste)\b/i.test(normalizedTableTranscript)) {
+            window.dispatchEvent(new CustomEvent("mampflogger:weekly-table-view", { detail: { mode: "detail" } }));
+            return;
+          }
+          if (/\b(?:summen?(?:ansicht)?|kompakt|komprimiert)\b/i.test(normalizedTableTranscript)) {
+            window.dispatchEvent(new CustomEvent("mampflogger:weekly-table-view", { detail: { mode: "summen" } }));
+            return;
+          }
+          const weeklySortMap: [RegExp, string][] = [
+            [/\b(?:datum|date)\b/i, "date"],
+            [/\b(?:lebensmittel|food|alphabetisch)\b/i, "food"],
+            [/\b(?:anz(?:ahl)?|count|haeufigkeit|häufigkeit)\b/i, "count"],
+            [/\b(?:gramm|g(?:\s*\/\s*|\s+pro\s+)ml|menge)\b/i, "amount"],
+            [/\b(?:kcal|kalorien|kilokalorien|calories)\b/i, "calories"],
+            [/\b(?:pro|protein(?:e|en)?|eiweiss)\b/i, "protein"],
+            [/\b(?:fat|fett(?:e)?)\b/i, "fat"],
+            [/\b(?:kh|kohlenhydrate?|carbs?|carbohydrates?)\b/i, "carbs"],
+            [/\b(?:fib|fiber|fibre|pfeffer|ballaststoffe?|ballast|faser(?:n)?)\b/i, "fiber"],
+          ];
+          for (const [re, key] of weeklySortMap) {
+            if (re.test(normalizedTableTranscript)) {
+              window.dispatchEvent(new CustomEvent("mampflogger:weekly-table-sort", { detail: { key } }));
+              return;
+            }
+          }
+        }
       }
 
       const activeElement = document.activeElement as HTMLElement | null;
