@@ -20,6 +20,7 @@ import {
 import { TrendingDown, TrendingUp, Target, RefreshCw } from "lucide-react";
 import NutritionCoach from "./NutritionCoach";
 import MicronutrientCoverageCard from "./MicronutrientCoverageCard";
+import WeeklyNutritionTable from "./WeeklyNutritionTable";
 
 interface WeeklyOverviewProps {
   entries: NutritionEntry[];
@@ -577,6 +578,13 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
           })}
         </div>
       </div>
+
+      {/* Weekly Nutrition Table */}
+      <WeeklyNutritionTable
+        entries={entries}
+        selectedDate={selectedDate}
+        highlighted={hl === "section-wochenansicht"}
+      />
 
       <MicronutrientCoverageCard
         entries={entries}
