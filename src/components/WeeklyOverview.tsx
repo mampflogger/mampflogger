@@ -579,6 +579,13 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
         </div>
       </div>
 
+      {/* Weekly Nutrition Table */}
+      <WeeklyNutritionTable
+        entries={entries}
+        selectedDate={selectedDate}
+        highlighted={hl === "section-wochenansicht"}
+      />
+
       <MicronutrientCoverageCard
         entries={entries}
         selectedDate={selectedDate}
