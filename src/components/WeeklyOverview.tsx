@@ -20,6 +20,7 @@ import {
 import { TrendingDown, TrendingUp, Target, RefreshCw } from "lucide-react";
 import NutritionCoach from "./NutritionCoach";
 import MicronutrientCoverageCard from "./MicronutrientCoverageCard";
+import WeeklyNutritionTable from "./WeeklyNutritionTable";
 
 interface WeeklyOverviewProps {
   entries: NutritionEntry[];
