@@ -28,15 +28,21 @@ export function useSectionNavigation() {
 
   const scrollDirection = useCallback((direction: "up" | "down") => {
     const sections = Array.from(document.querySelectorAll("[data-section]"))
-      .sort((a, b) => a.getBoundingClientRect().top - b.getBoundingClientRect().top);
+      .sort((a, b) => {
+        const aTop = a.getBoundingClientRect().top + window.scrollY;
+        const bTop = b.getBoundingClientRect().top + window.scrollY;
+        return aTop - bTop;
+      });
 
     if (sections.length === 0) return;
 
-    // Find first section whose top is near or below the header offset
+    // Find the section currently aligned at the header offset
+    // A section is "current" if its top is within a small tolerance of the header
+    const TOLERANCE = 40;
     let currentIdx = -1;
     for (let i = 0; i < sections.length; i++) {
       const top = sections[i].getBoundingClientRect().top;
-      if (top >= HEADER_OFFSET - 10) {
+      if (top >= HEADER_OFFSET - TOLERANCE) {
         currentIdx = i;
         break;
       }
@@ -45,15 +51,19 @@ export function useSectionNavigation() {
 
     let targetIdx: number;
     if (direction === "down") {
-      // If current section is very close to header, go to next
+      // Always jump to the next section
       const currentTop = sections[currentIdx]?.getBoundingClientRect().top ?? 0;
-      if (Math.abs(currentTop - HEADER_OFFSET) < 30 && currentIdx < sections.length - 1) {
-        targetIdx = currentIdx + 1;
-      } else {
-        targetIdx = Math.min(currentIdx, sections.length - 1);
-      }
+      const isAligned = Math.abs(currentTop - HEADER_OFFSET) < TOLERANCE;
+      targetIdx = isAligned
+        ? Math.min(currentIdx + 1, sections.length - 1)
+        : currentIdx; // not yet aligned → scroll to this one first
     } else {
-      targetIdx = Math.max(0, currentIdx - 1);
+      // Going up: find first section whose top is ABOVE the header
+      const currentTop = sections[currentIdx]?.getBoundingClientRect().top ?? 0;
+      const isAligned = Math.abs(currentTop - HEADER_OFFSET) < TOLERANCE;
+      targetIdx = isAligned
+        ? Math.max(0, currentIdx - 1)
+        : Math.max(0, currentIdx - 1);
     }
 
     const target = sections[targetIdx];
