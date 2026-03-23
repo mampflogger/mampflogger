@@ -793,7 +793,7 @@ const Index = () => {
             [/\b(?:kcal|kalorien|kilokalorien|calories)\b/i, "calories"],
             [/\b(?:pro|protein(?:e|en)?|eiweiss)\b/i, "protein"],
             [/\b(?:fat|fett(?:e)?)\b/i, "fat"],
-            [/\b(?:kh|kohlenhydrate?|carbs?|carbohydrates?)\b/i, "carbs"],
+            [/\b(?:kh|kohlenhydrate?|carbs?|carbohydrates?|zucker|sugar)\b/i, "carbs"],
             [/\b(?:fib|fiber|fibre|pfeffer|ballaststoffe?|ballast|faser(?:n)?)\b/i, "fiber"],
           ];
           for (const [re, key] of sortMap) {
