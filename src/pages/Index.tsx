@@ -789,12 +789,12 @@ const Index = () => {
             [/\b(?:zeit|uhrzeit|time|tim|taim)\b/i, "time"],
             [/\b(?:lebensmittel|food|alphabetisch)\b/i, "food"],
             [/\b(?:anz(?:ahl)?|count|haeufigkeit|häufigkeit)\b/i, "count"],
-            [/\b(?:gramm|g(?:\s*\/\s*|\s+pro\s+)ml|menge)\b/i, "amount"],
+            [/\b(?:gramm|milliliter|g(?:\s*\/\s*|\s+pro\s+)ml|menge)\b/i, "amount"],
             [/\b(?:kcal|kalorien|kilokalorien|calories)\b/i, "calories"],
-            [/\b(?:pro|protein(?:e|en)?|eiweiss)\b/i, "protein"],
-            [/\b(?:fat|fett(?:e)?)\b/i, "fat"],
-            [/\b(?:kh|kohlenhydrate?|carbs?|carbohydrates?|zucker|sugar)\b/i, "carbs"],
-            [/\b(?:fib|fiber|fibre|pfeffer|ballaststoffe?|ballast|faser(?:n)?)\b/i, "fiber"],
+            [/\b(?:pro|protein[ea]?|eiweiss)\b/i, "protein"],
+            [/\b(?:fat|fett[ea]?)\b/i, "fat"],
+            [/\b(?:kh|kohlenhydrat[ea]?|carbs?|carbohydrates?|zucker|sugar)\b/i, "carbs"],
+            [/\b(?:fib|fiber|fibre|pfeffer|ballaststoff[ea]?|ballast)\b/i, "fiber"],
           ];
           for (const [re, key] of sortMap) {
             if (key === "time" && tableViewMode === "summen") continue;
@@ -824,12 +824,12 @@ const Index = () => {
             [/\b(?:datum|date)\b/i, "date"],
             [/\b(?:lebensmittel|food|alphabetisch)\b/i, "food"],
             [/\b(?:anz(?:ahl)?|count|haeufigkeit|häufigkeit)\b/i, "count"],
-            [/\b(?:gramm|g(?:\s*\/\s*|\s+pro\s+)ml|menge)\b/i, "amount"],
+            [/\b(?:gramm|milliliter|g(?:\s*\/\s*|\s+pro\s+)ml|menge)\b/i, "amount"],
             [/\b(?:kcal|kalorien|kilokalorien|calories)\b/i, "calories"],
-            [/\b(?:pro|protein(?:e|en)?|eiweiss)\b/i, "protein"],
-            [/\b(?:fat|fett(?:e)?)\b/i, "fat"],
-            [/\b(?:kh|kohlenhydrate?|carbs?|carbohydrates?|zucker|sugar)\b/i, "carbs"],
-            [/\b(?:fib|fiber|fibre|pfeffer|ballaststoffe?|ballast|faser(?:n)?)\b/i, "fiber"],
+            [/\b(?:pro|protein[ea]?|eiweiss)\b/i, "protein"],
+            [/\b(?:fat|fett[ea]?)\b/i, "fat"],
+            [/\b(?:kh|kohlenhydrat[ea]?|carbs?|carbohydrates?|zucker|sugar)\b/i, "carbs"],
+            [/\b(?:fib|fiber|fibre|pfeffer|ballaststoff[ea]?|ballast)\b/i, "fiber"],
           ];
           for (const [re, key] of weeklySortMap) {
             if (re.test(normalizedTableTranscript)) {
