@@ -30,7 +30,7 @@ const COMMANDS: VoiceCommand[] = [
   { patterns: [/\bneue[rn]?\s+eintrag\s+(?:foto|photo|kamera|bild|camera)\b/i, /\beingabe\s+(?:foto|photo|kamera|bild|camera)\b/i], action: "action:entry+camera" },
   { patterns: [/\bneue[rn]?\s+eintrag\b/i, /\bneue\s+eingabe\b/i], action: "section:neuer-eintrag" },
   { patterns: [/\bnährstoff/i], action: "section:makro-naehrstoffe" },
-  { patterns: [/\btagesübersicht\b/i, /\btagesprotokoll\b/i, /\bprotokoll\b/i], action: "section:tagesuebersicht" },
+  { patterns: [/\btagesprotokoll\b/i, /\bprotokoll\b/i], action: "section:tagesuebersicht" },
   { patterns: [/\bkalorienaufnahme\b/i], action: "section:kalorienaufnahme" },
   { patterns: [/\bfasten/i], action: "section:fastenanalyse" },
   { patterns: [/\bactivit/i, /\baktivität/i, /\baktivitaet\b/i, /\baktivitäten\b/i, /\bworkout\b/i, /\bworkouts\b/i], action: "section:activity" },
@@ -42,7 +42,7 @@ const COMMANDS: VoiceCommand[] = [
   { patterns: [/\bdefizit/i], action: "section:defizit-pro-tag" },
   { patterns: [/\bmakros?\s+pro\s+tag\b/i], action: "section:makros-pro-tag" },
   { patterns: [/\bmakro.?verteilung\b/i, /\bverteilung\b/i], action: "section:makro-verteilung" },
-  { patterns: [/\bwochenansicht\b/i], action: "section:wochenansicht" },
+  { patterns: [/\bwochenprotokoll\b/i], action: "section:wochenansicht" },
 
   // Individual vitamins (BEFORE the general "Vitamine" pattern!)
   { patterns: [/\bvitamin\s*a\b/i, /\bretinol\b/i], action: "nutrient:vitA:vitamins" },
@@ -168,9 +168,9 @@ const FUZZY_KEYWORD_MAP: [string, string][] = [
   ["neue eingabe", "section:neuer-eintrag"],
   ["naehrstoffe", "section:makro-naehrstoffe"],
   ["naehrstoff", "section:makro-naehrstoffe"],
-  ["tagesuebersicht", "section:tagesuebersicht"],
   ["tagesprotokoll", "section:tagesuebersicht"],
   ["protokoll", "section:tagesuebersicht"],
+  ["wochenprotokoll", "section:wochenansicht"],
   ["kalorienaufnahme", "section:kalorienaufnahme"],
   ["fastenanalyse", "section:fastenanalyse"],
   ["fasten", "section:fastenanalyse"],
@@ -412,7 +412,7 @@ export function useVoiceCommands({ onCommand, onUnhandledSpeech }: UseVoiceComma
           .trim();
         const tagesActive = !!activeElement?.closest("#section-tagesuebersicht");
         const TABLE_VOICE_RE =
-          /\b(?:detail(?:ansicht)?|summen?(?:ansicht)?|kompakt|komprimiert|zeit|uhrzeit|time|tim|taim|lebensmittel|food|alphabetisch|anz(?:ahl)?|count|haeufigkeit|häufigkeit|gramm|g(?:\s*\/\s*|\s+pro\s+)ml|menge|kcal|kalorien|kilokalorien|calories|pro|protein(?:e|en)?|eiweiss|fat|fett(?:e)?|kh|kohlenhydrate?|carbs?|carbohydrates?|fib|fiber|fibre|pfeffer|ballaststoffe?|ballast|faser(?:n)?)\b/i;
+          /\b(?:detail(?:ansicht)?|summen?(?:ansicht)?|kompakt|komprimiert|zeit|uhrzeit|time|tim|taim|lebensmittel|food|alphabetisch|anz(?:ahl)?|count|haeufigkeit|häufigkeit|gramm|g(?:\s*\/\s*|\s+pro\s+)ml|menge|kcal|kalorien|kilokalorien|calories|pro|protein(?:e|en)?|eiweiss|fat|fett(?:e)?|kh|kohlenhydrate?|carbs?|carbohydrates?|zucker|sugar|fib|fiber|fibre|pfeffer|ballaststoffe?|ballast|faser(?:n)?)\b/i;
         if (tagesActive && TABLE_VOICE_RE.test(normalizedTableTranscript)) {
           onUnhandledRef.current(transcript, isInterim);
           return;

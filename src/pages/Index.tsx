@@ -793,7 +793,7 @@ const Index = () => {
             [/\b(?:kcal|kalorien|kilokalorien|calories)\b/i, "calories"],
             [/\b(?:pro|protein(?:e|en)?|eiweiss)\b/i, "protein"],
             [/\b(?:fat|fett(?:e)?)\b/i, "fat"],
-            [/\b(?:kh|kohlenhydrate?|carbs?|carbohydrates?)\b/i, "carbs"],
+            [/\b(?:kh|kohlenhydrate?|carbs?|carbohydrates?|zucker|sugar)\b/i, "carbs"],
             [/\b(?:fib|fiber|fibre|pfeffer|ballaststoffe?|ballast|faser(?:n)?)\b/i, "fiber"],
           ];
           for (const [re, key] of sortMap) {
@@ -828,7 +828,7 @@ const Index = () => {
             [/\b(?:kcal|kalorien|kilokalorien|calories)\b/i, "calories"],
             [/\b(?:pro|protein(?:e|en)?|eiweiss)\b/i, "protein"],
             [/\b(?:fat|fett(?:e)?)\b/i, "fat"],
-            [/\b(?:kh|kohlenhydrate?|carbs?|carbohydrates?)\b/i, "carbs"],
+            [/\b(?:kh|kohlenhydrate?|carbs?|carbohydrates?|zucker|sugar)\b/i, "carbs"],
             [/\b(?:fib|fiber|fibre|pfeffer|ballaststoffe?|ballast|faser(?:n)?)\b/i, "fiber"],
           ];
           for (const [re, key] of weeklySortMap) {
@@ -1368,7 +1368,7 @@ const Index = () => {
 
             <div id="section-tagesuebersicht" data-section tabIndex={-1} data-voice-active-section={sectionNav.activeSection === "section-tagesuebersicht" ? "true" : undefined} className={`glass-card rounded-xl p-3 mb-3 ${hl === "section-tagesuebersicht" ? "section-card-highlight" : ""}`}>
               <SectionHeading highlighted={hl === "section-tagesuebersicht"} className="mb-2">
-                Tagesübersicht
+                Tagesprotokoll
                 {todayEntries.length > 0 && (
                   <span className="ml-2 inline-flex items-center justify-center w-4 h-4 rounded-full bg-primary text-primary-foreground text-[10px] font-bold">
                     {todayEntries.length}
