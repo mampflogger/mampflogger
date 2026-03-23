@@ -42,7 +42,7 @@ const COMMANDS: VoiceCommand[] = [
   { patterns: [/\bdefizit/i], action: "section:defizit-pro-tag" },
   { patterns: [/\bmakros?\s+pro\s+tag\b/i], action: "section:makros-pro-tag" },
   { patterns: [/\bmakro.?verteilung\b/i, /\bverteilung\b/i], action: "section:makro-verteilung" },
-  { patterns: [/\bwochenansicht\b/i], action: "section:wochenansicht" },
+  { patterns: [/\bwochenprotokoll\b/i], action: "section:wochenansicht" },
 
   // Individual vitamins (BEFORE the general "Vitamine" pattern!)
   { patterns: [/\bvitamin\s*a\b/i, /\bretinol\b/i], action: "nutrient:vitA:vitamins" },
