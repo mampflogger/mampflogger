@@ -411,9 +411,10 @@ export function useVoiceCommands({ onCommand, onUnhandledSpeech }: UseVoiceComma
           .replace(/\s+/g, " ")
           .trim();
         const tagesActive = !!activeElement?.closest("#section-tagesuebersicht");
+        const wochenActive = !!activeElement?.closest("#section-wochenansicht");
         const TABLE_VOICE_RE =
-          /\b(?:detail(?:ansicht)?|summen?(?:ansicht)?|kompakt|komprimiert|zeit|uhrzeit|time|tim|taim|lebensmittel|food|alphabetisch|anz(?:ahl)?|count|haeufigkeit|häufigkeit|gramm|g(?:\s*\/\s*|\s+pro\s+)ml|menge|kcal|kalorien|kilokalorien|calories|pro|protein(?:e|en)?|eiweiss|fat|fett(?:e)?|kh|kohlenhydrate?|carbs?|carbohydrates?|zucker|sugar|fib|fiber|fibre|pfeffer|ballaststoffe?|ballast|faser(?:n)?)\b/i;
-        if (tagesActive && TABLE_VOICE_RE.test(normalizedTableTranscript)) {
+          /\b(?:detail(?:ansicht)?|summen?(?:ansicht)?|kompakt|komprimiert|zeit|uhrzeit|time|tim|taim|lebensmittel|food|alphabetisch|anz(?:ahl)?|count|haeufigkeit|häufigkeit|gramm|milliliter|g(?:\s*\/\s*|\s+pro\s+)ml|menge|kcal|kalorien|kilokalorien|calories|pro|protein(?:e|en)?|eiweiss|fat|fett(?:e)?|kh|kohlenhydrate?|carbs?|carbohydrates?|zucker|sugar|fib|fiber|fibre|pfeffer|ballaststoffe?|ballast|faser(?:n)?|datum|date)\b/i;
+        if ((tagesActive || wochenActive) && TABLE_VOICE_RE.test(normalizedTableTranscript)) {
           onUnhandledRef.current(transcript, isInterim);
           return;
         }
