@@ -287,7 +287,7 @@ const WeeklyNutritionTable = ({ entries, selectedDate, highlighted = false }: We
 
   return (
     <div id="section-wochenansicht" data-section className={`glass-card rounded-xl p-3 ${highlighted ? "section-card-highlight" : ""}`}>
-      <SectionHeading highlighted={highlighted} className="mb-2">Wochenansicht</SectionHeading>
+      <SectionHeading highlighted={highlighted} className="mb-2">Wochenprotokoll</SectionHeading>
 
       {/* View toggle */}
       <div className="flex gap-1 mb-2">

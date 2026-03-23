@@ -1368,7 +1368,7 @@ const Index = () => {
 
             <div id="section-tagesuebersicht" data-section tabIndex={-1} data-voice-active-section={sectionNav.activeSection === "section-tagesuebersicht" ? "true" : undefined} className={`glass-card rounded-xl p-3 mb-3 ${hl === "section-tagesuebersicht" ? "section-card-highlight" : ""}`}>
               <SectionHeading highlighted={hl === "section-tagesuebersicht"} className="mb-2">
-                Tagesübersicht
+                Tagesprotokoll
                 {todayEntries.length > 0 && (
                   <span className="ml-2 inline-flex items-center justify-center w-4 h-4 rounded-full bg-primary text-primary-foreground text-[10px] font-bold">
                     {todayEntries.length}

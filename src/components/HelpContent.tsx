@@ -20,7 +20,7 @@ const HELP_TABS: { id: HelpTab; label: string }[] = [
 const HELP_TOPICS: Record<HelpTab, HelpTopic[]> = {
   eingabe: [
     { label: "Neuer Eintrag", description: "Hier gibst du ein neues Lebensmittel ein. Wähle die Uhrzeit, tippe den Namen des Lebensmittels und gib die Menge in Gramm oder Milliliter an. Du kannst auch das Kamera-Symbol nutzen, um ein Foto deiner Mahlzeit zu machen – die App erkennt automatisch, was auf dem Teller liegt." },
-    { label: "Tagesübersicht", description: "Listet alle Lebensmittel auf, die du heute eingetragen hast – inklusive Kalorien und Makronährstoffe. Du kannst Einträge bearbeiten oder löschen und siehst die Gesamtsumme unten." },
+    { label: "Tagesprotokoll", description: "Listet alle Lebensmittel auf, die du heute eingetragen hast – inklusive Kalorien und Makronährstoffe. Du kannst Einträge bearbeiten oder löschen und siehst die Gesamtsumme unten." },
     { label: "Kalorienaufnahme 24 Stunden", description: "Ein Diagramm, das deine Kalorienaufnahme über die letzten 24 Stunden als Zeitverlauf darstellt. Hilft dir zu erkennen, wann du gegessen hast und wie sich die Kalorien über den Tag verteilen." },
     { label: "Fastenanalyse", description: "Analysiert deine Essenszeiten und zeigt dir, wie lange deine Fastenperioden sind. Besonders nützlich, wenn du Intervallfasten (z. B. 16:8) praktizierst." },
     { label: "Activity", description: "Trage hier deine sportlichen Aktivitäten ein, um deinen Kalorienverbrauch zu erfassen. Der Activity-Bonus wird in deiner Kalorienbilanz berücksichtigt." },
