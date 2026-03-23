@@ -274,6 +274,13 @@ const Index = () => {
         return;
       }
 
+      // Focus clear: deactivate current section without scrolling
+      if (action === "focus:clear") {
+        sectionNav.setActiveSection(null);
+        (document.activeElement as HTMLElement)?.blur?.();
+        return;
+      }
+
       // Scroll commands
       if (action === "scroll:bottom") {
         // Scroll to the last section, not beyond the viewport
