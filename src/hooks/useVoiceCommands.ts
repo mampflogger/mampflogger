@@ -91,6 +91,9 @@ const COMMANDS: VoiceCommand[] = [
   { patterns: [/\bladen\b/i, /\bdownload\b/i], action: "backup-load" },
   { patterns: [/\bcancel\b/i], action: "section:loeschen" },
 
+  // Focus clear
+  { patterns: [/\bfokus\s*(?:aus|weg|raus|entfernen)\b/i, /\bfocus\s*(?:off|clear|remove)\b/i, /\bkasten\s*(?:aus|verlassen|schließen)\b/i], action: "focus:clear" },
+
   // Scroll up/down
   { patterns: [/\bganz\s*nach\s*unten\b/i, /\bganz\s*unten\b/i], action: "scroll:bottom" },
   { patterns: [/\bganz\s*nach\s*oben\b/i, /\bganz\s*oben\b/i], action: "scroll:top" },
