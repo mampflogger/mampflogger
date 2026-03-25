@@ -34,6 +34,7 @@ import { ChevronLeft, ChevronRight, BarChart3, List, Mic, HelpCircle, Ear } from
 import { Button } from "@/components/ui/button";
 import { useVoiceCommands, SECTION_PAGE_MAP, SECTION_SETTINGS_TAB } from "@/hooks/useVoiceCommands";
 import { useSectionNavigation } from "@/hooks/useSectionNavigation";
+import { useAudioGuide } from "@/hooks/useAudioGuide";
 import { parseSpokenSelectionIndex } from "@/lib/voiceSelection";
 
 // Voice-to-nutrient matching for info panel toggle
