@@ -1299,6 +1299,9 @@ const Index = () => {
                 isMicSupported={voiceCommands.isSupported}
                 isMicListening={voiceCommands.isArmed}
                 onMicToggle={voiceCommands.toggle}
+                isAudioGuideEnabled={audioGuide.enabled}
+                onAudioGuideToggle={audioGuide.toggle}
+                onAudioGuideStop={audioGuide.stop}
                 voiceAction={settingsVoiceAction}
                 onVoiceActionHandled={() => setSettingsVoiceAction(null)}
                 highlightedTab={highlightedTab === "settings"}
