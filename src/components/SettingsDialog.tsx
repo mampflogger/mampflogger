@@ -25,7 +25,7 @@ import {
   Settings, Sun, Moon, Trash2, Upload, Download, UserCircle, Save, Check,
   AlertCircle, FileSpreadsheet, UtensilsCrossed, Palette, BarChart3, FileUp,
   ChevronLeft, ChevronRight, RefreshCw, List, Sparkles, Loader2, HardDrive, BookOpen, Search,
-  X, Mic, HelpCircle,
+  X, Mic, HelpCircle, Ear,
 } from "lucide-react";
 import CookIcon from "@/components/CookIcon";
 import { supabase } from "@/integrations/supabase/client";
@@ -97,6 +97,9 @@ interface SettingsDialogProps {
   isMicSupported?: boolean;
   isMicListening?: boolean;
   onMicToggle?: () => void;
+  isAudioGuideEnabled?: boolean;
+  onAudioGuideToggle?: () => void;
+  onAudioGuideStop?: () => void;
   voiceAction?: string | null;
   onVoiceActionHandled?: () => void;
   highlightedTab?: boolean;
@@ -134,6 +137,7 @@ const SettingsDialog = ({
   voiceCloseRequest, onVoiceCloseHandled,
   onOpenChange: onOpenChangeProp, onTabChange,
   isMicSupported, isMicListening, onMicToggle,
+  isAudioGuideEnabled, onAudioGuideToggle, onAudioGuideStop,
   voiceAction, onVoiceActionHandled,
   highlightedTab,
   profileVoiceInputRef,
@@ -1332,6 +1336,18 @@ const SettingsDialog = ({
                 <h1 className="text-lg font-bold tracking-tight">MampfLogger</h1>
               </a>
               <div className="flex items-center gap-1">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => {
+                    onAudioGuideToggle?.();
+                    if (isAudioGuideEnabled) onAudioGuideStop?.();
+                  }}
+                  className={`h-8 w-8 ${isAudioGuideEnabled ? "ring-2 ring-primary animate-pulse" : ""}`}
+                  title={isAudioGuideEnabled ? "Audio-Hilfe aus" : "Audio-Hilfe ein"}
+                >
+                  <Ear className="w-4 h-4" />
+                </Button>
                 {isMicSupported && (
                   <Button
                     variant="ghost"
