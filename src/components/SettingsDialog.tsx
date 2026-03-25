@@ -97,6 +97,9 @@ interface SettingsDialogProps {
   isMicSupported?: boolean;
   isMicListening?: boolean;
   onMicToggle?: () => void;
+  isAudioGuideEnabled?: boolean;
+  onAudioGuideToggle?: () => void;
+  onAudioGuideStop?: () => void;
   voiceAction?: string | null;
   onVoiceActionHandled?: () => void;
   highlightedTab?: boolean;
