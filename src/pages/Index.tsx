@@ -915,7 +915,9 @@ const Index = () => {
         }
       });
     }
-  }, [sectionNav.activeSection, activeTab]);
+    // Trigger audio guide for the newly active section
+    audioGuide.speak(sectionNav.activeSection);
+  }, [sectionNav.activeSection, activeTab, audioGuide.speak]);
 
   const [darkMode, setDarkMode] = useState(() => {
     const saved = localStorage.getItem("mampflogger-dark-mode");
