@@ -30,10 +30,11 @@ import SectionHeading from "@/components/SectionHeading";
 import HelpContent from "@/components/HelpContent";
 
 import SettingsDialog, { ColorTheme } from "@/components/SettingsDialog";
-import { ChevronLeft, ChevronRight, BarChart3, List, Mic, HelpCircle } from "lucide-react";
+import { ChevronLeft, ChevronRight, BarChart3, List, Mic, HelpCircle, Ear } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useVoiceCommands, SECTION_PAGE_MAP, SECTION_SETTINGS_TAB } from "@/hooks/useVoiceCommands";
 import { useSectionNavigation } from "@/hooks/useSectionNavigation";
+import { useAudioGuide } from "@/hooks/useAudioGuide";
 import { parseSpokenSelectionIndex } from "@/lib/voiceSelection";
 
 // Voice-to-nutrient matching for info panel toggle
@@ -171,6 +172,7 @@ const Index = () => {
   const profileVoiceRef = useRef<((transcript: string, isInterim: boolean) => void) | undefined>();
   const activityVoiceCaptureUntilRef = useRef(0);
   const sectionNav = useSectionNavigation();
+  const audioGuide = useAudioGuide(profile);
   const activeSectionRef = useRef<string | null>(null);
   activeSectionRef.current = sectionNav.activeSection;
 
@@ -913,7 +915,9 @@ const Index = () => {
         }
       });
     }
-  }, [sectionNav.activeSection, activeTab]);
+    // Trigger audio guide for the newly active section
+    audioGuide.speak(sectionNav.activeSection);
+  }, [sectionNav.activeSection, activeTab, audioGuide.speak]);
 
   const [darkMode, setDarkMode] = useState(() => {
     const saved = localStorage.getItem("mampflogger-dark-mode");
@@ -952,6 +956,8 @@ const Index = () => {
 
     if (hasProfile) {
       focusFoodField(350);
+      // Activate "Neuer Eintrag" section on startup so audio guide can trigger
+      setTimeout(() => sectionNav.setActiveSection("section-neuer-eintrag"), 400);
     }
 
     const remoteUrl = loadRemoteUrl();
@@ -1199,6 +1205,18 @@ const Index = () => {
               <h1 className="text-lg font-bold tracking-tight">MampfLogger</h1>
             </a>
             <div className="flex items-center gap-1">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => {
+                  audioGuide.toggle();
+                  if (audioGuide.enabled) audioGuide.stop();
+                }}
+                className={`h-8 w-8 ${audioGuide.enabled ? "ring-2 ring-primary animate-pulse" : ""}`}
+                title={audioGuide.enabled ? "Audio-Hilfe aus" : "Audio-Hilfe ein"}
+              >
+                <Ear className="w-4 h-4" />
+              </Button>
               {voiceCommands.isSupported && (
                 <Button
                   variant="ghost"
