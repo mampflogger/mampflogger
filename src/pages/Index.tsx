@@ -172,6 +172,7 @@ const Index = () => {
   const profileVoiceRef = useRef<((transcript: string, isInterim: boolean) => void) | undefined>();
   const activityVoiceCaptureUntilRef = useRef(0);
   const sectionNav = useSectionNavigation();
+  const audioGuide = useAudioGuide(profile);
   const activeSectionRef = useRef<string | null>(null);
   activeSectionRef.current = sectionNav.activeSection;
 
