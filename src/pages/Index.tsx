@@ -956,6 +956,8 @@ const Index = () => {
 
     if (hasProfile) {
       focusFoodField(350);
+      // Activate "Neuer Eintrag" section on startup so audio guide can trigger
+      setTimeout(() => sectionNav.setActiveSection("section-neuer-eintrag"), 400);
     }
 
     const remoteUrl = loadRemoteUrl();
