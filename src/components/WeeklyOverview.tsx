@@ -540,6 +540,7 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
               </BarChart>
             </ResponsiveContainer>
           </div>
+          {renderEditor("section-defizit-pro-tag")}
         </div>
       )}
 
