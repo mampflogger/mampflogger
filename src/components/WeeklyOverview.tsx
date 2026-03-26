@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { NutritionEntry, calculateDailySummary, formatDate } from "@/types/nutrition";
 import SectionHeading from "@/components/SectionHeading";
+import AudioGuideEditor from "@/components/AudioGuideEditor";
 import {
   UserProfile,
   BookedActivity,
