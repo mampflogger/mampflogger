@@ -1401,6 +1401,7 @@ const Index = () => {
                 isVoiceActive={voiceCommands.isListening}
                />
               <p className="text-muted-foreground/60 text-xs text-center mt-2">Gib ein neues Lebensmittel mit Name und Menge ein</p>
+              {audioGuide.editorOpen && <AudioGuideEditor sectionId="section-neuer-eintrag" value={audioGuide.getHelpText("section-neuer-eintrag")} onChange={audioGuide.updateHelpText} />}
             </div>
 
             <div id="section-tagesuebersicht" data-section tabIndex={-1} data-voice-active-section={sectionNav.activeSection === "section-tagesuebersicht" ? "true" : undefined} className={`glass-card rounded-xl p-3 mb-3 ${hl === "section-tagesuebersicht" ? "section-card-highlight" : ""}`}>
