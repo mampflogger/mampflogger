@@ -35,6 +35,7 @@ import { Button } from "@/components/ui/button";
 import { useVoiceCommands, SECTION_PAGE_MAP, SECTION_SETTINGS_TAB } from "@/hooks/useVoiceCommands";
 import { useSectionNavigation } from "@/hooks/useSectionNavigation";
 import { useAudioGuide } from "@/hooks/useAudioGuide";
+import AudioGuideEditor from "@/components/AudioGuideEditor";
 import { parseSpokenSelectionIndex } from "@/lib/voiceSelection";
 
 // Voice-to-nutrient matching for info panel toggle
