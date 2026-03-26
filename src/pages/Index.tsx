@@ -1422,6 +1422,7 @@ const Index = () => {
                 Kalorienaufnahme 24 Stunden
               </SectionHeading>
               <DailyCalorieChart entries={todayEntries} />
+              {audioGuide.editorOpen && <AudioGuideEditor sectionId="section-kalorienaufnahme" value={audioGuide.getHelpText("section-kalorienaufnahme")} onChange={audioGuide.updateHelpText} />}
             </div>
 
             <div id="section-fastenanalyse" data-section className={`glass-card rounded-xl p-3 mb-3 ${hl === "section-fastenanalyse" ? "section-card-highlight" : ""}`}>
