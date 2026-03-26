@@ -155,6 +155,10 @@ const DailyMacroCard = ({ weekData, highlighted, profile }: { weekData: DayData[
 const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [], highlightedSection, analyzeCoachRequestId, editorOpen, getHelpText, updateHelpText }: WeeklyOverviewProps) => {
   const bmr = profile ? calculateBMR(profile) : null;
   const [showGoalDate, setShowGoalDate] = useState(false);
+  const renderEditor = (sectionId: string) =>
+    editorOpen && getHelpText && updateHelpText ? (
+      <AudioGuideEditor sectionId={sectionId} value={getHelpText(sectionId)} onChange={updateHelpText} />
+    ) : null;
 
   const weekData = useMemo(() => {
     const today = new Date(selectedDate + "T00:00:00");
