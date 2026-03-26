@@ -426,6 +426,7 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
           })()}
 
         </div>
+        {renderEditor("section-uebersicht")}
       </div>
 
       {/* Calories per Day */}
