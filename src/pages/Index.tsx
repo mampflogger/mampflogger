@@ -1489,6 +1489,7 @@ const Index = () => {
                     setEntries(refreshed);
                   }}
                 />
+                {audioGuide.editorOpen && <AudioGuideEditor sectionId="section-fluessigkeit" value={audioGuide.getHelpText("section-fluessigkeit")} onChange={audioGuide.updateHelpText} />}
               </div>
             )}
 
