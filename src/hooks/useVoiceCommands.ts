@@ -91,6 +91,10 @@ const COMMANDS: VoiceCommand[] = [
   { patterns: [/\bladen\b/i, /\bdownload\b/i], action: "backup-load" },
   { patterns: [/\bcancel\b/i], action: "section:loeschen" },
 
+  // Editor (secret)
+  { patterns: [/\beditor\s*öffnen\b/i, /\beditor\s*oeffnen\b/i, /\beditor\s*auf\b/i, /\beditor\s*open\b/i], action: "action:editor-open" },
+  { patterns: [/\beditor\s*schlie(?:ß|ss)en\b/i, /\beditor\s*schliessen\b/i, /\beditor\s*zu\b/i, /\beditor\s*close\b/i], action: "action:editor-close" },
+
   // Focus clear
   { patterns: [/\bfokus\s*(?:aus|weg|raus|entfernen)\b/i, /\bfocus\s*(?:off|clear|remove)\b/i, /\bkasten\s*(?:aus|verlassen|schließen)\b/i], action: "focus:clear" },
 
