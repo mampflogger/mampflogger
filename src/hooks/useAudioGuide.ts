@@ -1,6 +1,8 @@
 import { useState, useCallback, useRef, useEffect } from "react";
 import { UserProfile } from "@/types/profile";
 
+type SpeakingCallback = (speaking: boolean) => void;
+
 const STORAGE_KEY = "mampflogger-audio-guide";
 const CUSTOM_TEXTS_KEY = "mampflogger-audio-guide-texts";
 
