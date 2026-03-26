@@ -1472,6 +1472,7 @@ const Index = () => {
                   Makro Nährstoffverteilung
                 </SectionHeading>
                 <MacroBar summary={todaySummary} />
+                {audioGuide.editorOpen && <AudioGuideEditor sectionId="section-makro-naehrstoffe" value={audioGuide.getHelpText("section-makro-naehrstoffe")} onChange={audioGuide.updateHelpText} />}
               </div>
             )}
 
