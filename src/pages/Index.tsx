@@ -1462,6 +1462,7 @@ const Index = () => {
                   Kalorienbilanz
                 </SectionHeading>
                 <DeficitDisplay profile={profile} activityBonus={activityBonus} consumedCalories={todaySummary.totalCalories} goalDeficit={profile.goalDeficit} />
+                {audioGuide.editorOpen && <AudioGuideEditor sectionId="section-kalorienbilanz" value={audioGuide.getHelpText("section-kalorienbilanz")} onChange={audioGuide.updateHelpText} />}
               </div>
             )}
 
