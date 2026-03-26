@@ -928,6 +928,21 @@ const Index = () => {
     audioGuide.speak(sectionNav.activeSection);
   }, [sectionNav.activeSection, activeTab, audioGuide.speak]);
 
+  // Disarm mic while audio guide is speaking to prevent keyword pickup
+  const wasArmedBeforeSpeechRef = useRef(false);
+  useEffect(() => {
+    audioGuide.onSpeakingChange((speaking) => {
+      if (speaking && voiceCommands.isArmed) {
+        wasArmedBeforeSpeechRef.current = true;
+        voiceCommands.disarm();
+      } else if (!speaking && wasArmedBeforeSpeechRef.current) {
+        wasArmedBeforeSpeechRef.current = false;
+        voiceCommands.arm();
+      }
+    });
+    return () => audioGuide.onSpeakingChange(null);
+  }, [audioGuide.onSpeakingChange, voiceCommands.arm, voiceCommands.disarm, voiceCommands.isArmed]);
+
   const [darkMode, setDarkMode] = useState(() => {
     const saved = localStorage.getItem("mampflogger-dark-mode");
     if (saved !== null) return saved === "true";

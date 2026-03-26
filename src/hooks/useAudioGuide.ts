@@ -1,6 +1,8 @@
 import { useState, useCallback, useRef, useEffect } from "react";
 import { UserProfile } from "@/types/profile";
 
+type SpeakingCallback = (speaking: boolean) => void;
+
 const STORAGE_KEY = "mampflogger-audio-guide";
 const CUSTOM_TEXTS_KEY = "mampflogger-audio-guide-texts";
 
@@ -64,9 +66,21 @@ export function useAudioGuide(profile: UserProfile | null) {
 
   const [helpTexts, setHelpTexts] = useState<Record<string, string>>(loadHelpTexts);
   const [editorOpen, setEditorOpen] = useState(false);
+  const [isSpeaking, setIsSpeaking] = useState(false);
 
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
   const currentSectionRef = useRef<string | null>(null);
+  const onSpeakingChangeRef = useRef<SpeakingCallback | null>(null);
+
+  /** Register a callback that fires when speaking starts/stops (used to pause mic). */
+  const onSpeakingChange = useCallback((cb: SpeakingCallback | null) => {
+    onSpeakingChangeRef.current = cb;
+  }, []);
+
+  const notifySpeaking = useCallback((val: boolean) => {
+    setIsSpeaking(val);
+    onSpeakingChangeRef.current?.(val);
+  }, []);
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, String(enabled));
@@ -74,19 +88,24 @@ export function useAudioGuide(profile: UserProfile | null) {
 
   const toggle = useCallback(() => {
     setEnabled((prev) => {
-      if (prev) speechSynthesis.cancel();
+      if (prev) {
+        speechSynthesis.cancel();
+        notifySpeaking(false);
+      }
       return !prev;
     });
-  }, []);
+  }, [notifySpeaking]);
 
   const stop = useCallback(() => {
     speechSynthesis.cancel();
     currentSectionRef.current = null;
-  }, []);
+    notifySpeaking(false);
+  }, [notifySpeaking]);
 
   const speak = useCallback(
     (sectionId: string | null) => {
       speechSynthesis.cancel();
+      notifySpeaking(false);
       if (!enabled || !sectionId) {
         currentSectionRef.current = null;
         return;
@@ -100,10 +119,16 @@ export function useAudioGuide(profile: UserProfile | null) {
       const doSpeak = () => {
         const utter = new SpeechSynthesisUtterance(text);
         utter.lang = "de-DE";
-        utter.rate = 1.0;
+        utter.rate = 0.9;
         utter.pitch = 1.0;
+        utter.volume = 0.5;
         const voice = pickVoice(profile);
         if (voice) utter.voice = voice;
+
+        utter.onstart = () => notifySpeaking(true);
+        utter.onend = () => notifySpeaking(false);
+        utter.onerror = () => notifySpeaking(false);
+
         utteranceRef.current = utter;
         speechSynthesis.speak(utter);
       };
@@ -114,7 +139,7 @@ export function useAudioGuide(profile: UserProfile | null) {
         speechSynthesis.addEventListener("voiceschanged", doSpeak, { once: true });
       }
     },
-    [enabled, profile, helpTexts],
+    [enabled, profile, helpTexts, notifySpeaking],
   );
 
   const updateHelpText = useCallback((sectionId: string, text: string) => {
@@ -137,5 +162,5 @@ export function useAudioGuide(profile: UserProfile | null) {
     return () => { speechSynthesis.cancel(); };
   }, []);
 
-  return { enabled, toggle, speak, stop, helpTexts, updateHelpText, getHelpText, editorOpen, openEditor, closeEditor };
+  return { enabled, isSpeaking, toggle, speak, stop, helpTexts, updateHelpText, getHelpText, editorOpen, openEditor, closeEditor, onSpeakingChange };
 }
