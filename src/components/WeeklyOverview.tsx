@@ -152,7 +152,7 @@ const DailyMacroCard = ({ weekData, highlighted, profile }: { weekData: DayData[
   );
 };
 
-const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [], highlightedSection, analyzeCoachRequestId }: WeeklyOverviewProps) => {
+const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [], highlightedSection, analyzeCoachRequestId, editorOpen, getHelpText, updateHelpText }: WeeklyOverviewProps) => {
   const bmr = profile ? calculateBMR(profile) : null;
   const [showGoalDate, setShowGoalDate] = useState(false);
 
