@@ -588,6 +588,7 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
             );
           })}
         </div>
+        {renderEditor("section-makro-verteilung")}
       </div>
 
       {/* Weekly Nutrition Table */}
