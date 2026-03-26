@@ -478,6 +478,7 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
             </BarChart>
           </ResponsiveContainer>
         </div>
+        {renderEditor("section-kalorien-pro-tag")}
       </div>
 
       {/* Deficit Bar Chart */}
