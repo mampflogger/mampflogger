@@ -396,6 +396,14 @@ const Index = () => {
         });
         return;
       }
+      else if (action === "action:editor-open") {
+        audioGuide.openEditor();
+        return;
+      }
+      else if (action === "action:editor-close") {
+        audioGuide.closeEditor();
+        return;
+      }
       else if (action === "action:mic-off") {
         voiceCommands.disarm();
         return;
