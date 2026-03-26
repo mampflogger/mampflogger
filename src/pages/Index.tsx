@@ -1505,6 +1505,9 @@ const Index = () => {
               bookedActivities={bookedActivities}
               highlightedSection={hl}
               analyzeCoachRequestId={weeklyCoachAnalyzeRequest}
+              editorOpen={audioGuide.editorOpen}
+              getHelpText={audioGuide.getHelpText}
+              updateHelpText={audioGuide.updateHelpText}
             />
             {/* Spacer so last sections can scroll to top */}
             <div style={{ height: "calc(100vh - 14rem)" }} />
