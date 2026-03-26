@@ -1414,6 +1414,7 @@ const Index = () => {
                 )}
               </SectionHeading>
               <NutritionTable entries={todayEntries} onDelete={handleDelete} onEntryClick={handleEntryClick} viewMode={tableViewMode} onViewModeChange={setTableViewMode} />
+              {audioGuide.editorOpen && <AudioGuideEditor sectionId="section-tagesuebersicht" value={audioGuide.getHelpText("section-tagesuebersicht")} onChange={audioGuide.updateHelpText} />}
             </div>
 
             <div id="section-kalorienaufnahme" data-section className={`glass-card rounded-xl p-3 mb-3 ${hl === "section-kalorienaufnahme" ? "section-card-highlight" : ""}`}>
