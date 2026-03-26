@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { NutritionEntry, calculateDailySummary, formatDate } from "@/types/nutrition";
 import SectionHeading from "@/components/SectionHeading";
+import AudioGuideEditor from "@/components/AudioGuideEditor";
 import {
   UserProfile,
   BookedActivity,
@@ -29,6 +30,9 @@ interface WeeklyOverviewProps {
   bookedActivities?: BookedActivity[];
   highlightedSection?: string | null;
   analyzeCoachRequestId?: number;
+  editorOpen?: boolean;
+  getHelpText?: (sectionId: string) => string;
+  updateHelpText?: (sectionId: string, text: string) => void;
 }
 
 interface DayData {
@@ -148,9 +152,13 @@ const DailyMacroCard = ({ weekData, highlighted, profile }: { weekData: DayData[
   );
 };
 
-const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [], highlightedSection, analyzeCoachRequestId }: WeeklyOverviewProps) => {
+const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [], highlightedSection, analyzeCoachRequestId, editorOpen, getHelpText, updateHelpText }: WeeklyOverviewProps) => {
   const bmr = profile ? calculateBMR(profile) : null;
   const [showGoalDate, setShowGoalDate] = useState(false);
+  const renderEditor = (sectionId: string) =>
+    editorOpen && getHelpText && updateHelpText ? (
+      <AudioGuideEditor sectionId={sectionId} value={getHelpText(sectionId)} onChange={updateHelpText} />
+    ) : null;
 
   const weekData = useMemo(() => {
     const today = new Date(selectedDate + "T00:00:00");
@@ -418,6 +426,7 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
           })()}
 
         </div>
+        {renderEditor("section-uebersicht")}
       </div>
 
       {/* Calories per Day */}
@@ -469,6 +478,7 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
             </BarChart>
           </ResponsiveContainer>
         </div>
+        {renderEditor("section-kalorien-pro-tag")}
       </div>
 
       {/* Deficit Bar Chart */}
@@ -530,6 +540,7 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
               </BarChart>
             </ResponsiveContainer>
           </div>
+          {renderEditor("section-defizit-pro-tag")}
         </div>
       )}
 
@@ -577,6 +588,7 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
             );
           })}
         </div>
+        {renderEditor("section-makro-verteilung")}
       </div>
 
       {/* Weekly Nutrition Table */}
@@ -616,6 +628,7 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
           highlightedSection={hl}
           analyzeRequestId={analyzeCoachRequestId}
         />
+        {renderEditor("section-ki-coach")}
       </div>
     </div>
   );
