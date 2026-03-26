@@ -628,6 +628,7 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
           highlightedSection={hl}
           analyzeRequestId={analyzeCoachRequestId}
         />
+        {renderEditor("section-ki-coach")}
       </div>
     </div>
   );
