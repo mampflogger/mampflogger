@@ -1451,7 +1451,8 @@ const Index = () => {
                   voiceInputRef={activityVoiceRef}
                   isVoiceActive={voiceCommands.isListening}
                   focusRequestId={activityFocusRequestId}
-                />
+                 />
+                {audioGuide.editorOpen && <AudioGuideEditor sectionId="section-activity" value={audioGuide.getHelpText("section-activity")} onChange={audioGuide.updateHelpText} />}
               </div>
             )}
 
