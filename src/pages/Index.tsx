@@ -1430,6 +1430,7 @@ const Index = () => {
                 Fastenanalyse
               </SectionHeading>
               <FastingAnalysis entries={todayEntries} allEntries={entries} selectedDate={selectedDate} />
+              {audioGuide.editorOpen && <AudioGuideEditor sectionId="section-fastenanalyse" value={audioGuide.getHelpText("section-fastenanalyse")} onChange={audioGuide.updateHelpText} />}
             </div>
 
             {profile && (
