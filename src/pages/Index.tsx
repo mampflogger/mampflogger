@@ -1519,7 +1519,7 @@ const Index = () => {
               bookedActivities={bookedActivities}
               highlightedSection={hl}
               analyzeCoachRequestId={weeklyCoachAnalyzeRequest}
-              editorOpen={audioGuide.editorOpen}
+              editorOpenSection={audioGuide.editorOpenSection}
               getHelpText={audioGuide.getHelpText}
               updateHelpText={audioGuide.updateHelpText}
             />
