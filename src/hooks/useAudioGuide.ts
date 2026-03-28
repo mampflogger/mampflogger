@@ -95,8 +95,7 @@ export function useAudioGuide(profile: UserProfile | null) {
   const speak = useCallback(
     async (sectionId: string | null) => {
       stopAudio();
-      if (!enabled || !sectionId) return;
-      if (sectionId === currentSectionRef.current) return;
+      if (!sectionId) return;
       currentSectionRef.current = sectionId;
 
       const text = helpTexts[sectionId];
