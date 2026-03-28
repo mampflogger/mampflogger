@@ -1336,18 +1336,7 @@ const SettingsDialog = ({
                 <h1 className="text-lg font-bold tracking-tight">MampfLogger</h1>
               </a>
               <div className="flex items-center gap-1">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => {
-                    onAudioGuideToggle?.();
-                    if (isAudioGuideEnabled) onAudioGuideStop?.();
-                  }}
-                  className={`h-8 w-8 ${isAudioGuideEnabled ? "ring-2 ring-primary animate-pulse" : ""}`}
-                  title={isAudioGuideEnabled ? "Audio-Hilfe aus" : "Audio-Hilfe ein"}
-                >
-                  <Ear className="w-4 h-4" />
-                </Button>
+                
                 {isMicSupported && (
                   <Button
                     variant="ghost"
