@@ -927,9 +927,7 @@ const Index = () => {
         }
       });
     }
-    // Trigger audio guide for the newly active section
-    audioGuide.speak(sectionNav.activeSection);
-  }, [sectionNav.activeSection, activeTab, audioGuide.speak]);
+  }, [sectionNav.activeSection, activeTab]);
 
   // Disarm mic while audio guide is speaking to prevent keyword pickup
   const wasArmedBeforeSpeechRef = useRef(false);
