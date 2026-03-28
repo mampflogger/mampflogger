@@ -14,9 +14,6 @@ const DEFAULT_HELP_TEXTS: Record<string, string> = {
   "section-neuer-eintrag": `Los geht's! In diesem Abschnitt kannst du ein Lebensmittel eingeben. Falls das Lebensmittel mehrere Varianten hat oder die Eingabe unklar ist, klappt ein Optionsmenü auf, aus dem du unter Angabe der Nummer – sag zum Beispiel „Nummer eins" – auswählen kannst, um welches Lebensmittel es sich handelt. Anschließend springt der Cursor weiter in die Mengenangabe. Sag einfach eine Zahl für Gramm oder Milliliter und bestätige deine Eingabe mit dem Wort „Okay", woraufhin der Cursor wieder ins Feld Lebensmittel springt und bereit ist für ein neues Lebensmittel. Mit „Weiter" oder „Zurück" kannst du zwischen den Eingabefeldern hin- und herspringen. Du kannst auch auf die Uhrzeit springen. Und mit „Storno" kannst du eventuelle Fehleingaben wieder löschen. Hast du ein Lebensmittel bereits gebucht und es erscheint im Tagesprotokoll, kannst du es dort anklicken und hier im Abschnitt „Neuer Eintrag" korrigieren – anschließend wieder mit „Okay" speichern.`,
 };
 
-/**
- * Load custom texts from localStorage, merged with defaults.
- */
 function loadHelpTexts(): Record<string, string> {
   try {
     const stored = localStorage.getItem(CUSTOM_TEXTS_KEY);
@@ -28,7 +25,6 @@ function loadHelpTexts(): Record<string, string> {
 }
 
 function saveCustomTexts(texts: Record<string, string>) {
-  // Only save texts that differ from defaults
   const custom: Record<string, string> = {};
   for (const [key, value] of Object.entries(texts)) {
     if (value !== DEFAULT_HELP_TEXTS[key]) {
@@ -39,25 +35,15 @@ function saveCustomTexts(texts: Record<string, string>) {
 }
 
 /**
- * Picks a German voice from available SpeechSynthesis voices.
- * Cross-gender logic: male profile → female voice, female profile → male voice.
+ * Pick Edge TTS voice name based on cross-gender logic.
+ * Male profile → female voice, female profile → male voice.
  */
-function pickVoice(profile: UserProfile | null): SpeechSynthesisVoice | null {
-  const voices = speechSynthesis.getVoices();
-  const deVoices = voices.filter((v) => v.lang.startsWith("de"));
-  if (deVoices.length === 0) return voices[0] ?? null;
-
+function pickVoiceName(profile: UserProfile | null): string {
   const wantFemale = !profile || profile.gender === "male";
-  const femaleHints = /\b(female|frau|woman|anna|petra|marlene|vicki|hedda)\b/i;
-  const maleHints = /\b(male|mann|man|hans|stefan|markus|conrad|florian)\b/i;
-
-  const preferred = deVoices.filter((v) =>
-    wantFemale ? femaleHints.test(v.name) : maleHints.test(v.name),
-  );
-
-  if (preferred.length > 0) return preferred[0];
-  return deVoices[0];
+  return wantFemale ? "de-DE-KatjaNeural" : "de-DE-ConradNeural";
 }
+
+const EDGE_TTS_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/edge-tts`;
 
 export function useAudioGuide(profile: UserProfile | null) {
   const [enabled, setEnabled] = useState(() => {
@@ -68,11 +54,11 @@ export function useAudioGuide(profile: UserProfile | null) {
   const [editorOpen, setEditorOpen] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
 
-  const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
   const currentSectionRef = useRef<string | null>(null);
   const onSpeakingChangeRef = useRef<SpeakingCallback | null>(null);
+  const abortRef = useRef<AbortController | null>(null);
 
-  /** Register a callback that fires when speaking starts/stops (used to pause mic). */
   const onSpeakingChange = useCallback((cb: SpeakingCallback | null) => {
     onSpeakingChangeRef.current = cb;
   }, []);
@@ -86,60 +72,89 @@ export function useAudioGuide(profile: UserProfile | null) {
     localStorage.setItem(STORAGE_KEY, String(enabled));
   }, [enabled]);
 
-  const toggle = useCallback(() => {
-    setEnabled((prev) => {
-      if (prev) {
-        speechSynthesis.cancel();
-        notifySpeaking(false);
-      }
-      return !prev;
-    });
-  }, [notifySpeaking]);
-
-  const stop = useCallback(() => {
-    speechSynthesis.cancel();
+  const stopAudio = useCallback(() => {
+    abortRef.current?.abort();
+    abortRef.current = null;
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.src = "";
+      audioRef.current = null;
+    }
     currentSectionRef.current = null;
     notifySpeaking(false);
   }, [notifySpeaking]);
 
+  const toggle = useCallback(() => {
+    setEnabled((prev) => {
+      if (prev) stopAudio();
+      return !prev;
+    });
+  }, [stopAudio]);
+
   const speak = useCallback(
-    (sectionId: string | null) => {
-      speechSynthesis.cancel();
-      notifySpeaking(false);
-      if (!enabled || !sectionId) {
-        currentSectionRef.current = null;
-        return;
-      }
+    async (sectionId: string | null) => {
+      stopAudio();
+      if (!enabled || !sectionId) return;
       if (sectionId === currentSectionRef.current) return;
       currentSectionRef.current = sectionId;
 
       const text = helpTexts[sectionId];
       if (!text) return;
 
-      const doSpeak = () => {
-        const utter = new SpeechSynthesisUtterance(text);
-        utter.lang = "de-DE";
-        utter.rate = 0.9;
-        utter.pitch = 1.0;
-        utter.volume = 0.5;
-        const voice = pickVoice(profile);
-        if (voice) utter.voice = voice;
+      const controller = new AbortController();
+      abortRef.current = controller;
 
-        utter.onstart = () => notifySpeaking(true);
-        utter.onend = () => notifySpeaking(false);
-        utter.onerror = () => notifySpeaking(false);
+      try {
+        notifySpeaking(true);
 
-        utteranceRef.current = utter;
-        speechSynthesis.speak(utter);
-      };
+        const response = await fetch(EDGE_TTS_URL, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+            Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+          },
+          body: JSON.stringify({
+            text,
+            voice: pickVoiceName(profile),
+          }),
+          signal: controller.signal,
+        });
 
-      if (speechSynthesis.getVoices().length > 0) {
-        doSpeak();
-      } else {
-        speechSynthesis.addEventListener("voiceschanged", doSpeak, { once: true });
+        if (!response.ok) {
+          console.error("Edge TTS error:", response.status);
+          notifySpeaking(false);
+          return;
+        }
+
+        const blob = await response.blob();
+        if (controller.signal.aborted) return;
+
+        const url = URL.createObjectURL(blob);
+        const audio = new Audio(url);
+        audio.volume = 0.5;
+        audioRef.current = audio;
+
+        audio.onended = () => {
+          URL.revokeObjectURL(url);
+          audioRef.current = null;
+          notifySpeaking(false);
+        };
+        audio.onerror = () => {
+          URL.revokeObjectURL(url);
+          audioRef.current = null;
+          notifySpeaking(false);
+        };
+
+        await audio.play();
+      } catch (err: any) {
+        if (err.name !== "AbortError") {
+          console.error("TTS playback error:", err);
+        }
+        notifySpeaking(false);
       }
     },
-    [enabled, profile, helpTexts, notifySpeaking],
+    [enabled, profile, helpTexts, notifySpeaking, stopAudio],
   );
 
   const updateHelpText = useCallback((sectionId: string, text: string) => {
@@ -159,8 +174,27 @@ export function useAudioGuide(profile: UserProfile | null) {
   const closeEditor = useCallback(() => setEditorOpen(false), []);
 
   useEffect(() => {
-    return () => { speechSynthesis.cancel(); };
+    return () => {
+      abortRef.current?.abort();
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.src = "";
+      }
+    };
   }, []);
 
-  return { enabled, isSpeaking, toggle, speak, stop, helpTexts, updateHelpText, getHelpText, editorOpen, openEditor, closeEditor, onSpeakingChange };
+  return {
+    enabled,
+    isSpeaking,
+    toggle,
+    speak,
+    stop: stopAudio,
+    helpTexts,
+    updateHelpText,
+    getHelpText,
+    editorOpen,
+    openEditor,
+    closeEditor,
+    onSpeakingChange,
+  };
 }
