@@ -1,5 +1,6 @@
 import { useState, useCallback, useRef, useEffect } from "react";
 import { UserProfile } from "@/types/profile";
+import { synthesizeEdgeTTS } from "@/lib/edgeTts";
 
 type SpeakingCallback = (speaking: boolean) => void;
 
@@ -43,7 +44,7 @@ function pickVoiceName(profile: UserProfile | null): string {
   return wantFemale ? "de-DE-KatjaNeural" : "de-DE-ConradNeural";
 }
 
-const EDGE_TTS_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/edge-tts`;
+
 
 export function useAudioGuide(profile: UserProfile | null) {
   const [enabled, setEnabled] = useState(() => {
@@ -107,27 +108,11 @@ export function useAudioGuide(profile: UserProfile | null) {
       try {
         notifySpeaking(true);
 
-        const response = await fetch(EDGE_TTS_URL, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
-            Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
-          },
-          body: JSON.stringify({
-            text,
-            voice: pickVoiceName(profile),
-          }),
-          signal: controller.signal,
-        });
-
-        if (!response.ok) {
-          console.error("Edge TTS error:", response.status);
-          notifySpeaking(false);
-          return;
-        }
-
-        const blob = await response.blob();
+        const blob = await synthesizeEdgeTTS(
+          text,
+          pickVoiceName(profile),
+          controller.signal,
+        );
         if (controller.signal.aborted) return;
 
         const url = URL.createObjectURL(blob);
