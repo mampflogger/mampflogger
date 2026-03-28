@@ -52,7 +52,7 @@ export function useAudioGuide(profile: UserProfile | null) {
   });
 
   const [helpTexts, setHelpTexts] = useState<Record<string, string>>(loadHelpTexts);
-  const [editorOpen, setEditorOpen] = useState(false);
+  const [editorOpenSection, setEditorOpenSection] = useState<string | null>(null);
   const [isSpeaking, setIsSpeaking] = useState(false);
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
