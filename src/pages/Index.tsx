@@ -930,18 +930,25 @@ const Index = () => {
 
   // Disarm mic while audio guide is speaking to prevent keyword pickup
   const wasArmedBeforeSpeechRef = useRef(false);
+  const isArmedRef = useRef(voiceCommands.isArmed);
+  isArmedRef.current = voiceCommands.isArmed;
+  const armRef = useRef(voiceCommands.arm);
+  armRef.current = voiceCommands.arm;
+  const disarmRef = useRef(voiceCommands.disarm);
+  disarmRef.current = voiceCommands.disarm;
+
   useEffect(() => {
-    audioGuide.onSpeakingChange((speaking) => {
-      if (speaking && voiceCommands.isArmed) {
+    audioGuide.onSpeakingChange((speaking: boolean) => {
+      if (speaking && isArmedRef.current) {
         wasArmedBeforeSpeechRef.current = true;
-        voiceCommands.disarm();
+        disarmRef.current();
       } else if (!speaking && wasArmedBeforeSpeechRef.current) {
         wasArmedBeforeSpeechRef.current = false;
-        voiceCommands.arm();
+        armRef.current();
       }
     });
     return () => audioGuide.onSpeakingChange(null);
-  }, [audioGuide.onSpeakingChange, voiceCommands.arm, voiceCommands.disarm, voiceCommands.isArmed]);
+  }, [audioGuide.onSpeakingChange]);
 
   const [darkMode, setDarkMode] = useState(() => {
     const saved = localStorage.getItem("mampflogger-dark-mode");
