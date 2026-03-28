@@ -1358,7 +1358,7 @@ const SettingsDialog = ({
                   <Settings className="w-4 h-4" />
                 </Button>
                 <Button variant="ghost" size="icon" className="h-8 w-8" title="Hilfe" onClick={() => handleOpen(false)}>
-                  <HelpCircle className="w-4 h-4" />
+                  <span className="text-base font-bold">?</span>
                 </Button>
               </div>
             </div>
