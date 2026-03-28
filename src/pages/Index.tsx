@@ -1336,7 +1336,7 @@ const Index = () => {
                 onClick={() => { const next = activeTab === "help" ? "log" : "help"; setActiveTab(next); window.scrollTo({ top: 0, behavior: "smooth" }); }}
                 title="Hilfe"
               >
-                <HelpCircle className="w-4 h-4" />
+                <span className="text-base font-bold">?</span>
               </Button>
             </div>
           </div>

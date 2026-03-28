@@ -180,9 +180,10 @@ export function useAudioGuide(profile: UserProfile | null) {
     helpTexts,
     updateHelpText,
     getHelpText,
-    editorOpen,
+    editorOpenSection,
     openEditor,
     closeEditor,
+    isEditorOpenFor,
     onSpeakingChange,
   };
 }
