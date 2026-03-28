@@ -30,7 +30,7 @@ interface WeeklyOverviewProps {
   bookedActivities?: BookedActivity[];
   highlightedSection?: string | null;
   analyzeCoachRequestId?: number;
-  editorOpen?: boolean;
+  editorOpenSection?: string | null;
   getHelpText?: (sectionId: string) => string;
   updateHelpText?: (sectionId: string, text: string) => void;
 }
