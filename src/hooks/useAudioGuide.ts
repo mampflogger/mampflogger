@@ -52,7 +52,7 @@ export function useAudioGuide(profile: UserProfile | null) {
   });
 
   const [helpTexts, setHelpTexts] = useState<Record<string, string>>(loadHelpTexts);
-  const [editorOpen, setEditorOpen] = useState(false);
+  const [editorOpenSection, setEditorOpenSection] = useState<string | null>(null);
   const [isSpeaking, setIsSpeaking] = useState(false);
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -95,8 +95,7 @@ export function useAudioGuide(profile: UserProfile | null) {
   const speak = useCallback(
     async (sectionId: string | null) => {
       stopAudio();
-      if (!enabled || !sectionId) return;
-      if (sectionId === currentSectionRef.current) return;
+      if (!sectionId) return;
       currentSectionRef.current = sectionId;
 
       const text = helpTexts[sectionId];
@@ -155,8 +154,11 @@ export function useAudioGuide(profile: UserProfile | null) {
     [helpTexts],
   );
 
-  const openEditor = useCallback(() => setEditorOpen(true), []);
-  const closeEditor = useCallback(() => setEditorOpen(false), []);
+  const openEditor = useCallback((sectionId?: string) => {
+    if (sectionId) setEditorOpenSection(sectionId);
+  }, []);
+  const closeEditor = useCallback(() => setEditorOpenSection(null), []);
+  const isEditorOpenFor = useCallback((sectionId: string) => editorOpenSection === sectionId, [editorOpenSection]);
 
   useEffect(() => {
     return () => {
@@ -177,9 +179,10 @@ export function useAudioGuide(profile: UserProfile | null) {
     helpTexts,
     updateHelpText,
     getHelpText,
-    editorOpen,
+    editorOpenSection,
     openEditor,
     closeEditor,
+    isEditorOpenFor,
     onSpeakingChange,
   };
 }

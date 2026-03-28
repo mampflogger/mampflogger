@@ -30,7 +30,7 @@ import SectionHeading from "@/components/SectionHeading";
 import HelpContent from "@/components/HelpContent";
 
 import SettingsDialog, { ColorTheme } from "@/components/SettingsDialog";
-import { ChevronLeft, ChevronRight, BarChart3, List, Mic, HelpCircle, Ear } from "lucide-react";
+import { ChevronLeft, ChevronRight, BarChart3, List, Mic } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useVoiceCommands, SECTION_PAGE_MAP, SECTION_SETTINGS_TAB } from "@/hooks/useVoiceCommands";
 import { useSectionNavigation } from "@/hooks/useSectionNavigation";
@@ -390,15 +390,18 @@ const Index = () => {
         return;
       }
       else if (action === "action:help") {
-        (document.activeElement as HTMLElement)?.blur?.();
-        closeSettingsAndDo(() => {
-          setActiveTab("help");
-          window.scrollTo({ top: 0, behavior: "smooth" });
-        });
+        // Play audio help for the currently active section
+        const currentSection = activeSectionRef.current;
+        if (currentSection) {
+          audioGuide.speak(currentSection);
+        }
         return;
       }
       else if (action === "action:editor-open") {
-        audioGuide.openEditor();
+        const currentSection = activeSectionRef.current;
+        if (currentSection) {
+          audioGuide.openEditor(currentSection);
+        }
         return;
       }
       else if (action === "action:editor-close") {
@@ -924,9 +927,7 @@ const Index = () => {
         }
       });
     }
-    // Trigger audio guide for the newly active section
-    audioGuide.speak(sectionNav.activeSection);
-  }, [sectionNav.activeSection, activeTab, audioGuide.speak]);
+  }, [sectionNav.activeSection, activeTab]);
 
   // Disarm mic while audio guide is speaking to prevent keyword pickup
   const wasArmedBeforeSpeechRef = useRef(false);
@@ -1236,18 +1237,7 @@ const Index = () => {
               <h1 className="text-lg font-bold tracking-tight">MampfLogger</h1>
             </a>
             <div className="flex items-center gap-1">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => {
-                  audioGuide.toggle();
-                  if (audioGuide.enabled) audioGuide.stop();
-                }}
-                className={`h-8 w-8 ${audioGuide.enabled ? "ring-2 ring-primary animate-pulse" : ""}`}
-                title={audioGuide.enabled ? "Audio-Hilfe aus" : "Audio-Hilfe ein"}
-              >
-                <Ear className="w-4 h-4" />
-              </Button>
+              
               {voiceCommands.isSupported && (
                 <Button
                   variant="ghost"
@@ -1344,7 +1334,7 @@ const Index = () => {
                 onClick={() => { const next = activeTab === "help" ? "log" : "help"; setActiveTab(next); window.scrollTo({ top: 0, behavior: "smooth" }); }}
                 title="Hilfe"
               >
-                <HelpCircle className="w-4 h-4" />
+                <span className="text-base font-bold">?</span>
               </Button>
             </div>
           </div>
@@ -1423,7 +1413,7 @@ const Index = () => {
                 isVoiceActive={voiceCommands.isListening}
                />
               <p className="text-muted-foreground/60 text-xs text-center mt-2">Gib ein neues Lebensmittel mit Name und Menge ein</p>
-              {audioGuide.editorOpen && <AudioGuideEditor sectionId="section-neuer-eintrag" value={audioGuide.getHelpText("section-neuer-eintrag")} onChange={audioGuide.updateHelpText} />}
+              {audioGuide.isEditorOpenFor("section-neuer-eintrag") && <AudioGuideEditor sectionId="section-neuer-eintrag" value={audioGuide.getHelpText("section-neuer-eintrag")} onChange={audioGuide.updateHelpText} />}
             </div>
 
             <div id="section-tagesuebersicht" data-section tabIndex={-1} data-voice-active-section={sectionNav.activeSection === "section-tagesuebersicht" ? "true" : undefined} className={`glass-card rounded-xl p-3 mb-3 ${hl === "section-tagesuebersicht" ? "section-card-highlight" : ""}`}>
@@ -1436,7 +1426,7 @@ const Index = () => {
                 )}
               </SectionHeading>
               <NutritionTable entries={todayEntries} onDelete={handleDelete} onEntryClick={handleEntryClick} viewMode={tableViewMode} onViewModeChange={setTableViewMode} />
-              {audioGuide.editorOpen && <AudioGuideEditor sectionId="section-tagesuebersicht" value={audioGuide.getHelpText("section-tagesuebersicht")} onChange={audioGuide.updateHelpText} />}
+              {audioGuide.isEditorOpenFor("section-tagesuebersicht") && <AudioGuideEditor sectionId="section-tagesuebersicht" value={audioGuide.getHelpText("section-tagesuebersicht")} onChange={audioGuide.updateHelpText} />}
             </div>
 
             <div id="section-kalorienaufnahme" data-section className={`glass-card rounded-xl p-3 mb-3 ${hl === "section-kalorienaufnahme" ? "section-card-highlight" : ""}`}>
@@ -1444,7 +1434,7 @@ const Index = () => {
                 Kalorienaufnahme 24 Stunden
               </SectionHeading>
               <DailyCalorieChart entries={todayEntries} />
-              {audioGuide.editorOpen && <AudioGuideEditor sectionId="section-kalorienaufnahme" value={audioGuide.getHelpText("section-kalorienaufnahme")} onChange={audioGuide.updateHelpText} />}
+              {audioGuide.isEditorOpenFor("section-kalorienaufnahme") && <AudioGuideEditor sectionId="section-kalorienaufnahme" value={audioGuide.getHelpText("section-kalorienaufnahme")} onChange={audioGuide.updateHelpText} />}
             </div>
 
             <div id="section-fastenanalyse" data-section className={`glass-card rounded-xl p-3 mb-3 ${hl === "section-fastenanalyse" ? "section-card-highlight" : ""}`}>
@@ -1452,7 +1442,7 @@ const Index = () => {
                 Fastenanalyse
               </SectionHeading>
               <FastingAnalysis entries={todayEntries} allEntries={entries} selectedDate={selectedDate} />
-              {audioGuide.editorOpen && <AudioGuideEditor sectionId="section-fastenanalyse" value={audioGuide.getHelpText("section-fastenanalyse")} onChange={audioGuide.updateHelpText} />}
+              {audioGuide.isEditorOpenFor("section-fastenanalyse") && <AudioGuideEditor sectionId="section-fastenanalyse" value={audioGuide.getHelpText("section-fastenanalyse")} onChange={audioGuide.updateHelpText} />}
             </div>
 
             {profile && (
@@ -1474,7 +1464,7 @@ const Index = () => {
                   isVoiceActive={voiceCommands.isListening}
                   focusRequestId={activityFocusRequestId}
                  />
-                {audioGuide.editorOpen && <AudioGuideEditor sectionId="section-activity" value={audioGuide.getHelpText("section-activity")} onChange={audioGuide.updateHelpText} />}
+                {audioGuide.isEditorOpenFor("section-activity") && <AudioGuideEditor sectionId="section-activity" value={audioGuide.getHelpText("section-activity")} onChange={audioGuide.updateHelpText} />}
               </div>
             )}
 
@@ -1484,7 +1474,7 @@ const Index = () => {
                   Kalorienbilanz
                 </SectionHeading>
                 <DeficitDisplay profile={profile} activityBonus={activityBonus} consumedCalories={todaySummary.totalCalories} goalDeficit={profile.goalDeficit} />
-                {audioGuide.editorOpen && <AudioGuideEditor sectionId="section-kalorienbilanz" value={audioGuide.getHelpText("section-kalorienbilanz")} onChange={audioGuide.updateHelpText} />}
+                {audioGuide.isEditorOpenFor("section-kalorienbilanz") && <AudioGuideEditor sectionId="section-kalorienbilanz" value={audioGuide.getHelpText("section-kalorienbilanz")} onChange={audioGuide.updateHelpText} />}
               </div>
             )}
 
@@ -1494,7 +1484,7 @@ const Index = () => {
                   Makro Nährstoffverteilung
                 </SectionHeading>
                 <MacroBar summary={todaySummary} />
-                {audioGuide.editorOpen && <AudioGuideEditor sectionId="section-makro-naehrstoffe" value={audioGuide.getHelpText("section-makro-naehrstoffe")} onChange={audioGuide.updateHelpText} />}
+                {audioGuide.isEditorOpenFor("section-makro-naehrstoffe") && <AudioGuideEditor sectionId="section-makro-naehrstoffe" value={audioGuide.getHelpText("section-makro-naehrstoffe")} onChange={audioGuide.updateHelpText} />}
               </div>
             )}
 
@@ -1511,7 +1501,7 @@ const Index = () => {
                     setEntries(refreshed);
                   }}
                 />
-                {audioGuide.editorOpen && <AudioGuideEditor sectionId="section-fluessigkeit" value={audioGuide.getHelpText("section-fluessigkeit")} onChange={audioGuide.updateHelpText} />}
+                {audioGuide.isEditorOpenFor("section-fluessigkeit") && <AudioGuideEditor sectionId="section-fluessigkeit" value={audioGuide.getHelpText("section-fluessigkeit")} onChange={audioGuide.updateHelpText} />}
               </div>
             )}
 
@@ -1527,7 +1517,7 @@ const Index = () => {
               bookedActivities={bookedActivities}
               highlightedSection={hl}
               analyzeCoachRequestId={weeklyCoachAnalyzeRequest}
-              editorOpen={audioGuide.editorOpen}
+              editorOpenSection={audioGuide.editorOpenSection}
               getHelpText={audioGuide.getHelpText}
               updateHelpText={audioGuide.updateHelpText}
             />
