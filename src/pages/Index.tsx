@@ -390,15 +390,18 @@ const Index = () => {
         return;
       }
       else if (action === "action:help") {
-        (document.activeElement as HTMLElement)?.blur?.();
-        closeSettingsAndDo(() => {
-          setActiveTab("help");
-          window.scrollTo({ top: 0, behavior: "smooth" });
-        });
+        // Play audio help for the currently active section
+        const currentSection = activeSectionRef.current;
+        if (currentSection) {
+          audioGuide.speak(currentSection);
+        }
         return;
       }
       else if (action === "action:editor-open") {
-        audioGuide.openEditor();
+        const currentSection = activeSectionRef.current;
+        if (currentSection) {
+          audioGuide.openEditor(currentSection);
+        }
         return;
       }
       else if (action === "action:editor-close") {
