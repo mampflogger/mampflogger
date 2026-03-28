@@ -1,5 +1,6 @@
 import { useState, useCallback, useRef, useEffect } from "react";
 import { UserProfile } from "@/types/profile";
+import { synthesizeEdgeTTS } from "@/lib/edgeTts";
 
 type SpeakingCallback = (speaking: boolean) => void;
 
