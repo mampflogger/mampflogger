@@ -44,7 +44,7 @@ function pickVoiceName(profile: UserProfile | null): string {
   return wantFemale ? "de-DE-KatjaNeural" : "de-DE-ConradNeural";
 }
 
-const EDGE_TTS_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/edge-tts`;
+
 
 export function useAudioGuide(profile: UserProfile | null) {
   const [enabled, setEnabled] = useState(() => {
