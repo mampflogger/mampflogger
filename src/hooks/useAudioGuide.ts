@@ -155,8 +155,11 @@ export function useAudioGuide(profile: UserProfile | null) {
     [helpTexts],
   );
 
-  const openEditor = useCallback(() => setEditorOpen(true), []);
-  const closeEditor = useCallback(() => setEditorOpen(false), []);
+  const openEditor = useCallback((sectionId?: string) => {
+    if (sectionId) setEditorOpenSection(sectionId);
+  }, []);
+  const closeEditor = useCallback(() => setEditorOpenSection(null), []);
+  const isEditorOpenFor = useCallback((sectionId: string) => editorOpenSection === sectionId, [editorOpenSection]);
 
   useEffect(() => {
     return () => {
