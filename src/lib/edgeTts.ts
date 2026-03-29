@@ -19,7 +19,71 @@ function escapeXml(text: string): string {
     .replace(/'/g, "&apos;");
 }
 
+/**
+ * Try Edge TTS via WebSocket, fall back to browser SpeechSynthesis.
+ */
 export async function synthesizeEdgeTTS(
+  text: string,
+  voice: string,
+  signal?: AbortSignal,
+): Promise<Blob | "USE_SPEECH_SYNTHESIS"> {
+  try {
+    return await edgeTTSWebSocket(text, voice, signal);
+  } catch (err: any) {
+    if (err.name === "AbortError") throw err;
+    console.warn("Edge TTS WebSocket failed, falling back to browser SpeechSynthesis", err.message);
+    return "USE_SPEECH_SYNTHESIS";
+  }
+}
+
+/**
+ * Speak text using the browser's built-in SpeechSynthesis API.
+ */
+export function speakWithBrowserTTS(
+  text: string,
+  preferFemale: boolean,
+  volume: number = 0.5,
+  signal?: AbortSignal,
+): Promise<void> {
+  return new Promise((resolve, reject) => {
+    if (signal?.aborted) {
+      reject(new DOMException("Aborted", "AbortError"));
+      return;
+    }
+
+    const synth = window.speechSynthesis;
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = "de-DE";
+    utterance.volume = volume;
+    utterance.rate = 0.95;
+
+    // Try to pick a German voice
+    const voices = synth.getVoices();
+    const germanVoices = voices.filter(v => v.lang.startsWith("de"));
+    if (germanVoices.length > 0) {
+      const preferred = germanVoices.find(v =>
+        preferFemale ? /female|frau|katja|anna/i.test(v.name) : /male|mann|conrad|hans/i.test(v.name)
+      );
+      utterance.voice = preferred || germanVoices[0];
+    }
+
+    utterance.onend = () => resolve();
+    utterance.onerror = (e) => {
+      if (e.error === "canceled") resolve();
+      else reject(new Error(`SpeechSynthesis error: ${e.error}`));
+    };
+
+    const onAbort = () => {
+      synth.cancel();
+      reject(new DOMException("Aborted", "AbortError"));
+    };
+    signal?.addEventListener("abort", onAbort, { once: true });
+
+    synth.speak(utterance);
+  });
+}
+
+function edgeTTSWebSocket(
   text: string,
   voice: string,
   signal?: AbortSignal,
@@ -53,7 +117,6 @@ export async function synthesizeEdgeTTS(
     signal?.addEventListener("abort", onAbort, { once: true });
 
     ws.onopen = () => {
-      // 1) speech config
       ws.send(
         `X-Timestamp:${isoNow()}\r\nContent-Type:application/json; charset=utf-8\r\nPath:speech.config\r\n\r\n` +
         JSON.stringify({
@@ -71,7 +134,6 @@ export async function synthesizeEdgeTTS(
         }),
       );
 
-      // 2) SSML
       const ssml =
         `<speak version='1.0' xmlns='http://www.w3.org/2001/10/synthesis' xml:lang='de-DE'>` +
         `<voice name='${voice}'>` +
@@ -121,7 +183,6 @@ export async function synthesizeEdgeTTS(
       }
     };
 
-    // Safety timeout 30s
     setTimeout(() => {
       if (!done) {
         cleanup();
