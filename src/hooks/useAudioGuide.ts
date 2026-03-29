@@ -77,7 +77,8 @@ function saveCustomTexts(texts: Record<string, string>) {
  */
 function pickVoiceName(profile: UserProfile | null): string {
   const wantFemale = !profile || profile.gender === "male";
-  return wantFemale ? "de-DE-KatjaNeural" : "de-DE-ConradNeural";
+  // Multilingual Neural voices sound significantly more natural than standard Neural
+  return wantFemale ? "de-DE-SeraphinaMultilingualNeural" : "de-DE-FlorianMultilingualNeural";
 }
 
 
