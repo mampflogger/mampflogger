@@ -374,7 +374,10 @@
 
 @layer utilities {
   .glass-card {
-    @apply bg-card/80 backdrop-blur-sm border border-border shadow-sm;
+    @apply bg-card/80 backdrop-blur-sm border border-border shadow-sm outline-none;
+  }
+  .glass-card:focus-visible {
+    @apply ring-2 ring-primary/50;
   }
 }
 

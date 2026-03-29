@@ -390,8 +390,21 @@ const Index = () => {
         return;
       }
       else if (action === "action:help") {
-        // Play audio help for the currently active section
-        const currentSection = activeSectionRef.current;
+        // Play audio help for the currently active section, fallback to visible section
+        let currentSection = activeSectionRef.current;
+        if (!currentSection) {
+          // Detect the section currently most visible at the header offset
+          const HEADER_OFFSET = 140;
+          const TOLERANCE = 80;
+          const allSections = Array.from(document.querySelectorAll("[data-section]"));
+          for (const el of allSections) {
+            const top = el.getBoundingClientRect().top;
+            if (top >= HEADER_OFFSET - TOLERANCE && top <= HEADER_OFFSET + 300) {
+              currentSection = el.id;
+              break;
+            }
+          }
+        }
         if (currentSection) {
           audioGuide.speak(currentSection);
         }
