@@ -13,6 +13,42 @@ const CUSTOM_TEXTS_KEY = "mampflogger-audio-guide-texts";
  */
 const DEFAULT_HELP_TEXTS: Record<string, string> = {
   "section-neuer-eintrag": `Los geht's! In diesem Abschnitt kannst du ein Lebensmittel eingeben. Falls das Lebensmittel mehrere Varianten hat oder die Eingabe unklar ist, klappt ein Optionsmenü auf, aus dem du unter Angabe der Nummer – sag zum Beispiel „Nummer eins" – auswählen kannst, um welches Lebensmittel es sich handelt. Anschließend springt der Cursor weiter in die Mengenangabe. Sag einfach eine Zahl für Gramm oder Milliliter und bestätige deine Eingabe mit dem Wort „Okay", woraufhin der Cursor wieder ins Feld Lebensmittel springt und bereit ist für ein neues Lebensmittel. Mit „Weiter" oder „Zurück" kannst du zwischen den Eingabefeldern hin- und herspringen. Du kannst auch auf die Uhrzeit springen. Und mit „Storno" kannst du eventuelle Fehleingaben wieder löschen. Hast du ein Lebensmittel bereits gebucht und es erscheint im Tagesprotokoll, kannst du es dort anklicken und hier im Abschnitt „Neuer Eintrag" korrigieren – anschließend wieder mit „Okay" speichern.`,
+
+  "section-tagesuebersicht": `Im Tagesprotokoll siehst du alle heute gebuchten Lebensmittel mit Uhrzeit, Menge und Nährwerten. Du kannst zwischen Detailansicht und Summenansicht wechseln, indem du „Detailansicht" oder „Summenansicht" sagst. In der Detailansicht wird jeder einzelne Eintrag angezeigt. In der Summenansicht werden gleiche Lebensmittel zusammengefasst. Du kannst die Liste sortieren, zum Beispiel nach Kalorien, Fett, Protein, Kohlenhydraten oder Menge – sag einfach den Namen der Spalte. Tippe auf einen Eintrag, um ihn oben im Bereich „Neuer Eintrag" zu bearbeiten.`,
+
+  "section-kalorienaufnahme": `Dieser Kasten zeigt dir deine Kalorienaufnahme der letzten 24 Stunden als Balkendiagramm. Jeder Balken steht für eine Stunde. So erkennst du auf einen Blick, wann du wie viel gegessen hast und ob deine Mahlzeiten gleichmäßig über den Tag verteilt sind.`,
+
+  "section-fastenanalyse": `Die Fastenanalyse zeigt dir, wie lange deine letzte Fastenperiode war und wann du zuletzt gegessen hast. Du siehst außerdem deinen aktuellen Fastenstatus – ob du gerade fastest oder nicht. Das hilft dir, Intervallfasten besser zu verfolgen.`,
+
+  "section-activity": `Im Activity-Kasten kannst du sportliche Aktivitäten und Bewegung eintragen. Gib die Art der Aktivität und die Dauer ein, um den Kalorienverbrauch zu berechnen. Die verbrannten Kalorien fließen in deine Kalorienbilanz ein.`,
+
+  "section-kalorienbilanz": `Die Kalorienbilanz zeigt dir, wie viele Kalorien du heute noch essen kannst oder ob du dein Tagesziel bereits überschritten hast. Sie berechnet sich aus deinem Grundumsatz plus Aktivitätsverbrauch minus aufgenommene Kalorien. Grün bedeutet, du bist im Defizit. Rot bedeutet, du hast dein Ziel überschritten.`,
+
+  "section-makro-naehrstoffe": `Hier siehst du die Verteilung deiner Makronährstoffe für den heutigen Tag. Die Balken zeigen dir, wie viel Protein, Kohlenhydrate, Fett und Ballaststoffe du aufgenommen hast – sowohl in Gramm als auch prozentual. So erkennst du, ob deine Ernährung ausgewogen ist.`,
+
+  "section-fluessigkeit": `Der Flüssigkeitskasten zeigt dir, wie viel du heute getrunken hast im Verhältnis zu deinem Tagesziel. Getränke und wasserhaltige Lebensmittel werden automatisch erfasst. Der Fortschrittsbalken zeigt dir, wie nah du an deinem Flüssigkeitsziel bist.`,
+
+  "section-uebersicht": `Die Übersicht zeigt dir die wichtigsten Kennzahlen der letzten sieben Tage auf einen Blick. Du siehst den Durchschnitt deiner täglichen Kalorienaufnahme, dein durchschnittliches Defizit und – falls ein Zielgewicht hinterlegt ist – die geschätzte Anzahl der Tage bis zum Ziel.`,
+
+  "section-kalorien-pro-tag": `Dieses Diagramm zeigt dir die Kalorienaufnahme der letzten sieben Tage als Balkendiagramm. Jeder Balken steht für einen Tag. Dein Tagesziel wird als gestrichelte Linie angezeigt, sodass du sofort erkennst, an welchen Tagen du über oder unter dem Ziel lagst.`,
+
+  "section-defizit-pro-tag": `Hier siehst du dein tägliches Kaloriendefizit oder deinen Überschuss der letzten sieben Tage. Grüne Balken bedeuten ein Defizit – du hast weniger gegessen als verbraucht. Rote Balken zeigen einen Überschuss an.`,
+
+  "section-makro-verteilung": `Die Makro-Verteilung zeigt dir den Durchschnitt deiner Makronährstoffe über die letzten sieben Tage. Du siehst Protein, Kohlenhydrate, Fett und Ballaststoffe als Kreisdiagramm und in Prozent. So erkennst du langfristige Trends in deiner Ernährung.`,
+
+  "section-makros-pro-tag": `Diese Tabelle zeigt dir die tägliche Aufschlüsselung deiner Makronährstoffe für jeden der letzten sieben Tage. Du siehst Protein, Kohlenhydrate, Fett und Ballaststoffe in Gramm pro Tag.`,
+
+  "section-wochenansicht": `Das Wochenprotokoll zeigt dir alle Lebensmittel der letzten sieben Tage – wie das Tagesprotokoll, nur über eine ganze Woche. Du kannst zwischen Detailansicht und Summenansicht wechseln. In der Summenansicht werden gleiche Lebensmittel zusammengefasst. Die Sortierung funktioniert genauso wie im Tagesprotokoll – sag einfach den Namen der Spalte.`,
+
+  "section-vitamine-7-tage": `Hier siehst du deine Vitaminversorgung der letzten sieben Tage. Jede Kachel steht für ein Vitamin und zeigt dir in Prozent, wie gut du versorgt bist. Grün bedeutet gute Versorgung, Gelb bedeutet teilweise Versorgung, und Rot zeigt einen Mangel an. Tippe auf eine Kachel für mehr Details.`,
+
+  "section-mineralstoffe-7-tage": `Dieser Kasten zeigt dir deine Mineralstoffversorgung der letzten sieben Tage. Wie bei den Vitaminen zeigt jede Kachel den Deckungsgrad in Prozent an. Achte besonders auf Eisen, Calcium und Magnesium – diese Mineralstoffe sind häufig unterversorgt.`,
+
+  "section-ki-coach": `Der KI-Ernährungscoach analysiert deine Ernährungsdaten und gibt dir personalisierte Empfehlungen. Er berücksichtigt dein Profil, deine Ziele und deine tatsächliche Nahrungsaufnahme. Tippe auf „Analysieren", um eine neue Analyse zu starten.`,
+
+  "section-lebensmittelliste": `In der Lebensmittelliste findest du alle verfügbaren Lebensmittel mit ihren Nährwerten. Du kannst Lebensmittel suchen, neue hinzufügen, bestehende bearbeiten oder löschen. Die Liste dient als Grundlage für die Eingabe im Tagesprotokoll.`,
+
+  "section-gespeicherte-rezepte": `Hier verwaltest du deine gespeicherten Rezepte. Du kannst Rezepte manuell erstellen, aus einem Foto generieren oder von der KI vorschlagen lassen. Jedes Rezept enthält die Zutaten mit Mengenangaben und berechneten Nährwerten. Tippe auf ein Rezept, um es aufzuklappen und die Details zu sehen.`,
 };
 
 function loadHelpTexts(): Record<string, string> {
