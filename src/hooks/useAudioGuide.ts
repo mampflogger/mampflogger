@@ -107,14 +107,22 @@ export function useAudioGuide(profile: UserProfile | null) {
       try {
         notifySpeaking(true);
 
-        const blob = await synthesizeEdgeTTS(
+        const wantFemale = !profile || profile.gender === "male";
+        const result = await synthesizeEdgeTTS(
           text,
           pickVoiceName(profile),
           controller.signal,
         );
         if (controller.signal.aborted) return;
 
-        const url = URL.createObjectURL(blob);
+        if (result === "USE_SPEECH_SYNTHESIS") {
+          // Fallback to browser built-in speech
+          await speakWithBrowserTTS(text, wantFemale, 0.5, controller.signal);
+          notifySpeaking(false);
+          return;
+        }
+
+        const url = URL.createObjectURL(result);
         const audio = new Audio(url);
         audio.volume = 0.5;
         audioRef.current = audio;
