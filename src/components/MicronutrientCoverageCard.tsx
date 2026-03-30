@@ -46,6 +46,9 @@ interface MicronutrientCoverageCardProps {
   kind: "vitamins" | "minerals";
   highlighted?: boolean;
   sectionId: string;
+  editorOpenSection?: string | null;
+  getHelpText?: (sectionId: string) => string;
+  updateHelpText?: (sectionId: string, text: string) => void;
 }
 
 const DAYS_IN_WINDOW = 7;
