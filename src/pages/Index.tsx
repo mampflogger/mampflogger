@@ -1549,6 +1549,9 @@ const Index = () => {
         )}
       </main>
       
+      {voiceControlVisible && window.innerWidth >= 1024 && (
+        <VoiceControlOverlay activeSection={sectionNav.activeSection} />
+      )}
     </div>
   );
 };
