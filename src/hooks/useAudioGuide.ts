@@ -40,7 +40,7 @@ const DEFAULT_HELP_TEXTS: Record<string, string> = {
 
   "section-wochenansicht": `Das Wochenprotokoll zeigt dir alle Lebensmittel der letzten sieben Tage – wie das Tagesprotokoll, nur über eine ganze Woche. Du kannst zwischen Detailansicht und Summenansicht wechseln. In der Summenansicht werden gleiche Lebensmittel zusammengefasst. Die Sortierung funktioniert genauso wie im Tagesprotokoll – sag einfach den Namen der Spalte.`,
 
-  "section-vitamine-7-tage": `Hier siehst du deine Vitaminversorgung der letzten sieben Tage. Jede Kachel steht für ein Vitamin und zeigt dir in Prozent, wie gut du versorgt bist. Grün bedeutet gute Versorgung, Gelb bedeutet teilweise Versorgung, und Rot zeigt einen Mangel an. Tippe auf eine Kachel für mehr Details.`,
+  "section-vitamine-7-tage": `Hier siehst du deine Vitaminversorgung der letzten sieben Tage. Jede Kachel steht für ein Vitamin und zeigt dir in Prozent, wie gut du versorgt bist. Der Fortschrittsbalken füllt sich je nach Deckungsgrad. Tippe auf eine Kachel für mehr Details. Du kannst auch per Sprachbefehl ein einzelnes Vitamin aufrufen, zum Beispiel „Vitamin C".`,
 
   "section-mineralstoffe-7-tage": `Dieser Kasten zeigt dir deine Mineralstoffversorgung der letzten sieben Tage. Wie bei den Vitaminen zeigt jede Kachel den Deckungsgrad in Prozent an. Achte besonders auf Eisen, Calcium und Magnesium – diese Mineralstoffe sind häufig unterversorgt.`,
 
