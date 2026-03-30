@@ -159,6 +159,7 @@ const Index = () => {
    const [activityFocusRequestId, setActivityFocusRequestId] = useState<number | undefined>(undefined);
   const [dateFocused, setDateFocused] = useState(false);
   const [tableViewMode, setTableViewMode] = useState<TableViewMode>("detail");
+  const [voiceControlVisible, setVoiceControlVisible] = useState(false);
   
   const [highlightedTab, setHighlightedTab] = useState<string | null>(null);
   const highlightTabTimerRef = useRef<ReturnType<typeof setTimeout>>();
