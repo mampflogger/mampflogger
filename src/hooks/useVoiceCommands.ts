@@ -164,6 +164,7 @@ const COMMANDS: VoiceCommand[] = [
   { patterns: [/\b(?:escape|schließen|schliessen|zu\s*klappen|zuklappen|zumachen|abbrechen|cancel)\b/i], action: "field:close-dropdown" },
 
   // Actions
+  { patterns: [/\bhilfe\s*aus\b/i, /\bhelp\s*(?:stop|off|aus)\b/i], action: "action:help-stop" },
   { patterns: [/\bhilfe\b/i, /\bhelp\b/i], action: "action:help" },
   { patterns: [/\bmikro\s*aus\b/i, /\bmikrofon\s*aus\b/i, /\bmic\s*off\b/i, /\bmicro\s*off\b/i, /\bmikro\s*standby\b/i, /\bmikrofon\s*standby\b/i, /\bmic\s*standby\b/i, /\bmicro\s*standby\b/i], action: "action:mic-off" },
   { patterns: [/\bmikro\s*an\b/i, /\bmikrofon\s*an\b/i, /\bmic\s*on\b/i, /\bmicro\s*on\b/i], action: "action:mic-on" },

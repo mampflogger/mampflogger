@@ -30,7 +30,7 @@ import SectionHeading from "@/components/SectionHeading";
 import HelpContent from "@/components/HelpContent";
 
 import SettingsDialog, { ColorTheme } from "@/components/SettingsDialog";
-import { ChevronLeft, ChevronRight, BarChart3, List, Mic } from "lucide-react";
+import { ChevronLeft, ChevronRight, BarChart3, List, Mic, Ear } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useVoiceCommands, SECTION_PAGE_MAP, SECTION_SETTINGS_TAB } from "@/hooks/useVoiceCommands";
 import { useSectionNavigation } from "@/hooks/useSectionNavigation";
@@ -389,6 +389,10 @@ const Index = () => {
           window.scrollTo({ top: 0, behavior: "smooth" });
           focusFoodField(300);
         });
+        return;
+      }
+      else if (action === "action:help-stop") {
+        audioGuide.stop();
         return;
       }
       else if (action === "action:help") {
@@ -1286,6 +1290,34 @@ const Index = () => {
                   <Mic className="w-4 h-4" />
                 </Button>
               )}
+              <Button
+                variant="ghost"
+                size="icon"
+                className={`h-8 w-8 ${audioGuide.isSpeaking ? "ring-2 ring-primary animate-pulse" : ""}`}
+                onClick={() => {
+                  if (audioGuide.isSpeaking) {
+                    audioGuide.stop();
+                  } else {
+                    let currentSection = activeSectionRef.current;
+                    if (!currentSection) {
+                      const HEADER_OFFSET = 140;
+                      const TOLERANCE = 80;
+                      const allSections = Array.from(document.querySelectorAll("[data-section]"));
+                      for (const el of allSections) {
+                        const top = el.getBoundingClientRect().top;
+                        if (top >= HEADER_OFFSET - TOLERANCE && top <= HEADER_OFFSET + 300) {
+                          currentSection = el.id;
+                          break;
+                        }
+                      }
+                    }
+                    if (currentSection) audioGuide.speak(currentSection);
+                  }
+                }}
+                title={audioGuide.isSpeaking ? "Audio-Hilfe stoppen" : "Audio-Hilfe abspielen"}
+              >
+                <Ear className="w-4 h-4" />
+              </Button>
               <Button
                 variant="ghost"
                 size="icon"
