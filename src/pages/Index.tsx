@@ -1293,6 +1293,34 @@ const Index = () => {
               <Button
                 variant="ghost"
                 size="icon"
+                className={`h-8 w-8 ${audioGuide.isSpeaking ? "ring-2 ring-primary animate-pulse" : ""}`}
+                onClick={() => {
+                  if (audioGuide.isSpeaking) {
+                    audioGuide.stop();
+                  } else {
+                    let currentSection = activeSectionRef.current;
+                    if (!currentSection) {
+                      const HEADER_OFFSET = 140;
+                      const TOLERANCE = 80;
+                      const allSections = Array.from(document.querySelectorAll("[data-section]"));
+                      for (const el of allSections) {
+                        const top = el.getBoundingClientRect().top;
+                        if (top >= HEADER_OFFSET - TOLERANCE && top <= HEADER_OFFSET + 300) {
+                          currentSection = el.id;
+                          break;
+                        }
+                      }
+                    }
+                    if (currentSection) audioGuide.speak(currentSection);
+                  }
+                }}
+                title={audioGuide.isSpeaking ? "Audio-Hilfe stoppen" : "Audio-Hilfe abspielen"}
+              >
+                <Ear className="w-4 h-4" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
                 className={`h-8 w-8 ${activeTab === "log" && !settingsOpen ? "ring-2 ring-primary bg-muted" : ""} ${highlightedTab === "log" ? "section-card-highlight rounded-lg" : ""}`}
                 onClick={() => { setActiveTab("log"); window.scrollTo({ top: 0, behavior: "smooth" }); }}
                 title="Eingabe"
