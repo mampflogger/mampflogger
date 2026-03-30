@@ -42,7 +42,7 @@ const DEFAULT_HELP_TEXTS: Record<string, string> = {
 
   "section-vitamine-7-tage": `Hier siehst du deine Vitaminversorgung der letzten sieben Tage. Jede Kachel steht für ein Vitamin und zeigt dir in Prozent, wie gut du versorgt bist. Der Fortschrittsbalken füllt sich je nach Deckungsgrad. Tippe auf eine Kachel für mehr Details. Du kannst auch per Sprachbefehl ein einzelnes Vitamin aufrufen, zum Beispiel „Vitamin C".`,
 
-  "section-mineralstoffe-7-tage": `Dieser Kasten zeigt dir deine Mineralstoffversorgung der letzten sieben Tage. Wie bei den Vitaminen zeigt jede Kachel den Deckungsgrad in Prozent an. Achte besonders auf Eisen, Calcium und Magnesium – diese Mineralstoffe sind häufig unterversorgt.`,
+  "section-mineralstoffe-7-tage": `Dieser Kasten zeigt dir deine Mineralstoffversorgung der letzten sieben Tage. Wie bei den Vitaminen zeigt jede Kachel den Deckungsgrad in Prozent an. Der Fortschrittsbalken füllt sich entsprechend. Achte besonders auf Eisen, Calcium und Magnesium – diese Mineralstoffe sind häufig unterversorgt. Du kannst auch per Sprachbefehl einen einzelnen Mineralstoff aufrufen, zum Beispiel „Eisen" oder „Magnesium".`,
 
   "section-ki-coach": `Der KI-Ernährungscoach analysiert deine Ernährungsdaten und gibt dir personalisierte Empfehlungen. Er berücksichtigt dein Profil, deine Ziele und deine tatsächliche Nahrungsaufnahme. Tippe auf „Analysieren", um eine neue Analyse zu starten.`,
 
