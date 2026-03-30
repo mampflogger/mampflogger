@@ -1,5 +1,6 @@
 import { useMemo, useState, useEffect, useCallback } from "react";
 import { Pencil, Check, ChevronDown } from "lucide-react";
+import AudioGuideEditor from "@/components/AudioGuideEditor";
 import type { NutritionEntry } from "@/types/nutrition";
 import SectionHeading from "@/components/SectionHeading";
 import {
