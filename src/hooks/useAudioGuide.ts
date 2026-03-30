@@ -32,7 +32,7 @@ const DEFAULT_HELP_TEXTS: Record<string, string> = {
 
   "section-kalorien-pro-tag": `Dieses Diagramm zeigt dir die Kalorienaufnahme der letzten sieben Tage als Balkendiagramm. Jeder Balken steht für einen Tag. Dein Tagesziel wird als gestrichelte Linie angezeigt, sodass du sofort erkennst, an welchen Tagen du über oder unter dem Ziel lagst.`,
 
-  "section-defizit-pro-tag": `Hier siehst du dein tägliches Kaloriendefizit oder deinen Überschuss der letzten sieben Tage. Grüne Balken bedeuten ein Defizit – du hast weniger gegessen als verbraucht. Rote Balken zeigen einen Überschuss an.`,
+  "section-defizit-pro-tag": `Hier siehst du dein tägliches Kaloriendefizit oder deinen Überschuss der letzten sieben Tage als Balkendiagramm. Balken nach oben bedeuten ein Defizit – du hast weniger gegessen als verbraucht. Balken nach unten zeigen einen Überschuss an. Alle Balken sind in der Hauptfarbe der App dargestellt.`,
 
   "section-makro-verteilung": `Die Makro-Verteilung zeigt dir den Durchschnitt deiner Makronährstoffe über die letzten sieben Tage. Du siehst Protein, Kohlenhydrate, Fett und Ballaststoffe als Kreisdiagramm und in Prozent. So erkennst du langfristige Trends in deiner Ernährung.`,
 
@@ -40,9 +40,9 @@ const DEFAULT_HELP_TEXTS: Record<string, string> = {
 
   "section-wochenansicht": `Das Wochenprotokoll zeigt dir alle Lebensmittel der letzten sieben Tage – wie das Tagesprotokoll, nur über eine ganze Woche. Du kannst zwischen Detailansicht und Summenansicht wechseln. In der Summenansicht werden gleiche Lebensmittel zusammengefasst. Die Sortierung funktioniert genauso wie im Tagesprotokoll – sag einfach den Namen der Spalte.`,
 
-  "section-vitamine-7-tage": `Hier siehst du deine Vitaminversorgung der letzten sieben Tage. Jede Kachel steht für ein Vitamin und zeigt dir in Prozent, wie gut du versorgt bist. Grün bedeutet gute Versorgung, Gelb bedeutet teilweise Versorgung, und Rot zeigt einen Mangel an. Tippe auf eine Kachel für mehr Details.`,
+  "section-vitamine-7-tage": `Hier siehst du deine Vitaminversorgung der letzten sieben Tage. Jede Kachel steht für ein Vitamin und zeigt dir in Prozent, wie gut du versorgt bist. Der Fortschrittsbalken füllt sich je nach Deckungsgrad. Tippe auf eine Kachel für mehr Details. Du kannst auch per Sprachbefehl ein einzelnes Vitamin aufrufen, zum Beispiel „Vitamin C".`,
 
-  "section-mineralstoffe-7-tage": `Dieser Kasten zeigt dir deine Mineralstoffversorgung der letzten sieben Tage. Wie bei den Vitaminen zeigt jede Kachel den Deckungsgrad in Prozent an. Achte besonders auf Eisen, Calcium und Magnesium – diese Mineralstoffe sind häufig unterversorgt.`,
+  "section-mineralstoffe-7-tage": `Dieser Kasten zeigt dir deine Mineralstoffversorgung der letzten sieben Tage. Wie bei den Vitaminen zeigt jede Kachel den Deckungsgrad in Prozent an. Der Fortschrittsbalken füllt sich entsprechend. Achte besonders auf Eisen, Calcium und Magnesium – diese Mineralstoffe sind häufig unterversorgt. Du kannst auch per Sprachbefehl einen einzelnen Mineralstoff aufrufen, zum Beispiel „Eisen" oder „Magnesium".`,
 
   "section-ki-coach": `Der KI-Ernährungscoach analysiert deine Ernährungsdaten und gibt dir personalisierte Empfehlungen. Er berücksichtigt dein Profil, deine Ziele und deine tatsächliche Nahrungsaufnahme. Tippe auf „Analysieren", um eine neue Analyse zu starten.`,
 

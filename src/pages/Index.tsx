@@ -36,6 +36,7 @@ import { useVoiceCommands, SECTION_PAGE_MAP, SECTION_SETTINGS_TAB } from "@/hook
 import { useSectionNavigation } from "@/hooks/useSectionNavigation";
 import { useAudioGuide } from "@/hooks/useAudioGuide";
 import AudioGuideEditor from "@/components/AudioGuideEditor";
+import VoiceControlOverlay from "@/components/VoiceControlOverlay";
 import { parseSpokenSelectionIndex } from "@/lib/voiceSelection";
 
 // Voice-to-nutrient matching for info panel toggle
@@ -158,6 +159,7 @@ const Index = () => {
    const [activityFocusRequestId, setActivityFocusRequestId] = useState<number | undefined>(undefined);
   const [dateFocused, setDateFocused] = useState(false);
   const [tableViewMode, setTableViewMode] = useState<TableViewMode>("detail");
+  const [voiceControlVisible, setVoiceControlVisible] = useState(false);
   
   const [highlightedTab, setHighlightedTab] = useState<string | null>(null);
   const highlightTabTimerRef = useRef<ReturnType<typeof setTimeout>>();
@@ -419,6 +421,13 @@ const Index = () => {
       }
       else if (action === "action:editor-close") {
         audioGuide.closeEditor();
+        return;
+      }
+      else if (action === "action:voice-control-toggle") {
+        // Only on desktop (>= 1024px width)
+        if (window.innerWidth >= 1024) {
+          setVoiceControlVisible(prev => !prev);
+        }
         return;
       }
       else if (action === "action:mic-off") {
@@ -1540,6 +1549,9 @@ const Index = () => {
         )}
       </main>
       
+      {voiceControlVisible && window.innerWidth >= 1024 && (
+        <VoiceControlOverlay activeSection={sectionNav.activeSection} />
+      )}
     </div>
   );
 };

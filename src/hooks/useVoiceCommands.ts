@@ -92,8 +92,10 @@ const COMMANDS: VoiceCommand[] = [
   { patterns: [/\bcancel\b/i], action: "section:loeschen" },
 
   // Editor (secret)
-  { patterns: [/\beditor\s*öffnen\b/i, /\beditor\s*oeffnen\b/i, /\beditor\s*auf\b/i, /\beditor\s*open\b/i], action: "action:editor-open" },
-  { patterns: [/\beditor\s*schlie(?:ß|ss)en\b/i, /\beditor\s*schliessen\b/i, /\beditor\s*zu\b/i, /\beditor\s*close\b/i], action: "action:editor-close" },
+  { patterns: [/\beditor\s*öffnen\b/i, /\beditor\s*oeffnen\b/i, /\beditor\s*auf\b/i, /\beditor\s*open\b/i, /\btext\s*öffnen\b/i, /\btext\s*oeffnen\b/i, /\btext\s*auf\b/i, /\btext\s*open\b/i], action: "action:editor-open" },
+  { patterns: [/\beditor\s*schlie(?:ß|ss)en\b/i, /\beditor\s*schliessen\b/i, /\beditor\s*zu\b/i, /\beditor\s*close\b/i, /\btext\s*schlie(?:ß|ss)en\b/i, /\btext\s*schliessen\b/i, /\btext\s*zu\b/i, /\btext\s*close\b/i], action: "action:editor-close" },
+  // Voice Control debug overlay (secret, desktop only)
+  { patterns: [/\bvoice\s*control\b/i], action: "action:voice-control-toggle" },
 
   // Focus clear
   { patterns: [/\bfokus\s*(?:aus|weg|raus|entfernen)\b/i, /\bfocus\s*(?:off|clear|remove)\b/i, /\bkasten\s*(?:aus|verlassen|schließen)\b/i], action: "focus:clear" },

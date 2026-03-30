@@ -1,5 +1,6 @@
 import { useMemo, useState, useEffect, useCallback } from "react";
 import { Pencil, Check, ChevronDown } from "lucide-react";
+import AudioGuideEditor from "@/components/AudioGuideEditor";
 import type { NutritionEntry } from "@/types/nutrition";
 import SectionHeading from "@/components/SectionHeading";
 import {
@@ -45,6 +46,9 @@ interface MicronutrientCoverageCardProps {
   kind: "vitamins" | "minerals";
   highlighted?: boolean;
   sectionId: string;
+  editorOpenSection?: string | null;
+  getHelpText?: (sectionId: string) => string;
+  updateHelpText?: (sectionId: string, text: string) => void;
 }
 
 const DAYS_IN_WINDOW = 7;
@@ -57,6 +61,9 @@ const MicronutrientCoverageCard = ({
   kind,
   highlighted = false,
   sectionId,
+  editorOpenSection,
+  getHelpText,
+  updateHelpText,
 }: MicronutrientCoverageCardProps) => {
   const definitions = kind === "vitamins" ? VITAMIN_DEFINITIONS : MINERAL_DEFINITIONS;
 
@@ -216,6 +223,9 @@ const MicronutrientCoverageCard = ({
         <p className="mt-3 text-[10px] leading-relaxed text-muted-foreground">
           Schwefel hat keinen separaten DGE-Sollwert und wird daher nur informativ angezeigt.
         </p>
+      )}
+      {editorOpenSection === sectionId && getHelpText && updateHelpText && (
+        <AudioGuideEditor sectionId={sectionId} value={getHelpText(sectionId)} onChange={updateHelpText} />
       )}
     </div>
   );
