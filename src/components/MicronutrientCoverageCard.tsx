@@ -224,6 +224,9 @@ const MicronutrientCoverageCard = ({
           Schwefel hat keinen separaten DGE-Sollwert und wird daher nur informativ angezeigt.
         </p>
       )}
+      {editorOpenSection === sectionId && getHelpText && updateHelpText && (
+        <AudioGuideEditor sectionId={sectionId} value={getHelpText(sectionId)} onChange={updateHelpText} />
+      )}
     </div>
   );
 };
