@@ -32,7 +32,7 @@ const DEFAULT_HELP_TEXTS: Record<string, string> = {
 
   "section-kalorien-pro-tag": `Dieses Diagramm zeigt dir die Kalorienaufnahme der letzten sieben Tage als Balkendiagramm. Jeder Balken steht für einen Tag. Dein Tagesziel wird als gestrichelte Linie angezeigt, sodass du sofort erkennst, an welchen Tagen du über oder unter dem Ziel lagst.`,
 
-  "section-defizit-pro-tag": `Hier siehst du dein tägliches Kaloriendefizit oder deinen Überschuss der letzten sieben Tage. Grüne Balken bedeuten ein Defizit – du hast weniger gegessen als verbraucht. Rote Balken zeigen einen Überschuss an.`,
+  "section-defizit-pro-tag": `Hier siehst du dein tägliches Kaloriendefizit oder deinen Überschuss der letzten sieben Tage als Balkendiagramm. Balken nach oben bedeuten ein Defizit – du hast weniger gegessen als verbraucht. Balken nach unten zeigen einen Überschuss an. Alle Balken sind in der Hauptfarbe der App dargestellt.`,
 
   "section-makro-verteilung": `Die Makro-Verteilung zeigt dir den Durchschnitt deiner Makronährstoffe über die letzten sieben Tage. Du siehst Protein, Kohlenhydrate, Fett und Ballaststoffe als Kreisdiagramm und in Prozent. So erkennst du langfristige Trends in deiner Ernährung.`,
 
