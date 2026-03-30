@@ -423,6 +423,13 @@ const Index = () => {
         audioGuide.closeEditor();
         return;
       }
+      else if (action === "action:voice-control-toggle") {
+        // Only on desktop (>= 1024px width)
+        if (window.innerWidth >= 1024) {
+          setVoiceControlVisible(prev => !prev);
+        }
+        return;
+      }
       else if (action === "action:mic-off") {
         voiceCommands.disarm();
         return;
