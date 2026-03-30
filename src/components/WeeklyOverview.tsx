@@ -606,6 +606,9 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
         kind="vitamins"
         highlighted={hl === "section-vitamine-7-tage"}
         sectionId="section-vitamine-7-tage"
+        editorOpenSection={editorOpenSection}
+        getHelpText={getHelpText}
+        updateHelpText={updateHelpText}
       />
 
       <MicronutrientCoverageCard
@@ -616,6 +619,9 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
         kind="minerals"
         highlighted={hl === "section-mineralstoffe-7-tage"}
         sectionId="section-mineralstoffe-7-tage"
+        editorOpenSection={editorOpenSection}
+        getHelpText={getHelpText}
+        updateHelpText={updateHelpText}
       />
 
       {/* AI Nutrition Coach */}
