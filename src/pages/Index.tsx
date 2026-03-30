@@ -391,6 +391,10 @@ const Index = () => {
         });
         return;
       }
+      else if (action === "action:help-stop") {
+        audioGuide.stop();
+        return;
+      }
       else if (action === "action:help") {
         // Play audio help for the currently active section, fallback to visible section
         let currentSection = activeSectionRef.current;
