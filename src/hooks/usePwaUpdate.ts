@@ -9,7 +9,7 @@ function snapshotLocalStorage(): string {
     const key = localStorage.key(i);
     if (!key) continue;
     // Persist everything relevant – mampflogger-* keys AND the legacy nutrition key
-    if (key.startsWith("mampflogger-") || key === "nutrition-log-entries") {
+    if (key.startsWith("mampflogger-") || key === "nutrition-log-entries" || key === "nutrition-log-profile" || key === "nutrition-log-activities") {
       snapshot[key] = localStorage.getItem(key) ?? "";
     }
   }

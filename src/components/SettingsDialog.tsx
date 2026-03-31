@@ -1348,6 +1348,24 @@ const SettingsDialog = ({
                     <Mic className="w-4 h-4" />
                   </Button>
                 )}
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className={`h-8 w-8 ${isAudioGuideSpeaking ? "ring-2 ring-primary animate-pulse" : ""}`}
+                  onClick={() => {
+                    if (isAudioGuideSpeaking) {
+                      onAudioGuideStop?.();
+                    } else {
+                      // Find active settings section and play its help
+                      if (activeSettingsSection) {
+                        onPlaySettingsHelp?.(activeSettingsSection);
+                      }
+                    }
+                  }}
+                  title={isAudioGuideSpeaking ? "Audio-Hilfe stoppen" : "Audio-Hilfe abspielen"}
+                >
+                  <Ear className="w-4 h-4" />
+                </Button>
                 <Button variant="ghost" size="icon" className="h-8 w-8" title="Eingabe" onClick={() => { handleOpen(false); onSetActiveTab("log"); }}>
                   <List className="w-4 h-4" />
                 </Button>
