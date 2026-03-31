@@ -49,6 +49,20 @@ const DEFAULT_HELP_TEXTS: Record<string, string> = {
   "section-lebensmittelliste": `In der Lebensmittelliste findest du alle verfügbaren Lebensmittel mit ihren Nährwerten. Du kannst Lebensmittel suchen, neue hinzufügen, bestehende bearbeiten oder löschen. Die Liste dient als Grundlage für die Eingabe im Tagesprotokoll.`,
 
   "section-gespeicherte-rezepte": `Hier verwaltest du deine gespeicherten Rezepte. Du kannst Rezepte manuell erstellen, aus einem Foto generieren oder von der KI vorschlagen lassen. Jedes Rezept enthält die Zutaten mit Mengenangaben und berechneten Nährwerten. Tippe auf ein Rezept, um es aufzuklappen und die Details zu sehen.`,
+
+  "section-persoenliche-daten": `In den persönlichen Daten gibst du deinen Namen, dein Geschlecht, Geburtsjahr, Größe und Gewicht ein. Diese Angaben werden für die Berechnung deines Grundumsatzes und BMI verwendet. Vergiss nicht, auf „Profil speichern" zu drücken, damit deine Daten erhalten bleiben.`,
+
+  "section-ziele": `Hier legst du deine persönlichen Ziele fest. Du kannst ein Zielgewicht, ein tägliches Kaloriendefizit, einen Aktivitätsbonus und ein Flüssigkeitsziel definieren. Außerdem kannst du Zielwerte für Protein, Fett, Kohlenhydrate und Ballaststoffe in Gramm angeben. Diese Ziele werden in der Statistik als Markierungen angezeigt.`,
+
+  "section-import": `Im Import-Bereich kannst du Daten aus CSV-Dateien laden. Du kannst Ernährungseinträge, Kalorienbilanz-Daten oder Lebensmitteldatenbanken importieren. Wähle den passenden Import-Typ und lade die Datei hoch oder füge den Text direkt ein.`,
+
+  "section-export": `Hier kannst du deine Daten als CSV-Dateien exportieren. Du hast die Wahl zwischen verschiedenen Export-Formaten: Ernährungseinträge, Lebensmitteldatenbank, Kalorienbilanz oder Aktivitäten. Die exportierten Dateien kannst du in anderen Programmen wie Excel öffnen.`,
+
+  "section-backup": `Im Backup-Bereich kannst du eine lokale Sicherungsdatei deiner gesamten App-Daten erstellen. Das Backup enthält alle Einträge, Einstellungen und Lebensmitteldaten als JSON-Datei. Du kannst ein Backup auch wiederherstellen, um deine Daten auf einem anderen Gerät zu laden.`,
+
+  "section-cloud-backup": `Das Cloud-Backup synchronisiert deine Daten automatisch in die Cloud. Du erhältst einen sechsstelligen Sync-Code, mit dem du deine Daten auf anderen Geräten wiederherstellen kannst. Aktiviere die Echtzeit-Synchronisation, damit Änderungen sofort gesichert werden.`,
+
+  "section-loeschen": `Im Lösch-Bereich kannst du gezielt Daten entfernen. Du kannst einen Zeitraum angeben, um nur bestimmte Einträge zu löschen, oder alle Daten auf einmal zurücksetzen. Jede Löschaktion erfordert eine Bestätigung, damit nichts versehentlich verloren geht.`,
 };
 
 function loadHelpTexts(): Record<string, string> {
