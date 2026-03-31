@@ -139,7 +139,7 @@ const SettingsDialog = ({
   voiceCloseRequest, onVoiceCloseHandled,
   onOpenChange: onOpenChangeProp, onTabChange,
   isMicSupported, isMicListening, onMicToggle,
-  isAudioGuideEnabled, onAudioGuideToggle, onAudioGuideStop,
+  isAudioGuideEnabled, onAudioGuideToggle, onAudioGuideStop, isAudioGuideSpeaking, onPlaySettingsHelp,
   voiceAction, onVoiceActionHandled,
   highlightedTab,
   profileVoiceInputRef,
