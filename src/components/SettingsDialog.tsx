@@ -100,6 +100,8 @@ interface SettingsDialogProps {
   isAudioGuideEnabled?: boolean;
   onAudioGuideToggle?: () => void;
   onAudioGuideStop?: () => void;
+  isAudioGuideSpeaking?: boolean;
+  onPlaySettingsHelp?: (sectionId: string) => void;
   voiceAction?: string | null;
   onVoiceActionHandled?: () => void;
   highlightedTab?: boolean;
