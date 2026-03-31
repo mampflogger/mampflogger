@@ -918,9 +918,7 @@ const ActivityInput = ({
               className="h-full rounded-full transition-all duration-500"
               style={{
                 width: `${Math.min(100, Math.round((activityBonus / goalActivityBonus) * 100))}%`,
-                backgroundColor: activityBonus >= goalActivityBonus
-                  ? "hsl(var(--success))"
-                  : "hsl(var(--primary))",
+                backgroundColor: "hsl(var(--primary))",
               }}
             />
           </div>

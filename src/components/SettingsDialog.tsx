@@ -25,7 +25,7 @@ import {
   Settings, Sun, Moon, Trash2, Upload, Download, UserCircle, Save, Check,
   AlertCircle, FileSpreadsheet, UtensilsCrossed, Palette, BarChart3, FileUp,
   ChevronLeft, ChevronRight, RefreshCw, List, Sparkles, Loader2, HardDrive, BookOpen, Search,
-  X, Mic, HelpCircle,
+  X, Mic, HelpCircle, Ear,
 } from "lucide-react";
 import CookIcon from "@/components/CookIcon";
 import { supabase } from "@/integrations/supabase/client";
@@ -100,6 +100,8 @@ interface SettingsDialogProps {
   isAudioGuideEnabled?: boolean;
   onAudioGuideToggle?: () => void;
   onAudioGuideStop?: () => void;
+  isAudioGuideSpeaking?: boolean;
+  onPlaySettingsHelp?: (sectionId: string) => void;
   voiceAction?: string | null;
   onVoiceActionHandled?: () => void;
   highlightedTab?: boolean;
@@ -137,7 +139,7 @@ const SettingsDialog = ({
   voiceCloseRequest, onVoiceCloseHandled,
   onOpenChange: onOpenChangeProp, onTabChange,
   isMicSupported, isMicListening, onMicToggle,
-  isAudioGuideEnabled, onAudioGuideToggle, onAudioGuideStop,
+  isAudioGuideEnabled, onAudioGuideToggle, onAudioGuideStop, isAudioGuideSpeaking, onPlaySettingsHelp,
   voiceAction, onVoiceActionHandled,
   highlightedTab,
   profileVoiceInputRef,
@@ -1348,6 +1350,24 @@ const SettingsDialog = ({
                     <Mic className="w-4 h-4" />
                   </Button>
                 )}
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className={`h-8 w-8 ${isAudioGuideSpeaking ? "ring-2 ring-primary animate-pulse" : ""}`}
+                  onClick={() => {
+                    if (isAudioGuideSpeaking) {
+                      onAudioGuideStop?.();
+                    } else {
+                      // Find active settings section and play its help
+                      if (activeSettingsSection) {
+                        onPlaySettingsHelp?.(activeSettingsSection);
+                      }
+                    }
+                  }}
+                  title={isAudioGuideSpeaking ? "Audio-Hilfe stoppen" : "Audio-Hilfe abspielen"}
+                >
+                  <Ear className="w-4 h-4" />
+                </Button>
                 <Button variant="ghost" size="icon" className="h-8 w-8" title="Eingabe" onClick={() => { handleOpen(false); onSetActiveTab("log"); }}>
                   <List className="w-4 h-4" />
                 </Button>
