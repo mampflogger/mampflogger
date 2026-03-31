@@ -1377,6 +1377,8 @@ const Index = () => {
                 isAudioGuideEnabled={audioGuide.enabled}
                 onAudioGuideToggle={audioGuide.toggle}
                 onAudioGuideStop={audioGuide.stop}
+                isAudioGuideSpeaking={audioGuide.isSpeaking}
+                onPlaySettingsHelp={(sectionId: string) => audioGuide.speak(sectionId)}
                 voiceAction={settingsVoiceAction}
                 onVoiceActionHandled={() => setSettingsVoiceAction(null)}
                 highlightedTab={highlightedTab === "settings"}
