@@ -396,8 +396,17 @@ const Index = () => {
         return;
       }
       else if (action === "action:help") {
-        // Play audio help for the currently active section, fallback to visible section
+        // Play audio help for the currently active section
         let currentSection = activeSectionRef.current;
+        
+        // If settings is open, check for active settings section
+        if (settingsOpenRef.current) {
+          const activeSettingsEl = document.querySelector('[role="dialog"] [data-section-active="true"]');
+          if (activeSettingsEl?.id) {
+            currentSection = activeSettingsEl.id;
+          }
+        }
+        
         if (!currentSection) {
           // Detect the section currently most visible at the header offset
           const HEADER_OFFSET = 140;
