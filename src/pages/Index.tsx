@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useRef, useCallback } from "react";
-import { useSearchParams } from "react-router-dom";
-
+import { useSearchParams, useNavigate } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
 import { NutritionEntry, formatDate, calculateDailySummary } from "@/types/nutrition";
 import { syncRemoteFoodDatabase, loadRemoteUrl } from "@/lib/remoteFoodSync";
 import {
