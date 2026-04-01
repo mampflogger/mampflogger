@@ -113,6 +113,43 @@ const SECTION_LOCAL_COMMANDS: Record<string, [string, string][]> = {
   "section-ki-coach": [
     ["Analyse / Coach", "Analyse starten"],
   ],
+  "section-persoenliche-daten": [
+    ["Name / Geburtsjahr / Größe / Gewicht", "Werte eingeben"],
+    ["Profil speichern", "Eingaben speichern"],
+    ["Weiter / Next", "Nächstes Feld"],
+  ],
+  "section-ziele": [
+    ["Kalorienziel / Proteinziel", "Werte eingeben"],
+    ["Profil speichern", "Eingaben speichern"],
+  ],
+  "section-lebensmittelliste": [
+    ["Lebensmittelname", "Suche in der Liste"],
+    ["Neues Lebensmittel", "Neuen Eintrag erstellen"],
+    ["Okay / OK", "Eintrag speichern"],
+    ["Zurück / Back", "Editor schließen"],
+  ],
+  "section-gespeicherte-rezepte": [
+    ["Neues Rezept", "Rezept erstellen"],
+    ["Rezept Foto", "Foto-Import"],
+    ["Rezeptname", "Rezeptsuche"],
+  ],
+  "section-design": [
+    ["Dark Mode / Light Mode", "Modus wechseln"],
+    ["Design + Farbe", "z.B. 'Design blau'"],
+  ],
+  "section-export": [
+    ["(keine lokalen Befehle)", "Nur Anzeige"],
+  ],
+  "section-backup": [
+    ["Backup erstellen", "Lokales Backup"],
+    ["Backup laden", "Backup wiederherstellen"],
+  ],
+  "section-cloud-backup": [
+    ["(keine lokalen Befehle)", "Nur Anzeige"],
+  ],
+  "section-loeschen": [
+    ["(keine lokalen Befehle)", "Nur Anzeige"],
+  ],
 };
 
 const SECTION_LABELS: Record<string, string> = {
@@ -133,6 +170,15 @@ const SECTION_LABELS: Record<string, string> = {
   "section-vitamine-7-tage": "Vitamine",
   "section-mineralstoffe-7-tage": "Mineralstoffe",
   "section-ki-coach": "KI Coach",
+  "section-persoenliche-daten": "Persönliche Daten",
+  "section-ziele": "Ziele",
+  "section-lebensmittelliste": "Lebensmittelliste",
+  "section-gespeicherte-rezepte": "Rezepte",
+  "section-design": "Design",
+  "section-export": "Export",
+  "section-backup": "Backup (Lokal)",
+  "section-cloud-backup": "Cloud-Backup",
+  "section-loeschen": "Daten löschen",
 };
 
 interface VoiceControlOverlayProps {

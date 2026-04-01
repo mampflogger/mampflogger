@@ -44,6 +44,7 @@ import { syncRemoteFoodDatabase, loadRemoteUrl } from "@/lib/remoteFoodSync";
 import RecipeGenerator from "@/components/RecipeGenerator";
 import RecipesTab from "@/components/RecipesTab";
 import { CloudBackupSettings } from "@/components/CloudBackupSettings";
+import VoiceControlOverlay from "@/components/VoiceControlOverlay";
 
 type SettingsTab = "profile" | "design" | "food" | "recipes" | "data";
 
@@ -106,6 +107,7 @@ interface SettingsDialogProps {
   onVoiceActionHandled?: () => void;
   highlightedTab?: boolean;
   profileVoiceInputRef?: React.MutableRefObject<((transcript: string, isInterim: boolean) => void) | undefined>;
+  voiceControlVisible?: boolean;
 }
 
 type ImportType = "csv-entries" | "csv-balance" | "csv-food";
@@ -143,6 +145,7 @@ const SettingsDialog = ({
   voiceAction, onVoiceActionHandled,
   highlightedTab,
   profileVoiceInputRef,
+  voiceControlVisible,
 }: SettingsDialogProps) => {
   const [open, setOpen] = useState(initialOpen ?? false);
   const [tab, setTab] = useState<SettingsTab>(initialTab ?? "profile");
@@ -2526,6 +2529,9 @@ const SettingsDialog = ({
         )}
           </div>
         </main>
+      {voiceControlVisible && window.innerWidth >= 1024 && (
+        <VoiceControlOverlay activeSection={activeSettingsSection} />
+      )}
       </DialogContent>
     </Dialog>
   );
