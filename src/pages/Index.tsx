@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useRef, useCallback } from "react";
-import { useSearchParams } from "react-router-dom";
-
+import { useSearchParams, useNavigate } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
 import { NutritionEntry, formatDate, calculateDailySummary } from "@/types/nutrition";
 import { syncRemoteFoodDatabase, loadRemoteUrl } from "@/lib/remoteFoodSync";
 import {
@@ -30,7 +30,7 @@ import SectionHeading from "@/components/SectionHeading";
 import HelpContent from "@/components/HelpContent";
 
 import SettingsDialog, { ColorTheme } from "@/components/SettingsDialog";
-import { ChevronLeft, ChevronRight, BarChart3, List, Mic, Ear } from "lucide-react";
+import { ChevronLeft, ChevronRight, BarChart3, List, Mic, Ear, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useVoiceCommands, SECTION_PAGE_MAP, SECTION_SETTINGS_TAB } from "@/hooks/useVoiceCommands";
 import { useSectionNavigation } from "@/hooks/useSectionNavigation";
@@ -132,6 +132,8 @@ function getNutrientKindForSection(sectionId: string | null): "vitamins" | "mine
 
 const Index = () => {
   const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const { signOut } = useAuth();
   const settingsParam = searchParams.get("settings");
 
   useEffect(() => {
@@ -1401,6 +1403,15 @@ const Index = () => {
                 title="Hilfe"
               >
                 <span className="text-base font-bold">?</span>
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                onClick={async () => { await signOut(); navigate("/"); }}
+                title="Ausloggen"
+              >
+                <LogOut className="w-4 h-4" />
               </Button>
             </div>
           </div>

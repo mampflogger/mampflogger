@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Zap, Activity, BarChart3, Minimize2, Lock, Share, Plus, Smartphone } from "lucide-react";
+import { Zap, Activity, BarChart3, Minimize2, Shield, Share, Plus, Smartphone } from "lucide-react";
 import VisitorCounter from "@/components/VisitorCounter";
 import CommentSection from "@/components/CommentSection";
 
@@ -27,9 +27,9 @@ const features = [
     desc: "Kein Schnickschnack. Nur du und deine Daten.",
   },
   {
-    icon: Lock,
-    title: "Keine Anmeldung. Keine Werbung. Keine Kosten.",
-    desc: "Deine Daten bleiben auf deinem Gerät. Komplett privat.",
+    icon: Shield,
+    title: "Sicher & Kostenlos",
+    desc: "Erstelle deinen kostenlosen Account und synchronisiere deine Daten sicher über die Cloud zwischen all deinen Geräten.",
   },
 ];
 
@@ -63,10 +63,10 @@ const LearnMore = () => {
           </div>
           <div className="flex items-center gap-1.5">
             <Button size="sm" variant="outline" className="px-2.5 text-xs" onClick={() => navigate("/")}>
-              Learn more
+              Startseite
             </Button>
-            <Button size="sm" className="px-2.5 text-xs" onClick={() => navigate("/app")}>
-              App öffnen
+            <Button size="sm" className="px-2.5 text-xs" onClick={() => navigate("/auth")}>
+              Login / Registrieren
             </Button>
           </div>
         </div>
@@ -111,7 +111,7 @@ const LearnMore = () => {
             <p className="font-bold text-base">App aufs iPhone – in 3 Schritten</p>
           </div>
           <p className="text-muted-foreground text-xs mb-5 leading-relaxed">
-            Kein App Store. Kein Konto. Einfach die Seite im Browser öffnen und als App speichern.
+            Kein App Store nötig. Einfach die Seite im Browser öffnen und als App speichern.
           </p>
           <div className="grid gap-3">
             <div className="flex items-start gap-3">
@@ -174,9 +174,9 @@ const LearnMore = () => {
           <Button
             size="lg"
             className="text-base px-8 py-5 font-bold shadow-lg"
-            onClick={() => navigate("/app?settings=profile")}
+            onClick={() => navigate("/auth")}
           >
-            Jetzt starten →
+            Kostenlos registrieren →
           </Button>
         </div>
       </section>
@@ -187,7 +187,7 @@ const LearnMore = () => {
       {/* Footer */}
       <footer className="border-t border-border">
         <div className="max-w-2xl mx-auto px-5 py-4 text-center text-xs text-muted-foreground flex flex-col items-center gap-0.5">
-          <span>Keine Anmeldung · Keine Werbung · Keine Kosten</span>
+          <span>Kostenlos · Keine Werbung · Cloud-Sync inklusive</span>
           <VisitorCounter />
           
           <a href="/impressum" className="hover:text-foreground transition-colors">Impressum</a>

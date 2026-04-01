@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
-export function useCloudBackup(syncCode: string | null) {
+export function useCloudBackup(userId: string | null) {
   const [lastSync, setLastSync] = useState<Date | null>(null);
 
   useEffect(() => {
-    if (!syncCode) return;
+    if (!userId) return;
 
     let debounceTimer: ReturnType<typeof setTimeout>;
 
@@ -14,16 +14,14 @@ export function useCloudBackup(syncCode: string | null) {
       const snapshot: Record<string, string> = {};
       for (let i = 0; i < localStorage.length; i++) {
         const key = localStorage.key(i);
-        if (key && (key.startsWith("mampflogger-") || key === "nutrition-log-entries")) {
-          // exclude the sync code itself from backup just in case
-          if (key !== "mampflogger-sync-code") {
-            snapshot[key] = localStorage.getItem(key) ?? "";
-          }
+        if (key && (key.startsWith("mampflogger-") || key === "nutrition-log-entries" || key === "nutrition-log-profile" || key === "nutrition-log-activities")) {
+          snapshot[key] = localStorage.getItem(key) ?? "";
         }
       }
 
       const { error } = await supabase.from('cloud_backups').upsert({
-        id: syncCode,
+        id: userId,
+        user_id: userId,
         data: snapshot,
         updated_at: new Date().toISOString()
       });
@@ -39,20 +37,19 @@ export function useCloudBackup(syncCode: string | null) {
       debounceTimer = setTimeout(syncToCloud, 2000);
     };
 
-    // We monkey patch setItem and removeItem for the relevant keys
     const originalSetItem = localStorage.setItem;
     const originalRemoveItem = localStorage.removeItem;
 
     localStorage.setItem = function(key, value) {
       originalSetItem.apply(this, [key, value]);
-      if (key.startsWith("mampflogger-") || key === "nutrition-log-entries") {
+      if (key.startsWith("mampflogger-") || key === "nutrition-log-entries" || key === "nutrition-log-profile" || key === "nutrition-log-activities") {
         handleStorageChange();
       }
     };
 
     localStorage.removeItem = function(key) {
       originalRemoveItem.apply(this, [key]);
-      if (key.startsWith("mampflogger-") || key === "nutrition-log-entries") {
+      if (key.startsWith("mampflogger-") || key === "nutrition-log-entries" || key === "nutrition-log-profile" || key === "nutrition-log-activities") {
         handleStorageChange();
       }
     };
@@ -65,7 +62,7 @@ export function useCloudBackup(syncCode: string | null) {
       localStorage.setItem = originalSetItem;
       localStorage.removeItem = originalRemoveItem;
     };
-  }, [syncCode]);
+  }, [userId]);
 
   return { lastSync };
 }

@@ -35,8 +35,11 @@ const Landing = () => {
             <Button size="sm" variant="outline" className="h-8 px-2 text-xs" onClick={() => navigate("/more")}>
               Learn more
             </Button>
-            <Button size="sm" className="h-8 px-2 text-xs" onClick={() => navigate("/app")}>
-              App öffnen
+            <Button size="sm" variant="outline" className="h-8 px-2 text-xs" onClick={() => navigate("/auth")}>
+              Login
+            </Button>
+            <Button size="sm" className="h-8 px-2 text-xs" onClick={() => navigate("/auth")}>
+              Registrieren
             </Button>
           </div>
         </div>
@@ -45,7 +48,7 @@ const Landing = () => {
       {/* Hero */}
       <section className="max-w-2xl mx-auto px-5 pt-5 pb-6 text-center flex-1 flex flex-col justify-center">
         <div className="inline-block mb-4 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-semibold uppercase tracking-widest mx-auto">
-          Free · No Account · No Ads
+          Free · No Ads · Cloud Sync
         </div>
         <p className="text-muted-foreground text-sm sm:text-lg leading-relaxed mb-5">
           <strong className="text-foreground">MampfLogger</strong> ist deine kostenlose Ernährungs-App mit super smarten KI-Funktionen. Damit zählst du nicht nur stumpf Kalorien, sondern checkst genau, ob dein Körper alle Nährstoffe bekommt, die er braucht.{" "}
@@ -62,16 +65,16 @@ const Landing = () => {
         <Button
           size="lg"
           className="text-base px-8 py-5 font-bold shadow-lg mx-auto"
-          onClick={() => navigate("/app?settings=profile")}
+          onClick={() => navigate("/auth")}
         >
-          Jetzt starten →
+          Kostenlos registrieren →
         </Button>
       </section>
 
       {/* Footer */}
       <footer className="border-t border-border">
         <div className="max-w-2xl mx-auto px-5 py-4 text-center text-xs text-muted-foreground flex flex-col items-center gap-0.5">
-          <span>Keine Anmeldung · Keine Werbung · Keine Kosten</span>
+          <span>Kostenlos · Keine Werbung · Cloud-Sync inklusive</span>
           <VisitorCounter />
           
           <a href="/impressum" className="hover:text-foreground transition-colors">Impressum</a>
