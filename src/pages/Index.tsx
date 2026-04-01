@@ -1404,6 +1404,15 @@ const Index = () => {
               >
                 <span className="text-base font-bold">?</span>
               </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                onClick={async () => { await signOut(); navigate("/"); }}
+                title="Ausloggen"
+              >
+                <LogOut className="w-4 h-4" />
+              </Button>
             </div>
           </div>
         </div>
