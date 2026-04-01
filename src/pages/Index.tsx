@@ -132,6 +132,8 @@ function getNutrientKindForSection(sectionId: string | null): "vitamins" | "mine
 
 const Index = () => {
   const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const { signOut } = useAuth();
   const settingsParam = searchParams.get("settings");
 
   useEffect(() => {
