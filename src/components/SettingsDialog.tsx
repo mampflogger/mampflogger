@@ -44,6 +44,7 @@ import { syncRemoteFoodDatabase, loadRemoteUrl } from "@/lib/remoteFoodSync";
 import RecipeGenerator from "@/components/RecipeGenerator";
 import RecipesTab from "@/components/RecipesTab";
 import { CloudBackupSettings } from "@/components/CloudBackupSettings";
+import VoiceControlOverlay from "@/components/VoiceControlOverlay";
 
 type SettingsTab = "profile" | "design" | "food" | "recipes" | "data";
 

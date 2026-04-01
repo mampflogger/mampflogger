@@ -1391,6 +1391,7 @@ const Index = () => {
                 voiceAction={settingsVoiceAction}
                 onVoiceActionHandled={() => setSettingsVoiceAction(null)}
                 highlightedTab={highlightedTab === "settings"}
+                voiceControlVisible={voiceControlVisible}
               />
               <Button
                 variant="ghost"
