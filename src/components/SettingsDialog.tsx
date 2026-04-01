@@ -144,6 +144,7 @@ const SettingsDialog = ({
   voiceAction, onVoiceActionHandled,
   highlightedTab,
   profileVoiceInputRef,
+  voiceControlVisible,
 }: SettingsDialogProps) => {
   const [open, setOpen] = useState(initialOpen ?? false);
   const [tab, setTab] = useState<SettingsTab>(initialTab ?? "profile");
