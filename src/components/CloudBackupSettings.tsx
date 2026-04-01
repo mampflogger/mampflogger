@@ -8,8 +8,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useCloudBackup } from "@/hooks/useCloudBackup";
 
 const generateSyncCode = () => {
-  return Array.from({ length: 2 }, () => 
-    (Math.random() * 1000000).toString(36).slice(0, 3).toUpperCase()
+  return Array.from({ length: 5 }, () => 
+    (Math.random() * 1000000).toString(36).slice(0, 4).toUpperCase()
   ).join('-');
 };
 
