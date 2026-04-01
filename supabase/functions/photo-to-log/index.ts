@@ -138,7 +138,7 @@ Beispiel:
   } catch (e) {
     console.error("photo-to-log error:", e);
     return new Response(
-      JSON.stringify({ error: e instanceof Error ? e.message : "Unknown error" }),
+      JSON.stringify({ error: "Ein interner Fehler ist aufgetreten." }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }

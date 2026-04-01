@@ -116,8 +116,8 @@ Beispiel: [{"i":0,"vgn":"J","gi":35,"vitC":12.5},{"i":1,"category":"Gemüse","ca
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
-      return new Response(JSON.stringify({ error: `AI error ${response.status}` }), {
-        status: response.status,
+      return new Response(JSON.stringify({ error: "KI-Klassifizierung fehlgeschlagen." }), {
+        status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
