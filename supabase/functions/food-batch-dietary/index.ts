@@ -116,8 +116,8 @@ Beispiel: [{"i":0,"vgn":"J","gi":35,"vitC":12.5},{"i":1,"category":"Gemüse","ca
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
-      return new Response(JSON.stringify({ error: `AI error ${response.status}` }), {
-        status: response.status,
+      return new Response(JSON.stringify({ error: "KI-Klassifizierung fehlgeschlagen." }), {
+        status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
@@ -129,7 +129,7 @@ Beispiel: [{"i":0,"vgn":"J","gi":35,"vitC":12.5},{"i":1,"category":"Gemüse","ca
     const jsonMatch = content.match(/\[[\s\S]*\]/);
     if (!jsonMatch) {
       console.error("No JSON array found in response:", content.substring(0, 500));
-      return new Response(JSON.stringify({ error: "No valid response", raw: content.substring(0, 200) }), {
+      return new Response(JSON.stringify({ error: "Klassifizierung fehlgeschlagen." }), {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
@@ -142,7 +142,7 @@ Beispiel: [{"i":0,"vgn":"J","gi":35,"vitC":12.5},{"i":1,"category":"Gemüse","ca
   } catch (e) {
     console.error("food-batch-dietary error:", e);
     return new Response(
-      JSON.stringify({ error: e instanceof Error ? e.message : "Unknown error" }),
+      JSON.stringify({ error: "Ein interner Fehler ist aufgetreten." }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }

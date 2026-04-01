@@ -14,3 +14,9 @@ verify_jwt = false
 
 [functions.recipe-recalculate]
 verify_jwt = false
+
+[functions.photo-to-recipe]
+verify_jwt = false
+
+[functions.food-batch-dietary]
+verify_jwt = false
