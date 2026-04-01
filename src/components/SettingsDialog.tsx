@@ -2528,6 +2528,9 @@ const SettingsDialog = ({
         )}
           </div>
         </main>
+      {voiceControlVisible && window.innerWidth >= 1024 && (
+        <VoiceControlOverlay activeSection={activeSettingsSection} />
+      )}
       </DialogContent>
     </Dialog>
   );
