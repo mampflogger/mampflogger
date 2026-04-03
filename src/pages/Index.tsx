@@ -164,6 +164,8 @@ const Index = () => {
   const [dateFocused, setDateFocused] = useState(false);
   const [tableViewMode, setTableViewMode] = useState<TableViewMode>("detail");
   const [voiceControlVisible, setVoiceControlVisible] = useState(false);
+  const [supplements, setSupplements] = useState<Supplement[]>(() => loadSupplements());
+  const supplementVoiceRef = useRef<((transcript: string, isInterim: boolean) => void) | undefined>();
   
   const [highlightedTab, setHighlightedTab] = useState<string | null>(null);
   const highlightTabTimerRef = useRef<ReturnType<typeof setTimeout>>();
