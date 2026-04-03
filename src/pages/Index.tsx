@@ -1065,7 +1065,6 @@ const Index = () => {
 
   const supplementNutrients = useMemo(
     () => {
-      const { aggregateSupplementNutrients } = require("@/types/supplements") as typeof import("@/types/supplements");
       const result = aggregateSupplementNutrients(supplements);
       return {
         vitamins: result.vitamins as unknown as Record<string, number>,
