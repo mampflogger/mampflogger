@@ -36,6 +36,7 @@ const COMMANDS: VoiceCommand[] = [
   { patterns: [/\bactivit/i, /\baktivität/i, /\baktivitaet\b/i, /\baktivitäten\b/i, /\bworkout\b/i, /\bworkouts\b/i], action: "section:activity" },
   { patterns: [/\bkalorienbilanz\b/i, /\bbilanz\b/i], action: "section:kalorienbilanz" },
   { patterns: [/\bflüssigkeit\b/i], action: "section:fluessigkeit" },
+  { patterns: [/\bsupplement/i, /\bnahrungsergänzung/i, /\bpräparat/i], action: "section:supplements" },
 
   // Stats page sections (specific before generic)
   { patterns: [/\bkalorien\s+pro\s+tag\b/i], action: "section:kalorien-pro-tag" },
@@ -190,6 +191,10 @@ const FUZZY_KEYWORD_MAP: [string, string][] = [
   ["kalorienbilanz", "section:kalorienbilanz"],
   ["bilanz", "section:kalorienbilanz"],
   ["fluessigkeit", "section:fluessigkeit"],
+  ["supplement", "section:supplements"],
+  ["supplements", "section:supplements"],
+  ["nahrungsergaenzung", "section:supplements"],
+  ["praeparat", "section:supplements"],
   ["kalorien pro tag", "section:kalorien-pro-tag"],
   ["defizit", "section:defizit-pro-tag"],
   ["makros pro tag", "section:makros-pro-tag"],
@@ -271,6 +276,7 @@ export const SECTION_PAGE_MAP: Record<string, "log" | "weekly"> = {
   "section-activity": "log",
   "section-kalorienbilanz": "log",
   "section-fluessigkeit": "log",
+  "section-supplements": "log",
   "section-uebersicht": "weekly",
   "section-kalorien-pro-tag": "weekly",
   "section-defizit-pro-tag": "weekly",

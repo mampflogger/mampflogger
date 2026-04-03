@@ -75,6 +75,11 @@ const SECTION_LOCAL_COMMANDS: Record<string, [string, string][]> = {
   "section-fluessigkeit": [
     ["(keine lokalen Befehle)", "Nur Anzeige"],
   ],
+  "section-supplements": [
+    ["Supplement hinzufügen / Neues Supplement", "Formular öffnen"],
+    ["Okay / Speichern", "Supplement speichern"],
+    ["Storno / Abbrechen", "Eingabe abbrechen"],
+  ],
   "section-uebersicht": [
     ["(keine lokalen Befehle)", "Nur Anzeige"],
   ],

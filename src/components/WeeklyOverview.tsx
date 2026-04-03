@@ -33,6 +33,8 @@ interface WeeklyOverviewProps {
   editorOpenSection?: string | null;
   getHelpText?: (sectionId: string) => string;
   updateHelpText?: (sectionId: string, text: string) => void;
+  supplementVitamins?: Record<string, number>;
+  supplementMinerals?: Record<string, number>;
 }
 
 interface DayData {
@@ -152,7 +154,7 @@ const DailyMacroCard = ({ weekData, highlighted, profile }: { weekData: DayData[
   );
 };
 
-const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [], highlightedSection, analyzeCoachRequestId, editorOpenSection, getHelpText, updateHelpText }: WeeklyOverviewProps) => {
+const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [], highlightedSection, analyzeCoachRequestId, editorOpenSection, getHelpText, updateHelpText, supplementVitamins, supplementMinerals }: WeeklyOverviewProps) => {
   const bmr = profile ? calculateBMR(profile) : null;
   const [showGoalDate, setShowGoalDate] = useState(false);
   const renderEditor = (sectionId: string) =>
@@ -609,6 +611,7 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
         editorOpenSection={editorOpenSection}
         getHelpText={getHelpText}
         updateHelpText={updateHelpText}
+        supplementTotals={supplementVitamins}
       />
 
       <MicronutrientCoverageCard
@@ -622,6 +625,7 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
         editorOpenSection={editorOpenSection}
         getHelpText={getHelpText}
         updateHelpText={updateHelpText}
+        supplementTotals={supplementMinerals}
       />
 
       {/* AI Nutrition Coach */}

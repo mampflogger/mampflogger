@@ -23,6 +23,8 @@ import WeeklyOverview from "@/components/WeeklyOverview";
 import ActivityInput from "@/components/ActivityInput";
 import DeficitDisplay from "@/components/DeficitDisplay";
 import FluidDisplay from "@/components/FluidDisplay";
+import SupplementTracker from "@/components/SupplementTracker";
+import { loadSupplements, saveSupplements, aggregateSupplementNutrients, type Supplement } from "@/types/supplements";
 import DailyCalorieChart from "@/components/DailyCalorieChart";
 import PhotoToLog from "@/components/PhotoToLog";
 import FastingAnalysis from "@/components/FastingAnalysis";
@@ -162,6 +164,8 @@ const Index = () => {
   const [dateFocused, setDateFocused] = useState(false);
   const [tableViewMode, setTableViewMode] = useState<TableViewMode>("detail");
   const [voiceControlVisible, setVoiceControlVisible] = useState(false);
+  const [supplements, setSupplements] = useState<Supplement[]>(() => loadSupplements());
+  const supplementVoiceRef = useRef<((transcript: string, isInterim: boolean) => void) | undefined>();
   
   const [highlightedTab, setHighlightedTab] = useState<string | null>(null);
   const highlightTabTimerRef = useRef<ReturnType<typeof setTimeout>>();
@@ -1059,6 +1063,17 @@ const Index = () => {
     [bookedActivities, selectedDate]
   );
 
+  const supplementNutrients = useMemo(
+    () => {
+      const result = aggregateSupplementNutrients(supplements);
+      return {
+        vitamins: result.vitamins as unknown as Record<string, number>,
+        minerals: result.minerals as unknown as Record<string, number>,
+      };
+    },
+    [supplements]
+  );
+
   const handleAdd = (entry: NutritionEntry) => {
     if (editingEntry) {
       const updated = entries.map((e) => (e.id === editingEntry.id ? entry : e));
@@ -1582,6 +1597,22 @@ const Index = () => {
               </div>
             )}
 
+            <div id="section-supplements" data-section className={`glass-card rounded-xl p-3 mb-3 ${hl === "section-supplements" ? "section-card-highlight" : ""}`}>
+              <SectionHeading highlighted={hl === "section-supplements"} className="mb-2">
+                Supplements
+              </SectionHeading>
+              <SupplementTracker
+                supplements={supplements}
+                onSupplementsChange={(updated) => {
+                  setSupplements(updated);
+                  saveSupplements(updated);
+                }}
+                voiceInputRef={supplementVoiceRef}
+                isVoiceActive={voiceCommands.isListening}
+              />
+              {audioGuide.isEditorOpenFor("section-supplements") && <AudioGuideEditor sectionId="section-supplements" value={audioGuide.getHelpText("section-supplements")} onChange={audioGuide.updateHelpText} />}
+            </div>
+
             {/* Spacer so last sections can scroll to top */}
             <div style={{ height: "calc(100vh - 14rem)" }} />
           </>
@@ -1597,6 +1628,8 @@ const Index = () => {
               editorOpenSection={audioGuide.editorOpenSection}
               getHelpText={audioGuide.getHelpText}
               updateHelpText={audioGuide.updateHelpText}
+              supplementVitamins={supplementNutrients.vitamins}
+              supplementMinerals={supplementNutrients.minerals}
             />
             {/* Spacer so last sections can scroll to top */}
             <div style={{ height: "calc(100vh - 14rem)" }} />

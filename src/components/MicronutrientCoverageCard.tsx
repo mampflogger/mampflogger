@@ -49,6 +49,8 @@ interface MicronutrientCoverageCardProps {
   editorOpenSection?: string | null;
   getHelpText?: (sectionId: string) => string;
   updateHelpText?: (sectionId: string, text: string) => void;
+  /** Daily supplement totals for this kind (keyed by nutrient key) */
+  supplementTotals?: Record<string, number>;
 }
 
 const DAYS_IN_WINDOW = 7;
@@ -64,6 +66,7 @@ const MicronutrientCoverageCard = ({
   editorOpenSection,
   getHelpText,
   updateHelpText,
+  supplementTotals,
 }: MicronutrientCoverageCardProps) => {
   const definitions = kind === "vitamins" ? VITAMIN_DEFINITIONS : MINERAL_DEFINITIONS;
 
@@ -125,7 +128,10 @@ const MicronutrientCoverageCard = ({
 
     return definitions.map((definition) => {
       const weeklyTotal = source[definition.key] ?? 0;
-      const averageDaily = weeklyTotal / DAYS_IN_WINDOW;
+      // Add daily supplement contribution (supplement amount × 7 days in window)
+      const supplementDaily = supplementTotals?.[definition.key] ?? 0;
+      const weeklyTotalWithSupplements = weeklyTotal + (supplementDaily * DAYS_IN_WINDOW);
+      const averageDaily = weeklyTotalWithSupplements / DAYS_IN_WINDOW;
       const defaultTarget = getMicronutrientTarget(definition, gender);
       const target = customTargets[definition.key] !== undefined ? customTargets[definition.key] : defaultTarget;
       const coverage = target && target > 0 ? (averageDaily / target) * 100 : 0;
@@ -137,7 +143,7 @@ const MicronutrientCoverageCard = ({
         fillWidth: `${Math.max(0, Math.min(coverage, 100))}%`,
       };
     });
-  }, [definitions, gender, kind, totals.minerals, totals.vitamins, customTargets]);
+  }, [definitions, gender, kind, totals.minerals, totals.vitamins, customTargets, supplementTotals]);
 
   return (
     <div id={sectionId} data-section className={`glass-card rounded-xl p-3 ${highlighted ? "section-card-highlight" : ""}`}>
