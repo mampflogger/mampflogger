@@ -611,6 +611,7 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
         editorOpenSection={editorOpenSection}
         getHelpText={getHelpText}
         updateHelpText={updateHelpText}
+        supplementTotals={supplementVitamins}
       />
 
       <MicronutrientCoverageCard
@@ -624,6 +625,7 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
         editorOpenSection={editorOpenSection}
         getHelpText={getHelpText}
         updateHelpText={updateHelpText}
+        supplementTotals={supplementMinerals}
       />
 
       {/* AI Nutrition Coach */}
