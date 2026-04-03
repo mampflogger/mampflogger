@@ -33,6 +33,8 @@ interface WeeklyOverviewProps {
   editorOpenSection?: string | null;
   getHelpText?: (sectionId: string) => string;
   updateHelpText?: (sectionId: string, text: string) => void;
+  supplementVitamins?: Record<string, number>;
+  supplementMinerals?: Record<string, number>;
 }
 
 interface DayData {
