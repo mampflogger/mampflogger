@@ -272,6 +272,7 @@ export const SECTION_PAGE_MAP: Record<string, "log" | "weekly"> = {
   "section-activity": "log",
   "section-kalorienbilanz": "log",
   "section-fluessigkeit": "log",
+  "section-supplements": "log",
   "section-uebersicht": "weekly",
   "section-kalorien-pro-tag": "weekly",
   "section-defizit-pro-tag": "weekly",
