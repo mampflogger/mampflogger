@@ -1586,6 +1586,22 @@ const Index = () => {
               </div>
             )}
 
+            <div id="section-supplements" data-section className={`glass-card rounded-xl p-3 mb-3 ${hl === "section-supplements" ? "section-card-highlight" : ""}`}>
+              <SectionHeading highlighted={hl === "section-supplements"} className="mb-2">
+                Supplements
+              </SectionHeading>
+              <SupplementTracker
+                supplements={supplements}
+                onSupplementsChange={(updated) => {
+                  setSupplements(updated);
+                  saveSupplements(updated);
+                }}
+                voiceInputRef={supplementVoiceRef}
+                isVoiceActive={voiceCommands.isListening}
+              />
+              {audioGuide.isEditorOpenFor("section-supplements") && <AudioGuideEditor sectionId="section-supplements" value={audioGuide.getHelpText("section-supplements")} onChange={audioGuide.updateHelpText} />}
+            </div>
+
             {/* Spacer so last sections can scroll to top */}
             <div style={{ height: "calc(100vh - 14rem)" }} />
           </>
