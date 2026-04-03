@@ -1617,16 +1617,8 @@ const Index = () => {
               editorOpenSection={audioGuide.editorOpenSection}
               getHelpText={audioGuide.getHelpText}
               updateHelpText={audioGuide.updateHelpText}
-              supplementVitamins={(() => {
-                const { aggregateSupplementNutrients } = require("@/types/supplements");
-                const { vitamins } = aggregateSupplementNutrients(supplements);
-                return vitamins;
-              })()}
-              supplementMinerals={(() => {
-                const { aggregateSupplementNutrients } = require("@/types/supplements");
-                const { minerals } = aggregateSupplementNutrients(supplements);
-                return minerals;
-              })()}
+              supplementVitamins={supplementNutrients.vitamins}
+              supplementMinerals={supplementNutrients.minerals}
             />
             {/* Spacer so last sections can scroll to top */}
             <div style={{ height: "calc(100vh - 14rem)" }} />
