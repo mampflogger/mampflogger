@@ -66,6 +66,7 @@ const MicronutrientCoverageCard = ({
   editorOpenSection,
   getHelpText,
   updateHelpText,
+  supplementTotals,
 }: MicronutrientCoverageCardProps) => {
   const definitions = kind === "vitamins" ? VITAMIN_DEFINITIONS : MINERAL_DEFINITIONS;
 
