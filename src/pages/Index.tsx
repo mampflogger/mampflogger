@@ -1063,6 +1063,14 @@ const Index = () => {
     [bookedActivities, selectedDate]
   );
 
+  const supplementNutrients = useMemo(
+    () => {
+      const { aggregateSupplementNutrients } = require("@/types/supplements") as typeof import("@/types/supplements");
+      return aggregateSupplementNutrients(supplements);
+    },
+    [supplements]
+  );
+
   const handleAdd = (entry: NutritionEntry) => {
     if (editingEntry) {
       const updated = entries.map((e) => (e.id === editingEntry.id ? entry : e));
