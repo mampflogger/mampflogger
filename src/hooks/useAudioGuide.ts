@@ -28,6 +28,8 @@ const DEFAULT_HELP_TEXTS: Record<string, string> = {
 
   "section-fluessigkeit": `Der Flüssigkeitskasten zeigt dir, wie viel du heute getrunken hast im Verhältnis zu deinem Tagesziel. Getränke und wasserhaltige Lebensmittel werden automatisch erfasst. Der Fortschrittsbalken zeigt dir, wie nah du an deinem Flüssigkeitsziel bist.`,
 
+  "section-supplements": `Im Supplement-Kasten verwaltest du deine Nahrungsergänzungsmittel. Du kannst Vitamine und Mineralstoffe als Kapseln eintragen, inklusive der Menge pro Einheit und der Stückzahl. Aktiviere die Checkbox „Täglich", damit die Dosen automatisch jeden Tag in deine Vitamin- und Mineralstoffbilanz eingerechnet werden. So musst du nicht jeden Tag einzeln dokumentieren. Du kannst auch Kombipräparate anlegen, die mehrere Nährstoffe gleichzeitig enthalten.`,
+
   "section-uebersicht": `Die Übersicht zeigt dir die wichtigsten Kennzahlen der letzten sieben Tage auf einen Blick. Du siehst den Durchschnitt deiner täglichen Kalorienaufnahme, dein durchschnittliches Defizit und – falls ein Zielgewicht hinterlegt ist – die geschätzte Anzahl der Tage bis zum Ziel.`,
 
   "section-kalorien-pro-tag": `Dieses Diagramm zeigt dir die Kalorienaufnahme der letzten sieben Tage als Balkendiagramm. Jeder Balken steht für einen Tag. Dein Tagesziel wird als gestrichelte Linie angezeigt, sodass du sofort erkennst, an welchen Tagen du über oder unter dem Ziel lagst.`,
