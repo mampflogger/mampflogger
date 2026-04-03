@@ -49,6 +49,8 @@ interface MicronutrientCoverageCardProps {
   editorOpenSection?: string | null;
   getHelpText?: (sectionId: string) => string;
   updateHelpText?: (sectionId: string, text: string) => void;
+  /** Daily supplement totals for this kind (keyed by nutrient key) */
+  supplementTotals?: Record<string, number>;
 }
 
 const DAYS_IN_WINDOW = 7;
