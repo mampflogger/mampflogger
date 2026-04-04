@@ -30,10 +30,88 @@ export interface Supplement {
 
 const STORAGE_KEY = "mampflogger-supplements";
 
+/** Default supplements for new users (all inactive by default) */
+const DEFAULT_SUPPLEMENTS: Omit<Supplement, "id">[] = [
+  {
+    name: "Vitamin D3",
+    quantity: 1,
+    nutrients: [{ nutrientKey: "vitD", kind: "vitamins", amountPerUnit: 250, displayUnit: "µg" }],
+    daily: false,
+  },
+  {
+    name: "Omega-3 Fischöl",
+    quantity: 1,
+    nutrients: [{ nutrientKey: "custom_omega_3", kind: "vitamins", amountPerUnit: 1000, displayUnit: "mg" }],
+    daily: false,
+  },
+  {
+    name: "Magnesium",
+    quantity: 1,
+    nutrients: [{ nutrientKey: "magnesium", kind: "minerals", amountPerUnit: 400, displayUnit: "mg" }],
+    daily: false,
+  },
+  {
+    name: "Vitamin C",
+    quantity: 1,
+    nutrients: [{ nutrientKey: "vitC", kind: "vitamins", amountPerUnit: 500, displayUnit: "mg" }],
+    daily: false,
+  },
+  {
+    name: "Zink",
+    quantity: 1,
+    nutrients: [{ nutrientKey: "zink", kind: "minerals", amountPerUnit: 25, displayUnit: "mg" }],
+    daily: false,
+  },
+  {
+    name: "Vitamin B12",
+    quantity: 1,
+    nutrients: [{ nutrientKey: "vitB12", kind: "vitamins", amountPerUnit: 1000, displayUnit: "µg" }],
+    daily: false,
+  },
+  {
+    name: "Eisen",
+    quantity: 1,
+    nutrients: [{ nutrientKey: "eisen", kind: "minerals", amountPerUnit: 14, displayUnit: "mg" }],
+    daily: false,
+  },
+  {
+    name: "Vitamin K2",
+    quantity: 1,
+    nutrients: [{ nutrientKey: "vitK", kind: "vitamins", amountPerUnit: 200, displayUnit: "µg" }],
+    daily: false,
+  },
+  {
+    name: "Calcium",
+    quantity: 1,
+    nutrients: [{ nutrientKey: "calcium", kind: "minerals", amountPerUnit: 500, displayUnit: "mg" }],
+    daily: false,
+  },
+  {
+    name: "Multivitamin Komplex",
+    quantity: 1,
+    nutrients: [
+      { nutrientKey: "vitA", kind: "vitamins", amountPerUnit: 800, displayUnit: "µg" },
+      { nutrientKey: "vitB1", kind: "vitamins", amountPerUnit: 1.1, displayUnit: "mg" },
+      { nutrientKey: "vitB2", kind: "vitamins", amountPerUnit: 1.4, displayUnit: "mg" },
+      { nutrientKey: "vitB6", kind: "vitamins", amountPerUnit: 1.4, displayUnit: "mg" },
+      { nutrientKey: "vitB12", kind: "vitamins", amountPerUnit: 2.5, displayUnit: "µg" },
+      { nutrientKey: "vitC", kind: "vitamins", amountPerUnit: 80, displayUnit: "mg" },
+      { nutrientKey: "vitD", kind: "vitamins", amountPerUnit: 5, displayUnit: "µg" },
+      { nutrientKey: "vitE", kind: "vitamins", amountPerUnit: 12, displayUnit: "mg" },
+      { nutrientKey: "vitB9", kind: "vitamins", amountPerUnit: 200, displayUnit: "µg" },
+    ],
+    daily: false,
+  },
+];
+
 export function loadSupplements(): Supplement[] {
   try {
     const data = localStorage.getItem(STORAGE_KEY);
-    return data ? JSON.parse(data) : [];
+    if (data) return JSON.parse(data);
+    // First load: seed with defaults
+    const defaults = DEFAULT_SUPPLEMENTS.map(s => createSupplement(s));
+    saveSupplements(defaults);
+    return defaults;
   } catch {
     return [];
   }
