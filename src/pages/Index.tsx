@@ -906,7 +906,33 @@ const Index = () => {
       const isActivityFocused = !!activeElement?.closest("#section-activity");
       const activityDropdownOpen = !!document.querySelector("#section-activity[data-dropdown-open]");
       const isNutritionFocused = !!activeElement?.closest("#section-neuer-eintrag");
-      const shouldRouteToActivity = isActivityFocused || activityDropdownOpen || (!isNutritionFocused && Date.now() < activityVoiceCaptureUntilRef.current);
+      const isSupplementFocused = !!activeElement?.closest("#section-supplements") || activeSectionRef.current === "section-supplements";
+      const shouldRouteToActivity = isActivityFocused || activityDropdownOpen || (!isNutritionFocused && !isSupplementFocused && Date.now() < activityVoiceCaptureUntilRef.current);
+
+      if (isSupplementFocused) {
+        // Handle "neu" locally within supplement scope
+        if (!isInterim) {
+          const lower = transcript.toLowerCase().trim();
+          if (/^\s*neu\s*$/i.test(lower) || /\bneue?s?\s+supplement\b/i.test(lower) || /\bsupplement\s+hinzufügen\b/i.test(lower)) {
+            window.dispatchEvent(new Event("mampflogger:supplement-new"));
+            return;
+          }
+          if (/\b(?:storno|abbrechen|cancel)\b/i.test(lower)) {
+            window.dispatchEvent(new Event("mampflogger:supplement-cancel"));
+            return;
+          }
+          if (/\b(?:okay|ok|speichern|save)\b/i.test(lower)) {
+            window.dispatchEvent(new Event("mampflogger:supplement-save"));
+            return;
+          }
+          if (/\b(?:löschen|loeschen|delete|entfernen)\b/i.test(lower)) {
+            window.dispatchEvent(new Event("mampflogger:supplement-delete-last"));
+            return;
+          }
+        }
+        supplementVoiceRef.current?.(transcript, isInterim);
+        return;
+      }
 
       if (shouldRouteToActivity) {
         activityVoiceCaptureUntilRef.current = Date.now() + 4000;
