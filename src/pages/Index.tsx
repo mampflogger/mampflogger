@@ -164,7 +164,17 @@ const Index = () => {
   const [dateFocused, setDateFocused] = useState(false);
   const [tableViewMode, setTableViewMode] = useState<TableViewMode>("detail");
   const [voiceControlVisible, setVoiceControlVisible] = useState(false);
-  const [supplements, setSupplements] = useState<Supplement[]>(() => loadSupplements());
+  const [supplements, setSupplements] = useState<Supplement[]>(() => {
+    // Seed custom nutrients if not present
+    if (!localStorage.getItem("mampflogger-custom-nutrients")) {
+      localStorage.setItem("mampflogger-custom-nutrients", JSON.stringify([
+        { key: "custom_omega_3", label: "Omega-3", defaultUnit: "mg" },
+        { key: "custom_kreatin", label: "Kreatin", defaultUnit: "mg" },
+        { key: "custom_kollagen", label: "Kollagen", defaultUnit: "mg" },
+      ]));
+    }
+    return loadSupplements();
+  });
   const supplementVoiceRef = useRef<((transcript: string, isInterim: boolean) => void) | undefined>();
   
   const [highlightedTab, setHighlightedTab] = useState<string | null>(null);
