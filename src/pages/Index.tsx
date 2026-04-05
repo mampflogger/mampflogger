@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
+import { useCloudBackup } from "@/hooks/useCloudBackup";
 import { NutritionEntry, formatDate, calculateDailySummary } from "@/types/nutrition";
 import { syncRemoteFoodDatabase, loadRemoteUrl } from "@/lib/remoteFoodSync";
 import {
@@ -135,7 +136,9 @@ function getNutrientKindForSection(sectionId: string | null): "vitamins" | "mine
 const Index = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
-  const { signOut } = useAuth();
+  const { user, signOut } = useAuth();
+  const cloudBackupActive = localStorage.getItem("mampflogger-cloud-backup-active") === "true";
+  useCloudBackup(cloudBackupActive ? user?.id ?? null : null);
   const settingsParam = searchParams.get("settings");
 
   useEffect(() => {

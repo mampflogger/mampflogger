@@ -1,23 +1,19 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
 import { Cloud, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { useCloudBackup } from "@/hooks/useCloudBackup";
 import { collectCloudBackupSnapshot } from "@/lib/cloudBackup";
 
 export const CloudBackupSettings = () => {
   const [isActive, setIsActive] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
-  const { lastSync } = useCloudBackup(isActive ? userId : null);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session?.user) {
         setUserId(session.user.id);
-        // Check if cloud backup is active
         const saved = localStorage.getItem("mampflogger-cloud-backup-active");
         setIsActive(saved === "true");
       }
@@ -68,9 +64,11 @@ export const CloudBackupSettings = () => {
         return;
       }
 
-      Object.entries(data.data as Record<string, string>).forEach(([key, value]) => {
-        localStorage.setItem(key, value);
-      });
+      // Restore all keys from the backup, overwriting local data
+      const backupData = data.data as Record<string, unknown>;
+      for (const [key, value] of Object.entries(backupData)) {
+        localStorage.setItem(key, typeof value === "string" ? value : JSON.stringify(value));
+      }
       
       toast.success("Daten aus Cloud-Backup wiederhergestellt!");
       setTimeout(() => window.location.reload(), 1000);
@@ -127,24 +125,30 @@ export const CloudBackupSettings = () => {
         <span className="text-xs font-medium text-primary">Cloud-Backup aktiv</span>
       </div>
       
-      {lastSync && (
-        <div className="text-xs text-muted-foreground">
-          Letzte Synchronisation: {lastSync.toLocaleTimeString()}
-        </div>
-      )}
-      
       <div className="bg-accent/50 rounded-lg p-2 text-xs text-muted-foreground">
         Deine Daten werden automatisch mit deinem Account synchronisiert.
       </div>
-      
-      <Button 
-        size="sm" 
-        variant="outline"
-        onClick={handleDeactivate}
-        className="h-8 text-xs text-destructive border-destructive/30 hover:bg-destructive/10"
-      >
-        Deaktivieren
-      </Button>
+
+      <div className="flex gap-2">
+        <Button 
+          variant="outline" 
+          size="sm"
+          className="h-9 text-xs gap-1.5"
+          onClick={handleRestore}
+          disabled={isLoading}
+        >
+          {isLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : null}
+          Wiederherstellen
+        </Button>
+        <Button 
+          size="sm" 
+          variant="outline"
+          onClick={handleDeactivate}
+          className="h-8 text-xs text-destructive border-destructive/30 hover:bg-destructive/10"
+        >
+          Deaktivieren
+        </Button>
+      </div>
     </div>
   );
 };
