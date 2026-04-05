@@ -5,6 +5,7 @@ import { Cloud, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useCloudBackup } from "@/hooks/useCloudBackup";
+import { collectCloudBackupSnapshot } from "@/lib/cloudBackup";
 
 export const CloudBackupSettings = () => {
   const [isActive, setIsActive] = useState(false);
@@ -30,10 +31,11 @@ export const CloudBackupSettings = () => {
     }
     setIsLoading(true);
     try {
+      const snapshot = collectCloudBackupSnapshot();
       const { error } = await supabase.from('cloud_backups').upsert({
         id: userId,
         user_id: userId,
-        data: { test: "connection" },
+        data: snapshot,
         updated_at: new Date().toISOString()
       });
       
