@@ -136,7 +136,9 @@ function getNutrientKindForSection(sectionId: string | null): "vitamins" | "mine
 const Index = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
-  const { signOut } = useAuth();
+  const { user, signOut } = useAuth();
+  const cloudBackupActive = localStorage.getItem("mampflogger-cloud-backup-active") === "true";
+  useCloudBackup(cloudBackupActive ? user?.id ?? null : null);
   const settingsParam = searchParams.get("settings");
 
   useEffect(() => {
