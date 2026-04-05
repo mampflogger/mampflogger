@@ -1,17 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
 import { Cloud, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { useCloudBackup } from "@/hooks/useCloudBackup";
-import { collectCloudBackupSnapshot } from "@/lib/cloudBackup";
-
-export const CloudBackupSettings = () => {
-  const [isActive, setIsActive] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [userId, setUserId] = useState<string | null>(null);
-  const { lastSync } = useCloudBackup(isActive ? userId : null);
+import { collectCloudBackupSnapshot, restoreCloudBackupSnapshot } from "@/lib/cloudBackup";
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
