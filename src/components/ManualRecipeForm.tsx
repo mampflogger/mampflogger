@@ -263,8 +263,32 @@ const ManualRecipeForm = ({ onSave, onCancel, voiceInputRef, isVoiceActive = fal
       const chunk = transcript.trim();
       if (!chunk) return;
 
+      // For servings field, try to parse number immediately on final results
+      // Small numbers are often lost in the buffer timeout
+      if (!isInterim && (current === "servings" || current === "ingredientAmount")) {
+        const num = parseGermanSpokenNumber(chunk);
+        if (num !== null && num > 0) {
+          if (voiceTimerRef.current !== null) {
+            window.clearTimeout(voiceTimerRef.current);
+            voiceTimerRef.current = null;
+          }
+          voiceBufferRef.current = "";
+          if (current === "servings") {
+            setServings(String(Math.round(num)));
+          } else {
+            setNewIngredientAmount(String(num));
+            setTimeout(() => focusField("ingredientName"), 50);
+          }
+          return;
+        }
+      }
+
       if (isInterim) {
-        // For interim results, just buffer
+        // For interim results, show live feedback for numeric fields
+        if (current === "servings") {
+          const num = parseGermanSpokenNumber(chunk);
+          if (num !== null && num > 0) setServings(String(Math.round(num)));
+        }
         voiceBufferRef.current = chunk;
         return;
       }
