@@ -45,6 +45,7 @@ import RecipeGenerator from "@/components/RecipeGenerator";
 import RecipesTab from "@/components/RecipesTab";
 import { CloudBackupSettings } from "@/components/CloudBackupSettings";
 import VoiceControlOverlay from "@/components/VoiceControlOverlay";
+import { collectManualBackupSnapshot, restoreManualBackupSnapshot } from "@/lib/cloudBackup";
 
 type SettingsTab = "profile" | "design" | "food" | "recipes" | "data";
 
@@ -2290,29 +2291,7 @@ const SettingsDialog = ({
                   size="sm"
                   className="h-9 text-xs gap-1.5"
                   onClick={() => {
-                    const BACKUP_KEYS = [
-                      "nutrition-log-profile",
-                      "nutrition-log-entries",
-                      "mampflogger-food-database",
-                      "mampflogger-deleted-foods",
-                      "mampflogger-booked-activities",
-                      "mampflogger-activity-types",
-                      "mampflogger-activity-types-version",
-                      "mampflogger-units",
-                      "mampflogger-food-usage",
-                      "mampflogger-dark-mode",
-                      "mampflogger-color-theme",
-                      "mampflogger-remote-url",
-                      "mampflogger-remote-sync",
-                      "mampflogger-last-activity-type",
-                      "mampflogger-saved-recipes",
-                      "mampflogger-custom-targets",
-                    ];
-                    const backup: Record<string, string | null> = {};
-                    BACKUP_KEYS.forEach((key) => {
-                      const val = localStorage.getItem(key);
-                      if (val !== null) backup[key] = val;
-                    });
+                    const backup = collectManualBackupSnapshot();
                     const blob = new Blob([JSON.stringify(backup, null, 2)], { type: "application/json" });
                     const url = URL.createObjectURL(blob);
                     const a = document.createElement("a");
@@ -2349,13 +2328,8 @@ const SettingsDialog = ({
                     try {
                       const data = JSON.parse(ev.target?.result as string);
                       if (typeof data !== "object" || data === null) throw new Error("Ungültig");
-                      let count = 0;
-                      Object.entries(data).forEach(([key, value]) => {
-                        if (typeof value === "string") {
-                          localStorage.setItem(key, value);
-                          count++;
-                        }
-                      });
+                      const count = restoreManualBackupSnapshot(data as Record<string, unknown>);
+                      if (count === 0) throw new Error("Leer");
                       toast.success(`Backup wiederhergestellt (${count} Schlüssel). App wird neu geladen…`);
                       setTimeout(() => window.location.reload(), 1200);
                     } catch {

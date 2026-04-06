@@ -36,6 +36,10 @@ export function collectCloudBackupSnapshot(storage: Storage = localStorage): Rec
   return snapshot;
 }
 
+export function collectManualBackupSnapshot(storage: Storage = localStorage): Record<string, string> {
+  return collectCloudBackupSnapshot(storage);
+}
+
 function isLegacyRandomSupplementSeed(rawValue: string | null): boolean {
   if (!rawValue) return false;
 
@@ -70,4 +74,17 @@ export function restoreCloudBackupSnapshot(snapshot: Record<string, unknown>, st
   }
 
   return restoredAny;
+}
+
+export function restoreManualBackupSnapshot(snapshot: Record<string, unknown>, storage: Storage = localStorage): number {
+  let restoredCount = 0;
+
+  for (const [key, value] of Object.entries(snapshot)) {
+    if (!isCloudBackupKey(key)) continue;
+
+    storage.setItem(key, typeof value === "string" ? value : JSON.stringify(value));
+    restoredCount += 1;
+  }
+
+  return restoredCount;
 }
