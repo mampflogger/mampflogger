@@ -27,7 +27,7 @@ interface SupplementTrackerProps {
   isVoiceActive?: boolean;
 }
 
-const UNIT_OPTIONS = ["µg", "mg", "IE"];
+const UNIT_OPTIONS = ["g", "mg", "µg", "IE"];
 
 /** Custom nutrient key prefix */
 const CUSTOM_KEY_PREFIX = "custom_";

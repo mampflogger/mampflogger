@@ -148,6 +148,7 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry, voiceExpandIndex, onVoi
   const [recipeSearch, setRecipeSearch] = useState("");
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [editName, setEditName] = useState("");
   const [editServings, setEditServings] = useState("");
   const [editIngredients, setEditIngredients] = useState<RecipeIngredient[]>([]);
   const [newIngredientAmount, setNewIngredientAmount] = useState("");
@@ -625,6 +626,7 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry, voiceExpandIndex, onVoi
   const startEditing = (recipe: SavedRecipe) => {
     setEditingId(recipe.id);
     setEditServings(String(recipe.servings));
+    setEditName(recipe.name);
     setEditIngredients([...recipe.ingredients]);
     setNewIngredientAmount("");
     setNewIngredientName("");
@@ -633,6 +635,7 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry, voiceExpandIndex, onVoi
   const stopEditing = () => {
     setEditingId(null);
     setEditServings("");
+    setEditName("");
     setEditIngredients([]);
     setNewIngredientAmount("");
     setNewIngredientName("");
@@ -706,7 +709,7 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry, voiceExpandIndex, onVoi
         body: {
           ingredients: finalIngredients,
           servings: normalizedServings,
-          recipeName: recipe.name,
+          recipeName: editName || recipe.name,
           oldSteps: recipe.steps,
         },
       });
@@ -752,10 +755,11 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry, voiceExpandIndex, onVoi
         }
       }
 
+      const finalName = editName.trim() || recipe.name;
       setSavedRecipes((prev) =>
         prev.map((r) =>
           r.id === recipeId
-            ? { ...r, ingredients: updatedIngredients, servings: normalizedServings, totalMacros, perServing, steps: updatedSteps }
+            ? { ...r, name: finalName, ingredients: updatedIngredients, servings: normalizedServings, totalMacros, perServing, steps: updatedSteps }
             : r
         )
       );
@@ -902,7 +906,17 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry, voiceExpandIndex, onVoi
                     {recipeIndex + 1}
                   </span>
                   <div>
-                    <span className="block text-[11px] font-medium text-foreground">{sr.name}</span>
+                    {isEditing ? (
+                      <Input
+                        type="text"
+                        value={editName}
+                        onChange={(e) => setEditName(e.target.value)}
+                        className="h-6 text-[11px] font-medium px-1.5 w-full"
+                        placeholder="Rezeptname"
+                      />
+                    ) : (
+                      <span className="block text-[11px] font-medium text-foreground">{sr.name}</span>
+                    )}
                     <span className="block text-[10px] text-muted-foreground font-normal">
                       {sr.perServing.calories} kcal/Portion · {currentServings} Portionen
                     </span>

@@ -364,8 +364,13 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
         setShowSuggestions(false);
       }
     };
+    const handleForceClose = () => setShowSuggestions(false);
     document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    window.addEventListener("mampflogger:close-food-dropdown", handleForceClose);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      window.removeEventListener("mampflogger:close-food-dropdown", handleForceClose);
+    };
   }, []);
 
   // Update dropdown position whenever it opens or window scrolls/resizes

@@ -997,6 +997,8 @@ const Index = () => {
         section.removeAttribute("data-section-active");
       }
     });
+    // Close any open dropdowns/popovers when leaving a section or switching tabs
+    window.dispatchEvent(new CustomEvent("mampflogger:close-food-dropdown"));
     // Auto-focus food input when "Neuer Eintrag" section becomes active
     if (sectionNav.activeSection === "section-neuer-eintrag") {
       requestAnimationFrame(() => {

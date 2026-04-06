@@ -152,8 +152,16 @@ export function convertToCanonical(
     return amount;
   }
 
-  // mg → µg conversion for nutrients whose canonical unit is µg
+  // g → mg conversion for nutrients whose canonical unit is mg
   const UG_NUTRIENTS = new Set(["vitA", "vitB7", "vitB9", "vitB12", "vitD", "vitK"]);
+  if (unitLower === "g" && UG_NUTRIENTS.has(nutrientKey)) {
+    return amount * 1_000_000; // g → µg
+  }
+  if (unitLower === "g" && !UG_NUTRIENTS.has(nutrientKey)) {
+    return amount * 1000; // g → mg
+  }
+
+  // mg → µg conversion for nutrients whose canonical unit is µg
   if (unitLower === "mg" && UG_NUTRIENTS.has(nutrientKey)) {
     return amount * 1000;
   }
