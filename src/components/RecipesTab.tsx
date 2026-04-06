@@ -148,6 +148,7 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry, voiceExpandIndex, onVoi
   const [recipeSearch, setRecipeSearch] = useState("");
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [editServings, setEditServings] = useState("");
   const [editIngredients, setEditIngredients] = useState<RecipeIngredient[]>([]);
   const [newIngredientAmount, setNewIngredientAmount] = useState("");
   const [newIngredientName, setNewIngredientName] = useState("");
@@ -623,6 +624,7 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry, voiceExpandIndex, onVoi
 
   const startEditing = (recipe: SavedRecipe) => {
     setEditingId(recipe.id);
+    setEditServings(String(recipe.servings));
     setEditIngredients([...recipe.ingredients]);
     setNewIngredientAmount("");
     setNewIngredientName("");
@@ -630,6 +632,7 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry, voiceExpandIndex, onVoi
 
   const stopEditing = () => {
     setEditingId(null);
+    setEditServings("");
     setEditIngredients([]);
     setNewIngredientAmount("");
     setNewIngredientName("");
@@ -637,13 +640,18 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry, voiceExpandIndex, onVoi
     setShowSuggestions(false);
   };
 
-  const handleAmountChange = (index: number, newNum: string) => {
+  const handleIngredientAmountChange = (index: number, amount: string) => {
     setEditIngredients((prev) => {
       const updated = [...prev];
-      const parsed = extractNumber(updated[index].amount);
-      if (parsed) {
-        updated[index] = { ...updated[index], amount: `${newNum}${parsed.rest ? " " + parsed.rest : ""}`.trim() };
-      }
+      updated[index] = { ...updated[index], amount };
+      return updated;
+    });
+  };
+
+  const handleIngredientNameChange = (index: number, name: string) => {
+    setEditIngredients((prev) => {
+      const updated = [...prev];
+      updated[index] = { ...updated[index], name };
       return updated;
     });
   };
@@ -687,6 +695,8 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry, voiceExpandIndex, onVoi
     const recipe = savedRecipes.find((r) => r.id === recipeId);
     if (!recipe) return;
 
+    const normalizedServings = Math.max(1, Math.round(Number.parseFloat(editServings.replace(",", ".")) || recipe.servings));
+
     // Always recalculate when user explicitly saves (even if ingredients look the same)
 
     // Recalculate macros via AI
@@ -695,7 +705,7 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry, voiceExpandIndex, onVoi
       const { data, error } = await supabase.functions.invoke("recipe-recalculate", {
         body: {
           ingredients: finalIngredients,
-          servings: recipe.servings,
+          servings: normalizedServings,
           recipeName: recipe.name,
           oldSteps: recipe.steps,
         },
@@ -745,7 +755,7 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry, voiceExpandIndex, onVoi
       setSavedRecipes((prev) =>
         prev.map((r) =>
           r.id === recipeId
-            ? { ...r, ingredients: updatedIngredients, totalMacros, perServing, steps: updatedSteps }
+            ? { ...r, ingredients: updatedIngredients, servings: normalizedServings, totalMacros, perServing, steps: updatedSteps }
             : r
         )
       );
@@ -875,6 +885,9 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry, voiceExpandIndex, onVoi
         ) : filteredRecipes.map((sr, recipeIndex) => {
           const isEditing = editingId === sr.id;
           const displayIngredients = isEditing ? editIngredients : sr.ingredients;
+          const currentServings = isEditing
+            ? Math.max(1, Math.round(Number.parseFloat(editServings.replace(",", ".")) || sr.servings))
+            : sr.servings;
 
           return (
             <div key={sr.id} className="rounded-lg bg-background border border-border/50">
@@ -891,7 +904,7 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry, voiceExpandIndex, onVoi
                   <div>
                     <span className="block text-[11px] font-medium text-foreground">{sr.name}</span>
                     <span className="block text-[10px] text-muted-foreground font-normal">
-                      {sr.perServing.calories} kcal/Portion · {sr.servings} Portionen
+                      {sr.perServing.calories} kcal/Portion · {currentServings} Portionen
                     </span>
                   </div>
                 </button>
@@ -950,11 +963,17 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry, voiceExpandIndex, onVoi
                   displayTotal.fat = Math.round(sr.totalMacros.fat * ratio * 10) / 10;
                   displayTotal.carbs = Math.round(sr.totalMacros.carbs * ratio * 10) / 10;
                   displayTotal.fiber = Math.round(sr.totalMacros.fiber * ratio * 10) / 10;
-                  displayPerServing.calories = Math.round(sumKcal / sr.servings);
-                  displayPerServing.protein = Math.round(displayTotal.protein / sr.servings * 10) / 10;
-                  displayPerServing.fat = Math.round(displayTotal.fat / sr.servings * 10) / 10;
-                  displayPerServing.carbs = Math.round(displayTotal.carbs / sr.servings * 10) / 10;
-                  displayPerServing.fiber = Math.round(displayTotal.fiber / sr.servings * 10) / 10;
+                  displayPerServing.calories = Math.round(sumKcal / currentServings);
+                  displayPerServing.protein = Math.round(displayTotal.protein / currentServings * 10) / 10;
+                  displayPerServing.fat = Math.round(displayTotal.fat / currentServings * 10) / 10;
+                  displayPerServing.carbs = Math.round(displayTotal.carbs / currentServings * 10) / 10;
+                  displayPerServing.fiber = Math.round(displayTotal.fiber / currentServings * 10) / 10;
+                } else if (currentServings !== sr.servings) {
+                  displayPerServing.calories = Math.round(displayTotal.calories / currentServings);
+                  displayPerServing.protein = Math.round(displayTotal.protein / currentServings * 10) / 10;
+                  displayPerServing.fat = Math.round(displayTotal.fat / currentServings * 10) / 10;
+                  displayPerServing.carbs = Math.round(displayTotal.carbs / currentServings * 10) / 10;
+                  displayPerServing.fiber = Math.round(displayTotal.fiber / currentServings * 10) / 10;
                 }
 
                 return (
@@ -1000,17 +1019,26 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry, voiceExpandIndex, onVoi
                                   <Trash2 className="w-3 h-3" />
                                 </button>
                               )}
-                              {isEditing && hasNumber ? (
-                                <span className="flex items-center gap-1">
+                              {isEditing ? (
+                                <div className="flex min-w-0 flex-1 items-center gap-1">
                                   <Input
                                     type="text"
-                                    inputMode="decimal"
-                                    value={parsed!.num}
-                                    onChange={(e) => handleAmountChange(i, e.target.value)}
-                                    className="h-6 w-14 px-1 text-[11px] text-center font-medium"
+                                    value={ing.amount}
+                                    onChange={(e) => handleIngredientAmountChange(i, e.target.value)}
+                                    placeholder="Menge"
+                                    className="h-6 w-24 px-2 text-[11px]"
                                   />
-                                  <span>{parsed!.rest} {ing.name}{ing.isMain ? " ⭐" : ""}</span>
-                                </span>
+                                  <Input
+                                    type="text"
+                                    value={ing.name}
+                                    onChange={(e) => handleIngredientNameChange(i, e.target.value)}
+                                    placeholder="Zutat"
+                                    className="h-6 min-w-0 flex-1 px-2 text-[11px]"
+                                  />
+                                  {ingKcal !== null && (
+                                    <span className="shrink-0 text-[10px] text-muted-foreground">{ingKcal} kcal</span>
+                                  )}
+                                </div>
                               ) : (
                                 <>
                                   {parsed ? (
@@ -1108,7 +1136,21 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry, voiceExpandIndex, onVoi
 
                       {/* Servings + Time under ingredients */}
                       <div className="flex gap-3 text-[10px] text-muted-foreground mt-1.5">
-                        <span>👥 {sr.servings} Portionen</span>
+                        {isEditing ? (
+                          <label className="flex items-center gap-1 text-foreground">
+                            <span>👥</span>
+                            <Input
+                              type="text"
+                              inputMode="numeric"
+                              value={editServings}
+                              onChange={(e) => setEditServings(e.target.value)}
+                              className="h-6 w-16 px-2 text-[11px]"
+                            />
+                            <span>Portionen</span>
+                          </label>
+                        ) : (
+                          <span>👥 {sr.servings} Portionen</span>
+                        )}
                         <span>⏱️ {sr.prepTime}</span>
                       </div>
                     </div>
