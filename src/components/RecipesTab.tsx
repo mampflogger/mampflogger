@@ -148,6 +148,7 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry, voiceExpandIndex, onVoi
   const [recipeSearch, setRecipeSearch] = useState("");
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [editName, setEditName] = useState("");
   const [editServings, setEditServings] = useState("");
   const [editIngredients, setEditIngredients] = useState<RecipeIngredient[]>([]);
   const [newIngredientAmount, setNewIngredientAmount] = useState("");
@@ -625,6 +626,7 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry, voiceExpandIndex, onVoi
   const startEditing = (recipe: SavedRecipe) => {
     setEditingId(recipe.id);
     setEditServings(String(recipe.servings));
+    setEditName(recipe.name);
     setEditIngredients([...recipe.ingredients]);
     setNewIngredientAmount("");
     setNewIngredientName("");
@@ -633,6 +635,7 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry, voiceExpandIndex, onVoi
   const stopEditing = () => {
     setEditingId(null);
     setEditServings("");
+    setEditName("");
     setEditIngredients([]);
     setNewIngredientAmount("");
     setNewIngredientName("");
