@@ -404,17 +404,9 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
       <div id="section-uebersicht" data-section className={`glass-card rounded-xl p-3 ${hl === "section-uebersicht" ? "section-card-highlight" : ""}`}>
         <SectionHeading highlighted={hl === "section-uebersicht"} className="mb-2">Übersicht</SectionHeading>
         <div className="grid gap-3 w-full grid-cols-2 sm:grid-cols-3">
-          <div className="rounded-xl bg-background p-3 text-center">
-            <p className="text-xs text-muted-foreground font-medium">Woche</p>
-            <p className="text-xl font-bold text-foreground mt-0.5 tabular-nums tracking-tight leading-tight">{weekTotals.totalCalories}</p>
-            <p className="text-xs text-muted-foreground">kcal</p>
-          </div>
-          <div className="rounded-xl bg-background p-3 text-center">
-            <p className="text-xs text-muted-foreground font-medium">Monat</p>
-            <p className="text-xl font-bold text-foreground mt-0.5 tabular-nums tracking-tight leading-tight">{monthlyStats.totalCalories}</p>
-            <p className="text-xs text-muted-foreground">kcal</p>
-          </div>
-          <div className="rounded-xl bg-background p-3 text-center">
+          {/* Mobile: col-left=Ø Tag,Woche,Monat / col-right=Defizit7,DefizitMonat,Ziel */}
+          {/* Desktop: row1=Ø Tag,Woche,Monat / row2=Defizit7,DefizitMonat,Ziel */}
+          <div className="rounded-xl bg-background p-3 text-center order-[0] sm:order-[0]">
             <p className="text-xs text-muted-foreground font-medium">Ø Tag</p>
             <p className="text-xl font-bold text-foreground mt-0.5 tabular-nums tracking-tight leading-tight">{weekTotals.avgCalories}</p>
             <p className="text-xs text-muted-foreground">kcal</p>
