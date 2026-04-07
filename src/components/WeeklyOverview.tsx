@@ -277,6 +277,36 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
     return Math.round(totalDeficit / allDates.length);
   }, [profile, entries, bookedActivities]);
 
+  // Monthly stats (30 days)
+  const monthlyStats = useMemo(() => {
+    const today = new Date(selectedDate + "T00:00:00");
+    let totalCalories = 0;
+    let totalDeficit = 0;
+    let daysWithData = 0;
+    const bmrVal = profile ? calculateBMR(profile) : 0;
+
+    for (let i = 29; i >= 0; i--) {
+      const d = new Date(today);
+      d.setDate(d.getDate() - i);
+      const dateStr = formatDate(d);
+      const dayEntries = entries.filter((e) => e.date === dateStr);
+      if (dayEntries.length === 0) continue;
+      daysWithData++;
+      const summary = calculateDailySummary(dayEntries);
+      totalCalories += summary.totalCalories;
+      if (profile) {
+        const bonus = calculateBookedActivityBonus(bookedActivities, dateStr);
+        totalDeficit += (bmrVal + bonus) - summary.totalCalories;
+      }
+    }
+
+    return {
+      totalCalories,
+      avgDeficit: daysWithData > 0 ? Math.round(totalDeficit / daysWithData) : null,
+      daysWithData,
+    };
+  }, [entries, selectedDate, profile, bookedActivities]);
+
   const daysToGoal = useMemo(() => {
     if (!profile || !profile.goalWeightKg || avgDeficit7 === null) return null;
     const kgDiff = profile.weightKg - profile.goalWeightKg; // positive = lose, negative = gain
