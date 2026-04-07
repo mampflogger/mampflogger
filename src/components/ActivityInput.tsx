@@ -295,7 +295,7 @@ const ActivityInput = ({
           selectTriggerRef.current?.focus();
           setFocusedField("type");
         }, 0);
-      }, 1400);
+      }, 800);
       return;
     }
 
