@@ -295,7 +295,7 @@ const ActivityInput = ({
           selectTriggerRef.current?.focus();
           setFocusedField("type");
         }, 0);
-      }, 1400);
+      }, 800);
       return;
     }
 
@@ -394,10 +394,11 @@ const ActivityInput = ({
       }
 
       if (!isInterim) {
+        // Final result: flush quickly so cursor auto-advances to type field
         valueVoiceTimerRef.current = window.setTimeout(() => {
           valueVoiceTimerRef.current = null;
           flushSpokenValueBuffer();
-        }, 1800);
+        }, 500);
       } else {
         valueVoiceTimerRef.current = window.setTimeout(() => {
           valueVoiceTimerRef.current = null;
