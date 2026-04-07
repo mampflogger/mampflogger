@@ -277,6 +277,36 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
     return Math.round(totalDeficit / allDates.length);
   }, [profile, entries, bookedActivities]);
 
+  // Monthly stats (30 days)
+  const monthlyStats = useMemo(() => {
+    const today = new Date(selectedDate + "T00:00:00");
+    let totalCalories = 0;
+    let totalDeficit = 0;
+    let daysWithData = 0;
+    const bmrVal = profile ? calculateBMR(profile) : 0;
+
+    for (let i = 29; i >= 0; i--) {
+      const d = new Date(today);
+      d.setDate(d.getDate() - i);
+      const dateStr = formatDate(d);
+      const dayEntries = entries.filter((e) => e.date === dateStr);
+      if (dayEntries.length === 0) continue;
+      daysWithData++;
+      const summary = calculateDailySummary(dayEntries);
+      totalCalories += summary.totalCalories;
+      if (profile) {
+        const bonus = calculateBookedActivityBonus(bookedActivities, dateStr);
+        totalDeficit += (bmrVal + bonus) - summary.totalCalories;
+      }
+    }
+
+    return {
+      totalCalories,
+      avgDeficit: daysWithData > 0 ? Math.round(totalDeficit / daysWithData) : null,
+      daysWithData,
+    };
+  }, [entries, selectedDate, profile, bookedActivities]);
+
   const daysToGoal = useMemo(() => {
     if (!profile || !profile.goalWeightKg || avgDeficit7 === null) return null;
     const kgDiff = profile.weightKg - profile.goalWeightKg; // positive = lose, negative = gain
@@ -373,10 +403,15 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
       {/* Stats Row */}
       <div id="section-uebersicht" data-section className={`glass-card rounded-xl p-3 ${hl === "section-uebersicht" ? "section-card-highlight" : ""}`}>
         <SectionHeading highlighted={hl === "section-uebersicht"} className="mb-2">Übersicht</SectionHeading>
-        <div className={`grid gap-3 w-full ${daysToGoal !== null ? "grid-cols-2" : avgDeficit7 !== null ? "grid-cols-3" : "grid-cols-2"}`}>
+        <div className="grid gap-3 w-full grid-cols-2 sm:grid-cols-3">
           <div className="rounded-xl bg-background p-3 text-center">
             <p className="text-xs text-muted-foreground font-medium">Woche</p>
             <p className="text-xl font-bold text-foreground mt-0.5 tabular-nums tracking-tight leading-tight">{weekTotals.totalCalories}</p>
+            <p className="text-xs text-muted-foreground">kcal</p>
+          </div>
+          <div className="rounded-xl bg-background p-3 text-center">
+            <p className="text-xs text-muted-foreground font-medium">Monat</p>
+            <p className="text-xl font-bold text-foreground mt-0.5 tabular-nums tracking-tight leading-tight">{monthlyStats.totalCalories}</p>
             <p className="text-xs text-muted-foreground">kcal</p>
           </div>
           <div className="rounded-xl bg-background p-3 text-center">
@@ -386,7 +421,7 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
           </div>
           {avgDeficit7 !== null && (
             <div className="rounded-xl bg-background p-3 text-center">
-              <p className="text-xs text-muted-foreground font-medium">Ø Defizit</p>
+              <p className="text-xs text-muted-foreground font-medium">Ø Defizit 7 Tage</p>
               <div className="flex items-center justify-center gap-0.5 mt-0.5">
                 {avgDeficit7 > 0 ? (
                   <TrendingDown className="w-3.5 h-3.5 shrink-0" style={{ color: "hsl(var(--primary))" }} />
@@ -395,6 +430,22 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
                 )}
                 <p className="text-xl font-bold tabular-nums tracking-tight leading-tight" style={{ color: avgDeficit7 > 0 ? "hsl(var(--primary))" : "hsl(var(--destructive))" }}>
                   {Math.abs(avgDeficit7)}
+                </p>
+              </div>
+              <p className="text-xs text-muted-foreground">kcal</p>
+            </div>
+          )}
+          {monthlyStats.avgDeficit !== null && profile && (
+            <div className="rounded-xl bg-background p-3 text-center">
+              <p className="text-xs text-muted-foreground font-medium">Ø Defizit Monat</p>
+              <div className="flex items-center justify-center gap-0.5 mt-0.5">
+                {monthlyStats.avgDeficit > 0 ? (
+                  <TrendingDown className="w-3.5 h-3.5 shrink-0" style={{ color: "hsl(var(--primary))" }} />
+                ) : (
+                  <TrendingUp className="w-3.5 h-3.5 shrink-0" style={{ color: "hsl(var(--destructive))" }} />
+                )}
+                <p className="text-xl font-bold tabular-nums tracking-tight leading-tight" style={{ color: monthlyStats.avgDeficit > 0 ? "hsl(var(--primary))" : "hsl(var(--destructive))" }}>
+                  {Math.abs(monthlyStats.avgDeficit)}
                 </p>
               </div>
               <p className="text-xs text-muted-foreground">kcal</p>
