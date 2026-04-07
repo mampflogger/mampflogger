@@ -404,23 +404,15 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
       <div id="section-uebersicht" data-section className={`glass-card rounded-xl p-3 ${hl === "section-uebersicht" ? "section-card-highlight" : ""}`}>
         <SectionHeading highlighted={hl === "section-uebersicht"} className="mb-2">Übersicht</SectionHeading>
         <div className="grid gap-3 w-full grid-cols-2 sm:grid-cols-3">
-          <div className="rounded-xl bg-background p-3 text-center">
-            <p className="text-xs text-muted-foreground font-medium">Woche</p>
-            <p className="text-xl font-bold text-foreground mt-0.5 tabular-nums tracking-tight leading-tight">{weekTotals.totalCalories}</p>
-            <p className="text-xs text-muted-foreground">kcal</p>
-          </div>
-          <div className="rounded-xl bg-background p-3 text-center">
-            <p className="text-xs text-muted-foreground font-medium">Monat</p>
-            <p className="text-xl font-bold text-foreground mt-0.5 tabular-nums tracking-tight leading-tight">{monthlyStats.totalCalories}</p>
-            <p className="text-xs text-muted-foreground">kcal</p>
-          </div>
-          <div className="rounded-xl bg-background p-3 text-center">
+          {/* Mobile 2-col: Left=ØTag,Woche,Monat Right=Def7,DefMonat,Ziel */}
+          {/* Desktop 3-col: Row1=ØTag,Woche,Monat Row2=Def7,DefMonat,Ziel */}
+          <div className="rounded-xl bg-background p-3 text-center order-[0]">
             <p className="text-xs text-muted-foreground font-medium">Ø Tag</p>
             <p className="text-xl font-bold text-foreground mt-0.5 tabular-nums tracking-tight leading-tight">{weekTotals.avgCalories}</p>
             <p className="text-xs text-muted-foreground">kcal</p>
           </div>
           {avgDeficit7 !== null && (
-            <div className="rounded-xl bg-background p-3 text-center">
+            <div className="rounded-xl bg-background p-3 text-center order-[1] sm:order-[3]">
               <p className="text-xs text-muted-foreground font-medium">Ø Defizit 7 Tage</p>
               <div className="flex items-center justify-center gap-0.5 mt-0.5">
                 {avgDeficit7 > 0 ? (
@@ -435,8 +427,13 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
               <p className="text-xs text-muted-foreground">kcal</p>
             </div>
           )}
+          <div className="rounded-xl bg-background p-3 text-center order-[2] sm:order-[1]">
+            <p className="text-xs text-muted-foreground font-medium">Woche</p>
+            <p className="text-xl font-bold text-foreground mt-0.5 tabular-nums tracking-tight leading-tight">{weekTotals.totalCalories}</p>
+            <p className="text-xs text-muted-foreground">kcal</p>
+          </div>
           {monthlyStats.avgDeficit !== null && profile && (
-            <div className="rounded-xl bg-background p-3 text-center">
+            <div className="rounded-xl bg-background p-3 text-center order-[3] sm:order-[4]">
               <p className="text-xs text-muted-foreground font-medium">Ø Defizit Monat</p>
               <div className="flex items-center justify-center gap-0.5 mt-0.5">
                 {monthlyStats.avgDeficit > 0 ? (
@@ -451,11 +448,16 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
               <p className="text-xs text-muted-foreground">kcal</p>
             </div>
           )}
+          <div className="rounded-xl bg-background p-3 text-center order-[4] sm:order-[2]">
+            <p className="text-xs text-muted-foreground font-medium">Monat</p>
+            <p className="text-xl font-bold text-foreground mt-0.5 tabular-nums tracking-tight leading-tight">{monthlyStats.totalCalories}</p>
+            <p className="text-xs text-muted-foreground">kcal</p>
+          </div>
           {daysToGoal !== null && (() => {
             const goalDate = daysToGoal > 0 ? new Date(Date.now() + daysToGoal * 86400000) : null;
             const goalDateStr = goalDate ? `${goalDate.getDate().toString().padStart(2, "0")}.${(goalDate.getMonth() + 1).toString().padStart(2, "0")}.${goalDate.getFullYear()}` : null;
             return (
-            <div className="rounded-xl bg-background p-3 text-center relative">
+            <div className="rounded-xl bg-background p-3 text-center relative order-[5]">
               {daysToGoal > 0 && (
                 <button
                   onClick={() => setShowGoalDate(d => !d)}
@@ -477,7 +479,6 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
               <p className="text-xs text-muted-foreground">{daysToGoal === 0 ? "Erreicht!" : showGoalDate ? "" : "Tagen"}</p>
             </div>);
           })()}
-
         </div>
         {renderEditor("section-uebersicht")}
       </div>
