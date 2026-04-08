@@ -127,7 +127,7 @@ function edgeTTSWebSocket(
                   sentenceBoundaryEnabled: "false",
                   wordBoundaryEnabled: "false",
                 },
-                outputFormat: "audio-24khz-48kbitrate-mono-mp3",
+                outputFormat: "audio-24khz-96kbitrate-mono-mp3",
               },
             },
           },
