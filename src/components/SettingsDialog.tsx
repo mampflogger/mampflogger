@@ -25,7 +25,7 @@ import {
   Settings, Sun, Moon, Trash2, Upload, Download, UserCircle, Save, Check,
   AlertCircle, FileSpreadsheet, UtensilsCrossed, Palette, BarChart3, FileUp,
   ChevronLeft, ChevronRight, RefreshCw, List, Sparkles, Loader2, HardDrive, BookOpen, Search,
-  X, Mic, HelpCircle, Ear,
+  X, Mic, HelpCircle, Ear, ArrowUp, ArrowDown,
 } from "lucide-react";
 import CookIcon from "@/components/CookIcon";
 import { supabase } from "@/integrations/supabase/client";
@@ -203,6 +203,10 @@ const SettingsDialog = ({
   const [showDeleteTestDataConfirm, setShowDeleteTestDataConfirm] = useState(false);
 
   // Food list state
+  type FoodSortKey = "name" | "calories" | "protein" | "fat" | "carbs" | "fiber" | "gi";
+  type FoodSortDir = "asc" | "desc";
+  const [foodSortKey, setFoodSortKey] = useState<FoodSortKey>("name");
+  const [foodSortDir, setFoodSortDir] = useState<FoodSortDir>("asc");
   const [foodSearch, setFoodSearch] = useState("");
   const [editingFood, setEditingFood] = useState<FoodItem | null>(null);
   const [editFoodName, setEditFoodName] = useState("");
@@ -1236,7 +1240,7 @@ const SettingsDialog = ({
   const filteredFoods = (() => {
     let list = foodSearch
       ? foodDatabase.filter((f) => f.name.toLowerCase().includes(foodSearch.toLowerCase()))
-      : [...foodDatabase].sort((a, b) => a.name.localeCompare(b.name));
+      : [...foodDatabase];
     if (selectedCategories.size > 0) {
       list = list.filter((f) => f.category && selectedCategories.has(f.category));
     }
@@ -1271,6 +1275,21 @@ const SettingsDialog = ({
         return true;
       });
     }
+    // Apply sorting
+    list.sort((a, b) => {
+      let cmp = 0;
+      switch (foodSortKey) {
+        case "name": cmp = a.name.localeCompare(b.name, "de"); break;
+        case "calories": cmp = a.calories - b.calories; break;
+        case "protein": cmp = a.protein - b.protein; break;
+        case "fat": cmp = a.fat - b.fat; break;
+        case "carbs": cmp = a.carbs - b.carbs; break;
+        case "fiber": cmp = a.fiber - b.fiber; break;
+        case "gi": cmp = (a.gi ?? -1) - (b.gi ?? -1); break;
+      }
+      if (cmp === 0 && foodSortKey !== "name") cmp = a.name.localeCompare(b.name, "de");
+      return foodSortDir === "asc" ? cmp : -cmp;
+    });
     return list;
   })();
 
@@ -1975,14 +1994,45 @@ const SettingsDialog = ({
                   <table className="w-full text-[10px]">
                     <thead className="sticky top-0 bg-card z-10">
                       <tr className="border-b border-border">
-                        <th className="text-left py-1 pr-1 font-semibold text-muted-foreground">Lebensmittel</th>
-                        <th className="text-right py-1 px-0.5 font-semibold text-muted-foreground">Einh.</th>
-                        <th className="text-right py-1 px-0.5 font-semibold text-muted-foreground">kcal</th>
-                        <th className="text-right py-1 px-0.5 font-semibold" style={{ color: "hsl(var(--macro-pro))" }}>PRO</th>
-                        <th className="text-right py-1 px-0.5 font-semibold" style={{ color: "hsl(var(--macro-fat))" }}>FAT</th>
-                        <th className="text-right py-1 px-0.5 font-semibold" style={{ color: "hsl(var(--macro-kh))" }}>KH</th>
-                        <th className="text-right py-1 px-0.5 font-semibold" style={{ color: "hsl(var(--macro-fib))" }}>FIB</th>
-                        <th className="text-right py-1 px-0.5 font-semibold text-foreground">GI</th>
+                        {([
+                          { key: "name" as FoodSortKey, label: "Lebensmittel", align: "left" as const, color: undefined as string | undefined },
+                          { key: null as FoodSortKey | null, label: "Einh.", align: "right" as const, color: undefined as string | undefined },
+                          { key: "calories" as FoodSortKey, label: "kcal", align: "right" as const, color: undefined as string | undefined },
+                          { key: "protein" as FoodSortKey, label: "PRO", align: "right" as const, color: "hsl(var(--macro-pro))" },
+                          { key: "fat" as FoodSortKey, label: "FAT", align: "right" as const, color: "hsl(var(--macro-fat))" },
+                          { key: "carbs" as FoodSortKey, label: "KH", align: "right" as const, color: "hsl(var(--macro-kh))" },
+                          { key: "fiber" as FoodSortKey, label: "FIB", align: "right" as const, color: "hsl(var(--macro-fib))" },
+                          { key: "gi" as FoodSortKey, label: "GI", align: "right" as const, color: undefined as string | undefined },
+                        ]).map((col, ci) => {
+                          if (!col.key) {
+                            return <th key={ci} className="text-right py-1 px-0.5 font-semibold text-muted-foreground">{col.label}</th>;
+                          }
+                          const isActive = foodSortKey === col.key;
+                          return (
+                            <th key={ci} className={`py-1 px-0.5 font-semibold ${col.align === "left" ? "text-left pr-1" : "text-right"}`}>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  if (foodSortKey === col.key) {
+                                    setFoodSortDir(d => d === "asc" ? "desc" : "asc");
+                                  } else {
+                                    setFoodSortKey(col.key);
+                                    setFoodSortDir(col.key === "name" ? "asc" : "desc");
+                                  }
+                                }}
+                                className={`inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full border transition-colors text-[10px] font-semibold leading-tight whitespace-nowrap ${
+                                  isActive
+                                    ? "border-primary/40 bg-primary/10 text-primary"
+                                    : "border-border/60 bg-transparent hover:border-primary/30 hover:bg-muted/40"
+                                }`}
+                                style={col.color && !isActive ? { color: col.color } : undefined}
+                              >
+                                {col.label}
+                                {isActive && (foodSortDir === "asc" ? <ArrowUp className="w-2.5 h-2.5 shrink-0" /> : <ArrowDown className="w-2.5 h-2.5 shrink-0" />)}
+                              </button>
+                            </th>
+                          );
+                        })}
                         <th className="w-5 pl-3"></th>
                       </tr>
                     </thead>
