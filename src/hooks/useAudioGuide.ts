@@ -93,8 +93,8 @@ function saveCustomTexts(texts: Record<string, string>) {
  */
 function pickVoiceName(profile: UserProfile | null): string {
   const wantFemale = !profile || profile.gender === "male";
-  // Multilingual Neural voices sound significantly more natural than standard Neural
-  return wantFemale ? "de-DE-SeraphinaMultilingualNeural" : "de-DE-FlorianMultilingualNeural";
+  // These voices are confirmed available on the free Edge TTS WebSocket endpoint
+  return wantFemale ? "de-DE-AmalaNeural" : "de-DE-ConradNeural";
 }
 
 

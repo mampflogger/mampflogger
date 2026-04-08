@@ -134,19 +134,13 @@ function edgeTTSWebSocket(
         }),
       );
 
-      // Insert SSML breaks at sentence boundaries for more natural pacing
-      const ssmlText = escapeXml(text)
-        .replace(/\.\s+/g, '. <break time="350ms"/> ')
-        .replace(/!\s+/g, '! <break time="300ms"/> ')
-        .replace(/\?\s+/g, '? <break time="300ms"/> ')
-        .replace(/,\s+/g, ', <break time="120ms"/> ')
-        .replace(/–\s+/g, '– <break time="200ms"/> ')
-        .replace(/:\s+/g, ': <break time="200ms"/> ');
+      // Keep SSML minimal – the neural voices handle pacing naturally
+      const ssmlText = escapeXml(text);
 
       const ssml =
         `<speak version='1.0' xmlns='http://www.w3.org/2001/10/synthesis' xml:lang='de-DE'>` +
         `<voice name='${voice}'>` +
-        `<prosody rate='-10%' pitch='+2Hz' volume='medium'>${ssmlText}</prosody>` +
+        `<prosody rate='-5%' volume='+10%'>${ssmlText}</prosody>` +
         `</voice></speak>`;
 
       ws.send(
