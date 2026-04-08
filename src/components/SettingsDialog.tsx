@@ -1995,15 +1995,15 @@ const SettingsDialog = ({
                     <thead className="sticky top-0 bg-card z-10">
                       <tr className="border-b border-border">
                         {([
-                          { key: "name" as FoodSortKey, label: "Lebensmittel", align: "left" },
-                          { key: null, label: "Einh.", align: "right" },
-                          { key: "calories" as FoodSortKey, label: "kcal", align: "right" },
-                          { key: "protein" as FoodSortKey, label: "PRO", align: "right", color: "hsl(var(--macro-pro))" },
-                          { key: "fat" as FoodSortKey, label: "FAT", align: "right", color: "hsl(var(--macro-fat))" },
-                          { key: "carbs" as FoodSortKey, label: "KH", align: "right", color: "hsl(var(--macro-kh))" },
-                          { key: "fiber" as FoodSortKey, label: "FIB", align: "right", color: "hsl(var(--macro-fib))" },
-                          { key: "gi" as FoodSortKey, label: "GI", align: "right" },
-                        ] as const).map((col, ci) => {
+                          { key: "name" as FoodSortKey, label: "Lebensmittel", align: "left" as const, color: undefined as string | undefined },
+                          { key: null as FoodSortKey | null, label: "Einh.", align: "right" as const, color: undefined as string | undefined },
+                          { key: "calories" as FoodSortKey, label: "kcal", align: "right" as const, color: undefined as string | undefined },
+                          { key: "protein" as FoodSortKey, label: "PRO", align: "right" as const, color: "hsl(var(--macro-pro))" },
+                          { key: "fat" as FoodSortKey, label: "FAT", align: "right" as const, color: "hsl(var(--macro-fat))" },
+                          { key: "carbs" as FoodSortKey, label: "KH", align: "right" as const, color: "hsl(var(--macro-kh))" },
+                          { key: "fiber" as FoodSortKey, label: "FIB", align: "right" as const, color: "hsl(var(--macro-fib))" },
+                          { key: "gi" as FoodSortKey, label: "GI", align: "right" as const, color: undefined as string | undefined },
+                        ]).map((col, ci) => {
                           if (!col.key) {
                             return <th key={ci} className="text-right py-1 px-0.5 font-semibold text-muted-foreground">{col.label}</th>;
                           }
