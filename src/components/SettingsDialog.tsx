@@ -1240,7 +1240,7 @@ const SettingsDialog = ({
   const filteredFoods = (() => {
     let list = foodSearch
       ? foodDatabase.filter((f) => f.name.toLowerCase().includes(foodSearch.toLowerCase()))
-      : [...foodDatabase].sort((a, b) => a.name.localeCompare(b.name));
+      : [...foodDatabase];
     if (selectedCategories.size > 0) {
       list = list.filter((f) => f.category && selectedCategories.has(f.category));
     }
@@ -1275,6 +1275,21 @@ const SettingsDialog = ({
         return true;
       });
     }
+    // Apply sorting
+    list.sort((a, b) => {
+      let cmp = 0;
+      switch (foodSortKey) {
+        case "name": cmp = a.name.localeCompare(b.name, "de"); break;
+        case "calories": cmp = a.calories - b.calories; break;
+        case "protein": cmp = a.protein - b.protein; break;
+        case "fat": cmp = a.fat - b.fat; break;
+        case "carbs": cmp = a.carbs - b.carbs; break;
+        case "fiber": cmp = a.fiber - b.fiber; break;
+        case "gi": cmp = (a.gi ?? -1) - (b.gi ?? -1); break;
+      }
+      if (cmp === 0 && foodSortKey !== "name") cmp = a.name.localeCompare(b.name, "de");
+      return foodSortDir === "asc" ? cmp : -cmp;
+    });
     return list;
   })();
 
