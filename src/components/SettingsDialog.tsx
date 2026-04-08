@@ -203,6 +203,10 @@ const SettingsDialog = ({
   const [showDeleteTestDataConfirm, setShowDeleteTestDataConfirm] = useState(false);
 
   // Food list state
+  type FoodSortKey = "name" | "calories" | "protein" | "fat" | "carbs" | "fiber" | "gi";
+  type FoodSortDir = "asc" | "desc";
+  const [foodSortKey, setFoodSortKey] = useState<FoodSortKey>("name");
+  const [foodSortDir, setFoodSortDir] = useState<FoodSortDir>("asc");
   const [foodSearch, setFoodSearch] = useState("");
   const [editingFood, setEditingFood] = useState<FoodItem | null>(null);
   const [editFoodName, setEditFoodName] = useState("");
