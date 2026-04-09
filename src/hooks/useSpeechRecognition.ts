@@ -24,6 +24,10 @@ type SpeechRecognitionConstructor = new () => SpeechRecognitionLike;
 const TERMINAL_ERRORS = new Set(["not-allowed", "service-not-allowed", "audio-capture"]);
 const NON_ACTIONABLE_ERRORS = new Set(["no-speech", "aborted"]);
 
+const RESTART_DELAY_MS = 300;
+const MAX_RAPID_RESTARTS = 5;
+const RAPID_RESTART_WINDOW_MS = 5_000;
+
 const getSpeechRecognition = (): SpeechRecognitionConstructor | null => {
   if (typeof window === "undefined") return null;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -40,6 +44,8 @@ export function useSpeechRecognition({ onResult, onEnd, onError, lang = "de-DE" 
   const processedIndexRef = useRef(0);
   const keepAliveRef = useRef(false);
   const silentStartRef = useRef(false);
+  const restartTimestampsRef = useRef<number[]>([]);
+  const restartTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const onResultRef = useRef(onResult);
   const onEndRef = useRef(onEnd);
   const onErrorRef = useRef(onError);
@@ -108,15 +114,34 @@ export function useSpeechRecognition({ onResult, onEnd, onError, lang = "de-DE" 
 
       processedIndexRef.current = 0;
 
-      try {
-        recognition.start();
-      } catch (err) {
-        console.warn("[Speech] restart failed:", err);
+      // Guard against rapid restart loops
+      const now = Date.now();
+      const timestamps = restartTimestampsRef.current;
+      // Prune old timestamps
+      restartTimestampsRef.current = timestamps.filter(t => now - t < RAPID_RESTART_WINDOW_MS);
+      restartTimestampsRef.current.push(now);
+
+      if (restartTimestampsRef.current.length > MAX_RAPID_RESTARTS) {
+        console.warn("[Speech] too many rapid restarts, stopping");
         keepAliveRef.current = false;
         setIsListening(false);
-        onErrorRef.current?.("restart-requires-gesture");
+        restartTimestampsRef.current = [];
         onEndRef.current?.();
+        return;
       }
+
+      restartTimerRef.current = setTimeout(() => {
+        if (!keepAliveRef.current) return;
+        try {
+          recognition.start();
+        } catch (err) {
+          console.warn("[Speech] restart failed:", err);
+          keepAliveRef.current = false;
+          setIsListening(false);
+          onErrorRef.current?.("restart-requires-gesture");
+          onEndRef.current?.();
+        }
+      }, RESTART_DELAY_MS);
     };
 
     recognitionRef.current = recognition;
@@ -158,6 +183,11 @@ export function useSpeechRecognition({ onResult, onEnd, onError, lang = "de-DE" 
   const stop = useCallback(() => {
     keepAliveRef.current = false;
     processedIndexRef.current = 0;
+    restartTimestampsRef.current = [];
+    if (restartTimerRef.current) {
+      clearTimeout(restartTimerRef.current);
+      restartTimerRef.current = null;
+    }
 
     if (recognitionRef.current) {
       try {
@@ -174,6 +204,11 @@ export function useSpeechRecognition({ onResult, onEnd, onError, lang = "de-DE" 
     return () => {
       keepAliveRef.current = false;
       processedIndexRef.current = 0;
+      restartTimestampsRef.current = [];
+      if (restartTimerRef.current) {
+        clearTimeout(restartTimerRef.current);
+        restartTimerRef.current = null;
+      }
 
       if (recognitionRef.current) {
         try {

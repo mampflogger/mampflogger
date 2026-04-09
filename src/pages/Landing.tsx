@@ -32,13 +32,13 @@ const Landing = () => {
             <span className="text-lg font-bold tracking-tight">MampfLogger</span>
           </div>
           <div className="flex items-center gap-1">
-            <Button size="sm" variant="outline" className="h-8 px-2 text-xs" onClick={() => navigate("/more")}>
+            <Button size="sm" variant="outline" className="h-7 px-1.5 text-[10px]" onClick={() => navigate("/more")}>
               Learn more
             </Button>
-            <Button size="sm" variant="outline" className="h-8 px-2 text-xs" onClick={() => navigate("/auth")}>
+            <Button size="sm" variant="outline" className="h-7 px-1.5 text-[10px]" onClick={() => navigate("/auth")}>
               Login
             </Button>
-            <Button size="sm" className="h-8 px-2 text-xs" onClick={() => navigate("/auth")}>
+            <Button size="sm" className="h-7 px-1.5 text-[10px]" onClick={() => navigate("/auth")}>
               Registrieren
             </Button>
           </div>
