@@ -78,6 +78,7 @@ const COMMANDS: VoiceCommand[] = [
   { patterns: [/\bvitamine\b/i], action: "section:vitamine-7-tage" },
   { patterns: [/\bmineralstoffe?\b/i, /\bspurenelemente?\b/i], action: "section:mineralstoffe-7-tage" },
   { patterns: [/\bwochenanalyse\b/i, /\bwoche\s+analysieren\b/i, /^\s*analyse\s*$/i, /\bernährungsberater\b/i, /\bernährungscoach\b/i, /\bcoach\b/i], action: "action:weekly-analysis" },
+  { patterns: [/\bzielgewicht\b/i], action: "action:toggle-goal-date" },
   { patterns: [/\bübersicht\b/i], action: "section:uebersicht" },
 
   // Settings sections
