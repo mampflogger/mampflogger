@@ -536,6 +536,9 @@ const Index = () => {
           setSettingsVoiceAction("food-search");
         }
       }
+      else if (action === "action:toggle-goal-date") {
+        window.dispatchEvent(new Event("mampflogger:toggle-goal-date"));
+      }
       else if (action === "backup-create") {
         if (!settingsOpenRef.current) {
           setSettingsVoiceTab("data");
