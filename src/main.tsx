@@ -83,12 +83,25 @@ function handleLovablePreviewToken(): void {
   localStorage.removeItem(getPreviewTokenStorageKey());
 }
 
-async function resetPreviewCacheOnce(): Promise<boolean> {
-  if (!isLovablePreviewHost()) return false;
+function stripPreviewBustParam(): void {
+  const params = new URLSearchParams(window.location.search);
+  if (!params.has(PREVIEW_BUST_PARAM)) return;
+
+  params.delete(PREVIEW_BUST_PARAM);
+  const search = params.toString();
+  const nextUrl = `${window.location.pathname}${search ? `?${search}` : ""}${window.location.hash}`;
+  window.history.replaceState(window.history.state, "", nextUrl);
+}
+
+async function resetPreviewCacheOnce(): Promise<void> {
+  if (!isLovablePreviewHost()) return;
 
   const token = getPreviewToken();
   const resetKey = getPreviewCacheResetKey(token);
-  if (sessionStorage.getItem(resetKey) === "1") return false;
+  if (sessionStorage.getItem(resetKey) === "1") {
+    stripPreviewBustParam();
+    return;
+  }
 
   sessionStorage.setItem(resetKey, "1");
 
@@ -105,17 +118,12 @@ async function resetPreviewCacheOnce(): Promise<boolean> {
     console.warn("[Preview] Cache reset failed", error);
   }
 
-  const params = new URLSearchParams(window.location.search);
-  params.set(PREVIEW_BUST_PARAM, `${Date.now()}`);
-  const search = params.toString();
-  const nextUrl = `${window.location.pathname}${search ? `?${search}` : ""}${window.location.hash}`;
-  window.location.replace(nextUrl);
-  return true;
+  stripPreviewBustParam();
 }
 
 async function bootstrap() {
   handleLovablePreviewToken();
-  if (await resetPreviewCacheOnce()) return;
+  await resetPreviewCacheOnce();
 
   createRoot(document.getElementById("root")!).render(<App />);
 }
