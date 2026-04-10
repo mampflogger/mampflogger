@@ -485,15 +485,16 @@ export function useVoiceCommands({ onCommand, onUnhandledSpeech }: UseVoiceComma
   stopFnRef.current = voice.stop;
 
   const arm = useCallback(() => {
+    if (!voice.isListening) {
+      toast.error("Mikrofon pausiert – bitte einmal auf das Mic tippen.");
+      return;
+    }
+
     isArmedRef.current = true;
     setIsArmed(true);
-    // Start listening if not already
-    if (!voice.isListening) {
-      voice.start({ silent: true });
-    }
     resetTimeout();
     toast("🎤 Mikrofon aktiv");
-  }, [voice.start, voice.isListening, resetTimeout]);
+  }, [voice.isListening, resetTimeout]);
 
   const disarm = useCallback(() => {
     isArmedRef.current = false;
@@ -533,14 +534,6 @@ export function useVoiceCommands({ onCommand, onUnhandledSpeech }: UseVoiceComma
       start();
     }
   }, [voice.isListening, start, arm, disarm]);
-
-  // Auto-start in standby mode on mount
-  useEffect(() => {
-    if (voice.isSupported && !voice.isListening) {
-      voice.start({ silent: true });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   useEffect(() => {
     return () => {
