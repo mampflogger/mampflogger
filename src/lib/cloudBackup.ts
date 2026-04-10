@@ -62,14 +62,19 @@ export function restoreCloudBackupSnapshot(snapshot: Record<string, unknown>, st
     if (!isCloudBackupKey(key)) continue;
 
     const currentValue = storage.getItem(key);
+    const nextValue = typeof value === "string" ? value : JSON.stringify(value);
     const shouldReplaceLegacySupplements =
       key === "mampflogger-supplements" && isLegacyRandomSupplementSeed(currentValue);
+
+    if (currentValue === nextValue && !shouldReplaceLegacySupplements) {
+      continue;
+    }
 
     if (currentValue !== null && currentValue !== "" && !shouldReplaceLegacySupplements) {
       continue;
     }
 
-    storage.setItem(key, typeof value === "string" ? value : JSON.stringify(value));
+    storage.setItem(key, nextValue);
     restoredAny = true;
   }
 
