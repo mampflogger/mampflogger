@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { collectCloudBackupSnapshot, restoreCloudBackupSnapshot, isCloudBackupKey } from "@/lib/cloudBackup";
 
+const CLOUD_RESTORE_RELOAD_KEY_PREFIX = "mampflogger-cloud-restore-reload";
+
 export function useCloudBackup(userId: string | null) {
   const [lastSync, setLastSync] = useState<Date | null>(null);
 
@@ -39,7 +41,15 @@ export function useCloudBackup(userId: string | null) {
       const restored = restoreCloudBackupSnapshot(data.data as Record<string, unknown>);
       if (restored) {
         setLastSync(data.updated_at ? new Date(data.updated_at) : new Date());
-        window.location.reload();
+        const restoreVersion = data.updated_at ?? "no-updated-at";
+        const reloadGuardKey = `${CLOUD_RESTORE_RELOAD_KEY_PREFIX}:${userId}`;
+        const alreadyReloadedForVersion = sessionStorage.getItem(reloadGuardKey) === restoreVersion;
+
+        if (!alreadyReloadedForVersion) {
+          sessionStorage.setItem(reloadGuardKey, restoreVersion);
+          window.location.reload();
+        }
+
         return true;
       }
 
