@@ -84,6 +84,7 @@ export function useCloudBackup(userId: string | null) {
 
     void (async () => {
       const restored = await restoreFromCloudIfNeeded();
+      restoreComplete = true;
       if (!restored) {
         await syncToCloud();
       }
