@@ -12,8 +12,11 @@ export function useCloudBackup(userId: string | null) {
 
     let debounceTimer: ReturnType<typeof setTimeout>;
     let isDisposed = false;
+    let restoreComplete = false;
 
     const syncToCloud = async () => {
+      // Don't sync until initial restore is done to avoid overwriting cloud with empty data
+      if (!restoreComplete) return;
       const snapshot = collectCloudBackupSnapshot();
       if (Object.keys(snapshot).length === 0) return;
 
@@ -81,6 +84,7 @@ export function useCloudBackup(userId: string | null) {
 
     void (async () => {
       const restored = await restoreFromCloudIfNeeded();
+      restoreComplete = true;
       if (!restored) {
         await syncToCloud();
       }
