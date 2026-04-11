@@ -500,19 +500,6 @@ export function useVoiceCommands({ onCommand, onUnhandledSpeech }: UseVoiceComma
     toast("🎤 Mikrofon aktiv");
   }, [voice.isListening, resetTimeout]);
 
-  const wake = useCallback((options?: StartVoiceOptions) => {
-    if (voice.isListening) {
-      activationTriggeredRef.current = false;
-      isArmedRef.current = true;
-      setIsArmed(true);
-      resetTimeout();
-      toast("🎤 Mikrofon aktiv");
-      return;
-    }
-
-    start(options);
-  }, [voice.isListening, resetTimeout, start]);
-
   const disarm = useCallback(() => {
     activationTriggeredRef.current = false;
     isArmedRef.current = false;
@@ -531,6 +518,19 @@ export function useVoiceCommands({ onCommand, onUnhandledSpeech }: UseVoiceComma
       resetTimeout();
     }
   }, [voice.start, resetTimeout]);
+
+  const wake = useCallback((options?: StartVoiceOptions) => {
+    if (voice.isListening) {
+      activationTriggeredRef.current = false;
+      isArmedRef.current = true;
+      setIsArmed(true);
+      resetTimeout();
+      toast("🎤 Mikrofon aktiv");
+      return;
+    }
+
+    start(options);
+  }, [voice.isListening, resetTimeout, start]);
 
   const stop = useCallback(() => {
     clearInactivityTimeout();
