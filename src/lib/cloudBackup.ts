@@ -63,17 +63,13 @@ export function restoreCloudBackupSnapshot(snapshot: Record<string, unknown>, st
 
     const currentValue = storage.getItem(key);
     const nextValue = typeof value === "string" ? value : JSON.stringify(value);
-    const shouldReplaceLegacySupplements =
-      key === "mampflogger-supplements" && isLegacyRandomSupplementSeed(currentValue);
 
-    if (currentValue === nextValue && !shouldReplaceLegacySupplements) {
+    // Skip if values are identical
+    if (currentValue === nextValue) {
       continue;
     }
 
-    if (currentValue !== null && currentValue !== "" && !shouldReplaceLegacySupplements) {
-      continue;
-    }
-
+    // Cloud always wins on restore — this prevents profile data loss
     storage.setItem(key, nextValue);
     restoredAny = true;
   }
