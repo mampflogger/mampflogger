@@ -467,7 +467,7 @@ const Index = () => {
         return;
       }
       else if (action === "action:mic-on") {
-        voiceCommands.arm();
+        voiceCommands.wake();
         return;
       }
       else if (action === "action:camera" || action === "action:entry+camera") {
