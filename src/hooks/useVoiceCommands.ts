@@ -353,6 +353,7 @@ export function useVoiceCommands({ onCommand, onUnhandledSpeech }: UseVoiceComma
 
   const [isArmed, setIsArmed] = useState(false);
   const isArmedRef = useRef(false);
+  const activationTriggeredRef = useRef(false);
 
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const stopFnRef = useRef<() => void>(() => {});
@@ -381,15 +382,17 @@ export function useVoiceCommands({ onCommand, onUnhandledSpeech }: UseVoiceComma
     onResult: useCallback((transcript: string, isInterim: boolean) => {
       // In standby mode: only listen for activation commands
       if (!isArmedRef.current) {
-        if (!isInterim) {
-          const lower = transcript.toLowerCase().trim();
-          if (ACTIVATION_RE.test(lower)) {
-            onCommandRef.current("action:mic-on");
-          }
-          // Ignore everything else in standby
+        const lower = transcript.toLowerCase().trim();
+
+        if (ACTIVATION_RE.test(lower) && !activationTriggeredRef.current) {
+          activationTriggeredRef.current = true;
+          onCommandRef.current("action:mic-on");
         }
+
         return;
       }
+
+      activationTriggeredRef.current = false;
 
       resetTimeout();
 
@@ -490,13 +493,28 @@ export function useVoiceCommands({ onCommand, onUnhandledSpeech }: UseVoiceComma
       return;
     }
 
+    activationTriggeredRef.current = false;
     isArmedRef.current = true;
     setIsArmed(true);
     resetTimeout();
     toast("🎤 Mikrofon aktiv");
   }, [voice.isListening, resetTimeout]);
 
+  const wake = useCallback((options?: StartVoiceOptions) => {
+    if (voice.isListening) {
+      activationTriggeredRef.current = false;
+      isArmedRef.current = true;
+      setIsArmed(true);
+      resetTimeout();
+      toast("🎤 Mikrofon aktiv");
+      return;
+    }
+
+    start(options);
+  }, [voice.isListening, resetTimeout, start]);
+
   const disarm = useCallback(() => {
+    activationTriggeredRef.current = false;
     isArmedRef.current = false;
     setIsArmed(false);
     clearInactivityTimeout();
@@ -505,6 +523,7 @@ export function useVoiceCommands({ onCommand, onUnhandledSpeech }: UseVoiceComma
   }, [clearInactivityTimeout]);
 
   const start = useCallback((options?: StartVoiceOptions) => {
+    activationTriggeredRef.current = false;
     voice.start(options);
     if (!options?.silent) {
       isArmedRef.current = true;
@@ -515,6 +534,7 @@ export function useVoiceCommands({ onCommand, onUnhandledSpeech }: UseVoiceComma
 
   const stop = useCallback(() => {
     clearInactivityTimeout();
+    activationTriggeredRef.current = false;
     isArmedRef.current = false;
     setIsArmed(false);
     voice.stop();
@@ -541,5 +561,5 @@ export function useVoiceCommands({ onCommand, onUnhandledSpeech }: UseVoiceComma
     };
   }, [clearInactivityTimeout]);
 
-  return { isListening: voice.isListening, isArmed, toggle, start, stop, arm, disarm, isSupported: voice.isSupported };
+  return { isListening: voice.isListening, isArmed, toggle, start, stop, arm, wake, disarm, isSupported: voice.isSupported };
 }
