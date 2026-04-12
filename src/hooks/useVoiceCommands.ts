@@ -451,6 +451,23 @@ export function useVoiceCommands({ onCommand, onUnhandledSpeech }: UseVoiceComma
             if (pattern.test(lower)) {
               const action = typeof cmd.action === "function" ? cmd.action(lower) : cmd.action;
               if (action && isActionAllowedInScope(action, scope)) {
+                // Handle mic commands directly to avoid stale closure issues
+                if (action === "action:mic-on") {
+                  activationTriggeredRef.current = false;
+                  isArmedRef.current = true;
+                  setIsArmed(true);
+                  resetTimeout();
+                  toast("🎤 Mikrofon aktiv");
+                  return;
+                }
+                if (action === "action:mic-off") {
+                  activationTriggeredRef.current = false;
+                  isArmedRef.current = false;
+                  setIsArmed(false);
+                  clearInactivityTimeout();
+                  toast("🎤 Mikrofon Standby");
+                  return;
+                }
                 onCommandRef.current(action);
                 return;
               }
