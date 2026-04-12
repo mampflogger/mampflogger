@@ -354,6 +354,7 @@ export function useVoiceCommands({ onCommand, onUnhandledSpeech }: UseVoiceComma
   const [isArmed, setIsArmed] = useState(false);
   const isArmedRef = useRef(false);
   const activationTriggeredRef = useRef(false);
+  const autoStartAttemptedRef = useRef(false);
 
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const stopFnRef = useRef<() => void>(() => {});
@@ -492,7 +493,7 @@ export function useVoiceCommands({ onCommand, onUnhandledSpeech }: UseVoiceComma
 
       // No command matched → delegate to active field handler
       onUnhandledRef.current(transcript, isInterim);
-    }, [resetTimeout]),
+    }, [resetTimeout, clearInactivityTimeout]),
     onError: useCallback((error: string) => {
       if (error === "not-allowed" || error === "service-not-allowed") {
         toast.error("Mikrofon blockiert – bitte Browser-Zugriff erlauben.");
@@ -577,6 +578,19 @@ export function useVoiceCommands({ onCommand, onUnhandledSpeech }: UseVoiceComma
       start();
     }
   }, [voice.isListening, start, arm, disarm]);
+
+  useEffect(() => {
+    if (!voice.isSupported || autoStartAttemptedRef.current) return;
+
+    autoStartAttemptedRef.current = true;
+    const timeoutId = window.setTimeout(() => {
+      start({ silent: true });
+    }, 250);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
+  }, [voice.isSupported, start]);
 
   useEffect(() => {
     return () => {
