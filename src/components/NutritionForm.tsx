@@ -223,7 +223,11 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
         setHighlightIndex(-1);
       }
     } else if (currentField === "amount") {
-      const num = transcript.replace(/[^\d.,]/g, "").replace(",", ".");
+      // First try spoken number parsing (handles words like "einhundert", "drei", etc.)
+      const spoken = parseGermanSpokenNumber(transcript);
+      const num = spoken !== null && spoken > 0
+        ? String(spoken)
+        : transcript.replace(/[^\d.,]/g, "").replace(",", ".");
       if (num) {
         handleAmountChangeRef.current(num);
         setTimeout(() => {
