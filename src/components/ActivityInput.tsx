@@ -413,7 +413,7 @@ const ActivityInput = ({
     if (currentField !== "type") return;
 
     const normalizedTranscript = normalizeForVoice(transcript);
-    const hasSelectionKeyword = /\b(?:nummer|position|nimm|nehme|zeige|liste|auswahl|dropdown|option|optionen)\b/i.test(transcript);
+    const hasSelectionKeyword = /\b(?:nummer|nr|position|nimm|nehme|zeige|liste|auswahl|dropdown|option|optionen)\b/i.test(transcript);
     if (!hasSelectionKeyword && !isTypeOpen && Date.now() < pendingTypeIgnoreNumericUntilRef.current) {
       const lateScaleWord = normalizedTranscript.match(LATE_SCALE_WORD_RE)?.[1];
       const currentValueNumber = Number.parseInt(value, 10);
@@ -432,8 +432,35 @@ const ActivityInput = ({
         return;
       }
 
+      // Handle numeric carryover: recognizer may send "1000" or "100" as digits
+      // instead of "tausend" or "hundert" – check if it's a scale of current value
       const carryOverNumber = parseGermanSpokenNumber(normalizedTranscript);
       if (carryOverNumber !== null) {
+        if (
+          Number.isInteger(currentValueNumber) &&
+          currentValueNumber >= 1 &&
+          currentValueNumber <= 9
+        ) {
+          // Check if carryOver is a round scale (100, 1000) that makes sense
+          // e.g. value=1, carryOver=1000 → user said "ein" then "tausend" (as "1000")
+          if (carryOverNumber === currentValueNumber * 100 || carryOverNumber === currentValueNumber * 1000) {
+            setValue(String(carryOverNumber));
+            pendingTypeIgnoreNumericUntilRef.current = Date.now() + 1500;
+            valueVoiceBufferRef.current = "";
+            valueVoiceDeferredRef.current = false;
+            playConfirmationTone();
+            return;
+          }
+          // Check if it's a bare scale value (100, 1000) – multiply
+          if (carryOverNumber === 100 || carryOverNumber === 1000) {
+            setValue(String(currentValueNumber * carryOverNumber));
+            pendingTypeIgnoreNumericUntilRef.current = Date.now() + 1500;
+            valueVoiceBufferRef.current = "";
+            valueVoiceDeferredRef.current = false;
+            playConfirmationTone();
+            return;
+          }
+        }
         return;
       }
     }
@@ -441,7 +468,7 @@ const ActivityInput = ({
     const pickIndex = parseSpokenSelectionIndex(transcript, {
       allowBareNumber: isTypeOpen,
       max: activityTypes.length || undefined,
-      keywords: ["nummer", "position", "nimm", "nehme", "zeige", "liste", "auswahl", "dropdown", "option", "optionen", "aktivitaet", "activity"],
+      keywords: ["nummer", "nr", "position", "nimm", "nehme", "zeige", "liste", "auswahl", "dropdown", "option", "optionen", "aktivitaet", "activity"],
     });
 
     if (pickIndex !== null) {
