@@ -1,5 +1,6 @@
 const DEFAULT_SELECTION_KEYWORDS = [
   "nummer",
+  "nr",
   "position",
   "zeige",
   "nimm",
