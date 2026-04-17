@@ -314,16 +314,20 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
   }, [entries, selectedDate, profile, bookedActivities]);
 
   const daysToGoal = useMemo(() => {
-    if (!profile || !profile.goalWeightKg || avgDeficit7 === null) return null;
+    if (!profile || !profile.goalWeightKg) return null;
+    // Prefer 30-day avg deficit when a full month of data exists; otherwise fall back to 7-day avg.
+    const useMonthly = monthlyStats.daysWithData >= 30 && monthlyStats.avgDeficit !== null;
+    const avgDeficit = useMonthly ? monthlyStats.avgDeficit! : avgDeficit7;
+    if (avgDeficit === null) return null;
     const kgDiff = profile.weightKg - profile.goalWeightKg; // positive = lose, negative = gain
     if (Math.abs(kgDiff) < 0.01) return 0; // goal reached
     // Losing weight: need positive deficit (caloric deficit)
     // Gaining weight: need negative deficit (caloric surplus)
-    if (kgDiff > 0 && avgDeficit7 <= 0) return null; // wants to lose but is in surplus
-    if (kgDiff < 0 && avgDeficit7 >= 0) return null; // wants to gain but is in deficit
+    if (kgDiff > 0 && avgDeficit <= 0) return null; // wants to lose but is in surplus
+    if (kgDiff < 0 && avgDeficit >= 0) return null; // wants to gain but is in deficit
     const totalKcalNeeded = Math.abs(kgDiff) * 7000;
-    return Math.round(totalKcalNeeded / Math.abs(avgDeficit7));
-  }, [profile, avgDeficit7]);
+    return Math.round(totalKcalNeeded / Math.abs(avgDeficit));
+  }, [profile, avgDeficit7, monthlyStats]);
 
   const maxCalories = useMemo(
     () => Math.max(...weekData.map((d) => d.calories), 100),
