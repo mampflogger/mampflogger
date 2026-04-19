@@ -590,36 +590,8 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry, voiceExpandIndex, onVoi
     };
     onAddEntry(entry);
 
-    // Rezept auch als Lebensmittel in der DB speichern (Kategorie "Eigene")
-    // Makros werden auf "pro 100g einer Portion" normalisiert
-    // Flüssigkeit aus Zutaten mit "ml" erkennen (z.B. "500 ml Wasser", "200ml Brühe")
-    let totalLiquidMl = 0;
-    const portionWeight = recipe.ingredients.reduce((sum, ing) => {
-      const match = ing.amount.match(/[\d.,]+/);
-      const val = match ? parseFloat(match[0].replace(",", ".")) : 0;
-      if (/ml\b/i.test(ing.amount)) {
-        totalLiquidMl += val;
-      }
-      return sum + val;
-    }, 0) || 100; // Fallback 100g wenn keine Mengen erkennbar
-    const liquidPerServing = Math.round(totalLiquidMl / recipe.servings);
-    const servingWeight = Math.round(portionWeight / recipe.servings);
-    const factor = 100 / servingWeight;
-    const foodItem: FoodItem = {
-      name: recipe.name,
-      baseUnit: "100g",
-      baseAmount: 100,
-      calories: Math.round(ps.calories * factor),
-      protein: Math.round(ps.protein * factor * 10) / 10,
-      fat: Math.round(ps.fat * factor * 10) / 10,
-      carbs: Math.round(ps.carbs * factor * 10) / 10,
-      fiber: Math.round(ps.fiber * factor * 10) / 10,
-      defaultAmount: servingWeight,
-      ...(liquidPerServing > 0 ? { liquidMl: liquidPerServing } : {}),
-      category: "Eigene",
-      isUserCreated: true,
-    };
-    addFoodItem(foodItem);
+    // Rezept als Lebensmittel registrieren (idempotent – auch beim Buchen)
+    registerRecipeAsFood(recipe);
 
     toast({ title: "Übernommen!", description: `${recipe.name} wurde ins Tagesprotokoll eingetragen.` });
   };
