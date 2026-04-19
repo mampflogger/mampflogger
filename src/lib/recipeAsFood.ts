@@ -62,5 +62,10 @@ export function registerRecipeAsFood(recipe: RecipeLike): void {
     isUserCreated: true,
   };
 
-  addFoodItem(foodItem);
+  const existing = foodDatabase.find((f) => f.name.toLowerCase() === recipe.name.toLowerCase());
+  if (existing) {
+    updateFoodItem(existing.name, { ...existing, ...foodItem, name: existing.name });
+  } else {
+    addFoodItem(foodItem);
+  }
 }
