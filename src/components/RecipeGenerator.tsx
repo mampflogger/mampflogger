@@ -316,6 +316,7 @@ const RecipeGenerator = ({
       savedAt: new Date().toISOString(),
     };
     setSavedRecipes((prev) => [savedEntry, ...prev]);
+    registerRecipeAsFood(savedEntry);
     setSaved(true);
     toast({ title: "Gespeichert!", description: `${recipe.name} wurde zu deinen Rezepten hinzugefügt.` });
   };
