@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { foodDatabase, saveFoodDatabase, guessCategory, addFoodItem, type FoodItem } from "@/data/foodDatabase";
+import { registerRecipeAsFood } from "@/lib/recipeAsFood";
 import ManualRecipeForm from "@/components/ManualRecipeForm";
 import {
   Dialog,
