@@ -417,6 +417,7 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry, voiceExpandIndex, onVoi
 
   const handleManualSave = (recipe: SavedRecipe) => {
     setSavedRecipes((prev) => [recipe, ...prev]);
+    registerRecipeAsFood(recipe);
     setShowManualForm(false);
   };
 
