@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import { FoodItem, foodDatabase, saveFoodDatabase, guessCategory } from "@/data/foodDatabase";
+import { registerRecipeAsFood } from "@/lib/recipeAsFood";
 import { NutritionEntry, generateId } from "@/types/nutrition";
 import { estimateRecipeMicronutrients } from "@/lib/micronutrients";
 import { supabase } from "@/integrations/supabase/client";
@@ -315,6 +316,7 @@ const RecipeGenerator = ({
       savedAt: new Date().toISOString(),
     };
     setSavedRecipes((prev) => [savedEntry, ...prev]);
+    registerRecipeAsFood(savedEntry);
     setSaved(true);
     toast({ title: "Gespeichert!", description: `${recipe.name} wurde zu deinen Rezepten hinzugefügt.` });
   };
