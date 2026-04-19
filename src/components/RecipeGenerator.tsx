@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import { FoodItem, foodDatabase, saveFoodDatabase, guessCategory } from "@/data/foodDatabase";
+import { registerRecipeAsFood } from "@/lib/recipeAsFood";
 import { NutritionEntry, generateId } from "@/types/nutrition";
 import { estimateRecipeMicronutrients } from "@/lib/micronutrients";
 import { supabase } from "@/integrations/supabase/client";
