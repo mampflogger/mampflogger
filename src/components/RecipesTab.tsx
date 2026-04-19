@@ -505,6 +505,7 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry, voiceExpandIndex, onVoi
         // Store the photo with the recipe
         recipe.photoUrl = base64;
         setSavedRecipes((prev) => [recipe, ...prev]);
+        registerRecipeAsFood(recipe);
         setExpandedId(recipe.id);
         setShowPhotoDialog(false);
         setPhotoPreview(null);
