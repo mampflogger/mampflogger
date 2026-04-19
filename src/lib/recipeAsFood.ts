@@ -1,4 +1,4 @@
-import { addFoodItem, type FoodItem } from "@/data/foodDatabase";
+import { addFoodItem, foodDatabase, updateFoodItem, type FoodItem } from "@/data/foodDatabase";
 
 interface RecipeMacros {
   calories: number;
