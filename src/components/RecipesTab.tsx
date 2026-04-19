@@ -731,13 +731,11 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry, voiceExpandIndex, onVoi
       }
 
       const finalName = editName.trim() || recipe.name;
+      const updatedRecipe: SavedRecipe = { ...recipe, name: finalName, ingredients: updatedIngredients, servings: normalizedServings, totalMacros, perServing, steps: updatedSteps };
       setSavedRecipes((prev) =>
-        prev.map((r) =>
-          r.id === recipeId
-            ? { ...r, name: finalName, ingredients: updatedIngredients, servings: normalizedServings, totalMacros, perServing, steps: updatedSteps }
-            : r
-        )
+        prev.map((r) => (r.id === recipeId ? updatedRecipe : r))
       );
+      registerRecipeAsFood(updatedRecipe);
       stopEditing();
       toast({ title: "Gespeichert", description: "Rezept, Nährwerte und Zubereitung wurden aktualisiert." });
     } catch (e) {
