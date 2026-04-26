@@ -228,16 +228,43 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
     } else if (currentField === "amount") {
       // First try spoken number parsing (handles words like "einhundert", "drei", etc.)
       const spoken = parseGermanSpokenNumber(transcript);
-      const num = spoken !== null && spoken > 0
-        ? String(spoken)
-        : transcript.replace(/[^\d.,]/g, "").replace(",", ".");
-      if (num) {
-        handleAmountChangeRef.current(num);
-        setTimeout(() => {
-          submitButtonRef.current?.focus();
-          setFocusedField("submit");
-        }, 0);
+      let resolved: number | null = spoken !== null && spoken > 0 ? spoken : null;
+
+      // Carry-over: if user said "ein" (1) followed shortly by "hundert"/"tausend" (100/1000),
+      // or vice versa, combine to 100 / 1000 / 1100 etc. instead of overwriting.
+      const prev = lastSpokenAmountRef.current;
+      const now = Date.now();
+      if (prev && now - prev.at < 2000 && resolved !== null) {
+        const a = prev.value;
+        const b = resolved;
+        // Single digit followed by a scale word → multiply
+        if (Number.isInteger(a) && a >= 1 && a <= 9 && (b === 100 || b === 1000)) {
+          resolved = a * b;
+        }
+        // Scale word followed by a single digit → keep the scale (avoid losing 100/1000)
+        else if ((a === 100 || a === 1000) && Number.isInteger(b) && b >= 1 && b <= 9) {
+          resolved = a;
+        }
       }
+
+      if (resolved === null) {
+        const digits = transcript.replace(/[^\d.,]/g, "").replace(",", ".");
+        if (digits) {
+          handleAmountChangeRef.current(digits);
+          setTimeout(() => {
+            submitButtonRef.current?.focus();
+            setFocusedField("submit");
+          }, 0);
+        }
+        return;
+      }
+
+      lastSpokenAmountRef.current = { value: resolved, at: now };
+      handleAmountChangeRef.current(String(resolved));
+      setTimeout(() => {
+        submitButtonRef.current?.focus();
+        setFocusedField("submit");
+      }, 0);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
