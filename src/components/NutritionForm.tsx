@@ -54,6 +54,9 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
   const focusedFieldRef = useRef<FocusedField>("food");
   const handleSelectFoodRef = useRef<(item: FoodItem) => void>(() => {});
   const handleAmountChangeRef = useRef<(value: string) => void>(() => {});
+  // Track last spoken amount value + timestamp for carry-over of split numbers
+  // (e.g. "ein" + "hundert" → 100, or "1" + "1000" → 1000)
+  const lastSpokenAmountRef = useRef<{ value: number; at: number } | null>(null);
 
   // Keep refs in sync with state
   useEffect(() => {
