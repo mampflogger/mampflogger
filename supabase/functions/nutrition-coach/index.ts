@@ -74,10 +74,10 @@ Regeln:
 - Genau 3-5 Tipps
 - Verwende passende Emojis als Icons (z.B. 🥦 🏋️ 💧 🌙 ⚖️ 🥩 🍞 🎯 ⏰ 💊 🧬)
 - Erkenne Muster: z.B. abends zu viele KH, zu wenig Protein, zu wenig Ballaststoffe, unregelmäßige Essenszeiten
-- Beziehe die Mikronährstoffdaten ein: Weise auf Defizite bei Vitaminen oder Mineralstoffen hin (z.B. zu wenig Vitamin D, Eisen, Calcium) und gib konkrete Lebensmittelempfehlungen
-- Wenn ein Mikronährstoff deutlich unter dem Sollwert liegt (<50%), erwähne das besonders
+- Mikronährstoffe: Beurteile AUSSCHLIESSLICH anhand des im Datenblock angegebenen Prozentwerts (avgDaily vs. Soll). Ein Nährstoff ist NUR DANN ein Defizit, wenn der Prozentwert < 80% beträgt. Liegt er bei ≥ 100%, ist er ausreichend – erwähne ihn dann NICHT als Mangel, auch nicht für Vitamin D.
+- Erfinde KEINE Informationen, die nicht in den Daten stehen. Du hast KEINE Daten über Sonnenexposition, Schlaf, Stress, Outdoor-Aktivität, Jahreszeit oder Wohnort – spekuliere darüber NICHT.
+- Sprich nur über Werte, die tatsächlich im übergebenen Datenblock vorhanden sind.
 - Sei konkret und positiv, nicht belehrend
-- Beziehe dich auf die tatsächlichen Daten
 - Kein zusätzlicher Text außerhalb des JSON`;
 
     const userContent = `Hier sind meine Ernährungsdaten der letzten 7 Tage:\n\n${JSON.stringify(weekData, null, 2)}${microBlock}`;
