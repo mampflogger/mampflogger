@@ -77,6 +77,8 @@ const ManualRecipeForm = ({ onSave, onCancel, voiceInputRef, isVoiceActive = fal
   const focusedFieldRef = useRef<FocusedField>("recipeName");
   const voiceBufferRef = useRef("");
   const voiceTimerRef = useRef<number | null>(null);
+  const lastAmountRef = useRef<{ value: number; at: number } | null>(null);
+  const amountJumpTimerRef = useRef<number | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -165,11 +167,26 @@ const ManualRecipeForm = ({ onSave, onCancel, voiceInputRef, isVoiceActive = fal
         break;
       }
       case "ingredientAmount": {
-        const num = parseGermanSpokenNumber(text);
+        let num = parseGermanSpokenNumber(text);
         if (num !== null && num > 0) {
+          const prev = lastAmountRef.current;
+          const now = Date.now();
+          if (prev && now - prev.at < 2000) {
+            const a = prev.value;
+            const b = num;
+            if (Number.isInteger(a) && a >= 1 && a <= 9 && (b === 100 || b === 1000)) {
+              num = a * b;
+            } else if ((a === 100 || a === 1000) && Number.isInteger(b) && b >= 1 && b <= 9) {
+              num = a;
+            }
+          }
+          lastAmountRef.current = { value: num, at: now };
           setNewIngredientAmount(String(num));
-          // Auto-jump to ingredient name field after valid number
-          setTimeout(() => focusField("ingredientName"), 50);
+          // Delayed auto-jump: gives 1.2s for a follow-up scale word like "tausend"
+          if (amountJumpTimerRef.current) window.clearTimeout(amountJumpTimerRef.current);
+          amountJumpTimerRef.current = window.setTimeout(() => {
+            focusField("ingredientName");
+          }, 1200);
         } else {
           setNewIngredientAmount(text);
         }
@@ -577,14 +594,13 @@ const ManualRecipeForm = ({ onSave, onCancel, voiceInputRef, isVoiceActive = fal
             inputMode="decimal"
             value={newIngredientAmount}
             onChange={(e) => {
-              const val = e.target.value;
-              setNewIngredientAmount(val);
-              // Auto-jump to ingredient name when a valid number is entered
-              if (val.trim() && /^\d+([.,]\d+)?$/.test(val.trim())) {
-                setTimeout(() => {
-                  ingredientNameRef.current?.focus();
-                  setFocusedField("ingredientName");
-                }, 0);
+              setNewIngredientAmount(e.target.value);
+            }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === "Tab") {
+                e.preventDefault();
+                ingredientNameRef.current?.focus();
+                setFocusedField("ingredientName");
               }
             }}
             onFocus={() => setFocusedField("ingredientAmount")}
