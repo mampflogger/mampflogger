@@ -77,6 +77,8 @@ const ManualRecipeForm = ({ onSave, onCancel, voiceInputRef, isVoiceActive = fal
   const focusedFieldRef = useRef<FocusedField>("recipeName");
   const voiceBufferRef = useRef("");
   const voiceTimerRef = useRef<number | null>(null);
+  const lastAmountRef = useRef<{ value: number; at: number } | null>(null);
+  const amountJumpTimerRef = useRef<number | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
