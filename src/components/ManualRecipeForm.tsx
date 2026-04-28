@@ -577,14 +577,13 @@ const ManualRecipeForm = ({ onSave, onCancel, voiceInputRef, isVoiceActive = fal
             inputMode="decimal"
             value={newIngredientAmount}
             onChange={(e) => {
-              const val = e.target.value;
-              setNewIngredientAmount(val);
-              // Auto-jump to ingredient name when a valid number is entered
-              if (val.trim() && /^\d+([.,]\d+)?$/.test(val.trim())) {
-                setTimeout(() => {
-                  ingredientNameRef.current?.focus();
-                  setFocusedField("ingredientName");
-                }, 0);
+              setNewIngredientAmount(e.target.value);
+            }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === "Tab") {
+                e.preventDefault();
+                ingredientNameRef.current?.focus();
+                setFocusedField("ingredientName");
               }
             }}
             onFocus={() => setFocusedField("ingredientAmount")}
