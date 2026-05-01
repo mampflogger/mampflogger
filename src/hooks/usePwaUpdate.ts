@@ -32,6 +32,14 @@ function restoreLocalStorage(json: string) {
 }
 
 const UPDATE_CHECK_INTERVAL = 60 * 1000; // Check every 60s
+const STARTUP_UPDATE_CHECK_DELAYS = [0, 1500, 5000, 15000];
+
+function requestServiceWorkerUpdate(registration: ServiceWorkerRegistration, reason: string) {
+  console.log(`[PWA] ${reason} update check`);
+  registration.update().catch((error) => {
+    console.warn(`[PWA] ${reason} update check failed`, error);
+  });
+}
 
 export function usePwaUpdate() {
   const {
@@ -51,23 +59,34 @@ export function usePwaUpdate() {
 
       if (!registration) return;
 
+      // Check immediately after opening the published app. Without this, some
+      // installed/browser PWA sessions keep serving the old cached build until
+      // the browser decides to update the service worker on its own.
+      STARTUP_UPDATE_CHECK_DELAYS.forEach((delay) => {
+        window.setTimeout(() => requestServiceWorkerUpdate(registration, "Startup"), delay);
+      });
+
       // Periodic update check
-      setInterval(() => {
-        console.log("[PWA] Periodic update check");
-        registration.update();
+      window.setInterval(() => {
+        requestServiceWorkerUpdate(registration, "Periodic");
       }, UPDATE_CHECK_INTERVAL);
 
       // Check on tab focus (user comes back to the app)
       const onFocus = () => {
-        console.log("[PWA] Focus update check");
-        registration.update();
+        requestServiceWorkerUpdate(registration, "Focus");
       };
       window.addEventListener("focus", onFocus);
 
+      const onVisibility = () => {
+        if (document.visibilityState === "visible") {
+          requestServiceWorkerUpdate(registration, "Visibility");
+        }
+      };
+      document.addEventListener("visibilitychange", onVisibility);
+
       // Check on online (device reconnects)
       const onOnline = () => {
-        console.log("[PWA] Online update check");
-        registration.update();
+        requestServiceWorkerUpdate(registration, "Online");
       };
       window.addEventListener("online", onOnline);
     },
@@ -80,6 +99,7 @@ export function usePwaUpdate() {
     const backup = snapshotLocalStorage();
     sessionStorage.setItem(BACKUP_KEY, backup);
     console.log("[PWA] Backup saved before update", Object.keys(JSON.parse(backup)).length, "keys");
+    setNeedsUpdate(false);
     updateServiceWorker(true);
   };
 
