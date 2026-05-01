@@ -47,6 +47,15 @@ function normalize(value: string): string {
     .replace(/ö/g, "oe")
     .replace(/ü/g, "ue")
     .replace(/ß/g, "ss")
+    // English / mis-recognized scale words → German
+    .replace(/\bhundred\b/g, "hundert")
+    .replace(/\bhunderd\b/g, "hundert")
+    .replace(/\bhundart\b/g, "hundert")
+    .replace(/\bhundat\b/g, "hundert")
+    .replace(/\bhundet\b/g, "hundert")
+    .replace(/\bthousand\b/g, "tausend")
+    .replace(/\btousend\b/g, "tausend")
+    .replace(/\btausand\b/g, "tausend")
     .replace(/\s+/g, " ")
     .trim();
 }
@@ -121,11 +130,21 @@ function parseUnderThousand(word: string): number | null {
 function normalizeNumberWord(raw: string): string {
   return normalize(raw)
     .replace(/\s+/g, "")
+    // English / mis-recognized variants of "hundert"
+    .replace(/hundred/g, "hundert")
+    .replace(/hunderd/g, "hundert")
+    .replace(/hundart/g, "hundert")
+    .replace(/hundat/g, "hundert")
+    .replace(/hundet/g, "hundert")
+    .replace(/hundrd/g, "hundert")
+    .replace(/hunder(?!t)/g, "hundert")
+    // English / mis-recognized variants of "tausend"
+    .replace(/thousand/g, "tausend")
+    .replace(/tousend/g, "tausend")
     .replace(/tausen(?!d)/g, "tausend")
     .replace(/tausnd/g, "tausend")
     .replace(/tausent/g, "tausend")
-    .replace(/hunder(?!t)/g, "hundert")
-    .replace(/hundrd/g, "hundert");
+    .replace(/tausand/g, "tausend");
 }
 
 function parseGermanNumberWord(raw: string): number | null {
