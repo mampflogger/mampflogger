@@ -121,11 +121,21 @@ function parseUnderThousand(word: string): number | null {
 function normalizeNumberWord(raw: string): string {
   return normalize(raw)
     .replace(/\s+/g, "")
+    // English / mis-recognized variants of "hundert"
+    .replace(/hundred/g, "hundert")
+    .replace(/hunderd/g, "hundert")
+    .replace(/hundart/g, "hundert")
+    .replace(/hundat/g, "hundert")
+    .replace(/hundet/g, "hundert")
+    .replace(/hundrd/g, "hundert")
+    .replace(/hunder(?!t)/g, "hundert")
+    // English / mis-recognized variants of "tausend"
+    .replace(/thousand/g, "tausend")
+    .replace(/tousend/g, "tausend")
     .replace(/tausen(?!d)/g, "tausend")
     .replace(/tausnd/g, "tausend")
     .replace(/tausent/g, "tausend")
-    .replace(/hunder(?!t)/g, "hundert")
-    .replace(/hundrd/g, "hundert");
+    .replace(/tausand/g, "tausend");
 }
 
 function parseGermanNumberWord(raw: string): number | null {
