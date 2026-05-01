@@ -2374,12 +2374,38 @@ const SettingsDialog = ({
                   const file = e.target.files?.[0];
                   if (!file) return;
                   const reader = new FileReader();
-                  reader.onload = (ev) => {
+                  reader.onload = async (ev) => {
                     try {
                       const data = JSON.parse(ev.target?.result as string);
                       if (typeof data !== "object" || data === null) throw new Error("Ungültig");
                       const count = restoreManualBackupSnapshot(data as Record<string, unknown>);
                       if (count === 0) throw new Error("Leer");
+
+                      // Push the freshly restored snapshot to the cloud BEFORE reloading,
+                      // so that other devices (and this device after reload) won't pull
+                      // an older cloud version that overwrites what we just imported.
+                      try {
+                        const { data: sessionData } = await supabase.auth.getSession();
+                        const userId = sessionData.session?.user?.id;
+                        const cloudActive = localStorage.getItem("mampflogger-cloud-backup-active") === "true";
+                        if (userId && cloudActive) {
+                          const snapshot = collectManualBackupSnapshot();
+                          const nowIso = new Date().toISOString();
+                          await supabase.from("cloud_backups").upsert({
+                            id: userId,
+                            user_id: userId,
+                            data: snapshot,
+                            updated_at: nowIso,
+                          });
+                          localStorage.setItem(
+                            `mampflogger-cloud-restore-version:${userId}`,
+                            nowIso
+                          );
+                        }
+                      } catch (syncErr) {
+                        console.warn("[Backup] Cloud-Push nach Restore fehlgeschlagen", syncErr);
+                      }
+
                       toast.success(`Backup wiederhergestellt (${count} Schlüssel). App wird neu geladen…`);
                       setTimeout(() => window.location.reload(), 1200);
                     } catch {
