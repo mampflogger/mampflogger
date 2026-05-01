@@ -47,6 +47,15 @@ function normalize(value: string): string {
     .replace(/ö/g, "oe")
     .replace(/ü/g, "ue")
     .replace(/ß/g, "ss")
+    // English / mis-recognized scale words → German
+    .replace(/\bhundred\b/g, "hundert")
+    .replace(/\bhunderd\b/g, "hundert")
+    .replace(/\bhundart\b/g, "hundert")
+    .replace(/\bhundat\b/g, "hundert")
+    .replace(/\bhundet\b/g, "hundert")
+    .replace(/\bthousand\b/g, "tausend")
+    .replace(/\btousend\b/g, "tausend")
+    .replace(/\btausand\b/g, "tausend")
     .replace(/\s+/g, " ")
     .trim();
 }
