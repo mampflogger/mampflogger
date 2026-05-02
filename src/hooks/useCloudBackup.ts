@@ -1,11 +1,38 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { collectCloudBackupSnapshot, restoreCloudBackupSnapshot, isCloudBackupKey } from "@/lib/cloudBackup";
 
 const LAST_RESTORED_VERSION_KEY_PREFIX = "mampflogger-cloud-restore-version";
+const BOOTSTRAP_EVENT = "mampflogger-cloud-backup-bootstrap";
 
 export function useCloudBackup(userId: string | null) {
   const [lastSync, setLastSync] = useState<Date | null>(null);
+  const [isReady, setIsReady] = useState(false);
+  const [restoreRevision, setRestoreRevision] = useState(0);
+
+  const pushNow = useCallback(async () => {
+    if (!userId) return false;
+
+    const snapshot = collectCloudBackupSnapshot();
+    if (Object.keys(snapshot).length === 0) return false;
+
+    const nowIso = new Date().toISOString();
+    const { error } = await supabase.from('cloud_backups').upsert({
+      id: userId,
+      user_id: userId,
+      data: snapshot,
+      updated_at: nowIso,
+    });
+
+    if (error) {
+      console.error("[CloudBackup] Push failed", error);
+      return false;
+    }
+
+    localStorage.setItem(`${LAST_RESTORED_VERSION_KEY_PREFIX}:${userId}`, nowIso);
+    setLastSync(new Date(nowIso));
+    return true;
+  }, [userId]);
 
   useEffect(() => {
     if (!userId) return;
@@ -13,29 +40,17 @@ export function useCloudBackup(userId: string | null) {
     let debounceTimer: ReturnType<typeof setTimeout>;
     let isDisposed = false;
     let restoreComplete = false;
+    setIsReady(false);
     let lastKnownRemoteVersion: string | null =
       localStorage.getItem(`${LAST_RESTORED_VERSION_KEY_PREFIX}:${userId}`);
 
     const syncToCloud = async () => {
       // Don't sync until initial restore is done to avoid overwriting cloud with empty data
       if (!restoreComplete) return;
-      const snapshot = collectCloudBackupSnapshot();
-      if (Object.keys(snapshot).length === 0) return;
+      const pushed = await pushNow();
 
-      const nowIso = new Date().toISOString();
-      const { error } = await supabase.from('cloud_backups').upsert({
-        id: userId,
-        user_id: userId,
-        data: snapshot,
-        updated_at: nowIso,
-      });
-
-      if (!error && !isDisposed) {
-        setLastSync(new Date());
-        // Mark this push as the version we now have locally so a subsequent
-        // remote check doesn't trigger a redundant reload.
-        lastKnownRemoteVersion = nowIso;
-        localStorage.setItem(`${LAST_RESTORED_VERSION_KEY_PREFIX}:${userId}`, nowIso);
+      if (pushed && !isDisposed) {
+        lastKnownRemoteVersion = localStorage.getItem(`${LAST_RESTORED_VERSION_KEY_PREFIX}:${userId}`);
       }
     };
 
@@ -67,6 +82,7 @@ export function useCloudBackup(userId: string | null) {
           window.location.reload();
         } else {
           // Notify components that storage changed (same-tab listeners)
+          setRestoreRevision((revision) => revision + 1);
           window.dispatchEvent(new Event("cloud-backup-restored"));
         }
         return true;
@@ -125,9 +141,10 @@ export function useCloudBackup(userId: string | null) {
       // Initial pull: do NOT reload (we just mounted).
       await checkRemoteAndApply({ reloadOnChange: false });
       restoreComplete = true;
-      // Push current local state up so cloud reflects whatever we have now
-      // (covers the case where local has newer manual import than cloud).
-      await syncToCloud();
+      if (!isDisposed) {
+        setIsReady(true);
+        window.dispatchEvent(new Event(BOOTSTRAP_EVENT));
+      }
     })();
 
     return () => {
@@ -140,7 +157,7 @@ export function useCloudBackup(userId: string | null) {
       localStorage.setItem = originalSetItem;
       localStorage.removeItem = originalRemoveItem;
     };
-  }, [userId]);
+  }, [pushNow, userId]);
 
-  return { lastSync };
+  return { lastSync, isReady, restoreRevision, pushNow };
 }
