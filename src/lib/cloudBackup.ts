@@ -5,6 +5,12 @@ const BACKUP_EXACT_KEYS = new Set([
 ]);
 
 const BACKUP_PREFIXES = ["mampflogger-"];
+const PENDING_MANUAL_RESTORE_SESSION_KEY = "mampflogger:pending-manual-cloud-restore";
+
+type PendingManualRestore = {
+  userId: string | null;
+  snapshot: Record<string, unknown>;
+};
 
 const LEGACY_RANDOM_DEFAULT_SUPPLEMENT_NAMES = new Set([
   "Vitamin D3",
@@ -38,6 +44,26 @@ export function collectCloudBackupSnapshot(storage: Storage = localStorage): Rec
 
 export function collectManualBackupSnapshot(storage: Storage = localStorage): Record<string, string> {
   return collectCloudBackupSnapshot(storage);
+}
+
+export function queuePendingManualCloudRestoreSnapshot(snapshot: Record<string, unknown>, userId: string | null): void {
+  const payload: PendingManualRestore = { userId, snapshot };
+  sessionStorage.setItem(PENDING_MANUAL_RESTORE_SESSION_KEY, JSON.stringify(payload));
+}
+
+export function consumePendingManualCloudRestoreSnapshot(userId: string): Record<string, unknown> | null {
+  const raw = sessionStorage.getItem(PENDING_MANUAL_RESTORE_SESSION_KEY);
+  if (!raw) return null;
+
+  try {
+    const parsed = JSON.parse(raw) as PendingManualRestore;
+    if (parsed.userId && parsed.userId !== userId) return null;
+    sessionStorage.removeItem(PENDING_MANUAL_RESTORE_SESSION_KEY);
+    return parsed.snapshot && typeof parsed.snapshot === "object" ? parsed.snapshot : null;
+  } catch {
+    sessionStorage.removeItem(PENDING_MANUAL_RESTORE_SESSION_KEY);
+    return null;
+  }
 }
 
 function isLegacyRandomSupplementSeed(rawValue: string | null): boolean {
