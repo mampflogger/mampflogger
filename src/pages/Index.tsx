@@ -1063,10 +1063,14 @@ const Index = () => {
     const loadedEntries = loadEntries();
     const loadedProfile = loadProfile();
     const loadedActivities = loadBookedActivities();
+    const loadedSupplements = loadSupplements();
 
     setEntries(loadedEntries);
     setProfile(loadedProfile);
     setBookedActivities(loadedActivities);
+    setSupplements(loadedSupplements);
+    setDarkMode(localStorage.getItem("mampflogger-dark-mode") === "true");
+    setColorTheme((localStorage.getItem("mampflogger-color-theme") as ColorTheme) || "yellow");
 
     const hasProfile = hasConfiguredPersonalProfile(loadedProfile);
     setStartupProfilePrompt(!hasProfile);
