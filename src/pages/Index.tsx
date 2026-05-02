@@ -138,7 +138,7 @@ const Index = () => {
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
   const cloudBackupActive = localStorage.getItem("mampflogger-cloud-backup-active") === "true";
-  useCloudBackup(cloudBackupActive ? user?.id ?? null : null);
+  const cloudBackup = useCloudBackup(cloudBackupActive ? user?.id ?? null : null);
   const settingsParam = searchParams.get("settings");
 
   useEffect(() => {
@@ -1088,7 +1088,7 @@ const Index = () => {
         }
       });
     }
-  }, [focusFoodField]);
+  }, [focusFoodField, cloudBackup.restoreRevision]);
 
    // Voice auto-start handled in useVoiceCommands hook (standby mode)
 
