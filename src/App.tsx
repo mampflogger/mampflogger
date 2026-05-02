@@ -4,7 +4,6 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { usePwaUpdate } from "@/hooks/usePwaUpdate";
 import { DisclaimerModal } from "@/components/DisclaimerModal";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -31,30 +30,6 @@ const isLovablePreviewHost = () => {
   return host.endsWith("lovableproject.com") || (host.endsWith(".lovable.app") && host.includes("--"));
 };
 
-const PwaUpdateBanner = () => {
-  const { needsUpdate, applyUpdate } = usePwaUpdate();
-  if (!needsUpdate) return null;
-  return (
-    <div className="fixed inset-x-0 bottom-0 z-50 p-4 pb-[calc(1rem+env(safe-area-inset-bottom))]">
-      <div className="max-w-lg mx-auto bg-primary text-primary-foreground rounded-2xl shadow-2xl p-4 flex flex-col gap-3">
-        <div className="flex items-center gap-2 text-base font-bold">
-          <span className="text-xl">🔄</span>
-          <span>Neue Version verfügbar!</span>
-        </div>
-        <p className="text-sm opacity-90 leading-snug">
-          Eine Aktualisierung wurde heruntergeladen. Tippe auf den Button – die App lädt neu und ist sofort auf dem neuesten Stand.
-        </p>
-        <button
-          onClick={applyUpdate}
-          className="w-full bg-primary-foreground text-primary font-bold py-3 rounded-xl text-sm active:opacity-80"
-        >
-          ✓ Jetzt aktualisieren
-        </button>
-      </div>
-    </div>
-  );
-};
-
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, loading } = useAuth();
   if (loading) return <PageLoader />;
@@ -63,15 +38,12 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 };
 
 const App = () => {
-  const pwaEnabled = !isLovablePreviewHost();
-
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <Toaster />
         <Sonner />
         <DisclaimerModal />
-        {pwaEnabled && <PwaUpdateBanner />}
         <BrowserRouter>
           <Suspense fallback={<PageLoader />}>
             <Routes>
