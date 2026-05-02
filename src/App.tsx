@@ -24,12 +24,6 @@ const PageLoader = () => (
 
 const queryClient = new QueryClient();
 
-const isLovablePreviewHost = () => {
-  if (typeof window === "undefined") return false;
-  const host = window.location.hostname;
-  return host.endsWith("lovableproject.com") || (host.endsWith(".lovable.app") && host.includes("--"));
-};
-
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, loading } = useAuth();
   if (loading) return <PageLoader />;
