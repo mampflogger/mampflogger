@@ -45,7 +45,7 @@ import RecipeGenerator from "@/components/RecipeGenerator";
 import RecipesTab from "@/components/RecipesTab";
 import { CloudBackupSettings } from "@/components/CloudBackupSettings";
 import VoiceControlOverlay from "@/components/VoiceControlOverlay";
-import { collectManualBackupSnapshot, restoreManualBackupSnapshot } from "@/lib/cloudBackup";
+import { collectManualBackupSnapshot, queuePendingManualCloudRestoreSnapshot, restoreManualBackupSnapshot } from "@/lib/cloudBackup";
 
 type SettingsTab = "profile" | "design" | "food" | "recipes" | "data";
 
@@ -2390,6 +2390,7 @@ const SettingsDialog = ({
                         const cloudActive = localStorage.getItem("mampflogger-cloud-backup-active") === "true";
                         if (userId && cloudActive) {
                           const snapshot = collectManualBackupSnapshot();
+                          queuePendingManualCloudRestoreSnapshot(snapshot, userId);
                           const nowIso = new Date().toISOString();
                           await supabase.from("cloud_backups").upsert({
                             id: userId,

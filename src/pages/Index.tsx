@@ -138,7 +138,7 @@ const Index = () => {
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
   const cloudBackupActive = localStorage.getItem("mampflogger-cloud-backup-active") === "true";
-  useCloudBackup(cloudBackupActive ? user?.id ?? null : null);
+  const cloudBackup = useCloudBackup(cloudBackupActive ? user?.id ?? null : null);
   const settingsParam = searchParams.get("settings");
 
   useEffect(() => {
@@ -1063,10 +1063,14 @@ const Index = () => {
     const loadedEntries = loadEntries();
     const loadedProfile = loadProfile();
     const loadedActivities = loadBookedActivities();
+    const loadedSupplements = loadSupplements();
 
     setEntries(loadedEntries);
     setProfile(loadedProfile);
     setBookedActivities(loadedActivities);
+    setSupplements(loadedSupplements);
+    setDarkMode(localStorage.getItem("mampflogger-dark-mode") === "true");
+    setColorTheme((localStorage.getItem("mampflogger-color-theme") as ColorTheme) || "yellow");
 
     const hasProfile = hasConfiguredPersonalProfile(loadedProfile);
     setStartupProfilePrompt(!hasProfile);
@@ -1088,7 +1092,7 @@ const Index = () => {
         }
       });
     }
-  }, [focusFoodField]);
+  }, [focusFoodField, cloudBackup.restoreRevision]);
 
    // Voice auto-start handled in useVoiceCommands hook (standby mode)
 
