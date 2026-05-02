@@ -70,11 +70,6 @@ export function useCloudBackup(userId: string | null) {
 
       const remoteVersion = data.updated_at ?? null;
 
-      // If we already applied this exact remote version, skip.
-      if (remoteVersion && remoteVersion === lastKnownRemoteVersion) {
-        return false;
-      }
-
       const restored = restoreCloudBackupSnapshot(data.data as Record<string, unknown>);
       if (restored) {
         if (remoteVersion) {
