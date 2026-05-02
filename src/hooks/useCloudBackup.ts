@@ -1,6 +1,11 @@
 import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { collectCloudBackupSnapshot, restoreCloudBackupSnapshot, isCloudBackupKey } from "@/lib/cloudBackup";
+import {
+  collectCloudBackupSnapshot,
+  consumePendingManualCloudRestoreSnapshot,
+  restoreCloudBackupSnapshot,
+  isCloudBackupKey,
+} from "@/lib/cloudBackup";
 
 const LAST_RESTORED_VERSION_KEY_PREFIX = "mampflogger-cloud-restore-version";
 const BOOTSTRAP_EVENT = "mampflogger-cloud-backup-bootstrap";
@@ -138,6 +143,26 @@ export function useCloudBackup(userId: string | null) {
     }, 30_000);
 
     void (async () => {
+      const pendingManualRestore = consumePendingManualCloudRestoreSnapshot(userId);
+      if (pendingManualRestore) {
+        const restored = restoreCloudBackupSnapshot(pendingManualRestore);
+        const nowIso = new Date().toISOString();
+        const { error } = await supabase.from('cloud_backups').upsert({
+          id: userId,
+          user_id: userId,
+          data: collectCloudBackupSnapshot(),
+          updated_at: nowIso,
+        });
+
+        if (!error) {
+          lastKnownRemoteVersion = nowIso;
+          localStorage.setItem(`${LAST_RESTORED_VERSION_KEY_PREFIX}:${userId}`, nowIso);
+          if (restored) setRestoreRevision((revision) => revision + 1);
+        } else {
+          console.error("[CloudBackup] Pending manual restore push failed", error);
+        }
+      }
+
       // Initial pull: do NOT reload (we just mounted).
       await checkRemoteAndApply({ reloadOnChange: false });
       restoreComplete = true;
