@@ -144,6 +144,7 @@ export function useCloudBackup(userId: string | null) {
 
     void (async () => {
       const pendingManualRestore = consumePendingManualCloudRestoreSnapshot(userId);
+      let handledPendingManualRestore = false;
       if (pendingManualRestore) {
         const restored = restoreCloudBackupSnapshot(pendingManualRestore);
         const nowIso = new Date().toISOString();
@@ -158,13 +159,18 @@ export function useCloudBackup(userId: string | null) {
           lastKnownRemoteVersion = nowIso;
           localStorage.setItem(`${LAST_RESTORED_VERSION_KEY_PREFIX}:${userId}`, nowIso);
           if (restored) setRestoreRevision((revision) => revision + 1);
+          handledPendingManualRestore = true;
         } else {
           console.error("[CloudBackup] Pending manual restore push failed", error);
+          // Do not pull an older cloud version over a freshly imported manual backup.
+          handledPendingManualRestore = true;
         }
       }
 
       // Initial pull: do NOT reload (we just mounted).
-      await checkRemoteAndApply({ reloadOnChange: false });
+      if (!handledPendingManualRestore) {
+        await checkRemoteAndApply({ reloadOnChange: false });
+      }
       restoreComplete = true;
       if (!isDisposed) {
         setIsReady(true);
