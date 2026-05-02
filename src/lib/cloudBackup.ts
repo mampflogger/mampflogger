@@ -5,6 +5,15 @@ const BACKUP_EXACT_KEYS = new Set([
 ]);
 
 const BACKUP_PREFIXES = ["mampflogger-"];
+const BACKUP_EXCLUDED_PREFIXES = [
+  "mampflogger-cloud-restore-version",
+  "mampflogger-lovable-preview-token",
+  "mampflogger-preview-cache-reset",
+  "mampflogger-preview-passive-cleanup",
+];
+const BACKUP_EXCLUDED_KEYS = new Set([
+  "mampflogger-pwa-backup",
+]);
 const PENDING_MANUAL_RESTORE_SESSION_KEY = "mampflogger:pending-manual-cloud-restore";
 
 type PendingManualRestore = {
@@ -27,6 +36,8 @@ const LEGACY_RANDOM_DEFAULT_SUPPLEMENT_NAMES = new Set([
 
 export function isCloudBackupKey(key: string | null): key is string {
   if (!key) return false;
+  if (BACKUP_EXCLUDED_KEYS.has(key)) return false;
+  if (BACKUP_EXCLUDED_PREFIXES.some((prefix) => key.startsWith(prefix))) return false;
   return BACKUP_EXACT_KEYS.has(key) || BACKUP_PREFIXES.some((prefix) => key.startsWith(prefix));
 }
 
