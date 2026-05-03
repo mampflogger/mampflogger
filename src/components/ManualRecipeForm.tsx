@@ -8,7 +8,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { foodDatabase, saveFoodDatabase, guessCategory, type FoodItem } from "@/data/foodDatabase";
-import { parseGermanSpokenNumber } from "@/lib/spokenNumbers";
+import { mergeGermanSpokenNumberTranscript, parseGermanSpokenNumber, shouldDeferGermanSpokenNumber } from "@/lib/spokenNumbers";
 
 interface RecipeMacros {
   calories: number;
@@ -289,12 +289,24 @@ const ManualRecipeForm = ({ onSave, onCancel, voiceInputRef, isVoiceActive = fal
             window.clearTimeout(voiceTimerRef.current);
             voiceTimerRef.current = null;
           }
-          voiceBufferRef.current = "";
           if (current === "servings") {
+            voiceBufferRef.current = "";
             setServings(String(Math.round(num)));
           } else {
-            setNewIngredientAmount(String(num));
-            setTimeout(() => focusField("ingredientName"), 50);
+            const bufferedTranscript = mergeGermanSpokenNumberTranscript(voiceBufferRef.current, chunk);
+            const bufferedNum = parseGermanSpokenNumber(bufferedTranscript) ?? num;
+            voiceBufferRef.current = bufferedTranscript;
+            setNewIngredientAmount(String(bufferedNum));
+            if (shouldDeferGermanSpokenNumber(bufferedTranscript, bufferedNum)) {
+              voiceTimerRef.current = window.setTimeout(() => {
+                voiceTimerRef.current = null;
+                flushVoiceBuffer("ingredientAmount");
+                voiceBufferRef.current = "";
+              }, 1500);
+            } else {
+              voiceBufferRef.current = "";
+              setTimeout(() => focusField("ingredientName"), 50);
+            }
           }
           return;
         }

@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from "react";
-import { parseGermanSpokenNumber } from "@/lib/spokenNumbers";
+import { mergeGermanSpokenNumberTranscript, parseGermanSpokenNumber, shouldDeferGermanSpokenNumber } from "@/lib/spokenNumbers";
 import { createPortal } from "react-dom";
 import { NutritionEntry, generateId } from "@/types/nutrition";
 import { Input } from "@/components/ui/input";
@@ -54,9 +54,8 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
   const focusedFieldRef = useRef<FocusedField>("food");
   const handleSelectFoodRef = useRef<(item: FoodItem) => void>(() => {});
   const handleAmountChangeRef = useRef<(value: string) => void>(() => {});
-  // Track last spoken amount value + timestamp for carry-over of split numbers
-  // (e.g. "ein" + "hundert" → 100, or "1" + "1000" → 1000)
-  const lastSpokenAmountRef = useRef<{ value: number; at: number } | null>(null);
+  const amountVoiceBufferRef = useRef("");
+  const amountVoiceTimerRef = useRef<number | null>(null);
 
   // Keep refs in sync with state
   useEffect(() => {
@@ -84,6 +83,21 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
   const isStornoCommand = useCallback((text: string) => {
     const lower = text.toLowerCase().trim();
     return /\b(storno|leer|leerfeld|clear)\b/.test(lower);
+  }, []);
+
+  const flushAmountVoiceBuffer = useCallback(() => {
+    const bufferedTranscript = amountVoiceBufferRef.current.trim();
+    amountVoiceBufferRef.current = "";
+    amountVoiceTimerRef.current = null;
+
+    const resolved = parseGermanSpokenNumber(bufferedTranscript);
+    if (resolved === null || resolved <= 0) return;
+
+    handleAmountChangeRef.current(String(resolved));
+    setTimeout(() => {
+      submitButtonRef.current?.focus();
+      setFocusedField("submit");
+    }, 0);
   }, []);
 
   // Voice input handler – receives transcripts from global voice command system
@@ -226,30 +240,18 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
         setHighlightIndex(-1);
       }
     } else if (currentField === "amount") {
-      // First try spoken number parsing (handles words like "einhundert", "drei", etc.)
-      const spoken = parseGermanSpokenNumber(transcript);
-      let resolved: number | null = spoken !== null && spoken > 0 ? spoken : null;
-
-      // Carry-over: if user said "ein" (1) followed shortly by "hundert"/"tausend" (100/1000),
-      // or vice versa, combine to 100 / 1000 / 1100 etc. instead of overwriting.
-      const prev = lastSpokenAmountRef.current;
-      const now = Date.now();
-      if (prev && now - prev.at < 2000 && resolved !== null) {
-        const a = prev.value;
-        const b = resolved;
-        // Single digit followed by a scale word → multiply
-        if (Number.isInteger(a) && a >= 1 && a <= 9 && (b === 100 || b === 1000)) {
-          resolved = a * b;
-        }
-        // Scale word followed by a single digit → keep the scale (avoid losing 100/1000)
-        else if ((a === 100 || a === 1000) && Number.isInteger(b) && b >= 1 && b <= 9) {
-          resolved = a;
-        }
-      }
+      const bufferedTranscript = mergeGermanSpokenNumberTranscript(amountVoiceBufferRef.current, transcript);
+      amountVoiceBufferRef.current = bufferedTranscript;
+      const resolved = parseGermanSpokenNumber(bufferedTranscript);
 
       if (resolved === null) {
         const digits = transcript.replace(/[^\d.,]/g, "").replace(",", ".");
         if (digits) {
+          amountVoiceBufferRef.current = "";
+          if (amountVoiceTimerRef.current !== null) {
+            window.clearTimeout(amountVoiceTimerRef.current);
+            amountVoiceTimerRef.current = null;
+          }
           handleAmountChangeRef.current(digits);
           setTimeout(() => {
             submitButtonRef.current?.focus();
@@ -259,7 +261,18 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
         return;
       }
 
-      lastSpokenAmountRef.current = { value: resolved, at: now };
+      if (shouldDeferGermanSpokenNumber(bufferedTranscript, resolved)) {
+        if (amountVoiceTimerRef.current !== null) window.clearTimeout(amountVoiceTimerRef.current);
+        amountVoiceTimerRef.current = window.setTimeout(flushAmountVoiceBuffer, 1500);
+        handleAmountChangeRef.current(String(resolved));
+        return;
+      }
+
+      amountVoiceBufferRef.current = "";
+      if (amountVoiceTimerRef.current !== null) {
+        window.clearTimeout(amountVoiceTimerRef.current);
+        amountVoiceTimerRef.current = null;
+      }
       handleAmountChangeRef.current(String(resolved));
       setTimeout(() => {
         submitButtonRef.current?.focus();
@@ -275,6 +288,10 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
       voiceInputRef.current = handleVoiceInput;
     }
     return () => {
+      if (amountVoiceTimerRef.current !== null) {
+        window.clearTimeout(amountVoiceTimerRef.current);
+        amountVoiceTimerRef.current = null;
+      }
       if (voiceInputRef) {
         voiceInputRef.current = undefined;
       }
