@@ -288,6 +288,10 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
       voiceInputRef.current = handleVoiceInput;
     }
     return () => {
+      if (amountVoiceTimerRef.current !== null) {
+        window.clearTimeout(amountVoiceTimerRef.current);
+        amountVoiceTimerRef.current = null;
+      }
       if (voiceInputRef) {
         voiceInputRef.current = undefined;
       }
