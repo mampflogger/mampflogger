@@ -39,6 +39,24 @@ const TENS: Record<string, number> = {
   neunzig: 90,
 };
 
+const DEFERRED_SINGLE_NUMBER_WORDS = new Set([
+  "ein",
+  "eins",
+  "eine",
+  "einen",
+  "einem",
+  "zwei",
+  "drei",
+  "vier",
+  "fuenf",
+  "sechs",
+  "sieben",
+  "acht",
+  "neun",
+]);
+
+const SCALE_WORD_RE = /\b(?:hundert|tausend)\b/;
+
 function normalize(value: string): string {
   return value
     .toLowerCase()
@@ -186,4 +204,54 @@ export function parseGermanSpokenNumber(transcript: string): number | null {
   }
 
   return null;
+}
+
+export function shouldDeferGermanSpokenNumber(transcript: string, parsedNumber: number): boolean {
+  if (!Number.isInteger(parsedNumber) || parsedNumber < 1 || parsedNumber > 9) return false;
+
+  const normalized = normalize(transcript);
+  if (!normalized || SCALE_WORD_RE.test(normalized)) return false;
+
+  const tokens = normalized.split(" ").filter(Boolean);
+  if (tokens.length !== 1) return false;
+
+  return DEFERRED_SINGLE_NUMBER_WORDS.has(tokens[0]) || /^[1-9]$/.test(tokens[0]);
+}
+
+export function mergeGermanSpokenNumberTranscript(previousBuffer: string, nextChunk: string): string {
+  const previous = previousBuffer.trim();
+  const next = nextChunk.trim();
+
+  if (!previous) return next;
+  if (!next) return previous;
+
+  const previousNormalized = normalize(previous);
+  const nextNormalized = normalize(next);
+
+  if (!previousNormalized) return next;
+  if (!nextNormalized) return previous;
+  if (previousNormalized === nextNormalized) return next.length >= previous.length ? next : previous;
+  if (nextNormalized.includes(previousNormalized)) return next;
+  if (previousNormalized.includes(nextNormalized)) return previous;
+
+  const previousParsed = parseGermanSpokenNumber(previousNormalized);
+  const nextParsed = parseGermanSpokenNumber(nextNormalized);
+  const combined = `${previous} ${next}`.trim();
+  const combinedParsed = parseGermanSpokenNumber(combined);
+
+  if (
+    combinedParsed !== null &&
+    combinedParsed > 0 &&
+    (SCALE_WORD_RE.test(nextNormalized) ||
+      (previousParsed !== null && combinedParsed !== previousParsed) ||
+      (nextParsed !== null && combinedParsed !== nextParsed))
+  ) {
+    return combined;
+  }
+
+  if (nextParsed !== null && previousParsed !== null && nextParsed > previousParsed) {
+    return next;
+  }
+
+  return next;
 }
