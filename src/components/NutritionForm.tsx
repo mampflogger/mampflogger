@@ -263,7 +263,7 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
 
       if (shouldDeferGermanSpokenNumber(bufferedTranscript, resolved)) {
         if (amountVoiceTimerRef.current !== null) window.clearTimeout(amountVoiceTimerRef.current);
-        amountVoiceTimerRef.current = window.setTimeout(flushAmountVoiceBuffer, 900);
+        amountVoiceTimerRef.current = window.setTimeout(flushAmountVoiceBuffer, 1500);
         handleAmountChangeRef.current(String(resolved));
         return;
       }
