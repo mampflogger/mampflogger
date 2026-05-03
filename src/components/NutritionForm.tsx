@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from "react";
-import { parseGermanSpokenNumber } from "@/lib/spokenNumbers";
+import { mergeGermanSpokenNumberTranscript, parseGermanSpokenNumber, shouldDeferGermanSpokenNumber } from "@/lib/spokenNumbers";
 import { createPortal } from "react-dom";
 import { NutritionEntry, generateId } from "@/types/nutrition";
 import { Input } from "@/components/ui/input";
@@ -54,9 +54,8 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
   const focusedFieldRef = useRef<FocusedField>("food");
   const handleSelectFoodRef = useRef<(item: FoodItem) => void>(() => {});
   const handleAmountChangeRef = useRef<(value: string) => void>(() => {});
-  // Track last spoken amount value + timestamp for carry-over of split numbers
-  // (e.g. "ein" + "hundert" → 100, or "1" + "1000" → 1000)
-  const lastSpokenAmountRef = useRef<{ value: number; at: number } | null>(null);
+  const amountVoiceBufferRef = useRef("");
+  const amountVoiceTimerRef = useRef<number | null>(null);
 
   // Keep refs in sync with state
   useEffect(() => {
@@ -84,6 +83,21 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
   const isStornoCommand = useCallback((text: string) => {
     const lower = text.toLowerCase().trim();
     return /\b(storno|leer|leerfeld|clear)\b/.test(lower);
+  }, []);
+
+  const flushAmountVoiceBuffer = useCallback(() => {
+    const bufferedTranscript = amountVoiceBufferRef.current.trim();
+    amountVoiceBufferRef.current = "";
+    amountVoiceTimerRef.current = null;
+
+    const resolved = parseGermanSpokenNumber(bufferedTranscript);
+    if (resolved === null || resolved <= 0) return;
+
+    handleAmountChangeRef.current(String(resolved));
+    setTimeout(() => {
+      submitButtonRef.current?.focus();
+      setFocusedField("submit");
+    }, 0);
   }, []);
 
   // Voice input handler – receives transcripts from global voice command system
