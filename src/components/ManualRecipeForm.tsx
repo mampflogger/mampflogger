@@ -289,8 +289,8 @@ const ManualRecipeForm = ({ onSave, onCancel, voiceInputRef, isVoiceActive = fal
             window.clearTimeout(voiceTimerRef.current);
             voiceTimerRef.current = null;
           }
-          voiceBufferRef.current = "";
           if (current === "servings") {
+            voiceBufferRef.current = "";
             setServings(String(Math.round(num)));
           } else {
             const bufferedTranscript = mergeGermanSpokenNumberTranscript(voiceBufferRef.current, chunk);
@@ -302,7 +302,7 @@ const ManualRecipeForm = ({ onSave, onCancel, voiceInputRef, isVoiceActive = fal
                 voiceTimerRef.current = null;
                 flushVoiceBuffer("ingredientAmount");
                 voiceBufferRef.current = "";
-              }, 900);
+              }, 1500);
             } else {
               voiceBufferRef.current = "";
               setTimeout(() => focusField("ingredientName"), 50);
