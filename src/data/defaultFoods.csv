@@ -457,3 +457,23 @@
 "Rote Paprika";100g;37;1.3;0.5;6.4;3.6;;;;Gemüse;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 "Putenschnitzel mit Champignons";100g;79;10.2;3.4;1.9;0.8;0;620;;Fleisch&Wurst;"Werte für gebratenes Putenschnitzel mit frischen Champignons ohne Panade oder Sahnesauce.";2;0.08;0.25;9.5;1.2;0.55;4;12;1.1;1;0.3;0.3;1;8;80;1.1;0.02;380;0.1;28;0.08;65;210;240;1.6;N;N;J;J;J;J;J;J
 "Bratwurst Geflügel";100g;230;16;18;1;0;;100;;Fleisch&Wurst;"Geringerer Fettgehalt als Schwein";;0.1;0.15;4.5;;0.3;;;0.5;;;0.2;2;15;;1.5;;250;;20;;850;180;;2.5;N;J;J;J;J;J;J;J
+"Pils";100ml;42;0.5;0;3.1;0;;330;100;Getränke;"Untergäriges Bier mit ca. 4,8% Vol. Alkohol. Alkohol liefert ca. 7 kcal/g und ist hier nicht in den Makros enthalten.";;0.005;0.03;0.6;0.04;0.05;3;6;0.02;;;;0.5;4;12;0.02;0.04;42;0.005;7;0.01;5;14;5;0.01;J;J;J;N;N;N;J;J
+"Weizenbier (Hefeweizen)";100ml;48;0.6;0;3.7;0;;500;100;Getränke;"Obergäriges Weizenbier mit ca. 5,2% Vol. Alkohol. Hefehaltig, daher mehr B-Vitamine als Pils.";;0.02;0.05;0.8;0.1;0.07;5;10;0.05;;;;0.5;5;14;0.05;0.04;55;0.01;9;0.02;5;18;6;0.02;J;J;J;N;N;N;J;J
+"Helles";100ml;43;0.5;0;3.4;0;;330;100;Getränke;"Untergäriges Lagerbier mit ca. 5,0% Vol. Alkohol, mild und süffig.";;0.005;0.03;0.6;0.05;0.05;3;6;0.02;;;;0.5;4;12;0.02;0.04;45;0.005;8;0.01;5;15;5;0.01;J;J;J;N;N;N;J;J
+"Kölsch";100ml;42;0.5;0;3.2;0;;200;100;Getränke;"Obergäriges, helles Bier aus Köln mit ca. 4,8% Vol. Alkohol.";;0.005;0.03;0.5;0.04;0.05;3;6;0.02;;;;0.5;4;12;0.02;0.04;42;0.005;7;0.01;5;14;5;0.01;J;J;J;N;N;N;J;J
+"Schwarzbier";100ml;45;0.5;0;3.8;0;;330;100;Getränke;"Dunkles, untergäriges Bier mit ca. 4,8% Vol. Alkohol, malziger Geschmack.";;0.01;0.04;0.7;0.05;0.06;3;7;0.03;;;;0.5;5;13;0.05;0.04;50;0.02;9;0.03;6;16;6;0.02;J;J;J;N;N;N;J;J
+"Weißwein trocken";100ml;82;0.1;0;0.6;0;;100;100;Getränke;"Trockener Weißwein mit ca. 12% Vol. Alkohol. Restzucker gering.";;0.005;0.01;0.07;0.03;0.02;1;0.4;;0;;;0;9;10;0.3;;80;0.01;9;0.1;5;15;10;0.07;J;J;J;N;N;J;J;J
+"Rotwein trocken";100ml;85;0.1;0;0.6;0;;100;100;Getränke;"Trockener Rotwein mit ca. 12,5% Vol. Alkohol. Enthält Polyphenole und Resveratrol.";;0.005;0.03;0.2;0.03;0.06;2;1;0.01;0;;;0;8;12;0.5;;130;0.04;12;0.2;5;20;10;0.1;J;J;J;N;N;J;J;J
+"Roséwein";100ml;83;0.1;0;1;0;;100;100;Getränke;"Roséwein mit ca. 11,5% Vol. Alkohol, leicht süßlich.";;0.005;0.02;0.1;0.03;0.04;2;1;0.005;0;;;0;9;10;0.4;;90;0.02;10;0.15;5;17;10;0.08;J;J;J;N;N;J;J;J
+"Sekt";100ml;80;0.2;0;1.5;0;;100;100;Getränke;"Deutscher Schaumwein mit ca. 11% Vol. Alkohol, brut bis trocken.";;0.005;0.01;0.1;0.03;0.02;1;0.5;;0;;;0;9;10;0.3;;75;0.01;8;0.05;5;14;10;0.07;J;J;J;N;N;J;J;J
+"Süßer Weißwein";100ml;120;0.2;0;8;0;;100;100;Getränke;"Lieblicher/süßer Weißwein (z.B. Riesling Spätlese) mit ca. 9-11% Vol. Alkohol und höherem Restzucker.";;0.005;0.01;0.1;0.03;0.02;1;0.5;;0;;;0;10;10;0.3;;90;0.01;10;0.1;5;15;10;0.07;J;J;N;N;N;J;J;N
+"Vodka";100ml;231;0;0;0;0;0;40;100;Getränke;"Klarer Schnaps mit ca. 40% Vol. Alkohol. Praktisch keine Nährstoffe, nur Alkoholkalorien (~7 kcal/g).";;;;;;;;;;;;;;;;;;1;;;1;;;;;J;J;J;N;N;J;J;J
+"Tequila";100ml;231;0;0;0;0;0;40;100;Getränke;"Klarer Agavenschnaps mit ca. 38-40% Vol. Alkohol.";;;;;;;;;;;;;;;;0.05;;2;;;1;;5;;;J;J;J;N;N;J;J;J
+"Whisky";100ml;250;0;0;0.1;0;0;40;100;Getränke;"Brauner Schnaps aus Getreide mit ca. 40-43% Vol. Alkohol.";;0.005;;;;;;;;;;;;1;1;0.02;;2;0.02;1;0.01;3;3;;0.02;J;J;J;N;N;N;J;J
+"Rum";100ml;231;0;0;0.1;0;0;40;100;Getränke;"Schnaps aus Zuckerrohr/Melasse mit ca. 37-40% Vol. Alkohol.";;;;;;;;;;;;;;;1;0.05;;2;0.01;1;0.01;3;3;;0.02;J;J;J;N;N;J;J;J
+"Gin";100ml;263;0;0;0;0;0;40;100;Getränke;"Wacholderschnaps mit ca. 40-47% Vol. Alkohol.";;;;;;;;;;;;;;;;;;1;;;1;;;;;J;J;J;N;N;J;J;J
+"Jägermeister";100ml;229;0;0.1;19;0;;20;100;Getränke;"Kräuterlikör mit 35% Vol. Alkohol und ca. 19g Zucker pro 100ml.";;;;;;;;;;;;;;5;5;0.1;;15;0.02;5;0.05;5;5;;0.05;J;J;N;N;N;J;J;N
+"Sambuca";100ml;240;0;0;19;0;;20;100;Getränke;"Italienischer Anisschnaps mit ca. 38-42% Vol. Alkohol und ~19g Zucker.";;;;;;;;;;;;;;5;3;0.05;;5;0.01;3;0.02;3;3;;0.02;J;J;N;N;N;J;J;N
+"Korn";100ml;231;0;0;0;0;0;40;100;Getränke;"Klarer Getreidebrand mit ca. 32-38% Vol. Alkohol.";;;;;;;;;;;;;;;1;0.02;;2;0.01;1;0.01;3;3;;0.02;J;J;J;N;N;N;J;J
+"Ouzo";100ml;220;0;0;6;0;;20;100;Getränke;"Griechischer Anisschnaps mit ca. 37-40% Vol. Alkohol und etwas Zucker.";;;;;;;;;;;;;;3;3;0.05;;3;0.01;2;0.02;3;3;;0.02;J;J;J;N;N;J;J;N
+"Grappa";100ml;231;0;0;0;0;0;40;100;Getränke;"Italienischer Tresterbrand mit ca. 38-45% Vol. Alkohol.";;;;;;;;;;;;;;;1;0.02;;2;0.01;1;0.01;3;3;;0.02;J;J;J;N;N;J;J;J
