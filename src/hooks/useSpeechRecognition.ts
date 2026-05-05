@@ -146,9 +146,7 @@ export function useSpeechRecognition({ onResult, onEnd, onError, lang = "de-DE" 
 
   const start = useCallback((options?: StartRecognitionOptions) => {
     if (!isSupported) {
-      if (!options?.silent) {
-        onErrorRef.current?.("not-supported");
-      }
+      onErrorRef.current?.("not-supported");
       return;
     }
 

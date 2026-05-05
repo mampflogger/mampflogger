@@ -9,6 +9,7 @@ import {
 
 const LAST_RESTORED_VERSION_KEY_PREFIX = "mampflogger-cloud-restore-version";
 const BOOTSTRAP_EVENT = "mampflogger-cloud-backup-bootstrap";
+const CLOUD_BACKUP_ACTIVE_KEY = "mampflogger-cloud-backup-active";
 
 export function useCloudBackup(userId: string | null) {
   const [lastSync, setLastSync] = useState<Date | null>(null);
@@ -69,6 +70,7 @@ export function useCloudBackup(userId: string | null) {
       if (error || !data?.data || isDisposed) return false;
 
       const remoteVersion = data.updated_at ?? null;
+      if (remoteVersion && remoteVersion === lastKnownRemoteVersion) return false;
 
       const restored = restoreCloudBackupSnapshot(data.data as Record<string, unknown>);
       if (restored) {
@@ -168,6 +170,7 @@ export function useCloudBackup(userId: string | null) {
       }
       restoreComplete = true;
       if (!isDisposed) {
+        localStorage.setItem(CLOUD_BACKUP_ACTIVE_KEY, "true");
         setIsReady(true);
         window.dispatchEvent(new Event(BOOTSTRAP_EVENT));
       }

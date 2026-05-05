@@ -3,12 +3,13 @@ import { Button } from "@/components/ui/button";
 import { Cloud, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { collectCloudBackupSnapshot } from "@/lib/cloudBackup";
+import { collectCloudBackupSnapshot, restoreCloudBackupSnapshot } from "@/lib/cloudBackup";
 
 export const CloudBackupSettings = () => {
   const [isActive, setIsActive] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
+  const [lastSync, setLastSync] = useState<string | null>(null);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -16,6 +17,12 @@ export const CloudBackupSettings = () => {
         setUserId(session.user.id);
         const saved = localStorage.getItem("mampflogger-cloud-backup-active");
         setIsActive(saved === "true");
+        supabase
+          .from('cloud_backups')
+          .select('updated_at')
+          .eq('user_id', session.user.id)
+          .maybeSingle()
+          .then(({ data }) => setLastSync(data?.updated_at ?? null));
       }
     });
   }, []);
@@ -28,17 +35,19 @@ export const CloudBackupSettings = () => {
     setIsLoading(true);
     try {
       const snapshot = collectCloudBackupSnapshot();
+      const nowIso = new Date().toISOString();
       const { error } = await supabase.from('cloud_backups').upsert({
         id: userId,
         user_id: userId,
         data: snapshot,
-        updated_at: new Date().toISOString()
+        updated_at: nowIso
       });
       
       if (error) throw error;
       
       localStorage.setItem("mampflogger-cloud-backup-active", "true");
       setIsActive(true);
+      setLastSync(nowIso);
       toast.success("Cloud-Backup aktiviert!");
     } catch (error) {
       toast.error("Fehler beim Aktivieren des Cloud-Backups");
@@ -65,10 +74,9 @@ export const CloudBackupSettings = () => {
       }
 
       // Restore all keys from the backup, overwriting local data
-      const backupData = data.data as Record<string, unknown>;
-      for (const [key, value] of Object.entries(backupData)) {
-        localStorage.setItem(key, typeof value === "string" ? value : JSON.stringify(value));
-      }
+      restoreCloudBackupSnapshot(data.data as Record<string, unknown>);
+      localStorage.setItem("mampflogger-cloud-backup-active", "true");
+      setIsActive(true);
       
       toast.success("Daten aus Cloud-Backup wiederhergestellt!");
       setTimeout(() => window.location.reload(), 1000);
@@ -127,6 +135,7 @@ export const CloudBackupSettings = () => {
       
       <div className="bg-accent/50 rounded-lg p-2 text-xs text-muted-foreground">
         Deine Daten werden automatisch mit deinem Account synchronisiert.
+        {lastSync ? ` Letzter Stand: ${new Date(lastSync).toLocaleString("de-DE")}` : ""}
       </div>
 
       <div className="flex gap-2">
@@ -139,14 +148,6 @@ export const CloudBackupSettings = () => {
         >
           {isLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : null}
           Wiederherstellen
-        </Button>
-        <Button 
-          size="sm" 
-          variant="outline"
-          onClick={handleDeactivate}
-          className="h-8 text-xs text-destructive border-destructive/30 hover:bg-destructive/10"
-        >
-          Deaktivieren
         </Button>
       </div>
     </div>

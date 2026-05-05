@@ -137,8 +137,7 @@ const Index = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
-  const cloudBackupActive = localStorage.getItem("mampflogger-cloud-backup-active") === "true";
-  const cloudBackup = useCloudBackup(cloudBackupActive ? user?.id ?? null : null);
+  const cloudBackup = useCloudBackup(user?.id ?? null);
   const settingsParam = searchParams.get("settings");
 
   useEffect(() => {
@@ -1323,7 +1322,7 @@ const Index = () => {
     <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="sticky top-0 z-10 bg-background/80 backdrop-blur-lg border-b border-border" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
-        <div className="max-w-lg mx-auto px-4 py-3">
+        <div className="w-full max-w-none lg:max-w-lg mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
             <a href="/" className="flex items-center gap-2 no-underline text-foreground">
               <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center shrink-0">
@@ -1338,8 +1337,7 @@ const Index = () => {
             </a>
             <div className="flex items-center gap-1">
               
-              {voiceCommands.isSupported && (
-                <Button
+              <Button
                   variant="ghost"
                   size="icon"
                   onPointerDown={(e) => {
@@ -1363,7 +1361,6 @@ const Index = () => {
                 >
                   <Mic className="w-4 h-4" />
                 </Button>
-              )}
               <Button
                 variant="ghost"
                 size="icon"
@@ -1481,7 +1478,7 @@ const Index = () => {
         </div>
       </header>
 
-      <main className="max-w-lg mx-auto px-4 pb-8">
+      <main className="w-full max-w-none lg:max-w-lg mx-auto px-4 pb-8">
         {/* Top sticky card – Date nav or Help title */}
         <div className="sticky top-[calc(env(safe-area-inset-top)+3.5rem)] z-[9] -mx-4 px-4 pt-3 pb-0 bg-background">
           <div className={`glass-card rounded-xl p-3 mb-3 min-h-[4.5rem] transition-all duration-500 ${activeTab !== "help" && dateFocused ? "ring-2 ring-primary shadow-lg shadow-primary/20" : ""}`}>
