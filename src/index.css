@@ -315,6 +315,8 @@
 
   html {
     scrollbar-gutter: stable;
+    width: 100%;
+    min-width: 100%;
   }
 
   body {
@@ -322,6 +324,15 @@
     font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    width: 100%;
+    min-width: 100%;
+    margin: 0;
+    overflow-x: hidden;
+  }
+
+  #root {
+    width: 100%;
+    min-width: 100%;
   }
 
   /* Mobile inputs: zoom prevented via viewport meta tag */
