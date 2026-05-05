@@ -149,14 +149,6 @@ export const CloudBackupSettings = () => {
           {isLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : null}
           Wiederherstellen
         </Button>
-        <Button 
-          size="sm" 
-          variant="outline"
-          onClick={handleDeactivate}
-          className="h-8 text-xs text-destructive border-destructive/30 hover:bg-destructive/10"
-        >
-          Deaktivieren
-        </Button>
       </div>
     </div>
   );
