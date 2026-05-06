@@ -7,6 +7,7 @@ const CURRENT_VERSION =
 const VERSION_URL = "/version.json";
 const CHECK_INTERVAL = 60 * 1000;
 const STARTUP_DELAYS = [1500, 5000, 15000];
+const DISMISSED_KEY = "mampflogger-update-dismissed-version";
 
 async function fetchRemoteVersion(): Promise<string | null> {
   try {
@@ -21,6 +22,22 @@ async function fetchRemoteVersion(): Promise<string | null> {
   }
 }
 
+function readDismissed(): string | null {
+  try {
+    return localStorage.getItem(DISMISSED_KEY);
+  } catch {
+    return null;
+  }
+}
+
+function writeDismissed(version: string): void {
+  try {
+    localStorage.setItem(DISMISSED_KEY, version);
+  } catch {
+    // ignore
+  }
+}
+
 export function usePwaUpdate() {
   const [needsUpdate, setNeedsUpdate] = useState(false);
   const remoteVersionRef = useRef<string | null>(null);
@@ -32,13 +49,26 @@ export function usePwaUpdate() {
       const remote = await fetchRemoteVersion();
       if (cancelled || !remote) return;
       remoteVersionRef.current = remote;
-      if (remote !== CURRENT_VERSION) {
-        console.log(`[Update] new version detected (${reason})`, {
-          current: CURRENT_VERSION,
-          remote,
-        });
-        setNeedsUpdate(true);
+      const dismissed = readDismissed();
+      if (remote === CURRENT_VERSION) {
+        // We are up to date — clear any stale dismissal marker
+        if (dismissed) {
+          try { localStorage.removeItem(DISMISSED_KEY); } catch { /* ignore */ }
+        }
+        setNeedsUpdate(false);
+        return;
       }
+      if (remote === dismissed) {
+        // User already tried to update to this version — don't nag again,
+        // even if the bundle didn't actually swap (e.g. proxy/browser cache).
+        setNeedsUpdate(false);
+        return;
+      }
+      console.log(`[Update] new version detected (${reason})`, {
+        current: CURRENT_VERSION,
+        remote,
+      });
+      setNeedsUpdate(true);
     };
 
     STARTUP_DELAYS.forEach((d) =>
@@ -64,6 +94,11 @@ export function usePwaUpdate() {
   }, []);
 
   const applyUpdate = async () => {
+    const target = remoteVersionRef.current;
+    // Mark this version as "user acknowledged" so we never loop on it again,
+    // even if the new bundle fails to load due to caching.
+    if (target) writeDismissed(target);
+
     // Best-effort cache wipe so the new build is fetched fresh
     try {
       if ("caches" in window) {
@@ -80,7 +115,7 @@ export function usePwaUpdate() {
       // ignore
     }
     const url = new URL(window.location.href);
-    url.searchParams.set("v", remoteVersionRef.current ?? Date.now().toString());
+    url.searchParams.set("v", target ?? Date.now().toString());
     window.location.replace(url.toString());
   };
 
