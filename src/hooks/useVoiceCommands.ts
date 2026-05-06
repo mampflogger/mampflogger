@@ -199,6 +199,7 @@ const FUZZY_KEYWORD_MAP: [string, string][] = [
   ["praeparat", "section:supplements"],
   ["kalorien pro tag", "section:kalorien-pro-tag"],
   ["defizit", "section:defizit-pro-tag"],
+  ["gewichtsverlust", "section:gewichtsverlust-pro-tag"],
   ["makros pro tag", "section:makros-pro-tag"],
   ["makroverteilung", "section:makro-verteilung"],
   ["verteilung", "section:makro-verteilung"],
