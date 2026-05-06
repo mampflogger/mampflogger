@@ -283,6 +283,7 @@ export const SECTION_PAGE_MAP: Record<string, "log" | "weekly"> = {
   "section-uebersicht": "weekly",
   "section-kalorien-pro-tag": "weekly",
   "section-defizit-pro-tag": "weekly",
+  "section-gewichtsverlust-pro-tag": "weekly",
   "section-makros-pro-tag": "weekly",
   "section-makro-verteilung": "weekly",
   "section-wochenansicht": "weekly",
