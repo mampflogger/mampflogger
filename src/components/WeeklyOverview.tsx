@@ -657,6 +657,50 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
         </div>
       )}
 
+      {/* Weight Loss Bar Chart */}
+      {weightLossData && (
+        <div id="section-gewichtsverlust-pro-tag" data-section className={`glass-card rounded-xl p-3 ${hl === "section-gewichtsverlust-pro-tag" ? "section-card-highlight" : ""}`}>
+          <SectionHeading highlighted={hl === "section-gewichtsverlust-pro-tag"} className="mb-2">
+            Gewichtsverlust pro Tag (g)
+          </SectionHeading>
+          <div className="h-44">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={weightLossData} margin={{ top: 4, right: 0, left: -20, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="weightLossGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="hsl(var(--primary) / 0.4)" />
+                    <stop offset="100%" stopColor="hsl(var(--primary) / 0.8)" />
+                  </linearGradient>
+                  <linearGradient id="weightGainGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="hsl(var(--destructive) / 0.4)" />
+                    <stop offset="100%" stopColor="hsl(var(--destructive) / 0.8)" />
+                  </linearGradient>
+                </defs>
+                <XAxis dataKey="label" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} />
+                <YAxis
+                  axisLine={false}
+                  tickLine={false}
+                  domain={[(dataMin: number) => Math.floor(Math.min(dataMin, 0) / 50) * 50, (dataMax: number) => Math.ceil(Math.max(dataMax, 200) / 50) * 50]}
+                  ticks={weightLossTicks}
+                  tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }}
+                />
+                {weightLossTicks.map((v) => (
+                  <ReferenceLine key={v} y={v} stroke="hsl(var(--muted-foreground) / 0.25)" strokeWidth={0.5} />
+                ))}
+                <Tooltip content={<WeightLossTooltip />} cursor={{ fill: "hsl(var(--accent) / 0.4)" }} />
+                <Bar dataKey="grams" radius={[6, 6, 0, 0]} maxBarSize={36}>
+                  {weightLossData.map((entry, index) => (
+                    <Cell key={index} fill={entry.grams >= 0 ? "url(#weightLossGradient)" : "url(#weightGainGradient)"} />
+                  ))}
+                </Bar>
+                <ReferenceLine y={0} stroke="hsl(var(--border))" strokeWidth={0.5} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+          {renderEditor("section-gewichtsverlust-pro-tag")}
+        </div>
+      )}
+
       {/* Daily macro with day selector */}
       <DailyMacroCard weekData={weekData} highlighted={hl === "section-makros-pro-tag"} profile={profile} />
 
