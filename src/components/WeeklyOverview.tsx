@@ -55,6 +55,17 @@ interface DeficitDayData {
   isToday: boolean;
 }
 
+interface WeightLossDayData {
+  label: string;
+  date: string;
+  grams: number;
+  deficit: number;
+  isToday: boolean;
+}
+
+// kcal per gram of body fat (~7700 kcal/kg)
+const KCAL_PER_GRAM = 7.7;
+
 const WEEKDAY_SHORT = ["So", "Mo", "Di", "Mi", "Do", "Fr", "Sa"];
 
 const MACRO_COLORS = {
