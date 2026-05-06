@@ -40,6 +40,7 @@ const COMMANDS: VoiceCommand[] = [
 
   // Stats page sections (specific before generic)
   { patterns: [/\bkalorien\s+pro\s+tag\b/i], action: "section:kalorien-pro-tag" },
+  { patterns: [/\bgewichtsverlust\b/i, /\bgewichts.?verlust\b/i], action: "section:gewichtsverlust-pro-tag" },
   { patterns: [/\bdefizit/i], action: "section:defizit-pro-tag" },
   { patterns: [/\bmakros?\s+pro\s+tag\b/i], action: "section:makros-pro-tag" },
   { patterns: [/\bmakro.?verteilung\b/i, /\bverteilung\b/i], action: "section:makro-verteilung" },
@@ -198,6 +199,7 @@ const FUZZY_KEYWORD_MAP: [string, string][] = [
   ["praeparat", "section:supplements"],
   ["kalorien pro tag", "section:kalorien-pro-tag"],
   ["defizit", "section:defizit-pro-tag"],
+  ["gewichtsverlust", "section:gewichtsverlust-pro-tag"],
   ["makros pro tag", "section:makros-pro-tag"],
   ["makroverteilung", "section:makro-verteilung"],
   ["verteilung", "section:makro-verteilung"],
@@ -281,6 +283,7 @@ export const SECTION_PAGE_MAP: Record<string, "log" | "weekly"> = {
   "section-uebersicht": "weekly",
   "section-kalorien-pro-tag": "weekly",
   "section-defizit-pro-tag": "weekly",
+  "section-gewichtsverlust-pro-tag": "weekly",
   "section-makros-pro-tag": "weekly",
   "section-makro-verteilung": "weekly",
   "section-wochenansicht": "weekly",

@@ -36,6 +36,8 @@ const DEFAULT_HELP_TEXTS: Record<string, string> = {
 
   "section-defizit-pro-tag": `Hier siehst du dein tägliches Kaloriendefizit oder deinen Überschuss der letzten sieben Tage als Balkendiagramm. Balken nach oben bedeuten ein Defizit – du hast weniger gegessen als verbraucht. Balken nach unten zeigen einen Überschuss an. Alle Balken sind in der Hauptfarbe der App dargestellt.`,
 
+  "section-gewichtsverlust-pro-tag": `Dieses Diagramm zeigt dir den geschätzten Körperfett-Verlust pro Tag in Gramm, basierend auf deinem Kaloriendefizit. Etwa 7700 Kalorien Defizit entsprechen einem Kilogramm Fett. Balken nach oben bedeuten Gewichtsverlust, Balken nach unten in Rot bedeuten eine Zunahme durch einen Kalorienüberschuss.`,
+
   "section-makro-verteilung": `Die Makro-Verteilung zeigt dir den Durchschnitt deiner Makronährstoffe über die letzten sieben Tage. Du siehst Protein, Kohlenhydrate, Fett und Ballaststoffe als Kreisdiagramm und in Prozent. So erkennst du langfristige Trends in deiner Ernährung.`,
 
   "section-makros-pro-tag": `Diese Tabelle zeigt dir die tägliche Aufschlüsselung deiner Makronährstoffe für jeden der letzten sieben Tage. Du siehst Protein, Kohlenhydrate, Fett und Ballaststoffe in Gramm pro Tag.`,

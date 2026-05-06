@@ -55,6 +55,17 @@ interface DeficitDayData {
   isToday: boolean;
 }
 
+interface WeightLossDayData {
+  label: string;
+  date: string;
+  grams: number;
+  deficit: number;
+  isToday: boolean;
+}
+
+// kcal per gram of body fat (~7700 kcal/kg)
+const KCAL_PER_GRAM = 7.7;
+
 const WEEKDAY_SHORT = ["So", "Mo", "Di", "Mi", "Do", "Fr", "Sa"];
 
 const MACRO_COLORS = {
@@ -373,6 +384,29 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
     return steps;
   }, [deficitData, profile]);
 
+  const weightLossData = useMemo<WeightLossDayData[] | null>(() => {
+    if (!deficitData) return null;
+    return deficitData.map((d) => ({
+      label: d.label,
+      date: d.date,
+      deficit: d.deficit,
+      grams: Math.round(d.deficit / KCAL_PER_GRAM),
+      isToday: d.isToday,
+    }));
+  }, [deficitData]);
+
+  const weightLossTicks = useMemo(() => {
+    if (!weightLossData) return [];
+    const vals = weightLossData.map((d) => d.grams);
+    const minVal = Math.min(...vals, 0);
+    const maxVal = Math.max(...vals, 200);
+    const bottom = Math.floor(minVal / 50) * 50;
+    const top = Math.ceil(maxVal / 50) * 50;
+    const steps: number[] = [];
+    for (let v = bottom; v <= top; v += 50) steps.push(v);
+    return steps;
+  }, [weightLossData]);
+
   const CaloriesTooltip = ({ active, payload }: any) => {
     if (!active || !payload?.length) return null;
     const data = payload[0].payload as DayData;
@@ -401,6 +435,21 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
         <p className="font-semibold text-popover-foreground">{dateLabel}</p>
         <p style={{ color: data.deficit >= 0 ? "hsl(var(--primary))" : "hsl(var(--destructive))" }}>
           <span className="font-bold">{data.deficit >= 0 ? `-${data.deficit}` : `+${Math.abs(data.deficit)}`}</span> kcal
+        </p>
+      </div>
+    );
+  };
+
+  const WeightLossTooltip = ({ active, payload }: any) => {
+    if (!active || !payload?.length) return null;
+    const data = payload[0].payload as WeightLossDayData;
+    const d = new Date(data.date + "T00:00:00");
+    const dateLabel = d.toLocaleDateString("de-DE", { day: "numeric", month: "short" });
+    return (
+      <div className="rounded-lg border border-border bg-popover px-3 py-2 shadow-md text-xs">
+        <p className="font-semibold text-popover-foreground">{dateLabel}</p>
+        <p style={{ color: data.grams >= 0 ? "hsl(var(--primary))" : "hsl(var(--destructive))" }}>
+          <span className="font-bold">{data.grams >= 0 ? `-${data.grams}` : `+${Math.abs(data.grams)}`}</span> g
         </p>
       </div>
     );
@@ -605,6 +654,50 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
             </ResponsiveContainer>
           </div>
           {renderEditor("section-defizit-pro-tag")}
+        </div>
+      )}
+
+      {/* Weight Loss Bar Chart */}
+      {weightLossData && (
+        <div id="section-gewichtsverlust-pro-tag" data-section className={`glass-card rounded-xl p-3 ${hl === "section-gewichtsverlust-pro-tag" ? "section-card-highlight" : ""}`}>
+          <SectionHeading highlighted={hl === "section-gewichtsverlust-pro-tag"} className="mb-2">
+            Gewichtsverlust pro Tag (g)
+          </SectionHeading>
+          <div className="h-44">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={weightLossData} margin={{ top: 4, right: 0, left: -20, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="weightLossGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="hsl(var(--primary) / 0.4)" />
+                    <stop offset="100%" stopColor="hsl(var(--primary) / 0.8)" />
+                  </linearGradient>
+                  <linearGradient id="weightGainGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="hsl(var(--destructive) / 0.4)" />
+                    <stop offset="100%" stopColor="hsl(var(--destructive) / 0.8)" />
+                  </linearGradient>
+                </defs>
+                <XAxis dataKey="label" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} />
+                <YAxis
+                  axisLine={false}
+                  tickLine={false}
+                  domain={[(dataMin: number) => Math.floor(Math.min(dataMin, 0) / 50) * 50, (dataMax: number) => Math.ceil(Math.max(dataMax, 200) / 50) * 50]}
+                  ticks={weightLossTicks}
+                  tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }}
+                />
+                {weightLossTicks.map((v) => (
+                  <ReferenceLine key={v} y={v} stroke="hsl(var(--muted-foreground) / 0.25)" strokeWidth={0.5} />
+                ))}
+                <Tooltip content={<WeightLossTooltip />} cursor={{ fill: "hsl(var(--accent) / 0.4)" }} />
+                <Bar dataKey="grams" radius={[6, 6, 0, 0]} maxBarSize={36}>
+                  {weightLossData.map((entry, index) => (
+                    <Cell key={index} fill={entry.grams >= 0 ? "url(#weightLossGradient)" : "url(#weightGainGradient)"} />
+                  ))}
+                </Bar>
+                <ReferenceLine y={0} stroke="hsl(var(--border))" strokeWidth={0.5} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+          {renderEditor("section-gewichtsverlust-pro-tag")}
         </div>
       )}
 

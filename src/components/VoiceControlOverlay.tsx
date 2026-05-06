@@ -91,6 +91,9 @@ const SECTION_LOCAL_COMMANDS: Record<string, [string, string][]> = {
   "section-defizit-pro-tag": [
     ["(keine lokalen Befehle)", "Nur Anzeige"],
   ],
+  "section-gewichtsverlust-pro-tag": [
+    ["(keine lokalen Befehle)", "Nur Anzeige"],
+  ],
   "section-makros-pro-tag": [
     ["(keine lokalen Befehle)", "Nur Anzeige"],
   ],
@@ -171,6 +174,7 @@ const SECTION_LABELS: Record<string, string> = {
   "section-uebersicht": "Übersicht",
   "section-kalorien-pro-tag": "Kalorien pro Tag",
   "section-defizit-pro-tag": "Defizit pro Tag",
+  "section-gewichtsverlust-pro-tag": "Gewichtsverlust pro Tag",
   "section-makros-pro-tag": "Makros pro Tag",
   "section-makro-verteilung": "Makroverteilung",
   "section-wochenansicht": "Wochenprotokoll",
