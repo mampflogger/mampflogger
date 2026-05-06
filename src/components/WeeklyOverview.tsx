@@ -440,7 +440,20 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
     );
   };
 
-  const hl = highlightedSection;
+  const WeightLossTooltip = ({ active, payload }: any) => {
+    if (!active || !payload?.length) return null;
+    const data = payload[0].payload as WeightLossDayData;
+    const d = new Date(data.date + "T00:00:00");
+    const dateLabel = d.toLocaleDateString("de-DE", { day: "numeric", month: "short" });
+    return (
+      <div className="rounded-lg border border-border bg-popover px-3 py-2 shadow-md text-xs">
+        <p className="font-semibold text-popover-foreground">{dateLabel}</p>
+        <p style={{ color: data.grams >= 0 ? "hsl(var(--primary))" : "hsl(var(--destructive))" }}>
+          <span className="font-bold">{data.grams >= 0 ? `-${data.grams}` : `+${Math.abs(data.grams)}`}</span> g
+        </p>
+      </div>
+    );
+  };
 
   return (
     <div className="space-y-3 animate-fade-in">
