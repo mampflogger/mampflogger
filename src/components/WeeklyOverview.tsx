@@ -384,6 +384,29 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
     return steps;
   }, [deficitData, profile]);
 
+  const weightLossData = useMemo<WeightLossDayData[] | null>(() => {
+    if (!deficitData) return null;
+    return deficitData.map((d) => ({
+      label: d.label,
+      date: d.date,
+      deficit: d.deficit,
+      grams: Math.round(d.deficit / KCAL_PER_GRAM),
+      isToday: d.isToday,
+    }));
+  }, [deficitData]);
+
+  const weightLossTicks = useMemo(() => {
+    if (!weightLossData) return [];
+    const vals = weightLossData.map((d) => d.grams);
+    const minVal = Math.min(...vals, 0);
+    const maxVal = Math.max(...vals, 200);
+    const bottom = Math.floor(minVal / 50) * 50;
+    const top = Math.ceil(maxVal / 50) * 50;
+    const steps: number[] = [];
+    for (let v = bottom; v <= top; v += 50) steps.push(v);
+    return steps;
+  }, [weightLossData]);
+
   const CaloriesTooltip = ({ active, payload }: any) => {
     if (!active || !payload?.length) return null;
     const data = payload[0].payload as DayData;
