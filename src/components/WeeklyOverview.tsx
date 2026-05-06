@@ -455,6 +455,8 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
     );
   };
 
+  const hl = highlightedSection;
+
   return (
     <div className="space-y-3 animate-fade-in">
       {/* Stats Row */}
