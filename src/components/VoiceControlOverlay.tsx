@@ -91,6 +91,9 @@ const SECTION_LOCAL_COMMANDS: Record<string, [string, string][]> = {
   "section-defizit-pro-tag": [
     ["(keine lokalen Befehle)", "Nur Anzeige"],
   ],
+  "section-gewichtsverlust-pro-tag": [
+    ["(keine lokalen Befehle)", "Nur Anzeige"],
+  ],
   "section-makros-pro-tag": [
     ["(keine lokalen Befehle)", "Nur Anzeige"],
   ],
