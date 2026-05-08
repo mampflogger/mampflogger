@@ -28,6 +28,7 @@ import WeeklyOverview from "@/components/WeeklyOverview";
 import ActivityInput from "@/components/ActivityInput";
 import DeficitDisplay from "@/components/DeficitDisplay";
 import FluidDisplay from "@/components/FluidDisplay";
+import WeightTracker from "@/components/WeightTracker";
 import SupplementTracker from "@/components/SupplementTracker";
 import { loadSupplements, saveSupplements, aggregateSupplementNutrients, type Supplement } from "@/types/supplements";
 import DailyCalorieChart from "@/components/DailyCalorieChart";
