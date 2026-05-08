@@ -75,6 +75,10 @@ const SECTION_LOCAL_COMMANDS: Record<string, [string, string][]> = {
   "section-fluessigkeit": [
     ["(keine lokalen Befehle)", "Nur Anzeige"],
   ],
+  "section-gewicht": [
+    ["Zahl (kg)", "Gewicht eingeben"],
+    ["Okay / OK", "Gewicht speichern"],
+  ],
   "section-supplements": [
     ["Neu", "Neues Supplement anlegen"],
     ["Neues Supplement / Supplement hinzufügen", "Formular öffnen"],
