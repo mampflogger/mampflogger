@@ -175,6 +175,7 @@ const SECTION_LABELS: Record<string, string> = {
   "section-kalorienbilanz": "Kalorienbilanz",
   "section-makro-naehrstoffe": "Makro Nährstoffe",
   "section-fluessigkeit": "Flüssigkeit",
+  "section-gewicht": "Gewicht",
   "section-uebersicht": "Übersicht",
   "section-kalorien-pro-tag": "Kalorien pro Tag",
   "section-defizit-pro-tag": "Defizit pro Tag",
