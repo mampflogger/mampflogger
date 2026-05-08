@@ -156,6 +156,7 @@ const Index = () => {
   const [activeTab, setActiveTab] = useState<"log" | "weekly" | "help">("log");
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [bookedActivities, setBookedActivities] = useState<BookedActivity[]>([]);
+  const [weightLog, setWeightLog] = useState<WeightEntry[]>(() => loadWeightLog());
   const [editingEntry, setEditingEntry] = useState<NutritionEntry | null>(null);
   const [editingActivity, setEditingActivity] = useState<BookedActivity | null>(null);
   const [openNewFood, setOpenNewFood] = useState(false);
