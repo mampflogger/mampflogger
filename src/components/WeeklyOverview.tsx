@@ -589,6 +589,61 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
         {renderEditor("section-uebersicht")}
       </div>
 
+      {/* Weight history line chart */}
+      {weightHistory && weightHistory.points.length > 0 && (
+        <div id="section-gewichts-verlauf" data-section className={`glass-card rounded-xl p-3 ${hl === "section-gewichts-verlauf" ? "section-card-highlight" : ""}`}>
+          <SectionHeading highlighted={hl === "section-gewichts-verlauf"} className="mb-2">
+            Gewichtsverlauf
+          </SectionHeading>
+          <div className="h-44">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={weightHistory.points} margin={{ top: 8, right: 8, left: -20, bottom: 0 }}>
+                <XAxis
+                  dataKey="t"
+                  type="number"
+                  domain={[0, (dataMax: number) => Math.max(dataMax, 1)]}
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }}
+                  tickFormatter={(v: number) => `${v}d`}
+                />
+                <YAxis
+                  domain={[weightHistory.yMin, weightHistory.yMax]}
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }}
+                  width={32}
+                />
+                <Tooltip
+                  content={({ active, payload }: any) => {
+                    if (!active || !payload?.length) return null;
+                    const p = payload[0].payload;
+                    const d = new Date(p.date + "T00:00:00").toLocaleDateString("de-DE", { day: "numeric", month: "short", year: "2-digit" });
+                    return (
+                      <div className="rounded-lg border border-border bg-popover px-2 py-1.5 shadow-md text-xs">
+                        <p className="font-semibold text-popover-foreground">{d}</p>
+                        <p style={{ color: "hsl(var(--primary))" }}>Gemessen: <span className="font-bold">{p.actual.toFixed(1).replace(".", ",")} kg</span></p>
+                        <p className="text-muted-foreground">Rechnerisch: <span className="font-semibold">{p.computed.toFixed(1).replace(".", ",")} kg</span></p>
+                      </div>
+                    );
+                  }}
+                />
+                {profile?.goalWeightKg && (
+                  <ReferenceLine y={profile.goalWeightKg} stroke="hsl(var(--destructive))" strokeDasharray="4 3" strokeWidth={1.5} />
+                )}
+                <Line type="monotone" dataKey="actual" name="Gemessen" stroke="hsl(var(--primary))" strokeWidth={2} dot={{ r: 3, fill: "hsl(var(--primary))" }} activeDot={{ r: 5 }} />
+                <Line type="monotone" dataKey="computed" name="Rechnerisch" stroke="hsl(var(--muted-foreground))" strokeWidth={1.5} strokeDasharray="3 3" dot={{ r: 2.5, fill: "hsl(var(--muted-foreground))" }} />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+          <div className="flex items-center justify-center gap-3 text-[10px] text-muted-foreground mt-1">
+            <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full" style={{ backgroundColor: "hsl(var(--primary))" }} />Gemessen</span>
+            <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-muted-foreground" />Rechnerisch</span>
+          </div>
+          {renderEditor("section-gewichts-verlauf")}
+        </div>
+      )}
+
       {/* Calories per Day */}
       <div id="section-kalorien-pro-tag" data-section className={`glass-card rounded-xl p-3 ${hl === "section-kalorien-pro-tag" ? "section-card-highlight" : ""}`}>
         <SectionHeading highlighted={hl === "section-kalorien-pro-tag"} className="mb-2">
