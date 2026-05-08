@@ -280,6 +280,7 @@ export const SECTION_PAGE_MAP: Record<string, "log" | "weekly"> = {
   "section-activity": "log",
   "section-kalorienbilanz": "log",
   "section-fluessigkeit": "log",
+  "section-gewicht": "log",
   "section-supplements": "log",
   "section-uebersicht": "weekly",
   "section-kalorien-pro-tag": "weekly",
