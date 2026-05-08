@@ -1766,6 +1766,7 @@ const Index = () => {
               selectedDate={selectedDate}
               profile={profile}
               bookedActivities={bookedActivities}
+              weightLog={weightLog}
               highlightedSection={hl}
               analyzeCoachRequestId={weeklyCoachAnalyzeRequest}
               editorOpenSection={audioGuide.editorOpenSection}
