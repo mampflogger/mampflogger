@@ -278,6 +278,12 @@ const Index = () => {
               activityVoiceCaptureUntilRef.current = Date.now() + (needsTabSwitch ? 6000 : 4000);
               setTimeout(() => setActivityFocusRequestId((prev) => (prev ?? 0) + 1), needsTabSwitch ? 350 : 120);
             }
+            if (sectionId === "section-gewicht") {
+              setTimeout(
+                () => window.dispatchEvent(new CustomEvent("mampflogger:focus-weight-input")),
+                needsTabSwitch ? 420 : 160,
+              );
+            }
           });
         }
         return;
