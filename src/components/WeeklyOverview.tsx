@@ -5,12 +5,16 @@ import AudioGuideEditor from "@/components/AudioGuideEditor";
 import {
   UserProfile,
   BookedActivity,
+  WeightEntry,
   calculateBMR,
   calculateBookedActivityBonus,
+  getEffectiveWeightKg,
 } from "@/types/profile";
 import {
   BarChart,
   Bar,
+  LineChart,
+  Line,
   XAxis,
   YAxis,
   Tooltip,
@@ -28,6 +32,7 @@ interface WeeklyOverviewProps {
   selectedDate: string;
   profile?: UserProfile | null;
   bookedActivities?: BookedActivity[];
+  weightLog?: WeightEntry[];
   highlightedSection?: string | null;
   analyzeCoachRequestId?: number;
   editorOpenSection?: string | null;
@@ -65,6 +70,7 @@ interface WeightLossDayData {
 
 // kcal per gram of body fat (~7700 kcal/kg)
 const KCAL_PER_GRAM = 7.7;
+const KCAL_PER_KG_FOR_HISTORY = 7700;
 
 const WEEKDAY_SHORT = ["So", "Mo", "Di", "Mi", "Do", "Fr", "Sa"];
 
@@ -165,8 +171,9 @@ const DailyMacroCard = ({ weekData, highlighted, profile }: { weekData: DayData[
   );
 };
 
-const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [], highlightedSection, analyzeCoachRequestId, editorOpenSection, getHelpText, updateHelpText, supplementVitamins, supplementMinerals }: WeeklyOverviewProps) => {
-  const bmr = profile ? calculateBMR(profile) : null;
+const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [], weightLog = [], highlightedSection, analyzeCoachRequestId, editorOpenSection, getHelpText, updateHelpText, supplementVitamins, supplementMinerals }: WeeklyOverviewProps) => {
+  const effectiveWeight = profile ? getEffectiveWeightKg(profile, weightLog, selectedDate) : null;
+  const bmr = profile ? calculateBMR(profile, effectiveWeight ?? undefined) : null;
   const [showGoalDate, setShowGoalDate] = useState(false);
 
   useEffect(() => {
@@ -205,7 +212,7 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
   const deficitData = useMemo(() => {
     if (!profile) return null;
     const today = new Date(selectedDate + "T00:00:00");
-    const bmr = calculateBMR(profile);
+    const bmr = calculateBMR(profile, getEffectiveWeightKg(profile, weightLog, selectedDate));
     const days: DeficitDayData[] = [];
     for (let i = 6; i >= 0; i--) {
       const d = new Date(today);
@@ -232,7 +239,7 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
       });
     }
     return days;
-  }, [profile, entries, bookedActivities, selectedDate]);
+  }, [profile, entries, bookedActivities, selectedDate, weightLog]);
 
   const weekTotals = useMemo(() => {
     // Only count days with entries for average
@@ -271,7 +278,7 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
   // Avg deficit: exclude current day and days without entries, last 7 past days with entries
   const avgDeficit7 = useMemo(() => {
     if (!profile) return null;
-    const bmr = calculateBMR(profile);
+    const bmr = calculateBMR(profile, getEffectiveWeightKg(profile, weightLog, selectedDate));
     const todayStr = formatDate(new Date());
 
     // Collect all past dates with entries (not today)
@@ -292,7 +299,7 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
     }
 
     return Math.round(totalDeficit / allDates.length);
-  }, [profile, entries, bookedActivities]);
+  }, [profile, entries, bookedActivities, weightLog, selectedDate]);
 
   // Monthly stats (30 days)
   const monthlyStats = useMemo(() => {
@@ -300,7 +307,7 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
     let totalCalories = 0;
     let totalDeficit = 0;
     let daysWithData = 0;
-    const bmrVal = profile ? calculateBMR(profile) : 0;
+    const bmrVal = profile ? calculateBMR(profile, getEffectiveWeightKg(profile, weightLog, selectedDate)) : 0;
 
     for (let i = 29; i >= 0; i--) {
       const d = new Date(today);
@@ -322,7 +329,7 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
       avgDeficit: daysWithData > 0 ? Math.round(totalDeficit / daysWithData) : null,
       daysWithData,
     };
-  }, [entries, selectedDate, profile, bookedActivities]);
+  }, [entries, selectedDate, profile, bookedActivities, weightLog]);
 
   const daysToGoal = useMemo(() => {
     if (!profile || !profile.goalWeightKg) return null;
@@ -330,7 +337,8 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
     const useMonthly = monthlyStats.daysWithData >= 30 && monthlyStats.avgDeficit !== null;
     const avgDeficit = useMonthly ? monthlyStats.avgDeficit! : avgDeficit7;
     if (avgDeficit === null) return null;
-    const kgDiff = profile.weightKg - profile.goalWeightKg; // positive = lose, negative = gain
+    const refWeight = effectiveWeight ?? profile.weightKg;
+    const kgDiff = refWeight - profile.goalWeightKg; // positive = lose, negative = gain
     if (Math.abs(kgDiff) < 0.01) return 0; // goal reached
     // Losing weight: need positive deficit (caloric deficit)
     // Gaining weight: need negative deficit (caloric surplus)
@@ -338,7 +346,7 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
     if (kgDiff < 0 && avgDeficit >= 0) return null; // wants to gain but is in deficit
     const totalKcalNeeded = Math.abs(kgDiff) * 7000;
     return Math.round(totalKcalNeeded / Math.abs(avgDeficit));
-  }, [profile, avgDeficit7, monthlyStats]);
+  }, [profile, avgDeficit7, monthlyStats, effectiveWeight]);
 
   const maxCalories = useMemo(
     () => Math.max(...weekData.map((d) => d.calories), 100),
@@ -406,6 +414,45 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
     for (let v = bottom; v <= top; v += 50) steps.push(v);
     return steps;
   }, [weightLossData]);
+
+  // Weight history line chart data: x = days since first weighing, y = kg.
+  // Each weight entry yields two points: actual (measured) and computed (projection).
+  const weightHistory = useMemo(() => {
+    if (!profile || !weightLog || weightLog.length === 0) return null;
+    const sorted = [...weightLog].sort((a, b) => a.date.localeCompare(b.date));
+    const startDate = sorted[0].date;
+    const startMs = new Date(startDate + "T00:00:00").getTime();
+    const dayMs = 86400000;
+
+    const bmr = calculateBMR(profile, getEffectiveWeightKg(profile, weightLog, selectedDate));
+
+    const points = sorted.map((entry) => {
+      const t = Math.round((new Date(entry.date + "T00:00:00").getTime() - startMs) / dayMs);
+      // Computed projection from profile.weightKg using cumulative deficit up to entry.date
+      let totalDeficit = 0;
+      const dateSet = new Set(entries.map((e) => e.date));
+      for (const dateStr of dateSet) {
+        if (dateStr > entry.date) continue;
+        const dayEntries = entries.filter((e) => e.date === dateStr);
+        if (dayEntries.length === 0) continue;
+        const summary = calculateDailySummary(dayEntries);
+        const bonus = calculateBookedActivityBonus(bookedActivities, dateStr);
+        totalDeficit += (bmr + bonus) - summary.totalCalories;
+      }
+      const computed = profile.weightKg - totalDeficit / KCAL_PER_KG_FOR_HISTORY;
+      return {
+        t,
+        date: entry.date,
+        actual: entry.kg,
+        computed: Math.round(computed * 10) / 10,
+      };
+    });
+
+    const allKgs = points.flatMap((p) => [p.actual, p.computed]);
+    const yMax = Math.max(profile.weightKg + 2, ...allKgs);
+    const yMin = Math.min(...allKgs, profile.goalWeightKg ?? Number.POSITIVE_INFINITY) - 1;
+    return { points, yMax: Math.ceil(yMax), yMin: Math.floor(yMin) };
+  }, [profile, weightLog, entries, bookedActivities, selectedDate]);
 
   const CaloriesTooltip = ({ active, payload }: any) => {
     if (!active || !payload?.length) return null;
@@ -541,6 +588,61 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
         </div>
         {renderEditor("section-uebersicht")}
       </div>
+
+      {/* Weight history line chart */}
+      {weightHistory && weightHistory.points.length > 0 && (
+        <div id="section-gewichts-verlauf" data-section className={`glass-card rounded-xl p-3 ${hl === "section-gewichts-verlauf" ? "section-card-highlight" : ""}`}>
+          <SectionHeading highlighted={hl === "section-gewichts-verlauf"} className="mb-2">
+            Gewichtsverlauf
+          </SectionHeading>
+          <div className="h-44">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={weightHistory.points} margin={{ top: 8, right: 8, left: -20, bottom: 0 }}>
+                <XAxis
+                  dataKey="t"
+                  type="number"
+                  domain={[0, (dataMax: number) => Math.max(dataMax, 1)]}
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }}
+                  tickFormatter={(v: number) => `${v}d`}
+                />
+                <YAxis
+                  domain={[weightHistory.yMin, weightHistory.yMax]}
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }}
+                  width={32}
+                />
+                <Tooltip
+                  content={({ active, payload }: any) => {
+                    if (!active || !payload?.length) return null;
+                    const p = payload[0].payload;
+                    const d = new Date(p.date + "T00:00:00").toLocaleDateString("de-DE", { day: "numeric", month: "short", year: "2-digit" });
+                    return (
+                      <div className="rounded-lg border border-border bg-popover px-2 py-1.5 shadow-md text-xs">
+                        <p className="font-semibold text-popover-foreground">{d}</p>
+                        <p style={{ color: "hsl(var(--primary))" }}>Gemessen: <span className="font-bold">{p.actual.toFixed(1).replace(".", ",")} kg</span></p>
+                        <p className="text-muted-foreground">Rechnerisch: <span className="font-semibold">{p.computed.toFixed(1).replace(".", ",")} kg</span></p>
+                      </div>
+                    );
+                  }}
+                />
+                {profile?.goalWeightKg && (
+                  <ReferenceLine y={profile.goalWeightKg} stroke="hsl(var(--destructive))" strokeDasharray="4 3" strokeWidth={1.5} />
+                )}
+                <Line type="monotone" dataKey="actual" name="Gemessen" stroke="hsl(var(--primary))" strokeWidth={2} dot={{ r: 3, fill: "hsl(var(--primary))" }} activeDot={{ r: 5 }} />
+                <Line type="monotone" dataKey="computed" name="Rechnerisch" stroke="hsl(var(--muted-foreground))" strokeWidth={1.5} strokeDasharray="3 3" dot={{ r: 2.5, fill: "hsl(var(--muted-foreground))" }} />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+          <div className="flex items-center justify-center gap-3 text-[10px] text-muted-foreground mt-1">
+            <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full" style={{ backgroundColor: "hsl(var(--primary))" }} />Gemessen</span>
+            <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-muted-foreground" />Rechnerisch</span>
+          </div>
+          {renderEditor("section-gewichts-verlauf")}
+        </div>
+      )}
 
       {/* Calories per Day */}
       <div id="section-kalorien-pro-tag" data-section className={`glass-card rounded-xl p-3 ${hl === "section-kalorien-pro-tag" ? "section-card-highlight" : ""}`}>

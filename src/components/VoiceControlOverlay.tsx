@@ -79,6 +79,12 @@ const SECTION_LOCAL_COMMANDS: Record<string, [string, string][]> = {
     ["Zahl (kg)", "Gewicht eingeben"],
     ["Okay / OK", "Gewicht speichern"],
   ],
+  "section-bmi": [
+    ["(keine lokalen Befehle)", "Nur Anzeige"],
+  ],
+  "section-gewichts-verlauf": [
+    ["(keine lokalen Befehle)", "Nur Anzeige"],
+  ],
   "section-supplements": [
     ["Neu", "Neues Supplement anlegen"],
     ["Neues Supplement / Supplement hinzufügen", "Formular öffnen"],
@@ -176,6 +182,8 @@ const SECTION_LABELS: Record<string, string> = {
   "section-makro-naehrstoffe": "Makro Nährstoffe",
   "section-fluessigkeit": "Flüssigkeit",
   "section-gewicht": "Gewicht",
+  "section-bmi": "BMI",
+  "section-gewichts-verlauf": "Gewichtsverlauf",
   "section-uebersicht": "Übersicht",
   "section-kalorien-pro-tag": "Kalorien pro Tag",
   "section-defizit-pro-tag": "Defizit pro Tag",
