@@ -8,6 +8,7 @@ import {
   WeightEntry,
   calculateBMR,
   calculateBookedActivityBonus,
+  getEffectiveWeightKg,
 } from "@/types/profile";
 import { NutritionEntry, calculateDailySummary, formatDate } from "@/types/nutrition";
 
