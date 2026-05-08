@@ -7,11 +7,15 @@ import { syncRemoteFoodDatabase, loadRemoteUrl } from "@/lib/remoteFoodSync";
 import {
   UserProfile,
   BookedActivity,
+  WeightEntry,
   clearProfile,
   loadProfile,
   saveProfile,
   loadBookedActivities,
   saveBookedActivities,
+  loadWeightLog,
+  saveWeightLog,
+  setWeightForDate,
   calculateBookedActivityBonus,
 } from "@/types/profile";
 import { loadEntries, saveEntries } from "@/lib/storage";
@@ -24,6 +28,7 @@ import WeeklyOverview from "@/components/WeeklyOverview";
 import ActivityInput from "@/components/ActivityInput";
 import DeficitDisplay from "@/components/DeficitDisplay";
 import FluidDisplay from "@/components/FluidDisplay";
+import WeightTracker from "@/components/WeightTracker";
 import SupplementTracker from "@/components/SupplementTracker";
 import { loadSupplements, saveSupplements, aggregateSupplementNutrients, type Supplement } from "@/types/supplements";
 import DailyCalorieChart from "@/components/DailyCalorieChart";
@@ -151,6 +156,7 @@ const Index = () => {
   const [activeTab, setActiveTab] = useState<"log" | "weekly" | "help">("log");
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [bookedActivities, setBookedActivities] = useState<BookedActivity[]>([]);
+  const [weightLog, setWeightLog] = useState<WeightEntry[]>(() => loadWeightLog());
   const [editingEntry, setEditingEntry] = useState<NutritionEntry | null>(null);
   const [editingActivity, setEditingActivity] = useState<BookedActivity | null>(null);
   const [openNewFood, setOpenNewFood] = useState(false);
@@ -1639,6 +1645,27 @@ const Index = () => {
                   }}
                 />
                 {audioGuide.isEditorOpenFor("section-fluessigkeit") && <AudioGuideEditor sectionId="section-fluessigkeit" value={audioGuide.getHelpText("section-fluessigkeit")} onChange={audioGuide.updateHelpText} />}
+              </div>
+            )}
+
+            {profile && (
+              <div id="section-gewicht" data-section className={`glass-card rounded-xl p-3 mb-3 ${hl === "section-gewicht" ? "section-card-highlight" : ""}`}>
+                <SectionHeading highlighted={hl === "section-gewicht"} className="mb-2">
+                  Gewicht
+                </SectionHeading>
+                <WeightTracker
+                  profile={profile}
+                  entries={entries}
+                  bookedActivities={bookedActivities}
+                  weightLog={weightLog}
+                  selectedDate={selectedDate}
+                  onSaveWeight={(date, kg) => {
+                    const updated = setWeightForDate(weightLog, date, kg);
+                    setWeightLog(updated);
+                    saveWeightLog(updated);
+                  }}
+                />
+                {audioGuide.isEditorOpenFor("section-gewicht") && <AudioGuideEditor sectionId="section-gewicht" value={audioGuide.getHelpText("section-gewicht")} onChange={audioGuide.updateHelpText} />}
               </div>
             )}
 

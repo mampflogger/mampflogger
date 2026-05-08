@@ -28,6 +28,8 @@ const DEFAULT_HELP_TEXTS: Record<string, string> = {
 
   "section-fluessigkeit": `Der Flüssigkeitskasten zeigt dir, wie viel du heute getrunken hast im Verhältnis zu deinem Tagesziel. Getränke und wasserhaltige Lebensmittel werden automatisch erfasst. Der Fortschrittsbalken zeigt dir, wie nah du an deinem Flüssigkeitsziel bist.`,
 
+  "section-gewicht": `Im Gewichts-Kasten kannst du dein aktuell gemessenes Gewicht in Kilogramm mit einer Nachkommastelle eintragen. Sag eine Zahl und bestätige mit „Okay". Darunter siehst du das rechnerische Gewicht, das die App aus deinem Kaloriendefizit ermittelt hat, dein tatsächlich gemessenes Gewicht und die Abweichung zwischen beiden Werten. Der Fortschrittsbalken zeigt dir, wie viel Prozent du auf dem Weg von deinem Startgewicht aus dem Profil zu deinem Zielgewicht bereits geschafft hast. Hundert Prozent bedeutet, du hast dein Zielgewicht erreicht.`,
+
   "section-supplements": `Im Supplement-Kasten verwaltest du deine Nahrungsergänzungsmittel. Du kannst Vitamine und Mineralstoffe als Kapseln eintragen, inklusive der Menge pro Einheit und der Stückzahl. Aktiviere die Checkbox „Täglich", damit die Dosen automatisch jeden Tag in deine Vitamin- und Mineralstoffbilanz eingerechnet werden. So musst du nicht jeden Tag einzeln dokumentieren. Du kannst auch Kombipräparate anlegen, die mehrere Nährstoffe gleichzeitig enthalten.`,
 
   "section-uebersicht": `Die Übersicht zeigt dir die wichtigsten Kennzahlen der letzten sieben Tage auf einen Blick. Du siehst den Durchschnitt deiner täglichen Kalorienaufnahme, dein durchschnittliches Defizit und – falls ein Zielgewicht hinterlegt ist – die geschätzte Anzahl der Tage bis zum Ziel.`,

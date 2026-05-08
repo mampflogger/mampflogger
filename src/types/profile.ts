@@ -43,6 +43,35 @@ const ACTIVITY_KEY = "nutrition-log-activities";
 const ACTIVITY_TYPES_KEY = "mampflogger-activity-types";
 const ACTIVITY_TYPES_VERSION_KEY = "mampflogger-activity-types-version";
 const BOOKED_ACTIVITIES_KEY = "mampflogger-booked-activities";
+const WEIGHT_LOG_KEY = "mampflogger-weight-log";
+
+export interface WeightEntry {
+  date: string; // YYYY-MM-DD
+  kg: number;
+}
+
+export function loadWeightLog(): WeightEntry[] {
+  try {
+    const data = localStorage.getItem(WEIGHT_LOG_KEY);
+    return data ? JSON.parse(data) : [];
+  } catch {
+    return [];
+  }
+}
+
+export function saveWeightLog(log: WeightEntry[]): void {
+  localStorage.setItem(WEIGHT_LOG_KEY, JSON.stringify(log));
+}
+
+export function setWeightForDate(log: WeightEntry[], date: string, kg: number): WeightEntry[] {
+  const idx = log.findIndex((w) => w.date === date);
+  if (idx >= 0) {
+    const updated = [...log];
+    updated[idx] = { date, kg };
+    return updated;
+  }
+  return [...log, { date, kg }].sort((a, b) => a.date.localeCompare(b.date));
+}
 
 // Bump this whenever DEFAULT_ACTIVITY_TYPES changes
 const ACTIVITY_TYPES_VERSION = 3;
