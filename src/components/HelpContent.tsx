@@ -27,6 +27,7 @@ const HELP_TOPICS: Record<HelpTab, HelpTopic[]> = {
     { label: "Kalorienbilanz", description: "Zeigt die Differenz zwischen deinem Kalorienbedarf (Grundumsatz + Activity) und deiner Kalorienaufnahme. Ein Defizit bedeutet, dass du weniger Kalorien aufgenommen hast als verbraucht – ideal zum Abnehmen." },
     { label: "Makro Nährstoffverteilung", description: "Zeigt dir die prozentuale Verteilung von Eiweiß, Fett, Kohlenhydraten und Ballaststoffen für den aktuellen Tag als Balkendiagramm an. So siehst du auf einen Blick, ob deine Makros im gewünschten Verhältnis liegen." },
     { label: "Flüssigkeit", description: "Trackt deine Flüssigkeitsaufnahme. Getränke werden automatisch aus deinen Einträgen erkannt. Du siehst, wie viel du bereits getrunken hast und wie viel noch fehlt bis zu deinem Tagesziel." },
+    { label: "Gewicht", description: "Trage dein aktuell gemessenes Gewicht in kg ein und bestätige mit „OK". Darunter siehst du das rechnerische Gewicht (basierend auf deinem Kaloriendefizit), das aktuelle Gewicht und die Abweichung. Der Fortschrittsbalken zeigt, wie viel Prozent du auf dem Weg vom Startgewicht (Profil) zum Zielgewicht geschafft hast." },
   ],
   statistik: [
     { label: "Übersicht", description: "Zeigt dir die wichtigsten Kennzahlen der letzten 7 Tage auf einen Blick: Durchschnittsdefizit, durchschnittliche Kalorienaufnahme und wie viele Tage du noch bis zu deinem Zielgewicht brauchst." },
