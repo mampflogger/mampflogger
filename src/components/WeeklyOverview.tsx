@@ -414,6 +414,45 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
     return steps;
   }, [weightLossData]);
 
+  // Weight history line chart data: x = days since first weighing, y = kg.
+  // Each weight entry yields two points: actual (measured) and computed (projection).
+  const weightHistory = useMemo(() => {
+    if (!profile || !weightLog || weightLog.length === 0) return null;
+    const sorted = [...weightLog].sort((a, b) => a.date.localeCompare(b.date));
+    const startDate = sorted[0].date;
+    const startMs = new Date(startDate + "T00:00:00").getTime();
+    const dayMs = 86400000;
+
+    const bmr = calculateBMR(profile, getEffectiveWeightKg(profile, weightLog, selectedDate));
+
+    const points = sorted.map((entry) => {
+      const t = Math.round((new Date(entry.date + "T00:00:00").getTime() - startMs) / dayMs);
+      // Computed projection from profile.weightKg using cumulative deficit up to entry.date
+      let totalDeficit = 0;
+      const dateSet = new Set(entries.map((e) => e.date));
+      for (const dateStr of dateSet) {
+        if (dateStr > entry.date) continue;
+        const dayEntries = entries.filter((e) => e.date === dateStr);
+        if (dayEntries.length === 0) continue;
+        const summary = calculateDailySummary(dayEntries);
+        const bonus = calculateBookedActivityBonus(bookedActivities, dateStr);
+        totalDeficit += (bmr + bonus) - summary.totalCalories;
+      }
+      const computed = profile.weightKg - totalDeficit / KCAL_PER_KG_FOR_HISTORY;
+      return {
+        t,
+        date: entry.date,
+        actual: entry.kg,
+        computed: Math.round(computed * 10) / 10,
+      };
+    });
+
+    const allKgs = points.flatMap((p) => [p.actual, p.computed]);
+    const yMax = Math.max(profile.weightKg + 2, ...allKgs);
+    const yMin = Math.min(...allKgs, profile.goalWeightKg ?? Number.POSITIVE_INFINITY) - 1;
+    return { points, yMax: Math.ceil(yMax), yMin: Math.floor(yMin) };
+  }, [profile, weightLog, entries, bookedActivities, selectedDate]);
+
   const CaloriesTooltip = ({ active, payload }: any) => {
     if (!active || !payload?.length) return null;
     const data = payload[0].payload as DayData;
