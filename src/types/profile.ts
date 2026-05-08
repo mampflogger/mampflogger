@@ -188,12 +188,32 @@ export function calculateBookedActivityBonus(activities: BookedActivity[], date:
 }
 
 /**
- * BMR using Mifflin-St Jeor equation + NEAT factor (1.2)
+ * Returns the most recent manually-entered weight up to (and including) the
+ * given date, or the profile's stored starting weight if none exists.
  */
-export function calculateBMR(profile: UserProfile): number {
+export function getEffectiveWeightKg(
+  profile: UserProfile,
+  weightLog: WeightEntry[] | undefined | null,
+  dateStr?: string,
+): number {
+  if (!weightLog || weightLog.length === 0) return profile.weightKg;
+  const cutoff = dateStr ?? "9999-12-31";
+  const candidates = weightLog.filter((w) => w.date <= cutoff);
+  if (candidates.length === 0) return profile.weightKg;
+  const sorted = [...candidates].sort((a, b) => b.date.localeCompare(a.date));
+  return sorted[0].kg;
+}
+
+/**
+ * BMR using Mifflin-St Jeor equation + NEAT factor (1.2).
+ * Optional weightOverrideKg lets callers compute BMR for a different weight
+ * than the profile's stored value (e.g. last measured weight).
+ */
+export function calculateBMR(profile: UserProfile, weightOverrideKg?: number): number {
   const currentYear = new Date().getFullYear();
   const age = currentYear - profile.birthYear;
-  const base = 10 * profile.weightKg + 6.25 * profile.heightCm - 5 * age;
+  const w = typeof weightOverrideKg === "number" && weightOverrideKg > 0 ? weightOverrideKg : profile.weightKg;
+  const base = 10 * w + 6.25 * profile.heightCm - 5 * age;
   const bmr = profile.gender === "male" ? base + 5 : base - 161;
   return Math.round(bmr * 1.2);
 }
