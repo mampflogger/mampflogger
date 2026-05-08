@@ -5,12 +5,16 @@ import AudioGuideEditor from "@/components/AudioGuideEditor";
 import {
   UserProfile,
   BookedActivity,
+  WeightEntry,
   calculateBMR,
   calculateBookedActivityBonus,
+  getEffectiveWeightKg,
 } from "@/types/profile";
 import {
   BarChart,
   Bar,
+  LineChart,
+  Line,
   XAxis,
   YAxis,
   Tooltip,
@@ -28,6 +32,7 @@ interface WeeklyOverviewProps {
   selectedDate: string;
   profile?: UserProfile | null;
   bookedActivities?: BookedActivity[];
+  weightLog?: WeightEntry[];
   highlightedSection?: string | null;
   analyzeCoachRequestId?: number;
   editorOpenSection?: string | null;
