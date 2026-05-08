@@ -7,11 +7,15 @@ import { syncRemoteFoodDatabase, loadRemoteUrl } from "@/lib/remoteFoodSync";
 import {
   UserProfile,
   BookedActivity,
+  WeightEntry,
   clearProfile,
   loadProfile,
   saveProfile,
   loadBookedActivities,
   saveBookedActivities,
+  loadWeightLog,
+  saveWeightLog,
+  setWeightForDate,
   calculateBookedActivityBonus,
 } from "@/types/profile";
 import { loadEntries, saveEntries } from "@/lib/storage";
