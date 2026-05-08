@@ -1648,6 +1648,27 @@ const Index = () => {
               </div>
             )}
 
+            {profile && (
+              <div id="section-gewicht" data-section className={`glass-card rounded-xl p-3 mb-3 ${hl === "section-gewicht" ? "section-card-highlight" : ""}`}>
+                <SectionHeading highlighted={hl === "section-gewicht"} className="mb-2">
+                  Gewicht
+                </SectionHeading>
+                <WeightTracker
+                  profile={profile}
+                  entries={entries}
+                  bookedActivities={bookedActivities}
+                  weightLog={weightLog}
+                  selectedDate={selectedDate}
+                  onSaveWeight={(date, kg) => {
+                    const updated = setWeightForDate(weightLog, date, kg);
+                    setWeightLog(updated);
+                    saveWeightLog(updated);
+                  }}
+                />
+                {audioGuide.isEditorOpenFor("section-gewicht") && <AudioGuideEditor sectionId="section-gewicht" value={audioGuide.getHelpText("section-gewicht")} onChange={audioGuide.updateHelpText} />}
+              </div>
+            )}
+
             <div id="section-supplements" data-section className={`glass-card rounded-xl p-3 mb-3 ${hl === "section-supplements" ? "section-card-highlight" : ""}`}>
               <SectionHeading highlighted={hl === "section-supplements"} className="mb-2">
                 Supplements
