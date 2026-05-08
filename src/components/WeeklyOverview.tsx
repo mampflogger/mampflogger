@@ -211,7 +211,7 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
   const deficitData = useMemo(() => {
     if (!profile) return null;
     const today = new Date(selectedDate + "T00:00:00");
-    const bmr = calculateBMR(profile);
+    const bmr = calculateBMR(profile, getEffectiveWeightKg(profile, weightLog, selectedDate));
     const days: DeficitDayData[] = [];
     for (let i = 6; i >= 0; i--) {
       const d = new Date(today);
@@ -277,7 +277,7 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
   // Avg deficit: exclude current day and days without entries, last 7 past days with entries
   const avgDeficit7 = useMemo(() => {
     if (!profile) return null;
-    const bmr = calculateBMR(profile);
+    const bmr = calculateBMR(profile, getEffectiveWeightKg(profile, weightLog, selectedDate));
     const todayStr = formatDate(new Date());
 
     // Collect all past dates with entries (not today)
@@ -306,7 +306,7 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
     let totalCalories = 0;
     let totalDeficit = 0;
     let daysWithData = 0;
-    const bmrVal = profile ? calculateBMR(profile) : 0;
+    const bmrVal = profile ? calculateBMR(profile, getEffectiveWeightKg(profile, weightLog, selectedDate)) : 0;
 
     for (let i = 29; i >= 0; i--) {
       const d = new Date(today);
@@ -336,7 +336,8 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
     const useMonthly = monthlyStats.daysWithData >= 30 && monthlyStats.avgDeficit !== null;
     const avgDeficit = useMonthly ? monthlyStats.avgDeficit! : avgDeficit7;
     if (avgDeficit === null) return null;
-    const kgDiff = profile.weightKg - profile.goalWeightKg; // positive = lose, negative = gain
+    const refWeight = effectiveWeight ?? profile.weightKg;
+    const kgDiff = refWeight - profile.goalWeightKg; // positive = lose, negative = gain
     if (Math.abs(kgDiff) < 0.01) return 0; // goal reached
     // Losing weight: need positive deficit (caloric deficit)
     // Gaining weight: need negative deficit (caloric surplus)
