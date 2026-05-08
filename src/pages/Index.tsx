@@ -1675,6 +1675,71 @@ const Index = () => {
               </div>
             )}
 
+            {profile && (() => {
+              const heightM = profile.heightCm / 100;
+              if (!heightM || heightM <= 0) return null;
+              const startBmi = profile.weightKg / (heightM * heightM);
+              const goalBmi = profile.goalWeightKg ? profile.goalWeightKg / (heightM * heightM) : null;
+              const effectiveWeight = (() => {
+                const sorted = [...weightLog]
+                  .filter((w) => w.date <= selectedDate)
+                  .sort((a, b) => b.date.localeCompare(a.date));
+                return sorted[0]?.kg ?? profile.weightKg;
+              })();
+              const currentBmi = effectiveWeight / (heightM * heightM);
+              const fmt = (n: number) => n.toFixed(1).replace(".", ",");
+              const bmiCategory = (b: number) =>
+                b < 18.5 ? "Untergewicht"
+                : b < 25 ? "Normalgewicht"
+                : b < 30 ? "Übergewicht"
+                : b < 35 ? "Adipositas I"
+                : b < 40 ? "Adipositas II"
+                : "Adipositas III";
+              let progress: number | null = null;
+              if (goalBmi !== null && Math.abs(startBmi - goalBmi) > 0.01) {
+                const totalDelta = startBmi - goalBmi;
+                const currentDelta = startBmi - currentBmi;
+                progress = Math.max(0, Math.min(100, Math.round((currentDelta / totalDelta) * 100)));
+              }
+              return (
+                <div id="section-bmi" data-section className={`glass-card rounded-xl p-3 mb-3 ${hl === "section-bmi" ? "section-card-highlight" : ""}`}>
+                  <SectionHeading highlighted={hl === "section-bmi"} className="mb-2">
+                    BMI
+                  </SectionHeading>
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between rounded-lg bg-background px-3 py-1.5 text-xs">
+                      <span className="text-muted-foreground font-medium">Aktueller BMI</span>
+                      <span className="font-bold text-foreground">{fmt(currentBmi)} <span className="text-muted-foreground font-normal">({bmiCategory(currentBmi)})</span></span>
+                    </div>
+                    {goalBmi !== null && progress !== null && (
+                      <>
+                        <div className="h-2 rounded-full bg-muted overflow-hidden">
+                          <div
+                            className="h-full rounded-full transition-all duration-500"
+                            style={{
+                              width: `${progress}%`,
+                              backgroundColor: progress >= 100 ? "hsl(var(--success))" : "hsl(var(--primary))",
+                            }}
+                          />
+                        </div>
+                        <div className="flex items-center justify-between text-xs text-muted-foreground">
+                          <span>Start BMI {fmt(startBmi)} → Ziel BMI {fmt(goalBmi)}</span>
+                          <span className="font-bold text-foreground">{progress}%</span>
+                        </div>
+                        <div className="text-xs text-muted-foreground">
+                          {progress >= 100
+                            ? <span>Du hast dein BMI-Ziel erreicht!</span>
+                            : <span>Du hast schon <span className="font-bold">{progress} %</span> deines BMI-Ziels erreicht.</span>
+                          }
+                        </div>
+                      </>
+                    )}
+                  </div>
+                  {audioGuide.isEditorOpenFor("section-bmi") && <AudioGuideEditor sectionId="section-bmi" value={audioGuide.getHelpText("section-bmi")} onChange={audioGuide.updateHelpText} />}
+                </div>
+              );
+            })()}
+
             <div id="section-supplements" data-section className={`glass-card rounded-xl p-3 mb-3 ${hl === "section-supplements" ? "section-card-highlight" : ""}`}>
               <SectionHeading highlighted={hl === "section-supplements"} className="mb-2">
                 Supplements
