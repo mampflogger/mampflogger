@@ -170,8 +170,9 @@ const DailyMacroCard = ({ weekData, highlighted, profile }: { weekData: DayData[
   );
 };
 
-const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [], highlightedSection, analyzeCoachRequestId, editorOpenSection, getHelpText, updateHelpText, supplementVitamins, supplementMinerals }: WeeklyOverviewProps) => {
-  const bmr = profile ? calculateBMR(profile) : null;
+const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [], weightLog = [], highlightedSection, analyzeCoachRequestId, editorOpenSection, getHelpText, updateHelpText, supplementVitamins, supplementMinerals }: WeeklyOverviewProps) => {
+  const effectiveWeight = profile ? getEffectiveWeightKg(profile, weightLog, selectedDate) : null;
+  const bmr = profile ? calculateBMR(profile, effectiveWeight ?? undefined) : null;
   const [showGoalDate, setShowGoalDate] = useState(false);
 
   useEffect(() => {
