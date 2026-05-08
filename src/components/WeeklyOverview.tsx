@@ -238,7 +238,7 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
       });
     }
     return days;
-  }, [profile, entries, bookedActivities, selectedDate]);
+  }, [profile, entries, bookedActivities, selectedDate, weightLog]);
 
   const weekTotals = useMemo(() => {
     // Only count days with entries for average
@@ -298,7 +298,7 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
     }
 
     return Math.round(totalDeficit / allDates.length);
-  }, [profile, entries, bookedActivities]);
+  }, [profile, entries, bookedActivities, weightLog, selectedDate]);
 
   // Monthly stats (30 days)
   const monthlyStats = useMemo(() => {
@@ -328,7 +328,7 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
       avgDeficit: daysWithData > 0 ? Math.round(totalDeficit / daysWithData) : null,
       daysWithData,
     };
-  }, [entries, selectedDate, profile, bookedActivities]);
+  }, [entries, selectedDate, profile, bookedActivities, weightLog]);
 
   const daysToGoal = useMemo(() => {
     if (!profile || !profile.goalWeightKg) return null;
@@ -345,7 +345,7 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
     if (kgDiff < 0 && avgDeficit >= 0) return null; // wants to gain but is in deficit
     const totalKcalNeeded = Math.abs(kgDiff) * 7000;
     return Math.round(totalKcalNeeded / Math.abs(avgDeficit));
-  }, [profile, avgDeficit7, monthlyStats]);
+  }, [profile, avgDeficit7, monthlyStats, effectiveWeight]);
 
   const maxCalories = useMemo(
     () => Math.max(...weekData.map((d) => d.calories), 100),
