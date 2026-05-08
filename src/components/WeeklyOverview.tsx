@@ -70,6 +70,7 @@ interface WeightLossDayData {
 
 // kcal per gram of body fat (~7700 kcal/kg)
 const KCAL_PER_GRAM = 7.7;
+const KCAL_PER_KG_FOR_HISTORY = 7700;
 
 const WEEKDAY_SHORT = ["So", "Mo", "Di", "Mi", "Do", "Fr", "Sa"];
 
