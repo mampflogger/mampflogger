@@ -41,9 +41,23 @@ const WeightTracker = ({
     setValue(existingForDate ? existingForDate.kg.toFixed(1).replace(".", ",") : "");
   }, [selectedDate, existingForDate?.kg]);
 
-  // Computed weight = startWeight - sum(deficits up to selectedDate) / 7700
+  // Focus the input when section is activated via voice / navigation
+  useEffect(() => {
+    const handler = () => {
+      window.setTimeout(() => {
+        inputRef.current?.focus();
+        inputRef.current?.select();
+      }, 50);
+    };
+    window.addEventListener("mampflogger:focus-weight-input", handler);
+    return () => window.removeEventListener("mampflogger:focus-weight-input", handler);
+  }, []);
+
+  // Computed weight = effectiveWeight - sum(deficits since last weighing) / 7700
+  // BMR uses the latest measured weight (or profile weight if none).
   const computed = useMemo(() => {
-    const bmr = calculateBMR(profile);
+    const effectiveWeight = getEffectiveWeightKg(profile, weightLog, selectedDate);
+    const bmr = calculateBMR(profile, effectiveWeight);
     const dateSet = new Set(entries.map((e) => e.date));
     let totalDeficit = 0;
     for (const dateStr of dateSet) {
@@ -56,7 +70,7 @@ const WeightTracker = ({
     }
     const kgChange = totalDeficit / KCAL_PER_KG;
     return profile.weightKg - kgChange;
-  }, [profile, entries, bookedActivities, selectedDate]);
+  }, [profile, entries, bookedActivities, selectedDate, weightLog]);
 
   // Latest manually entered weight up to selectedDate
   const latestActual = useMemo(() => {
