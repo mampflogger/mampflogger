@@ -1093,6 +1093,23 @@ const Index = () => {
     localStorage.setItem("mampflogger-color-theme", colorTheme);
   }, [colorTheme]);
 
+  // Auto-seed initial weight: if no weight has been booked yet but we have
+  // protocol entries and a profile, anchor the start at the earliest entry
+  // date with the profile weight, so the chart and target calculations have
+  // a meaningful starting point.
+  useEffect(() => {
+    if (!profile) return;
+    if (weightLog.length > 0) return;
+    if (entries.length === 0) return;
+    const earliest = entries.reduce(
+      (min, e) => (e.date < min ? e.date : min),
+      entries[0].date,
+    );
+    const seeded: WeightEntry[] = [{ date: earliest, kg: profile.weightKg }];
+    setWeightLog(seeded);
+    saveWeightLog(seeded);
+  }, [profile, weightLog.length, entries.length]);
+
   useEffect(() => {
     const loadedEntries = loadEntries();
     const loadedProfile = loadProfile();
