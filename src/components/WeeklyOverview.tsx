@@ -597,7 +597,7 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
           </SectionHeading>
           <div className="h-44">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={weightHistory.points} margin={{ top: 8, right: 8, left: -20, bottom: 0 }}>
+              <LineChart data={weightHistory.points} margin={{ top: 8, right: 12, left: 0, bottom: 0 }}>
                 <XAxis
                   dataKey="t"
                   type="number"
