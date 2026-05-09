@@ -183,6 +183,49 @@ function parseGermanNumberWord(raw: string): number | null {
   return parseUnderThousand(word);
 }
 
+const DIGIT_WORDS: Record<string, string> = {
+  null: "0",
+  eins: "1", ein: "1", eine: "1", einen: "1", einem: "1",
+  zwei: "2", drei: "3", vier: "4", fuenf: "5", sechs: "6",
+  sieben: "7", acht: "8", neun: "9",
+};
+
+/**
+ * Parse a sequence of single-digit words/digits, e.g. "eins null null" → 100,
+ * "eins eins vier komma neun" → 114.9. Requires at least 2 digits to avoid
+ * ambiguity with normal speech ("ein Brötchen" must NOT become 1 here).
+ */
+function parseDigitSequence(normalized: string): number | null {
+  const tokens = normalized.split(" ").filter(Boolean);
+  if (tokens.length < 2) return null;
+
+  let out = "";
+  let digitCount = 0;
+  let sawSeparator = false;
+  for (const tk of tokens) {
+    if (DIGIT_WORDS[tk]) {
+      out += DIGIT_WORDS[tk];
+      digitCount += 1;
+    } else if (/^[0-9]$/.test(tk)) {
+      out += tk;
+      digitCount += 1;
+    } else if (tk === "komma" || tk === "punkt") {
+      if (out.includes(".") || !out) return null;
+      out += ".";
+      sawSeparator = true;
+    } else {
+      // Non-digit token before any digits: ignore as filler ("nimm", "und")
+      if (digitCount === 0 && !sawSeparator) continue;
+      // Otherwise: stop sequence
+      break;
+    }
+  }
+
+  if (digitCount < 2) return null;
+  const parsed = Number.parseFloat(out);
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
 export function parseGermanSpokenNumber(transcript: string): number | null {
   const normalized = normalize(transcript);
   if (!normalized) return null;
@@ -191,6 +234,11 @@ export function parseGermanSpokenNumber(transcript: string): number | null {
   if (numericLiteral !== null) {
     return numericLiteral;
   }
+
+  // Digit-by-digit sequence ("eins null null" → 100). Run before word parser
+  // so it wins over a stray match of just "ein" → 1.
+  const digitSeq = parseDigitSequence(normalized);
+  if (digitSeq !== null) return digitSeq;
 
   const tokens = normalized.split(" ").filter(Boolean);
 
