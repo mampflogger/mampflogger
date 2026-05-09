@@ -242,6 +242,31 @@ export function parseGermanSpokenNumber(transcript: string): number | null {
 
   const tokens = normalized.split(" ").filter(Boolean);
 
+  // Decimal: "X komma Y" → split & combine (X word-number, Y digit-by-digit or word).
+  const kommaIdx = tokens.indexOf("komma");
+  if (kommaIdx > 0 && kommaIdx < tokens.length - 1) {
+    const intStr = tokens.slice(0, kommaIdx).join(" ");
+    const fracTokens = tokens.slice(kommaIdx + 1);
+    const intPart = parseGermanSpokenNumber(intStr);
+    if (intPart !== null) {
+      // Try digit-sequence fraction first
+      let fracStr = "";
+      for (const tk of fracTokens) {
+        if (DIGIT_WORDS[tk]) fracStr += DIGIT_WORDS[tk];
+        else if (/^[0-9]+$/.test(tk)) fracStr += tk;
+        else break;
+      }
+      if (!fracStr) {
+        const fracNum = parseGermanSpokenNumber(fracTokens.join(" "));
+        if (fracNum !== null && fracNum >= 0) fracStr = String(Math.trunc(fracNum));
+      }
+      if (fracStr) {
+        const combined = Number.parseFloat(`${intPart}.${fracStr}`);
+        if (Number.isFinite(combined)) return combined;
+      }
+    }
+  }
+
   // Try longest token windows first (e.g. "fuenf tausend schritte" -> "fuenftausend")
   for (let size = tokens.length; size >= 1; size -= 1) {
     for (let start = 0; start + size <= tokens.length; start += 1) {
