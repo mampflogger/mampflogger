@@ -46,6 +46,7 @@ import { useAudioGuide } from "@/hooks/useAudioGuide";
 import AudioGuideEditor from "@/components/AudioGuideEditor";
 import VoiceControlOverlay from "@/components/VoiceControlOverlay";
 import { parseSpokenSelectionIndex } from "@/lib/voiceSelection";
+import { parseGermanSpokenNumber } from "@/lib/spokenNumbers";
 
 // Voice-to-nutrient matching for info panel toggle
 const NUTRIENT_VOICE_MAP: [RegExp, string, "vitamins" | "minerals"][] = [
