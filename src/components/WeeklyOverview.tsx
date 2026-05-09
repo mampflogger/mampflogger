@@ -597,7 +597,7 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
           </SectionHeading>
           <div className="h-44">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={weightHistory.points} margin={{ top: 8, right: 8, left: -20, bottom: 0 }}>
+              <LineChart data={weightHistory.points} margin={{ top: 8, right: 12, left: 0, bottom: 0 }}>
                 <XAxis
                   dataKey="t"
                   type="number"
@@ -611,8 +611,10 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
                   domain={[weightHistory.yMin, weightHistory.yMax]}
                   axisLine={false}
                   tickLine={false}
-                  tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }}
-                  width={32}
+                  tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }}
+                  width={48}
+                  tickFormatter={(v: number) => `${Math.round(v)}`}
+                  label={{ value: "kg", angle: -90, position: "insideLeft", offset: 18, style: { fontSize: 10, fill: "hsl(var(--muted-foreground))" } }}
                 />
                 <Tooltip
                   content={({ active, payload }: any) => {

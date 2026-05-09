@@ -46,6 +46,7 @@ import { useAudioGuide } from "@/hooks/useAudioGuide";
 import AudioGuideEditor from "@/components/AudioGuideEditor";
 import VoiceControlOverlay from "@/components/VoiceControlOverlay";
 import { parseSpokenSelectionIndex } from "@/lib/voiceSelection";
+import { parseGermanSpokenNumber } from "@/lib/spokenNumbers";
 
 // Voice-to-nutrient matching for info panel toggle
 const NUTRIENT_VOICE_MAP: [RegExp, string, "vitamins" | "minerals"][] = [
@@ -656,6 +657,28 @@ const Index = () => {
         return;
       }
 
+      // Weight section: route number / OK to WeightTracker
+      if (!isInterim) {
+        const ae = document.activeElement as HTMLElement | null;
+        const inWeight = !!ae?.closest?.("#section-gewicht");
+        if (inWeight) {
+          const lower = transcript.toLowerCase().trim();
+          if (/^(?:okay|ok|speichern|buchen|fertig|übernehmen|uebernehmen)\b/i.test(lower)) {
+            window.dispatchEvent(new CustomEvent("mampflogger:weight-save"));
+            return;
+          }
+          if (/^(?:löschen|loeschen|clear|leeren)\b/i.test(lower)) {
+            window.dispatchEvent(new CustomEvent("mampflogger:weight-set", { detail: { value: "" } }));
+            return;
+          }
+          const num = parseGermanSpokenNumber(lower);
+          if (num !== null && num > 0 && num < 500) {
+            window.dispatchEvent(new CustomEvent("mampflogger:weight-set", { detail: { value: num } }));
+            return;
+          }
+        }
+      }
+
       if (settingsOpenRef.current) {
         const currentTab = settingsTabRef.current;
         if (!isInterim) {
@@ -1069,6 +1092,23 @@ const Index = () => {
     }
     localStorage.setItem("mampflogger-color-theme", colorTheme);
   }, [colorTheme]);
+
+  // Auto-seed initial weight: if no weight has been booked yet but we have
+  // protocol entries and a profile, anchor the start at the earliest entry
+  // date with the profile weight, so the chart and target calculations have
+  // a meaningful starting point.
+  useEffect(() => {
+    if (!profile) return;
+    if (weightLog.length > 0) return;
+    if (entries.length === 0) return;
+    const earliest = entries.reduce(
+      (min, e) => (e.date < min ? e.date : min),
+      entries[0].date,
+    );
+    const seeded: WeightEntry[] = [{ date: earliest, kg: profile.weightKg }];
+    setWeightLog(seeded);
+    saveWeightLog(seeded);
+  }, [profile, weightLog.length, entries.length]);
 
   useEffect(() => {
     const loadedEntries = loadEntries();
