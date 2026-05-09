@@ -657,6 +657,28 @@ const Index = () => {
         return;
       }
 
+      // Weight section: route number / OK to WeightTracker
+      if (!isInterim) {
+        const ae = document.activeElement as HTMLElement | null;
+        const inWeight = !!ae?.closest?.("#section-gewicht");
+        if (inWeight) {
+          const lower = transcript.toLowerCase().trim();
+          if (/^(?:okay|ok|speichern|buchen|fertig|übernehmen|uebernehmen)\b/i.test(lower)) {
+            window.dispatchEvent(new CustomEvent("mampflogger:weight-save"));
+            return;
+          }
+          if (/^(?:löschen|loeschen|clear|leeren)\b/i.test(lower)) {
+            window.dispatchEvent(new CustomEvent("mampflogger:weight-set", { detail: { value: "" } }));
+            return;
+          }
+          const num = parseGermanSpokenNumber(lower);
+          if (num !== null && num > 0 && num < 500) {
+            window.dispatchEvent(new CustomEvent("mampflogger:weight-set", { detail: { value: num } }));
+            return;
+          }
+        }
+      }
+
       if (settingsOpenRef.current) {
         const currentTab = settingsTabRef.current;
         if (!isInterim) {
