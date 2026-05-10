@@ -1710,6 +1710,11 @@ const Index = () => {
                     setWeightLog(updated);
                     saveWeightLog(updated);
                   }}
+                  onReplaceWeightLog={(log) => {
+                    const sorted = [...log].sort((a, b) => a.date.localeCompare(b.date));
+                    setWeightLog(sorted);
+                    saveWeightLog(sorted);
+                  }}
                 />
                 {audioGuide.isEditorOpenFor("section-gewicht") && <AudioGuideEditor sectionId="section-gewicht" value={audioGuide.getHelpText("section-gewicht")} onChange={audioGuide.updateHelpText} />}
               </div>

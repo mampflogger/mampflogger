@@ -60,7 +60,9 @@ const SCALE_WORD_RE = /\b(?:hundert|tausend)\b/;
 function normalize(value: string): string {
   return value
     .toLowerCase()
-    .replace(/[.,!?;:]/g, " ")
+    .replace(/[!?;:]/g, " ")
+    // Strip . and , only when NOT between digits (preserve "116,9" as decimal)
+    .replace(/(?<!\d)[.,]|[.,](?!\d)/g, " ")
     .replace(/ä/g, "ae")
     .replace(/ö/g, "oe")
     .replace(/ü/g, "ue")
@@ -230,19 +232,10 @@ export function parseGermanSpokenNumber(transcript: string): number | null {
   const normalized = normalize(transcript);
   if (!normalized) return null;
 
-  const numericLiteral = parseNumericLiteral(normalized);
-  if (numericLiteral !== null) {
-    return numericLiteral;
-  }
-
-  // Digit-by-digit sequence ("eins null null" → 100). Run before word parser
-  // so it wins over a stray match of just "ein" → 1.
-  const digitSeq = parseDigitSequence(normalized);
-  if (digitSeq !== null) return digitSeq;
-
   const tokens = normalized.split(" ").filter(Boolean);
 
-  // Decimal: "X komma Y" → split & combine (X word-number, Y digit-by-digit or word).
+  // Decimal: "X komma Y" → split & combine. MUST run before parseNumericLiteral,
+  // otherwise "116 komma 9" returns just 9 (last numeric token wins).
   const kommaIdx = tokens.indexOf("komma");
   if (kommaIdx > 0 && kommaIdx < tokens.length - 1) {
     const intStr = tokens.slice(0, kommaIdx).join(" ");
@@ -266,6 +259,13 @@ export function parseGermanSpokenNumber(transcript: string): number | null {
       }
     }
   }
+
+  const numericLiteral = parseNumericLiteral(normalized);
+  if (numericLiteral !== null) return numericLiteral;
+
+  // Digit-by-digit sequence ("eins null null" → 100).
+  const digitSeq = parseDigitSequence(normalized);
+  if (digitSeq !== null) return digitSeq;
 
   // Try longest token windows first (e.g. "fuenf tausend schritte" -> "fuenftausend")
   for (let size = tokens.length; size >= 1; size -= 1) {
