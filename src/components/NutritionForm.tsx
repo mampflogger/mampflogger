@@ -418,6 +418,7 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
   // Load editing entry into form
   useEffect(() => {
     if (editingEntry) {
+      sessionStorage.removeItem(DRAFT_STORAGE_KEY);
       setTime(editingEntry.time);
       setFood(editingEntry.food);
       setAmount(String(editingEntry.amount));
@@ -433,6 +434,33 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
       setSelectedFood(match || null);
     }
   }, [editingEntry]);
+
+  useEffect(() => {
+    if (editingEntry) return;
+
+    const hasDraft =
+      food.trim() || amount.trim() || calories.trim() || protein.trim() || carbs.trim() || fat.trim() || fiber.trim() || gi.trim();
+
+    if (!hasDraft) {
+      sessionStorage.removeItem(DRAFT_STORAGE_KEY);
+      return;
+    }
+
+    const draft: NutritionFormDraft = {
+      selectedDate,
+      time,
+      food,
+      amount,
+      calories,
+      protein,
+      carbs,
+      fat,
+      fiber,
+      gi,
+    };
+
+    sessionStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify(draft));
+  }, [editingEntry, selectedDate, time, food, amount, calories, protein, carbs, fat, fiber, gi]);
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -627,6 +655,7 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
 
     trackFoodUsage(food.trim());
     onAdd(entry);
+    sessionStorage.removeItem(DRAFT_STORAGE_KEY);
     resetForm();
   };
 
@@ -649,6 +678,7 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
   };
 
   const handleCancel = () => {
+    sessionStorage.removeItem(DRAFT_STORAGE_KEY);
     resetForm();
     onCancelEdit?.();
   };
