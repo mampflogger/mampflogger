@@ -60,7 +60,9 @@ const SCALE_WORD_RE = /\b(?:hundert|tausend)\b/;
 function normalize(value: string): string {
   return value
     .toLowerCase()
-    .replace(/[.,!?;:]/g, " ")
+    .replace(/[!?;:]/g, " ")
+    // Strip . and , only when NOT between digits (preserve "116,9" as decimal)
+    .replace(/(?<!\d)[.,]|[.,](?!\d)/g, " ")
     .replace(/ä/g, "ae")
     .replace(/ö/g, "oe")
     .replace(/ü/g, "ue")
