@@ -44,6 +44,7 @@ export function useSpeechRecognition({ onResult, onEnd, onError, lang = "de-DE" 
   const keepAliveRef = useRef(false);
   const silentStartRef = useRef(false);
   const restartTimestampsRef = useRef<number[]>([]);
+  const restartTimerRef = useRef<number | null>(null);
   const onResultRef = useRef(onResult);
   const onEndRef = useRef(onEnd);
   const onErrorRef = useRef(onError);
@@ -68,7 +69,27 @@ export function useSpeechRecognition({ onResult, onEnd, onError, lang = "de-DE" 
     recognition.maxAlternatives = 3;
     recognition.continuous = true;
 
+    const scheduleRestart = (delayMs: number) => {
+      if (restartTimerRef.current !== null) {
+        window.clearTimeout(restartTimerRef.current);
+      }
+
+      restartTimerRef.current = window.setTimeout(() => {
+        restartTimerRef.current = null;
+        if (!keepAliveRef.current) return;
+
+        try {
+          recognition.start();
+          setIsListening(true);
+        } catch (err) {
+          console.warn("[Speech] delayed restart failed, retrying:", err);
+          scheduleRestart(Math.min(Math.max(delayMs * 2, 500), 5_000));
+        }
+      }, delayMs);
+    };
+
     recognition.onresult = (event) => {
+      restartTimestampsRef.current = [];
       const startIndex = typeof event.resultIndex === "number" ? event.resultIndex : processedIndexRef.current;
       for (let i = startIndex; i < event.results.length; i++) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -99,6 +120,10 @@ export function useSpeechRecognition({ onResult, onEnd, onError, lang = "de-DE" 
 
       if (TERMINAL_ERRORS.has(event.error)) {
         keepAliveRef.current = false;
+        if (restartTimerRef.current !== null) {
+          window.clearTimeout(restartTimerRef.current);
+          restartTimerRef.current = null;
+        }
         setIsListening(false);
       }
     };
@@ -120,11 +145,8 @@ export function useSpeechRecognition({ onResult, onEnd, onError, lang = "de-DE" 
       restartTimestampsRef.current.push(now);
 
       if (restartTimestampsRef.current.length > MAX_RAPID_RESTARTS) {
-        console.warn("[Speech] too many rapid restarts, stopping");
-        keepAliveRef.current = false;
-        setIsListening(false);
-        restartTimestampsRef.current = [];
-        onEndRef.current?.();
+        console.warn("[Speech] rapid restart loop detected, backing off");
+        scheduleRestart(1_500);
         return;
       }
 
@@ -132,11 +154,8 @@ export function useSpeechRecognition({ onResult, onEnd, onError, lang = "de-DE" 
         recognition.start();
         setIsListening(true);
       } catch (err) {
-        console.warn("[Speech] restart failed:", err);
-        keepAliveRef.current = false;
-        setIsListening(false);
-        onErrorRef.current?.("restart-requires-gesture");
-        onEndRef.current?.();
+        console.warn("[Speech] restart failed, retrying:", err);
+        scheduleRestart(750);
       }
     };
 
@@ -159,6 +178,11 @@ export function useSpeechRecognition({ onResult, onEnd, onError, lang = "de-DE" 
       const recognition = initRecognition();
       recognition.lang = lang;
       processedIndexRef.current = 0;
+      restartTimestampsRef.current = [];
+      if (restartTimerRef.current !== null) {
+        window.clearTimeout(restartTimerRef.current);
+        restartTimerRef.current = null;
+      }
       recognition.start();
       setIsListening(true);
       silentStartRef.current = false;
@@ -178,6 +202,10 @@ export function useSpeechRecognition({ onResult, onEnd, onError, lang = "de-DE" 
     keepAliveRef.current = false;
     processedIndexRef.current = 0;
     restartTimestampsRef.current = [];
+    if (restartTimerRef.current !== null) {
+      window.clearTimeout(restartTimerRef.current);
+      restartTimerRef.current = null;
+    }
 
     if (recognitionRef.current) {
       try {
@@ -195,6 +223,10 @@ export function useSpeechRecognition({ onResult, onEnd, onError, lang = "de-DE" 
       keepAliveRef.current = false;
       processedIndexRef.current = 0;
       restartTimestampsRef.current = [];
+      if (restartTimerRef.current !== null) {
+        window.clearTimeout(restartTimerRef.current);
+        restartTimerRef.current = null;
+      }
 
       if (recognitionRef.current) {
         try {

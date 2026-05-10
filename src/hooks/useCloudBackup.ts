@@ -11,6 +11,20 @@ const LAST_RESTORED_VERSION_KEY_PREFIX = "mampflogger-cloud-restore-version";
 const BOOTSTRAP_EVENT = "mampflogger-cloud-backup-bootstrap";
 const CLOUD_BACKUP_ACTIVE_KEY = "mampflogger-cloud-backup-active";
 
+function hasActiveDraft(): boolean {
+  try {
+    const raw = sessionStorage.getItem("mampflogger-nutrition-form-draft");
+    if (!raw) return false;
+    const draft = JSON.parse(raw) as Record<string, unknown>;
+    return ["food", "amount", "calories", "protein", "carbs", "fat", "fiber", "gi"].some((key) => {
+      const value = draft[key];
+      return typeof value === "string" && value.trim().length > 0;
+    });
+  } catch {
+    return false;
+  }
+}
+
 export function useCloudBackup(userId: string | null) {
   const [lastSync, setLastSync] = useState<Date | null>(null);
   const [isReady, setIsReady] = useState(false);
@@ -61,6 +75,8 @@ export function useCloudBackup(userId: string | null) {
     };
 
     const checkRemoteAndApply = async (options: { reloadOnChange: boolean }) => {
+      if (hasActiveDraft()) return false;
+
       const { data, error } = await supabase
         .from('cloud_backups')
         .select('data, updated_at')
