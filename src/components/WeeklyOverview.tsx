@@ -449,9 +449,14 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
     });
 
     const allKgs = points.flatMap((p) => [p.actual, p.computed]);
-    const yMax = Math.max(profile.weightKg + 2, ...allKgs);
-    const yMin = Math.min(...allKgs, profile.goalWeightKg ?? Number.POSITIVE_INFINITY) - 1;
-    return { points, yMax: Math.ceil(yMax), yMin: Math.floor(yMin) };
+    const rawMax = Math.max(profile.weightKg + 2, ...allKgs);
+    const rawMin = Math.min(...allKgs, profile.goalWeightKg ?? Number.POSITIVE_INFINITY) - 1;
+    // Snap to 5 kg grid for a clean axis
+    const yMax = Math.ceil(rawMax / 5) * 5;
+    const yMin = Math.floor(rawMin / 5) * 5;
+    const ticks: number[] = [];
+    for (let v = yMin; v <= yMax; v += 5) ticks.push(v);
+    return { points, yMax, yMin, ticks };
   }, [profile, weightLog, entries, bookedActivities, selectedDate]);
 
   const CaloriesTooltip = ({ active, payload }: any) => {
