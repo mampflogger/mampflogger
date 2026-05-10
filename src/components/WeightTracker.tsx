@@ -36,10 +36,12 @@ const WeightTracker = ({
   weightLog,
   selectedDate,
   onSaveWeight,
+  onReplaceWeightLog,
 }: WeightTrackerProps) => {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [value, setValue] = useState<string>("");
   const [showHistory, setShowHistory] = useState(false);
+  const [editMode, setEditMode] = useState(false);
 
   // Voice events
   useEffect(() => {
