@@ -178,6 +178,11 @@ export function useSpeechRecognition({ onResult, onEnd, onError, lang = "de-DE" 
       const recognition = initRecognition();
       recognition.lang = lang;
       processedIndexRef.current = 0;
+      restartTimestampsRef.current = [];
+      if (restartTimerRef.current !== null) {
+        window.clearTimeout(restartTimerRef.current);
+        restartTimerRef.current = null;
+      }
       recognition.start();
       setIsListening(true);
       silentStartRef.current = false;
@@ -197,6 +202,10 @@ export function useSpeechRecognition({ onResult, onEnd, onError, lang = "de-DE" 
     keepAliveRef.current = false;
     processedIndexRef.current = 0;
     restartTimestampsRef.current = [];
+    if (restartTimerRef.current !== null) {
+      window.clearTimeout(restartTimerRef.current);
+      restartTimerRef.current = null;
+    }
 
     if (recognitionRef.current) {
       try {
@@ -214,6 +223,10 @@ export function useSpeechRecognition({ onResult, onEnd, onError, lang = "de-DE" 
       keepAliveRef.current = false;
       processedIndexRef.current = 0;
       restartTimestampsRef.current = [];
+      if (restartTimerRef.current !== null) {
+        window.clearTimeout(restartTimerRef.current);
+        restartTimerRef.current = null;
+      }
 
       if (recognitionRef.current) {
         try {
