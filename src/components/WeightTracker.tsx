@@ -1,5 +1,5 @@
 import { useMemo, useRef, useState, useEffect } from "react";
-import { Scale, Target, Info, ChevronDown } from "lucide-react";
+import { Scale, Target, Info, ChevronDown, Pencil, Check, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
