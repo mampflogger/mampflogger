@@ -12,6 +12,33 @@ import { parseSpokenSelectionIndex } from "@/lib/voiceSelection";
 
 type FocusedField = "time" | "food" | "amount" | "submit" | null;
 
+const DRAFT_STORAGE_KEY = "mampflogger-nutrition-form-draft";
+
+type NutritionFormDraft = {
+  selectedDate: string;
+  time: string;
+  food: string;
+  amount: string;
+  calories: string;
+  protein: string;
+  carbs: string;
+  fat: string;
+  fiber: string;
+  gi: string;
+};
+
+const loadDraft = (selectedDate: string): Partial<NutritionFormDraft> | null => {
+  try {
+    const raw = sessionStorage.getItem(DRAFT_STORAGE_KEY);
+    if (!raw) return null;
+    const draft = JSON.parse(raw) as NutritionFormDraft;
+    if (draft.selectedDate !== selectedDate) return null;
+    return draft;
+  } catch {
+    return null;
+  }
+};
+
 interface NutritionFormProps {
   onAdd: (entry: NutritionEntry) => void;
   selectedDate: string;
@@ -25,16 +52,17 @@ interface NutritionFormProps {
 const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewFood, voiceInputRef, isVoiceActive = false }: NutritionFormProps) => {
   const now = new Date();
   const currentTime = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
+  const initialDraft = !editingEntry ? loadDraft(selectedDate) : null;
 
-  const [time, setTime] = useState(currentTime);
-  const [food, setFood] = useState("");
-  const [amount, setAmount] = useState("");
-  const [calories, setCalories] = useState("");
-  const [protein, setProtein] = useState("");
-  const [carbs, setCarbs] = useState("");
-  const [fat, setFat] = useState("");
-  const [fiber, setFiber] = useState("");
-  const [gi, setGi] = useState("");
+  const [time, setTime] = useState(initialDraft?.time || currentTime);
+  const [food, setFood] = useState(initialDraft?.food || "");
+  const [amount, setAmount] = useState(initialDraft?.amount || "");
+  const [calories, setCalories] = useState(initialDraft?.calories || "");
+  const [protein, setProtein] = useState(initialDraft?.protein || "");
+  const [carbs, setCarbs] = useState(initialDraft?.carbs || "");
+  const [fat, setFat] = useState(initialDraft?.fat || "");
+  const [fiber, setFiber] = useState(initialDraft?.fiber || "");
+  const [gi, setGi] = useState(initialDraft?.gi || "");
   const justBookedRef = useRef(false);
 
   const [suggestions, setSuggestions] = useState<FoodItem[]>([]);
