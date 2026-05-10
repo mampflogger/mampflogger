@@ -21,6 +21,7 @@ interface WeightTrackerProps {
   weightLog: WeightEntry[];
   selectedDate: string;
   onSaveWeight: (date: string, kg: number) => void;
+  onReplaceWeightLog?: (log: WeightEntry[]) => void;
 }
 
 const formatDateShort = (iso: string): string => {
