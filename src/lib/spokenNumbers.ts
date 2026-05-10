@@ -258,6 +258,13 @@ export function parseGermanSpokenNumber(transcript: string): number | null {
     }
   }
 
+  const numericLiteral = parseNumericLiteral(normalized);
+  if (numericLiteral !== null) return numericLiteral;
+
+  // Digit-by-digit sequence ("eins null null" → 100).
+  const digitSeq = parseDigitSequence(normalized);
+  if (digitSeq !== null) return digitSeq;
+
   // Try longest token windows first (e.g. "fuenf tausend schritte" -> "fuenftausend")
   for (let size = tokens.length; size >= 1; size -= 1) {
     for (let start = 0; start + size <= tokens.length; start += 1) {
