@@ -265,13 +265,73 @@ const WeightTracker = ({
 
       {showHistory && sortedHistory.length > 0 && (
         <div className="rounded-lg bg-background px-3 py-2 space-y-1 max-h-56 overflow-y-auto">
-          <div className="text-[11px] uppercase tracking-wide text-muted-foreground font-semibold pb-1 border-b border-border">
-            Gewichtsverlauf · {sortedHistory.length} Einträge
+          <div className="flex items-center justify-between pb-1 border-b border-border">
+            <div className="text-[11px] uppercase tracking-wide text-muted-foreground font-semibold">
+              Gewichtsverlauf · {sortedHistory.length} Einträge
+            </div>
+            {onReplaceWeightLog && (
+              <button
+                type="button"
+                onClick={() => setEditMode((e) => !e)}
+                title={editMode ? "Bearbeitung beenden" : "Einträge bearbeiten"}
+                className="p-1 rounded-full text-muted-foreground/60 hover:text-foreground transition-colors"
+              >
+                {editMode ? <Check className="w-4 h-4" /> : <Pencil className="w-3.5 h-3.5" />}
+              </button>
+            )}
           </div>
           {sortedHistory.map((w) => (
-            <div key={w.date} className="flex items-center justify-between text-xs">
-              <span className="text-muted-foreground tabular-nums">{formatDateShort(w.date)}</span>
-              <span className="font-semibold text-foreground tabular-nums">{fmt(w.kg)} kg</span>
+            <div key={w.date} className="flex items-center justify-between gap-2 text-xs py-0.5">
+              {editMode && onReplaceWeightLog ? (
+                <>
+                  <Input
+                    type="date"
+                    value={w.date}
+                    onChange={(e) => {
+                      const newDate = e.target.value;
+                      if (!newDate || newDate === w.date) return;
+                      // Replace entry's date; if a record on newDate already exists, overwrite it.
+                      const next = weightLog
+                        .filter((x) => x.date !== w.date && x.date !== newDate)
+                        .concat({ date: newDate, kg: w.kg })
+                        .sort((a, b) => a.date.localeCompare(b.date));
+                      onReplaceWeightLog(next);
+                    }}
+                    className="h-7 text-xs flex-1 px-2"
+                  />
+                  <Input
+                    type="text"
+                    inputMode="decimal"
+                    defaultValue={fmt(w.kg)}
+                    onBlur={(e) => {
+                      const kg = parseFloat(e.target.value.replace(",", ".").trim());
+                      if (!isFinite(kg) || kg <= 0 || kg > 500) return;
+                      const rounded = Math.round(kg * 10) / 10;
+                      if (rounded === w.kg) return;
+                      const next = weightLog.map((x) => (x.date === w.date ? { date: x.date, kg: rounded } : x));
+                      onReplaceWeightLog(next);
+                    }}
+                    className="h-7 w-20 text-right text-xs"
+                  />
+                  <span className="text-[10px] text-muted-foreground">kg</span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (!confirm(`Eintrag vom ${formatDateShort(w.date)} (${fmt(w.kg)} kg) wirklich löschen?`)) return;
+                      onReplaceWeightLog(weightLog.filter((x) => x.date !== w.date));
+                    }}
+                    title="Eintrag löschen"
+                    className="p-1 rounded-full text-muted-foreground/60 hover:text-destructive transition-colors"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
+                </>
+              ) : (
+                <>
+                  <span className="text-muted-foreground tabular-nums">{formatDateShort(w.date)}</span>
+                  <span className="font-semibold text-foreground tabular-nums">{fmt(w.kg)} kg</span>
+                </>
+              )}
             </div>
           ))}
         </div>
