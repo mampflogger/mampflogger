@@ -614,6 +614,8 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
                 />
                 <YAxis
                   domain={[weightHistory.yMin, weightHistory.yMax]}
+                  ticks={weightHistory.ticks}
+                  interval={0}
                   axisLine={false}
                   tickLine={false}
                   tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }}
