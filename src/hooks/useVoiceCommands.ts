@@ -542,7 +542,7 @@ export function useVoiceCommands({ onCommand, onUnhandledSpeech }: UseVoiceComma
     setIsArmed(true);
     resetTimeout();
     toast("🎤 Mikrofon aktiv");
-  }, [voice.isListening, resetTimeout]);
+  }, [voice.isListening, voice.start, resetTimeout]);
 
   const disarm = useCallback(() => {
     manuallyStoppedRef.current = false;
