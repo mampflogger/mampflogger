@@ -175,8 +175,6 @@ export function useSpeechRecognition({ onResult, onEnd, onError, lang = "de-DE" 
       return;
     }
 
-    if (keepAliveRef.current) return;
-
     keepAliveRef.current = true;
     silentStartRef.current = !!options?.silent;
 
@@ -189,15 +187,39 @@ export function useSpeechRecognition({ onResult, onEnd, onError, lang = "de-DE" 
         window.clearTimeout(restartTimerRef.current);
         restartTimerRef.current = null;
       }
+      if (recognitionActiveRef.current) {
+        setIsListening(true);
+        silentStartRef.current = false;
+        return;
+      }
       recognition.start();
-      setIsListening(true);
       silentStartRef.current = false;
     } catch (err) {
       console.warn("[Speech] start failed:", err);
-      keepAliveRef.current = false;
-      setIsListening(false);
       const silent = silentStartRef.current;
       silentStartRef.current = false;
+      if (keepAliveRef.current) {
+        const recognition = recognitionRef.current;
+        if (recognition) {
+          const retryDelay = silent ? 1_000 : 500;
+          if (restartTimerRef.current !== null) window.clearTimeout(restartTimerRef.current);
+          restartTimerRef.current = window.setTimeout(() => {
+            restartTimerRef.current = null;
+            if (!keepAliveRef.current || recognitionActiveRef.current) return;
+            try {
+              recognition.start();
+            } catch (retryErr) {
+              console.warn("[Speech] start retry failed:", retryErr);
+              onErrorRef.current?.("start-failed");
+              keepAliveRef.current = false;
+              setIsListening(false);
+            }
+          }, retryDelay);
+          return;
+        }
+      }
+      keepAliveRef.current = false;
+      setIsListening(false);
       if (!silent) {
         onErrorRef.current?.("start-failed");
       }
