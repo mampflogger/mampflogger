@@ -559,16 +559,16 @@ export function useVoiceCommands({ onCommand, onUnhandledSpeech }: UseVoiceComma
   const start = useCallback((options?: StartVoiceOptions) => {
     manuallyStoppedRef.current = false;
     activationTriggeredRef.current = false;
-    voice.start(options);
+    startRecognition(options);
     if (!options?.silent) {
       isArmedRef.current = true;
       setIsArmed(true);
       resetTimeout();
     }
-  }, [voice.start, resetTimeout]);
+  }, [startRecognition, resetTimeout]);
 
   const wake = useCallback((options?: StartVoiceOptions) => {
-    if (voice.isListening) {
+    if (isListening) {
       activationTriggeredRef.current = false;
       isArmedRef.current = true;
       setIsArmed(true);
@@ -578,7 +578,7 @@ export function useVoiceCommands({ onCommand, onUnhandledSpeech }: UseVoiceComma
     }
 
     start(options);
-  }, [voice.isListening, resetTimeout, start]);
+  }, [isListening, resetTimeout, start]);
 
   const stop = useCallback(() => {
     manuallyStoppedRef.current = true;
@@ -586,8 +586,8 @@ export function useVoiceCommands({ onCommand, onUnhandledSpeech }: UseVoiceComma
     activationTriggeredRef.current = false;
     isArmedRef.current = false;
     setIsArmed(false);
-    voice.stop();
-  }, [voice.stop, clearInactivityTimeout]);
+    stopRecognition();
+  }, [stopRecognition, clearInactivityTimeout]);
 
   useEffect(() => {
     if (!voice.isSupported || voice.isListening || manuallyStoppedRef.current) return;
