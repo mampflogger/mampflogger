@@ -283,7 +283,13 @@ const ManualRecipeForm = ({ onSave, onCancel, voiceInputRef, isVoiceActive = fal
       // For servings field, try to parse number immediately on final results
       // Small numbers are often lost in the buffer timeout
       if (!isInterim && (current === "servings" || current === "ingredientAmount")) {
-        const num = parseGermanSpokenNumber(chunk);
+        // Always merge with existing buffer first so that split chunks
+        // ("vier" + "null null", "ein" + "hundert") combine correctly.
+        const merged = mergeGermanSpokenNumberTranscript(voiceBufferRef.current, chunk);
+        const mergedNum = parseGermanSpokenNumber(merged);
+        const chunkNum = parseGermanSpokenNumber(chunk);
+        const num = mergedNum !== null && mergedNum > 0 ? mergedNum : chunkNum;
+
         if (num !== null && num > 0) {
           if (voiceTimerRef.current !== null) {
             window.clearTimeout(voiceTimerRef.current);
@@ -293,11 +299,9 @@ const ManualRecipeForm = ({ onSave, onCancel, voiceInputRef, isVoiceActive = fal
             voiceBufferRef.current = "";
             setServings(String(Math.round(num)));
           } else {
-            const bufferedTranscript = mergeGermanSpokenNumberTranscript(voiceBufferRef.current, chunk);
-            const bufferedNum = parseGermanSpokenNumber(bufferedTranscript) ?? num;
-            voiceBufferRef.current = bufferedTranscript;
-            setNewIngredientAmount(String(bufferedNum));
-            if (shouldDeferGermanSpokenNumber(bufferedTranscript, bufferedNum)) {
+            voiceBufferRef.current = merged;
+            setNewIngredientAmount(String(num));
+            if (shouldDeferGermanSpokenNumber(merged, num)) {
               voiceTimerRef.current = window.setTimeout(() => {
                 voiceTimerRef.current = null;
                 flushVoiceBuffer("ingredientAmount");
@@ -308,6 +312,18 @@ const ManualRecipeForm = ({ onSave, onCancel, voiceInputRef, isVoiceActive = fal
               setTimeout(() => focusField("ingredientName"), 50);
             }
           }
+          return;
+        }
+
+        // Chunk is digits-only filler like "null" – buffer it for the next chunk.
+        if (current === "ingredientAmount" && /\b(?:null|punkt|komma)\b/i.test(chunk)) {
+          voiceBufferRef.current = merged;
+          if (voiceTimerRef.current !== null) window.clearTimeout(voiceTimerRef.current);
+          voiceTimerRef.current = window.setTimeout(() => {
+            voiceTimerRef.current = null;
+            flushVoiceBuffer("ingredientAmount");
+            voiceBufferRef.current = "";
+          }, 1500);
           return;
         }
       }
