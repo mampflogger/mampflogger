@@ -243,6 +243,7 @@ export function useSpeechRecognition({ onResult, onEnd, onError, lang = "de-DE" 
       }
     }
 
+    recognitionActiveRef.current = false;
     setIsListening(false);
   }, []);
 
@@ -264,6 +265,7 @@ export function useSpeechRecognition({ onResult, onEnd, onError, lang = "de-DE" 
         }
         recognitionRef.current = null;
       }
+      recognitionActiveRef.current = false;
     };
   }, []);
 
