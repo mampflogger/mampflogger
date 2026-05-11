@@ -370,6 +370,7 @@ export function useVoiceCommands({ onCommand, onUnhandledSpeech }: UseVoiceComma
   const isArmedRef = useRef(false);
   const activationTriggeredRef = useRef(false);
   const autoStartAttemptedRef = useRef(false);
+  const manuallyStoppedRef = useRef(false);
 
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const stopFnRef = useRef<() => void>(() => {});
@@ -527,8 +528,12 @@ export function useVoiceCommands({ onCommand, onUnhandledSpeech }: UseVoiceComma
   stopFnRef.current = voice.stop;
 
   const arm = useCallback(() => {
+    manuallyStoppedRef.current = false;
     if (!voice.isListening) {
-      toast.error("Mikrofon pausiert – bitte einmal auf das Mic tippen.");
+      voice.start();
+      isArmedRef.current = true;
+      setIsArmed(true);
+      resetTimeout();
       return;
     }
 
@@ -540,6 +545,7 @@ export function useVoiceCommands({ onCommand, onUnhandledSpeech }: UseVoiceComma
   }, [voice.isListening, resetTimeout]);
 
   const disarm = useCallback(() => {
+    manuallyStoppedRef.current = false;
     activationTriggeredRef.current = false;
     isArmedRef.current = false;
     setIsArmed(false);
@@ -549,6 +555,7 @@ export function useVoiceCommands({ onCommand, onUnhandledSpeech }: UseVoiceComma
   }, [clearInactivityTimeout]);
 
   const start = useCallback((options?: StartVoiceOptions) => {
+    manuallyStoppedRef.current = false;
     activationTriggeredRef.current = false;
     voice.start(options);
     if (!options?.silent) {
@@ -572,12 +579,23 @@ export function useVoiceCommands({ onCommand, onUnhandledSpeech }: UseVoiceComma
   }, [voice.isListening, resetTimeout, start]);
 
   const stop = useCallback(() => {
+    manuallyStoppedRef.current = true;
     clearInactivityTimeout();
     activationTriggeredRef.current = false;
     isArmedRef.current = false;
     setIsArmed(false);
     voice.stop();
   }, [voice.stop, clearInactivityTimeout]);
+
+  useEffect(() => {
+    if (!voice.isSupported || voice.isListening || manuallyStoppedRef.current) return;
+
+    const timeoutId = window.setTimeout(() => {
+      start({ silent: true });
+    }, isArmedRef.current ? 350 : 1_200);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [voice.isSupported, voice.isListening, start]);
 
   const toggle = useCallback(() => {
     if (voice.isListening) {
