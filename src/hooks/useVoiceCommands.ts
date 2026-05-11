@@ -525,13 +525,14 @@ export function useVoiceCommands({ onCommand, onUnhandledSpeech }: UseVoiceComma
       }
     }, []),
   });
+  const { isListening, start: startRecognition, stop: stopRecognition, isSupported } = voice;
 
-  stopFnRef.current = voice.stop;
+  stopFnRef.current = stopRecognition;
 
   const arm = useCallback(() => {
     manuallyStoppedRef.current = false;
-    if (!voice.isListening) {
-      voice.start();
+    if (!isListening) {
+      startRecognition();
       isArmedRef.current = true;
       setIsArmed(true);
       resetTimeout();
@@ -543,7 +544,7 @@ export function useVoiceCommands({ onCommand, onUnhandledSpeech }: UseVoiceComma
     setIsArmed(true);
     resetTimeout();
     toast("🎤 Mikrofon aktiv");
-  }, [voice.isListening, voice.start, resetTimeout]);
+  }, [isListening, startRecognition, resetTimeout]);
 
   const disarm = useCallback(() => {
     manuallyStoppedRef.current = false;
