@@ -121,6 +121,9 @@ const COMMANDS: VoiceCommand[] = [
   { patterns: [/\beingabe\b/i, /\blog\b/i], action: "nav:log" },
   { patterns: [/\bstatistik\b/i, /\bwoche\b/i], action: "nav:weekly" },
 
+  // Bare "neu" / "new" — context-sensitive (handled in Index based on active tab)
+  { patterns: [/^\s*(?:neu|new)\s*[.!?]?\s*$/i], action: "ctx:neu" },
+
   // Settings tabs
   { patterns: [/\beinstellung/i, /\bsettings?\b/i], action: "settings:open" },
   { patterns: [/\brezept\s+suchen\b/i], action: "action:recipe-search" },

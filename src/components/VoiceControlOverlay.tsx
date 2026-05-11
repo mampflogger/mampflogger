@@ -149,7 +149,7 @@ const SECTION_LOCAL_COMMANDS: Record<string, [string, string][]> = {
     ["Zurück / Back", "Editor schließen"],
   ],
   "section-gespeicherte-rezepte": [
-    ["Neues Rezept", "Rezept erstellen"],
+    ["Neu / Neues Rezept", "Rezept erstellen"],
     ["Rezept Foto", "Foto-Import"],
     ["Rezeptname", "Rezeptsuche"],
   ],

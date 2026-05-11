@@ -367,6 +367,16 @@ const Index = () => {
         flashTab("settings");
         setTimeout(() => setSettingsVoiceAction("new-recipe"), 400);
       }
+      else if (action === "ctx:neu") {
+        // Context-sensitive bare "neu": opens new recipe if recipes tab is active,
+        // otherwise opens new food when food tab is active.
+        if (settingsOpenRef.current && settingsTabRef.current === "recipes") {
+          const manualFormOpen = !!document.querySelector('[data-voice-scope="manual-recipe"]');
+          if (!manualFormOpen) setSettingsVoiceAction("new-recipe");
+        } else if (settingsOpenRef.current && settingsTabRef.current === "food") {
+          setSettingsVoiceAction("new-food");
+        }
+      }
       else if (action === "settings:recipes+camera") {
         setSettingsVoiceTab("recipes");
         flashTab("settings");
