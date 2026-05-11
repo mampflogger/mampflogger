@@ -12,6 +12,7 @@ interface SpeechRecognitionLike {
   interimResults: boolean;
   maxAlternatives: number;
   continuous: boolean;
+  onstart: (() => void) | null;
   onresult: ((event: { resultIndex?: number; results: SpeechRecognitionResultList }) => void) | null;
   onend: (() => void) | null;
   onerror: ((event: { error: string }) => void) | null;
@@ -42,6 +43,7 @@ export function useSpeechRecognition({ onResult, onEnd, onError, lang = "de-DE" 
   const recognitionRef = useRef<SpeechRecognitionLike | null>(null);
   const processedIndexRef = useRef(0);
   const keepAliveRef = useRef(false);
+  const recognitionActiveRef = useRef(false);
   const silentStartRef = useRef(false);
   const restartTimestampsRef = useRef<number[]>([]);
   const restartTimerRef = useRef<number | null>(null);
@@ -69,6 +71,11 @@ export function useSpeechRecognition({ onResult, onEnd, onError, lang = "de-DE" 
     recognition.maxAlternatives = 3;
     recognition.continuous = true;
 
+    recognition.onstart = () => {
+      recognitionActiveRef.current = true;
+      setIsListening(true);
+    };
+
     const scheduleRestart = (delayMs: number) => {
       if (restartTimerRef.current !== null) {
         window.clearTimeout(restartTimerRef.current);
@@ -80,7 +87,6 @@ export function useSpeechRecognition({ onResult, onEnd, onError, lang = "de-DE" 
 
         try {
           recognition.start();
-          setIsListening(true);
         } catch (err) {
           console.warn("[Speech] delayed restart failed, retrying:", err);
           scheduleRestart(Math.min(Math.max(delayMs * 2, 500), 5_000));
@@ -129,6 +135,7 @@ export function useSpeechRecognition({ onResult, onEnd, onError, lang = "de-DE" 
     };
 
     recognition.onend = () => {
+      recognitionActiveRef.current = false;
       if (!keepAliveRef.current) {
         setIsListening(false);
         onEndRef.current?.();
@@ -152,7 +159,6 @@ export function useSpeechRecognition({ onResult, onEnd, onError, lang = "de-DE" 
 
       try {
         recognition.start();
-        setIsListening(true);
       } catch (err) {
         console.warn("[Speech] restart failed, retrying:", err);
         scheduleRestart(750);
@@ -169,8 +175,6 @@ export function useSpeechRecognition({ onResult, onEnd, onError, lang = "de-DE" 
       return;
     }
 
-    if (keepAliveRef.current) return;
-
     keepAliveRef.current = true;
     silentStartRef.current = !!options?.silent;
 
@@ -183,15 +187,39 @@ export function useSpeechRecognition({ onResult, onEnd, onError, lang = "de-DE" 
         window.clearTimeout(restartTimerRef.current);
         restartTimerRef.current = null;
       }
+      if (recognitionActiveRef.current) {
+        setIsListening(true);
+        silentStartRef.current = false;
+        return;
+      }
       recognition.start();
-      setIsListening(true);
       silentStartRef.current = false;
     } catch (err) {
       console.warn("[Speech] start failed:", err);
-      keepAliveRef.current = false;
-      setIsListening(false);
       const silent = silentStartRef.current;
       silentStartRef.current = false;
+      if (keepAliveRef.current) {
+        const recognition = recognitionRef.current;
+        if (recognition) {
+          const retryDelay = silent ? 1_000 : 500;
+          if (restartTimerRef.current !== null) window.clearTimeout(restartTimerRef.current);
+          restartTimerRef.current = window.setTimeout(() => {
+            restartTimerRef.current = null;
+            if (!keepAliveRef.current || recognitionActiveRef.current) return;
+            try {
+              recognition.start();
+            } catch (retryErr) {
+              console.warn("[Speech] start retry failed:", retryErr);
+              onErrorRef.current?.("start-failed");
+              keepAliveRef.current = false;
+              setIsListening(false);
+            }
+          }, retryDelay);
+          return;
+        }
+      }
+      keepAliveRef.current = false;
+      setIsListening(false);
       if (!silent) {
         onErrorRef.current?.("start-failed");
       }
@@ -215,6 +243,7 @@ export function useSpeechRecognition({ onResult, onEnd, onError, lang = "de-DE" 
       }
     }
 
+    recognitionActiveRef.current = false;
     setIsListening(false);
   }, []);
 
@@ -236,6 +265,7 @@ export function useSpeechRecognition({ onResult, onEnd, onError, lang = "de-DE" 
         }
         recognitionRef.current = null;
       }
+      recognitionActiveRef.current = false;
     };
   }, []);
 
