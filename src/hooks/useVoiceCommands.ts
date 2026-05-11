@@ -590,17 +590,17 @@ export function useVoiceCommands({ onCommand, onUnhandledSpeech }: UseVoiceComma
   }, [stopRecognition, clearInactivityTimeout]);
 
   useEffect(() => {
-    if (!voice.isSupported || voice.isListening || manuallyStoppedRef.current) return;
+    if (!isSupported || isListening || manuallyStoppedRef.current) return;
 
     const timeoutId = window.setTimeout(() => {
       start({ silent: true });
     }, isArmedRef.current ? 350 : 1_200);
 
     return () => window.clearTimeout(timeoutId);
-  }, [voice.isSupported, voice.isListening, start]);
+  }, [isSupported, isListening, start]);
 
   const toggle = useCallback(() => {
-    if (voice.isListening) {
+    if (isListening) {
       if (isArmedRef.current) {
         // Disarm to standby (keep listening)
         disarm();
@@ -612,10 +612,10 @@ export function useVoiceCommands({ onCommand, onUnhandledSpeech }: UseVoiceComma
       // Start fresh and arm
       start();
     }
-  }, [voice.isListening, start, arm, disarm]);
+  }, [isListening, start, arm, disarm]);
 
   useEffect(() => {
-    if (!voice.isSupported || autoStartAttemptedRef.current) return;
+    if (!isSupported || autoStartAttemptedRef.current) return;
 
     autoStartAttemptedRef.current = true;
     const timeoutId = window.setTimeout(() => {
@@ -625,7 +625,7 @@ export function useVoiceCommands({ onCommand, onUnhandledSpeech }: UseVoiceComma
     return () => {
       window.clearTimeout(timeoutId);
     };
-  }, [voice.isSupported, start]);
+  }, [isSupported, start]);
 
   useEffect(() => {
     return () => {
@@ -633,5 +633,5 @@ export function useVoiceCommands({ onCommand, onUnhandledSpeech }: UseVoiceComma
     };
   }, [clearInactivityTimeout]);
 
-  return { isListening: voice.isListening, isArmed, toggle, start, stop, arm, wake, disarm, isSupported: voice.isSupported };
+  return { isListening, isArmed, toggle, start, stop, arm, wake, disarm, isSupported };
 }
