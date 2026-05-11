@@ -478,6 +478,7 @@ export function useVoiceCommands({ onCommand, onUnhandledSpeech }: UseVoiceComma
                   return;
                 }
                 if (action === "action:mic-off") {
+                  manuallyStoppedRef.current = false;
                   activationTriggeredRef.current = false;
                   isArmedRef.current = false;
                   setIsArmed(false);
