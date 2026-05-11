@@ -12,6 +12,7 @@ interface SpeechRecognitionLike {
   interimResults: boolean;
   maxAlternatives: number;
   continuous: boolean;
+  onstart: (() => void) | null;
   onresult: ((event: { resultIndex?: number; results: SpeechRecognitionResultList }) => void) | null;
   onend: (() => void) | null;
   onerror: ((event: { error: string }) => void) | null;
@@ -42,6 +43,7 @@ export function useSpeechRecognition({ onResult, onEnd, onError, lang = "de-DE" 
   const recognitionRef = useRef<SpeechRecognitionLike | null>(null);
   const processedIndexRef = useRef(0);
   const keepAliveRef = useRef(false);
+  const recognitionActiveRef = useRef(false);
   const silentStartRef = useRef(false);
   const restartTimestampsRef = useRef<number[]>([]);
   const restartTimerRef = useRef<number | null>(null);
@@ -69,6 +71,11 @@ export function useSpeechRecognition({ onResult, onEnd, onError, lang = "de-DE" 
     recognition.maxAlternatives = 3;
     recognition.continuous = true;
 
+    recognition.onstart = () => {
+      recognitionActiveRef.current = true;
+      setIsListening(true);
+    };
+
     const scheduleRestart = (delayMs: number) => {
       if (restartTimerRef.current !== null) {
         window.clearTimeout(restartTimerRef.current);
@@ -80,7 +87,6 @@ export function useSpeechRecognition({ onResult, onEnd, onError, lang = "de-DE" 
 
         try {
           recognition.start();
-          setIsListening(true);
         } catch (err) {
           console.warn("[Speech] delayed restart failed, retrying:", err);
           scheduleRestart(Math.min(Math.max(delayMs * 2, 500), 5_000));
@@ -129,6 +135,7 @@ export function useSpeechRecognition({ onResult, onEnd, onError, lang = "de-DE" 
     };
 
     recognition.onend = () => {
+      recognitionActiveRef.current = false;
       if (!keepAliveRef.current) {
         setIsListening(false);
         onEndRef.current?.();
@@ -152,7 +159,6 @@ export function useSpeechRecognition({ onResult, onEnd, onError, lang = "de-DE" 
 
       try {
         recognition.start();
-        setIsListening(true);
       } catch (err) {
         console.warn("[Speech] restart failed, retrying:", err);
         scheduleRestart(750);
