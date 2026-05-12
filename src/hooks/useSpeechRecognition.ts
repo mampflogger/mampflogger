@@ -27,6 +27,7 @@ const NON_ACTIONABLE_ERRORS = new Set(["no-speech", "aborted"]);
 
 const MAX_RAPID_RESTARTS = 5;
 const RAPID_RESTART_WINDOW_MS = 5_000;
+const HARD_RECREATE_RESTARTS = 3;
 
 const getSpeechRecognition = (): SpeechRecognitionConstructor | null => {
   if (typeof window === "undefined") return null;
@@ -44,6 +45,7 @@ export function useSpeechRecognition({ onResult, onEnd, onError, lang = "de-DE" 
   const processedIndexRef = useRef(0);
   const keepAliveRef = useRef(false);
   const recognitionActiveRef = useRef(false);
+  const restartingRef = useRef(false);
   const silentStartRef = useRef(false);
   const restartTimestampsRef = useRef<number[]>([]);
   const restartTimerRef = useRef<number | null>(null);
