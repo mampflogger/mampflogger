@@ -246,6 +246,7 @@ export function useSpeechRecognition({ onResult, onEnd, onError, lang = "de-DE" 
 
   const stop = useCallback(() => {
     keepAliveRef.current = false;
+    restartingRef.current = false;
     processedIndexRef.current = 0;
     restartTimestampsRef.current = [];
     if (restartTimerRef.current !== null) {
@@ -268,6 +269,7 @@ export function useSpeechRecognition({ onResult, onEnd, onError, lang = "de-DE" 
   useEffect(() => {
     return () => {
       keepAliveRef.current = false;
+      restartingRef.current = false;
       processedIndexRef.current = 0;
       restartTimestampsRef.current = [];
       if (restartTimerRef.current !== null) {
