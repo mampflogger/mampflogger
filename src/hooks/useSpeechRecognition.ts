@@ -75,23 +75,31 @@ export function useSpeechRecognition({ onResult, onEnd, onError, lang = "de-DE" 
 
     recognition.onstart = () => {
       recognitionActiveRef.current = true;
+      restartingRef.current = false;
       setIsListening(true);
     };
 
-    const scheduleRestart = (delayMs: number) => {
+    const scheduleRestart = (delayMs: number, recreate = false) => {
       if (restartTimerRef.current !== null) {
         window.clearTimeout(restartTimerRef.current);
       }
 
+      restartingRef.current = true;
+      setIsListening(true);
       restartTimerRef.current = window.setTimeout(() => {
         restartTimerRef.current = null;
         if (!keepAliveRef.current) return;
 
         try {
-          recognition.start();
+          const nextRecognition = recreate ? (() => {
+            recognitionRef.current = null;
+            recognitionActiveRef.current = false;
+            return initRecognition();
+          })() : recognition;
+          nextRecognition.start();
         } catch (err) {
           console.warn("[Speech] delayed restart failed, retrying:", err);
-          scheduleRestart(Math.min(Math.max(delayMs * 2, 500), 5_000));
+          scheduleRestart(Math.min(Math.max(delayMs * 2, 500), 5_000), true);
         }
       }, delayMs);
     };
@@ -128,6 +136,7 @@ export function useSpeechRecognition({ onResult, onEnd, onError, lang = "de-DE" 
 
       if (TERMINAL_ERRORS.has(event.error)) {
         keepAliveRef.current = false;
+        restartingRef.current = false;
         if (restartTimerRef.current !== null) {
           window.clearTimeout(restartTimerRef.current);
           restartTimerRef.current = null;
@@ -139,12 +148,14 @@ export function useSpeechRecognition({ onResult, onEnd, onError, lang = "de-DE" 
     recognition.onend = () => {
       recognitionActiveRef.current = false;
       if (!keepAliveRef.current) {
+        restartingRef.current = false;
         setIsListening(false);
         onEndRef.current?.();
         return;
       }
 
       processedIndexRef.current = 0;
+      setIsListening(true);
 
       // Guard against rapid restart loops
       const now = Date.now();
@@ -155,15 +166,20 @@ export function useSpeechRecognition({ onResult, onEnd, onError, lang = "de-DE" 
 
       if (restartTimestampsRef.current.length > MAX_RAPID_RESTARTS) {
         console.warn("[Speech] rapid restart loop detected, backing off");
-        scheduleRestart(1_500);
+        scheduleRestart(1_500, true);
         return;
       }
 
       try {
-        recognition.start();
+        if (restartTimestampsRef.current.length >= HARD_RECREATE_RESTARTS) {
+          recognitionRef.current = null;
+          initRecognition().start();
+        } else {
+          recognition.start();
+        }
       } catch (err) {
         console.warn("[Speech] restart failed, retrying:", err);
-        scheduleRestart(750);
+        scheduleRestart(750, true);
       }
     };
 
