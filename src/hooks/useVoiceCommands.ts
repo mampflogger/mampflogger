@@ -169,7 +169,7 @@ const COMMANDS: VoiceCommand[] = [
   { patterns: [/\bweiter\b/i, /\bvorwärts\b/i, /\bvorwaerts\b/i, /\bnext\b/i], action: "field:next" },
   { patterns: [/\blöschen\b/i, /\bloeschen\b/i], action: "field:clear" },
   { patterns: [/\b(?:auswahl|optionen?|option|ausklappen|aufklappen|dropdown|liste)\b/i], action: "field:open-dropdown" },
-  { patterns: [/\b(?:storn(?:o|ier|ierung)?)\b/i], action: "field:storno" },
+  { patterns: [/^\s*storno\s*[.!?]?\s*$/i], action: "field:storno" },
   { patterns: [/\b(?:escape|schließen|schliessen|zu\s*klappen|zuklappen|zumachen|abbrechen|cancel)\b/i], action: "field:close-dropdown" },
 
   // Actions
