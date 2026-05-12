@@ -97,8 +97,12 @@ export function useCloudBackup(userId: string | null) {
       if (hasPendingLocalChanges || hasActiveDraft()) return false;
 
       isApplyingRemoteSnapshot = true;
-      const restored = restoreCloudBackupSnapshot(data.data as Record<string, unknown>);
-      isApplyingRemoteSnapshot = false;
+      let restored = false;
+      try {
+        restored = restoreCloudBackupSnapshot(data.data as Record<string, unknown>);
+      } finally {
+        isApplyingRemoteSnapshot = false;
+      }
       if (restored) {
         if (remoteVersion) {
           lastKnownRemoteVersion = remoteVersion;
