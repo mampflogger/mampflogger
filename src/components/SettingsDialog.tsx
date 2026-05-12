@@ -49,7 +49,7 @@ import { collectManualBackupSnapshot, queuePendingManualCloudRestoreSnapshot, re
 
 type SettingsTab = "profile" | "design" | "food" | "recipes" | "data";
 
-export type ColorTheme = "yellow" | "blue" | "pink" | "green" | "orange" | "teal" | "red" | "gray";
+export type ColorTheme = "yellow" | "blue" | "pink" | "green" | "orange" | "teal" | "red" | "gray" | "gold" | "silver" | "azure" | "cappuccino";
 
 const THEME_COLORS: Record<ColorTheme, { label: string; primary: string; swatch: string }> = {
   yellow: { label: "Gelb", primary: "hsl(45, 80%, 50%)", swatch: "#d4a017" },
@@ -60,6 +60,10 @@ const THEME_COLORS: Record<ColorTheme, { label: string; primary: string; swatch:
   teal: { label: "Türkis", primary: "hsl(180, 65%, 42%)", swatch: "#25a1a1" },
   red: { label: "Rot", primary: "hsl(0, 75%, 50%)", swatch: "#df2020" },
   gray: { label: "Grau", primary: "hsl(220, 10%, 45%)", swatch: "#6b7280" },
+  gold: { label: "Gold", primary: "hsl(42, 70%, 48%)", swatch: "#c9a227" },
+  silver: { label: "Silber", primary: "hsl(210, 12%, 55%)", swatch: "#8a939d" },
+  azure: { label: "Azur", primary: "hsl(200, 85%, 55%)", swatch: "#2bb0ee" },
+  cappuccino: { label: "Cappuccino", primary: "hsl(28, 38%, 48%)", swatch: "#a87a52" },
 };
 
 interface SettingsDialogProps {
