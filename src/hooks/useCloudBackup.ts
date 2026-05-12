@@ -60,6 +60,8 @@ export function useCloudBackup(userId: string | null) {
     let debounceTimer: ReturnType<typeof setTimeout>;
     let isDisposed = false;
     let restoreComplete = false;
+    let hasPendingLocalChanges = false;
+    let isApplyingRemoteSnapshot = false;
     setIsReady(false);
     let lastKnownRemoteVersion: string | null =
       localStorage.getItem(`${LAST_RESTORED_VERSION_KEY_PREFIX}:${userId}`);
@@ -70,12 +72,17 @@ export function useCloudBackup(userId: string | null) {
       const pushed = await pushNow();
 
       if (pushed && !isDisposed) {
+        hasPendingLocalChanges = false;
         lastKnownRemoteVersion = localStorage.getItem(`${LAST_RESTORED_VERSION_KEY_PREFIX}:${userId}`);
       }
     };
 
     const checkRemoteAndApply = async (options: { reloadOnChange: boolean }) => {
       if (hasActiveDraft()) return false;
+      if (hasPendingLocalChanges) {
+        void syncToCloud();
+        return false;
+      }
 
       const { data, error } = await supabase
         .from('cloud_backups')
@@ -87,8 +94,11 @@ export function useCloudBackup(userId: string | null) {
 
       const remoteVersion = data.updated_at ?? null;
       if (remoteVersion && remoteVersion === lastKnownRemoteVersion) return false;
+      if (hasPendingLocalChanges || hasActiveDraft()) return false;
 
+      isApplyingRemoteSnapshot = true;
       const restored = restoreCloudBackupSnapshot(data.data as Record<string, unknown>);
+      isApplyingRemoteSnapshot = false;
       if (restored) {
         if (remoteVersion) {
           lastKnownRemoteVersion = remoteVersion;
@@ -115,6 +125,10 @@ export function useCloudBackup(userId: string | null) {
 
     // Listen to local storage changes to trigger sync
     const handleStorageChange = () => {
+      if (isApplyingRemoteSnapshot) return;
+      if (restoreComplete) {
+        hasPendingLocalChanges = true;
+      }
       clearTimeout(debounceTimer);
       debounceTimer = setTimeout(syncToCloud, 2000);
     };
