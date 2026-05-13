@@ -1096,7 +1096,7 @@ const Index = () => {
 
   useEffect(() => {
     const el = document.documentElement;
-    el.classList.remove("theme-yellow", "theme-blue", "theme-pink", "theme-orange", "theme-teal", "theme-red", "theme-gray");
+    el.classList.remove("theme-yellow", "theme-blue", "theme-pink", "theme-orange", "theme-teal", "theme-red", "theme-gray", "theme-gold", "theme-silver", "theme-azure", "theme-cappuccino");
     if (colorTheme !== "green") {
       el.classList.add(`theme-${colorTheme}`);
     }
