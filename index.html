@@ -38,6 +38,19 @@
 
   <body>
     <div id="root"></div>
+    <!-- Apply persisted theme + dark mode BEFORE React mounts to avoid flash & ensure persistence after reload/login -->
+    <script>
+      (function(){
+        try {
+          var el = document.documentElement;
+          var theme = localStorage.getItem('mampflogger-color-theme') || 'yellow';
+          var themes = ['theme-yellow','theme-blue','theme-pink','theme-orange','theme-teal','theme-red','theme-gray','theme-gold','theme-silver','theme-azure','theme-cappuccino'];
+          themes.forEach(function(c){ el.classList.remove(c); });
+          if (theme && theme !== 'green') el.classList.add('theme-' + theme);
+          if (localStorage.getItem('mampflogger-dark-mode') === 'true') el.classList.add('dark');
+        } catch(e) {}
+      })();
+    </script>
     <!-- Aggressive SW/cache nuke for Lovable preview – runs BEFORE any module JS -->
     <script>
       (function(){
