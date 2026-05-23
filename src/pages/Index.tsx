@@ -1672,7 +1672,7 @@ const Index = () => {
                 <SectionHeading highlighted={hl === "section-kalorienbilanz"} className="mb-2">
                   Kalorienbilanz
                 </SectionHeading>
-                <DeficitDisplay profile={profile} activityBonus={activityBonus} consumedCalories={todaySummary.totalCalories} goalDeficit={profile.goalDeficit} />
+                <DeficitDisplay profile={profile} activityBonus={activityBonus} consumedCalories={todaySummary.totalCalories} goalDeficit={profile.goalDeficit} weightLog={weightLog} selectedDate={selectedDate} />
                 {audioGuide.isEditorOpenFor("section-kalorienbilanz") && <AudioGuideEditor sectionId="section-kalorienbilanz" value={audioGuide.getHelpText("section-kalorienbilanz")} onChange={audioGuide.updateHelpText} />}
               </div>
             )}

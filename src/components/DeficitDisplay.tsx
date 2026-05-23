@@ -1,4 +1,4 @@
-import { UserProfile, calculateBMR } from "@/types/profile";
+import { UserProfile, WeightEntry, calculateBMR, getEffectiveWeightKg } from "@/types/profile";
 import { TrendingDown, TrendingUp, Flame, Zap } from "lucide-react";
 
 interface DeficitDisplayProps {
@@ -6,10 +6,13 @@ interface DeficitDisplayProps {
   activityBonus: number;
   consumedCalories: number;
   goalDeficit?: number;
+  weightLog?: WeightEntry[];
+  selectedDate?: string;
 }
 
-const DeficitDisplay = ({ profile, activityBonus, consumedCalories, goalDeficit }: DeficitDisplayProps) => {
-  const bmr = calculateBMR(profile);
+const DeficitDisplay = ({ profile, activityBonus, consumedCalories, goalDeficit, weightLog, selectedDate }: DeficitDisplayProps) => {
+  const effectiveWeight = weightLog && selectedDate ? getEffectiveWeightKg(profile, weightLog, selectedDate) : undefined;
+  const bmr = calculateBMR(profile, effectiveWeight);
   const tdee = bmr + activityBonus;
   const deficit = tdee - consumedCalories;
   const isDeficit = deficit > 0;
