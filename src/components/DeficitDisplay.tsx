@@ -1,5 +1,4 @@
-import { UserProfile, calculateBMR, getEffectiveWeightKg } from "@/types/profile";
-import { WeightEntry } from "@/types/nutrition";
+import { UserProfile, WeightEntry, calculateBMR, getEffectiveWeightKg } from "@/types/profile";
 import { TrendingDown, TrendingUp, Flame, Zap } from "lucide-react";
 
 interface DeficitDisplayProps {
