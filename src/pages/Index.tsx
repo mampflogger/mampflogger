@@ -825,7 +825,11 @@ const Index = () => {
           profileVoiceRef.current?.(transcript, isInterim);
         }
         if (currentTab === "food" && isInterim) {
-          setSettingsVoiceAction(`food-search-text:${transcript}`);
+          const ae = document.activeElement as HTMLElement | null;
+          const nameInputFocused = ae?.getAttribute?.("data-voice-food-name") === "true";
+          if (!nameInputFocused) {
+            setSettingsVoiceAction(`food-search-text:${transcript}`);
+          }
         }
         return; // Don't pass to food input when in settings
       }
