@@ -712,6 +712,20 @@ const Index = () => {
 
           // Food tab: categories, filters, numbered selection, food editor commands
           if (currentTab === "food") {
+            // If the food name input in the editor is focused, route ALL
+            // unmatched speech as the name (don't trigger filters/categories/
+            // search reset). Only a few explicit commands still work.
+            const ae = document.activeElement as HTMLElement | null;
+            const nameInputFocused = ae?.getAttribute?.("data-voice-food-name") === "true";
+            if (nameInputFocused) {
+              // Allow save / next / back commands even while typing the name
+              if (/\b(speichern|okay|ok|ja)\b/i.test(lower)) { setSettingsVoiceAction("food-save"); return; }
+              if (/\b(nächstes|next)\b/i.test(lower)) { setSettingsVoiceAction("food-next"); return; }
+              if (/\b(zurück|back|tabelle)\b/i.test(lower)) { setSettingsVoiceAction("food-back"); return; }
+              if (/\bnährwerte?\b/i.test(lower) || /\bnaehrwerte?\b/i.test(lower)) { setSettingsVoiceAction("food-ai-lookup"); return; }
+              setSettingsVoiceAction(`food-name-text:${transcript}`);
+              return;
+            }
             // X / clear search field
             if (/^\s*(?:x|iks|ix|ex)\s*$/i.test(lower) || /\b(?:kreuz|löschen)\b/i.test(lower)) { setSettingsVoiceAction("food-clear-search"); return; }
             if (/\bneu\b/i.test(lower) || /\bnew\s*food\b/i.test(lower) || /\bneue?s?\s+lebensmittel\b/i.test(lower)) { setSettingsVoiceAction("new-food"); return; }
@@ -811,7 +825,11 @@ const Index = () => {
           profileVoiceRef.current?.(transcript, isInterim);
         }
         if (currentTab === "food" && isInterim) {
-          setSettingsVoiceAction(`food-search-text:${transcript}`);
+          const ae = document.activeElement as HTMLElement | null;
+          const nameInputFocused = ae?.getAttribute?.("data-voice-food-name") === "true";
+          if (!nameInputFocused) {
+            setSettingsVoiceAction(`food-search-text:${transcript}`);
+          }
         }
         return; // Don't pass to food input when in settings
       }
