@@ -121,11 +121,13 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
     const resolved = parseGermanSpokenNumber(bufferedTranscript);
     if (resolved === null || resolved <= 0) return;
 
+    // Commit the value but keep focus on the amount field so the user can
+    // still correct it / append a scale word like "hundert" via a follow-up
+    // utterance. Moving focus to submit here loses any subsequent speech
+    // (e.g. saying "einhundert" → "ein" arrives first, gets committed as 1,
+    // focus jumps to submit, then "hundert" is dropped because submit only
+    // accepts "buchen").
     handleAmountChangeRef.current(String(resolved));
-    setTimeout(() => {
-      submitButtonRef.current?.focus();
-      setFocusedField("submit");
-    }, 0);
   }, []);
 
   // Voice input handler – receives transcripts from global voice command system
