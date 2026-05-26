@@ -307,6 +307,17 @@ const SettingsDialog = ({
     } else if (voiceAction === "food-search") {
       setTab("food");
       setTimeout(() => foodSearchRef.current?.focus(), 100);
+    } else if (voiceAction.startsWith("food-name-text:")) {
+      const text = voiceAction.replace("food-name-text:", "").trim();
+      if (text) {
+        // Append to existing name (so multiple utterances accumulate),
+        // separated by space if the previous chunk didn't end with one.
+        setEditFoodName((prev) => {
+          const base = prev.trim();
+          return base ? `${base} ${text}` : text;
+        });
+        setTimeout(() => foodNameInputRef.current?.focus(), 0);
+      }
     } else if (voiceAction.startsWith("food-search-text:")) {
       const text = voiceAction.replace("food-search-text:", "");
       setTab("food");
