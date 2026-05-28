@@ -459,9 +459,9 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
     return { points, yMax, yMin, ticks };
   }, [profile, weightLog, entries, bookedActivities, selectedDate]);
 
-  // 90-day daily macro history (Makroverlauf)
+  // 30-day daily macro history (Makroverlauf)
   const macroHistory = useMemo(() => {
-    const days = 90;
+    const days = 30;
     const today = new Date(selectedDate + "T00:00:00");
     const points: { t: number; date: string; pro: number; fat: number; kh: number; fib: number }[] = [];
     for (let i = days - 1; i >= 0; i--) {
@@ -850,12 +850,12 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
                 <XAxis
                   dataKey="t"
                   type="number"
-                  domain={[0, 89]}
+                  domain={[0, 29]}
                   axisLine={false}
                   tickLine={false}
                   tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }}
-                  tickFormatter={(v: number) => `${v - 89}d`}
-                  ticks={[0, 30, 60, 89]}
+                  tickFormatter={(v: number) => `${v - 29}d`}
+                  ticks={[0, 10, 20, 29]}
                 />
                 <YAxis
                   domain={[0, 250]}
