@@ -188,6 +188,7 @@ const SECTION_LABELS: Record<string, string> = {
   "section-kalorien-pro-tag": "Kalorien pro Tag",
   "section-defizit-pro-tag": "Defizit pro Tag",
   "section-gewichtsverlust-pro-tag": "Gewichtsverlust pro Tag",
+  "section-makro-verlauf": "Makroverlauf",
   "section-makros-pro-tag": "Makros pro Tag",
   "section-makro-verteilung": "Makroverteilung",
   "section-wochenansicht": "Wochenprotokoll",
