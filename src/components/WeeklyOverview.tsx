@@ -459,9 +459,9 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
     return { points, yMax, yMin, ticks };
   }, [profile, weightLog, entries, bookedActivities, selectedDate]);
 
-  // 90-day daily macro history (Makroverlauf)
+  // 30-day daily macro history (Makroverlauf)
   const macroHistory = useMemo(() => {
-    const days = 90;
+    const days = 30;
     const today = new Date(selectedDate + "T00:00:00");
     const points: { t: number; date: string; pro: number; fat: number; kh: number; fib: number }[] = [];
     for (let i = days - 1; i >= 0; i--) {
