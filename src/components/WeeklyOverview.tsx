@@ -850,12 +850,12 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
                 <XAxis
                   dataKey="t"
                   type="number"
-                  domain={[0, 89]}
+                  domain={[0, 29]}
                   axisLine={false}
                   tickLine={false}
                   tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }}
-                  tickFormatter={(v: number) => `${v - 89}d`}
-                  ticks={[0, 30, 60, 89]}
+                  tickFormatter={(v: number) => `${v - 29}d`}
+                  ticks={[0, 10, 20, 29]}
                 />
                 <YAxis
                   domain={[0, 250]}
