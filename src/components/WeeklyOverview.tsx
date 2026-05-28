@@ -838,7 +838,54 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
       )}
 
       {/* Daily macro with day selector */}
+      {/* 90-day Macro Trend Line Chart */}
+      {macroHistory && (
+        <div id="section-makro-verlauf" data-section className={`glass-card rounded-xl p-3 ${hl === "section-makro-verlauf" ? "section-card-highlight" : ""}`}>
+          <SectionHeading highlighted={hl === "section-makro-verlauf"} className="mb-2">
+            Makroverlauf
+          </SectionHeading>
+          <div className="h-44">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={macroHistory} margin={{ top: 8, right: 12, left: 0, bottom: 0 }}>
+                <XAxis
+                  dataKey="t"
+                  type="number"
+                  domain={[0, 89]}
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }}
+                  tickFormatter={(v: number) => `${v - 89}d`}
+                  ticks={[0, 30, 60, 89]}
+                />
+                <YAxis
+                  domain={[0, 250]}
+                  ticks={[0, 50, 100, 150, 200, 250]}
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }}
+                  width={32}
+                  tickFormatter={(v: number) => `${v}`}
+                  label={{ value: "g", angle: -90, position: "insideLeft", offset: 18, style: { fontSize: 10, fill: "hsl(var(--muted-foreground))" } }}
+                />
+                <Line type="monotone" dataKey="pro" stroke="hsl(var(--primary))" strokeWidth={1.8} dot={false} isAnimationActive={false} />
+                <Line type="monotone" dataKey="fat" stroke="hsl(var(--primary) / 0.6)" strokeWidth={1.5} dot={false} isAnimationActive={false} />
+                <Line type="monotone" dataKey="kh" stroke="hsl(var(--primary) / 0.3)" strokeWidth={1.5} dot={false} isAnimationActive={false} />
+                <Line type="monotone" dataKey="fib" stroke="hsl(var(--muted-foreground))" strokeWidth={1.2} strokeDasharray="3 3" dot={false} isAnimationActive={false} />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+          <div className="flex items-center justify-center flex-wrap gap-x-3 gap-y-1 text-[10px] text-muted-foreground mt-1">
+            <span className="flex items-center gap-1"><span className="w-3 h-0.5" style={{ backgroundColor: "hsl(var(--primary))" }} />PRO</span>
+            <span className="flex items-center gap-1"><span className="w-3 h-0.5" style={{ backgroundColor: "hsl(var(--primary) / 0.6)" }} />FAT</span>
+            <span className="flex items-center gap-1"><span className="w-3 h-0.5" style={{ backgroundColor: "hsl(var(--primary) / 0.3)" }} />KH</span>
+            <span className="flex items-center gap-1"><span className="w-3 h-0.5 border-t border-dashed border-muted-foreground" />FIB</span>
+          </div>
+          {renderEditor("section-makro-verlauf")}
+        </div>
+      )}
+
       <DailyMacroCard weekData={weekData} highlighted={hl === "section-makros-pro-tag"} profile={profile} />
+
 
       {/* Macro Distribution */}
       <div id="section-makro-verteilung" data-section className={`glass-card rounded-xl p-3 ${hl === "section-makro-verteilung" ? "section-card-highlight" : ""}`}>
