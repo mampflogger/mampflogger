@@ -459,6 +459,31 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
     return { points, yMax, yMin, ticks };
   }, [profile, weightLog, entries, bookedActivities, selectedDate]);
 
+  // 90-day daily macro history (Makroverlauf)
+  const macroHistory = useMemo(() => {
+    const days = 90;
+    const today = new Date(selectedDate + "T00:00:00");
+    const points: { t: number; date: string; pro: number; fat: number; kh: number; fib: number }[] = [];
+    for (let i = days - 1; i >= 0; i--) {
+      const d = new Date(today);
+      d.setDate(d.getDate() - i);
+      const dateStr = formatDate(d);
+      const dayEntries = entries.filter((e) => e.date === dateStr);
+      const s = calculateDailySummary(dayEntries);
+      points.push({
+        t: days - 1 - i,
+        date: dateStr,
+        pro: s.totalProtein,
+        fat: s.totalFat,
+        kh: s.totalCarbs,
+        fib: s.totalFiber,
+      });
+    }
+    const hasData = points.some((p) => p.pro + p.fat + p.kh + p.fib > 0);
+    return hasData ? points : null;
+  }, [entries, selectedDate]);
+
+
   const CaloriesTooltip = ({ active, payload }: any) => {
     if (!active || !payload?.length) return null;
     const data = payload[0].payload as DayData;
