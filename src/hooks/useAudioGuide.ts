@@ -44,6 +44,8 @@ const DEFAULT_HELP_TEXTS: Record<string, string> = {
 
   "section-gewichtsverlust-pro-tag": `Dieses Diagramm zeigt dir den geschätzten Körperfett-Verlust pro Tag in Gramm, basierend auf deinem Kaloriendefizit. Etwa 7700 Kalorien Defizit entsprechen einem Kilogramm Fett. Balken nach oben bedeuten Gewichtsverlust, Balken nach unten in Rot bedeuten eine Zunahme durch einen Kalorienüberschuss.`,
 
+  "section-makro-verlauf": `Der Makroverlauf zeigt dir die Entwicklung deiner vier Makrobausteine Protein, Fett, Kohlenhydrate und Ballaststoffe über die letzten neunzig Tage als Liniendiagramm. Jede Linie steht für einen Makronährstoff in Gramm pro Tag. Protein ist in der kräftigen Hauptfarbe, Fett mittel, Kohlenhydrate hell, und Ballaststoffe als gestrichelte graue Linie. Die Y-Achse reicht von null bis zweihundertfünfzig Gramm. So erkennst du auf einen Blick, wie gleichmäßig du dich versorgst und wo Spitzen oder Lücken auftreten.`,
+
   "section-makro-verteilung": `Die Makro-Verteilung zeigt dir den Durchschnitt deiner Makronährstoffe über die letzten sieben Tage. Du siehst Protein, Kohlenhydrate, Fett und Ballaststoffe als Kreisdiagramm und in Prozent. So erkennst du langfristige Trends in deiner Ernährung.`,
 
   "section-makros-pro-tag": `Diese Tabelle zeigt dir die tägliche Aufschlüsselung deiner Makronährstoffe für jeden der letzten sieben Tage. Du siehst Protein, Kohlenhydrate, Fett und Ballaststoffe in Gramm pro Tag.`,
