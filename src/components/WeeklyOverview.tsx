@@ -461,9 +461,10 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
     return { points, yMax, yMin, ticks };
   }, [profile, weightLog, entries, bookedActivities, selectedDate]);
 
-  // 30-day daily macro history (Makroverlauf)
+  // Daily macro history (Makroverlauf) – timeframe configurable
+  const [macroDays, setMacroDays] = useState<30 | 60 | 90 | 180>(30);
   const macroHistory = useMemo(() => {
-    const days = 30;
+    const days = macroDays;
     const today = new Date(selectedDate + "T00:00:00");
     const points: { t: number; date: string; pro: number; fat: number; kh: number; fib: number }[] = [];
     for (let i = days; i >= 1; i--) {
@@ -483,7 +484,8 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
     }
     const hasData = points.some((p) => p.pro + p.fat + p.kh + p.fib > 0);
     return hasData ? points : null;
-  }, [entries, selectedDate]);
+  }, [entries, selectedDate, macroDays]);
+
 
 
   const CaloriesTooltip = ({ active, payload }: any) => {
@@ -856,13 +858,35 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
                 <XAxis
                   dataKey="t"
                   type="number"
-                  domain={[0, 29]}
+                  domain={[0, macroDays - 1]}
                   axisLine={false}
                   tickLine={false}
                   tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }}
-                  tickFormatter={(v: number) => `${v - 30}d`}
-                  ticks={[0, 10, 20, 29]}
+                  tickFormatter={(v: number) => {
+                    const back = macroDays - 1 - v;
+                    if (back === 0) {
+                      const last = macroHistory?.[macroHistory.length - 1];
+                      if (last) {
+                        const d = new Date(last.date + "T00:00:00");
+                        return d.toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit" });
+                      }
+                      return "";
+                    }
+                    return `-${back}d`;
+                  }}
+                  ticks={(() => {
+                    const step = macroDays === 30 ? 10 : macroDays === 60 ? 20 : macroDays === 90 ? 30 : 60;
+                    const arr: number[] = [];
+                    for (let back = macroDays; back >= 0; back -= step) {
+                      const t = macroDays - 1 - back;
+                      if (t >= 0) arr.push(t);
+                    }
+                    const lastTick = macroDays - 1;
+                    if (!arr.includes(lastTick)) arr.push(lastTick);
+                    return arr;
+                  })()}
                 />
+
                 <YAxis
                   domain={[0, 250]}
                   ticks={[0, 25, 50, 100, 150, 200, 250]}
@@ -902,6 +926,21 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
                     ? <span className="w-3 h-0 border-t border-dashed border-muted-foreground" />
                     : <span className="w-3 h-0.5" style={item.style} />}
                   {item.label}
+                </button>
+              );
+            })}
+            <span className="w-px h-3 bg-border mx-1" />
+            {([30, 60, 90, 180] as const).map(d => {
+              const active = macroDays === d;
+              return (
+                <button
+                  key={d}
+                  type="button"
+                  onClick={() => setMacroDays(d)}
+                  className={`px-2 py-0.5 rounded-full border transition-opacity ${active ? "border-primary bg-primary/10 text-foreground" : "border-border/50 text-muted-foreground opacity-60"}`}
+                  aria-pressed={active}
+                >
+                  {d}T
                 </button>
               );
             })}
