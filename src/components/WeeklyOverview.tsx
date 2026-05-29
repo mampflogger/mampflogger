@@ -464,14 +464,14 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
     const days = 30;
     const today = new Date(selectedDate + "T00:00:00");
     const points: { t: number; date: string; pro: number; fat: number; kh: number; fib: number }[] = [];
-    for (let i = days - 1; i >= 0; i--) {
+    for (let i = days; i >= 1; i--) {
       const d = new Date(today);
       d.setDate(d.getDate() - i);
       const dateStr = formatDate(d);
       const dayEntries = entries.filter((e) => e.date === dateStr);
       const s = calculateDailySummary(dayEntries);
       points.push({
-        t: days - 1 - i,
+        t: days - i,
         date: dateStr,
         pro: s.totalProtein,
         fat: s.totalFat,
@@ -854,7 +854,7 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
                   axisLine={false}
                   tickLine={false}
                   tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }}
-                  tickFormatter={(v: number) => `${v - 29}d`}
+                  tickFormatter={(v: number) => `${v - 30}d`}
                   ticks={[0, 10, 20, 29]}
                 />
                 <YAxis
