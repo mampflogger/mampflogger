@@ -175,6 +175,8 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
   const effectiveWeight = profile ? getEffectiveWeightKg(profile, weightLog, selectedDate) : null;
   const bmr = profile ? calculateBMR(profile, effectiveWeight ?? undefined) : null;
   const [showGoalDate, setShowGoalDate] = useState(false);
+  const [macroVisible, setMacroVisible] = useState<{ pro: boolean; fat: boolean; kh: boolean; fib: boolean }>({ pro: true, fat: true, kh: true, fib: true });
+
 
   useEffect(() => {
     const handler = () => setShowGoalDate(prev => !prev);
