@@ -175,6 +175,8 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
   const effectiveWeight = profile ? getEffectiveWeightKg(profile, weightLog, selectedDate) : null;
   const bmr = profile ? calculateBMR(profile, effectiveWeight ?? undefined) : null;
   const [showGoalDate, setShowGoalDate] = useState(false);
+  const [macroVisible, setMacroVisible] = useState<{ pro: boolean; fat: boolean; kh: boolean; fib: boolean }>({ pro: true, fat: true, kh: true, fib: true });
+
 
   useEffect(() => {
     const handler = () => setShowGoalDate(prev => !prev);
@@ -662,11 +664,15 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
                     );
                   }}
                 />
+                {weightHistory.ticks.filter(v => !profile?.goalWeightKg || Math.abs(v - profile.goalWeightKg) > 0.5).map((v) => (
+                  <ReferenceLine key={v} y={v} stroke="hsl(var(--muted-foreground) / 0.25)" strokeWidth={0.5} />
+                ))}
                 {profile?.goalWeightKg && (
                   <ReferenceLine y={profile.goalWeightKg} stroke="hsl(var(--destructive))" strokeDasharray="4 3" strokeWidth={1.5} />
                 )}
                 <Line type="monotone" dataKey="actual" name="Gemessen" stroke="hsl(var(--primary))" strokeWidth={2} dot={{ r: 3, fill: "hsl(var(--primary))" }} activeDot={{ r: 5 }} />
                 <Line type="monotone" dataKey="computed" name="Rechnerisch" stroke="hsl(var(--muted-foreground))" strokeWidth={1.5} strokeDasharray="3 3" dot={{ r: 2.5, fill: "hsl(var(--muted-foreground))" }} />
+
               </LineChart>
             </ResponsiveContainer>
           </div>
@@ -842,7 +848,7 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
       {macroHistory && (
         <div id="section-makro-verlauf" data-section className={`glass-card rounded-xl p-3 ${hl === "section-makro-verlauf" ? "section-card-highlight" : ""}`}>
           <SectionHeading highlighted={hl === "section-makro-verlauf"} className="mb-2">
-            Makroverlauf
+            Makroverlauf (g)
           </SectionHeading>
           <div className="h-44">
             <ResponsiveContainer width="100%" height="100%">
@@ -859,27 +865,48 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
                 />
                 <YAxis
                   domain={[0, 250]}
-                  ticks={[0, 50, 100, 150, 200, 250]}
+                  ticks={[0, 25, 50, 100, 150, 200, 250]}
                   axisLine={false}
                   tickLine={false}
                   tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }}
                   width={32}
                   tickFormatter={(v: number) => `${v}`}
-                  label={{ value: "g", angle: -90, position: "insideLeft", offset: 18, style: { fontSize: 10, fill: "hsl(var(--muted-foreground))" } }}
                 />
-                <Line type="monotone" dataKey="pro" stroke="hsl(var(--primary))" strokeWidth={1.8} dot={false} isAnimationActive={false} />
-                <Line type="monotone" dataKey="fat" stroke="hsl(var(--primary) / 0.6)" strokeWidth={1.5} dot={false} isAnimationActive={false} />
-                <Line type="monotone" dataKey="kh" stroke="hsl(var(--primary) / 0.3)" strokeWidth={1.5} dot={false} isAnimationActive={false} />
-                <Line type="monotone" dataKey="fib" stroke="hsl(var(--muted-foreground))" strokeWidth={1.2} strokeDasharray="3 3" dot={false} isAnimationActive={false} />
+                {[25, 50, 100, 150, 200, 250].map((v) => (
+                  <ReferenceLine key={v} y={v} stroke="hsl(var(--muted-foreground) / 0.25)" strokeWidth={0.5} />
+                ))}
+                {macroVisible.pro && <Line type="monotone" dataKey="pro" stroke="hsl(var(--primary))" strokeWidth={1.8} dot={false} isAnimationActive={false} />}
+                {macroVisible.fat && <Line type="monotone" dataKey="fat" stroke="hsl(var(--primary) / 0.6)" strokeWidth={1.5} dot={false} isAnimationActive={false} />}
+                {macroVisible.kh && <Line type="monotone" dataKey="kh" stroke="hsl(var(--primary) / 0.3)" strokeWidth={1.5} dot={false} isAnimationActive={false} />}
+                {macroVisible.fib && <Line type="monotone" dataKey="fib" stroke="hsl(var(--muted-foreground))" strokeWidth={1.2} strokeDasharray="3 3" dot={false} isAnimationActive={false} />}
               </LineChart>
             </ResponsiveContainer>
           </div>
-          <div className="flex items-center justify-center flex-wrap gap-x-3 gap-y-1 text-[10px] text-muted-foreground mt-1">
-            <span className="flex items-center gap-1"><span className="w-3 h-0.5" style={{ backgroundColor: "hsl(var(--primary))" }} />PRO</span>
-            <span className="flex items-center gap-1"><span className="w-3 h-0.5" style={{ backgroundColor: "hsl(var(--primary) / 0.6)" }} />FAT</span>
-            <span className="flex items-center gap-1"><span className="w-3 h-0.5" style={{ backgroundColor: "hsl(var(--primary) / 0.3)" }} />KH</span>
-            <span className="flex items-center gap-1"><span className="w-3 h-0.5 border-t border-dashed border-muted-foreground" />FIB</span>
+          <div className="flex items-center justify-center flex-wrap gap-x-2 gap-y-1 text-[10px] mt-1">
+            {([
+              { key: "pro" as const, label: "PRO", style: { backgroundColor: "hsl(var(--primary))" }, dashed: false },
+              { key: "fat" as const, label: "FAT", style: { backgroundColor: "hsl(var(--primary) / 0.6)" }, dashed: false },
+              { key: "kh" as const, label: "KH", style: { backgroundColor: "hsl(var(--primary) / 0.3)" }, dashed: false },
+              { key: "fib" as const, label: "FIB", style: {}, dashed: true },
+            ]).map(item => {
+              const active = macroVisible[item.key];
+              return (
+                <button
+                  key={item.key}
+                  type="button"
+                  onClick={() => setMacroVisible(prev => ({ ...prev, [item.key]: !prev[item.key] }))}
+                  className={`flex items-center gap-1 px-2 py-0.5 rounded-full border transition-opacity ${active ? "border-border bg-muted/40 text-foreground opacity-100" : "border-border/50 text-muted-foreground opacity-50"}`}
+                  aria-pressed={active}
+                >
+                  {item.dashed
+                    ? <span className="w-3 h-0 border-t border-dashed border-muted-foreground" />
+                    : <span className="w-3 h-0.5" style={item.style} />}
+                  {item.label}
+                </button>
+              );
+            })}
           </div>
+
           {renderEditor("section-makro-verlauf")}
         </div>
       )}
