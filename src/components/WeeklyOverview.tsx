@@ -929,6 +929,21 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
                 </button>
               );
             })}
+            <span className="w-px h-3 bg-border mx-1" />
+            {([30, 60, 90, 180] as const).map(d => {
+              const active = macroDays === d;
+              return (
+                <button
+                  key={d}
+                  type="button"
+                  onClick={() => setMacroDays(d)}
+                  className={`px-2 py-0.5 rounded-full border transition-opacity ${active ? "border-primary bg-primary/10 text-foreground" : "border-border/50 text-muted-foreground opacity-60"}`}
+                  aria-pressed={active}
+                >
+                  {d}T
+                </button>
+              );
+            })}
           </div>
 
           {renderEditor("section-makro-verlauf")}
