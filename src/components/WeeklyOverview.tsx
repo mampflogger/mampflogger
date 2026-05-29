@@ -461,9 +461,10 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
     return { points, yMax, yMin, ticks };
   }, [profile, weightLog, entries, bookedActivities, selectedDate]);
 
-  // 30-day daily macro history (Makroverlauf)
+  // Daily macro history (Makroverlauf) – timeframe configurable
+  const [macroDays, setMacroDays] = useState<30 | 60 | 90 | 180>(30);
   const macroHistory = useMemo(() => {
-    const days = 30;
+    const days = macroDays;
     const today = new Date(selectedDate + "T00:00:00");
     const points: { t: number; date: string; pro: number; fat: number; kh: number; fib: number }[] = [];
     for (let i = days; i >= 1; i--) {
@@ -483,7 +484,8 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
     }
     const hasData = points.some((p) => p.pro + p.fat + p.kh + p.fib > 0);
     return hasData ? points : null;
-  }, [entries, selectedDate]);
+  }, [entries, selectedDate, macroDays]);
+
 
 
   const CaloriesTooltip = ({ active, payload }: any) => {
