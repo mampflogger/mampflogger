@@ -854,7 +854,7 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
                   axisLine={false}
                   tickLine={false}
                   tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }}
-                  tickFormatter={(v: number) => `${v - 29}d`}
+                  tickFormatter={(v: number) => `${v - 30}d`}
                   ticks={[0, 10, 20, 29]}
                 />
                 <YAxis
