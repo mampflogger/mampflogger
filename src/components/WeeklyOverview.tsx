@@ -662,11 +662,15 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
                     );
                   }}
                 />
+                {weightHistory.ticks.filter(v => !profile?.goalWeightKg || Math.abs(v - profile.goalWeightKg) > 0.5).map((v) => (
+                  <ReferenceLine key={v} y={v} stroke="hsl(var(--muted-foreground) / 0.25)" strokeWidth={0.5} />
+                ))}
                 {profile?.goalWeightKg && (
                   <ReferenceLine y={profile.goalWeightKg} stroke="hsl(var(--destructive))" strokeDasharray="4 3" strokeWidth={1.5} />
                 )}
                 <Line type="monotone" dataKey="actual" name="Gemessen" stroke="hsl(var(--primary))" strokeWidth={2} dot={{ r: 3, fill: "hsl(var(--primary))" }} activeDot={{ r: 5 }} />
                 <Line type="monotone" dataKey="computed" name="Rechnerisch" stroke="hsl(var(--muted-foreground))" strokeWidth={1.5} strokeDasharray="3 3" dot={{ r: 2.5, fill: "hsl(var(--muted-foreground))" }} />
+
               </LineChart>
             </ResponsiveContainer>
           </div>
