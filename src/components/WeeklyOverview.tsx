@@ -858,13 +858,35 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
                 <XAxis
                   dataKey="t"
                   type="number"
-                  domain={[0, 29]}
+                  domain={[0, macroDays - 1]}
                   axisLine={false}
                   tickLine={false}
                   tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }}
-                  tickFormatter={(v: number) => `${v - 30}d`}
-                  ticks={[0, 10, 20, 29]}
+                  tickFormatter={(v: number) => {
+                    const back = macroDays - 1 - v;
+                    if (back === 0) {
+                      const last = macroHistory?.[macroHistory.length - 1];
+                      if (last) {
+                        const d = new Date(last.date + "T00:00:00");
+                        return d.toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit" });
+                      }
+                      return "";
+                    }
+                    return `-${back}d`;
+                  }}
+                  ticks={(() => {
+                    const step = macroDays === 30 ? 10 : macroDays === 60 ? 20 : macroDays === 90 ? 30 : 60;
+                    const arr: number[] = [];
+                    for (let back = macroDays; back >= 0; back -= step) {
+                      const t = macroDays - 1 - back;
+                      if (t >= 0) arr.push(t);
+                    }
+                    const lastTick = macroDays - 1;
+                    if (!arr.includes(lastTick)) arr.push(lastTick);
+                    return arr;
+                  })()}
                 />
+
                 <YAxis
                   domain={[0, 250]}
                   ticks={[0, 25, 50, 100, 150, 200, 250]}
