@@ -81,6 +81,9 @@ const MACRO_COLORS = {
   fib: "hsl(var(--macro-fib) / 0.8)",
 };
 
+const MACRO_HISTORY_Y_TICKS = [0, 50, 100, 150, 200, 250];
+const MACRO_HISTORY_GUIDE_TICKS = [25, 50, 100, 150, 200, 250];
+
 const COLORS = {
   calories: "hsl(var(--primary))",
   caloriesMuted: "hsl(var(--primary) / 0.85)",
@@ -889,14 +892,18 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
 
                 <YAxis
                   domain={[0, 250]}
-                  ticks={[0, 25, 50, 100, 150, 200, 250]}
+                  ticks={MACRO_HISTORY_Y_TICKS}
+                  interval={0}
+                  minTickGap={0}
+                  allowDataOverflow
+                  allowDecimals={false}
                   axisLine={false}
                   tickLine={false}
                   tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }}
                   width={32}
                   tickFormatter={(v: number) => `${v}`}
                 />
-                {[25, 50, 100, 150, 200, 250].map((v) => (
+                {MACRO_HISTORY_GUIDE_TICKS.map((v) => (
                   <ReferenceLine key={v} y={v} stroke="hsl(var(--muted-foreground) / 0.25)" strokeWidth={0.5} />
                 ))}
                 {macroVisible.pro && <Line type="monotone" dataKey="pro" stroke="hsl(var(--primary))" strokeWidth={1.8} dot={false} isAnimationActive={false} />}

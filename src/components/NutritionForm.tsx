@@ -82,6 +82,7 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
   const focusedFieldRef = useRef<FocusedField>("food");
   const handleSelectFoodRef = useRef<(item: FoodItem) => void>(() => {});
   const handleAmountChangeRef = useRef<(value: string) => void>(() => {});
+  const amountValueRef = useRef(amount);
   const amountVoiceBufferRef = useRef("");
   const amountVoiceTimerRef = useRef<number | null>(null);
 
@@ -89,6 +90,9 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
   useEffect(() => {
     focusedFieldRef.current = focusedField;
   }, [focusedField]);
+  useEffect(() => {
+    amountValueRef.current = amount;
+  }, [amount]);
   useEffect(() => {
     suggestionsRef.current = suggestions;
   }, [suggestions]);
@@ -167,8 +171,10 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
       if (currentField === "submit") return;
     }
 
-    // For food/amount/time fields: only act on final results
-    if (isInterim) return;
+    // For food/time fields: only act on final results. Amount is allowed to
+    // react to interim results because browsers sometimes never finalize
+    // short scale words like "hundert" reliably.
+    if (isInterim && currentField !== "amount") return;
 
     if (currentField === "time") {
       // Parse spoken time like "sechzehn Uhr", "16 Uhr", "acht Uhr dreißig", "14:30"
@@ -270,6 +276,14 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
         setHighlightIndex(-1);
       }
     } else if (currentField === "amount") {
+      if (isInterim) {
+        const interimResolved = parseGermanSpokenNumber(transcript);
+        if (interimResolved !== null && interimResolved > 0 && !shouldDeferGermanSpokenNumber(transcript, interimResolved)) {
+          handleAmountChangeRef.current(String(interimResolved));
+        }
+        return;
+      }
+
       const bufferedTranscript = mergeGermanSpokenNumberTranscript(amountVoiceBufferRef.current, transcript);
       amountVoiceBufferRef.current = bufferedTranscript;
       const resolved = parseGermanSpokenNumber(bufferedTranscript);
@@ -292,6 +306,15 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
       }
 
       if (shouldDeferGermanSpokenNumber(bufferedTranscript, resolved)) {
+        const currentAmount = Number.parseFloat(amountValueRef.current.replace(",", "."));
+        if (Number.isFinite(currentAmount) && currentAmount > 9 && currentAmount !== resolved) {
+          amountVoiceBufferRef.current = "";
+          if (amountVoiceTimerRef.current !== null) {
+            window.clearTimeout(amountVoiceTimerRef.current);
+            amountVoiceTimerRef.current = null;
+          }
+          return;
+        }
         if (amountVoiceTimerRef.current !== null) window.clearTimeout(amountVoiceTimerRef.current);
         amountVoiceTimerRef.current = window.setTimeout(flushAmountVoiceBuffer, 3000);
         handleAmountChangeRef.current(String(resolved));
@@ -541,6 +564,7 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
   };
 
   const handleAmountChange = (value: string) => {
+    amountValueRef.current = value;
     setAmount(value);
     if (selectedFood && value) {
       const qty = parseFloat(value);
