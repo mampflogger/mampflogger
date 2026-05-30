@@ -82,6 +82,7 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
   const focusedFieldRef = useRef<FocusedField>("food");
   const handleSelectFoodRef = useRef<(item: FoodItem) => void>(() => {});
   const handleAmountChangeRef = useRef<(value: string) => void>(() => {});
+  const amountValueRef = useRef(amount);
   const amountVoiceBufferRef = useRef("");
   const amountVoiceTimerRef = useRef<number | null>(null);
 
@@ -302,6 +303,15 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
       }
 
       if (shouldDeferGermanSpokenNumber(bufferedTranscript, resolved)) {
+        const currentAmount = Number.parseFloat(amountValueRef.current.replace(",", "."));
+        if (Number.isFinite(currentAmount) && currentAmount > 9 && currentAmount !== resolved) {
+          amountVoiceBufferRef.current = "";
+          if (amountVoiceTimerRef.current !== null) {
+            window.clearTimeout(amountVoiceTimerRef.current);
+            amountVoiceTimerRef.current = null;
+          }
+          return;
+        }
         if (amountVoiceTimerRef.current !== null) window.clearTimeout(amountVoiceTimerRef.current);
         amountVoiceTimerRef.current = window.setTimeout(flushAmountVoiceBuffer, 3000);
         handleAmountChangeRef.current(String(resolved));
@@ -551,6 +561,7 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
   };
 
   const handleAmountChange = (value: string) => {
+    amountValueRef.current = value;
     setAmount(value);
     if (selectedFood && value) {
       const qty = parseFloat(value);
