@@ -91,6 +91,9 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
     focusedFieldRef.current = focusedField;
   }, [focusedField]);
   useEffect(() => {
+    amountValueRef.current = amount;
+  }, [amount]);
+  useEffect(() => {
     suggestionsRef.current = suggestions;
   }, [suggestions]);
 
