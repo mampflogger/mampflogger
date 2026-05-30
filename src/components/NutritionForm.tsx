@@ -167,8 +167,10 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
       if (currentField === "submit") return;
     }
 
-    // For food/amount/time fields: only act on final results
-    if (isInterim) return;
+    // For food/time fields: only act on final results. Amount is allowed to
+    // react to interim results because browsers sometimes never finalize
+    // short scale words like "hundert" reliably.
+    if (isInterim && currentField !== "amount") return;
 
     if (currentField === "time") {
       // Parse spoken time like "sechzehn Uhr", "16 Uhr", "acht Uhr dreißig", "14:30"
@@ -270,6 +272,14 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
         setHighlightIndex(-1);
       }
     } else if (currentField === "amount") {
+      if (isInterim) {
+        const interimResolved = parseGermanSpokenNumber(transcript);
+        if (interimResolved !== null && interimResolved > 0 && !shouldDeferGermanSpokenNumber(transcript, interimResolved)) {
+          handleAmountChangeRef.current(String(interimResolved));
+        }
+        return;
+      }
+
       const bufferedTranscript = mergeGermanSpokenNumberTranscript(amountVoiceBufferRef.current, transcript);
       amountVoiceBufferRef.current = bufferedTranscript;
       const resolved = parseGermanSpokenNumber(bufferedTranscript);
