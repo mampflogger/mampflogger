@@ -466,17 +466,19 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
 
   // Daily macro history (Makroverlauf) – timeframe configurable
   const [macroDays, setMacroDays] = useState<30 | 60 | 90 | 180>(30);
+  const [macroSmooth, setMacroSmooth] = useState(false);
+  const macroSmoothWindow = macroDays === 30 ? 7 : macroDays === 60 ? 7 : macroDays === 90 ? 14 : 21;
   const macroHistory = useMemo(() => {
     const days = macroDays;
     const today = new Date(selectedDate + "T00:00:00");
-    const points: { t: number; date: string; pro: number; fat: number; kh: number; fib: number }[] = [];
+    const raw: { t: number; date: string; pro: number; fat: number; kh: number; fib: number }[] = [];
     for (let i = days; i >= 1; i--) {
       const d = new Date(today);
       d.setDate(d.getDate() - i);
       const dateStr = formatDate(d);
       const dayEntries = entries.filter((e) => e.date === dateStr);
       const s = calculateDailySummary(dayEntries);
-      points.push({
+      raw.push({
         t: days - i,
         date: dateStr,
         pro: s.totalProtein,
@@ -485,9 +487,24 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
         fib: s.totalFiber,
       });
     }
-    const hasData = points.some((p) => p.pro + p.fat + p.kh + p.fib > 0);
-    return hasData ? points : null;
-  }, [entries, selectedDate, macroDays]);
+    const hasData = raw.some((p) => p.pro + p.fat + p.kh + p.fib > 0);
+    if (!hasData) return null;
+    if (!macroSmooth) return raw;
+    // Centered moving average over `macroSmoothWindow` days
+    const w = macroSmoothWindow;
+    const half = Math.floor(w / 2);
+    const keys = ["pro", "fat", "kh", "fib"] as const;
+    return raw.map((_, idx) => {
+      const start = Math.max(0, idx - half);
+      const end = Math.min(raw.length, idx + half + 1);
+      const slice = raw.slice(start, end);
+      const avg: any = { t: raw[idx].t, date: raw[idx].date };
+      for (const k of keys) {
+        avg[k] = Math.round(slice.reduce((sum, p) => sum + p[k], 0) / slice.length);
+      }
+      return avg;
+    });
+  }, [entries, selectedDate, macroDays, macroSmooth, macroSmoothWindow]);
 
 
 
