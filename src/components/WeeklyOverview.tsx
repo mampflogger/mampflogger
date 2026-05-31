@@ -953,15 +953,6 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
                 </button>
               );
             })}
-            <button
-              type="button"
-              onClick={() => setMacroSmooth(s => !s)}
-              className={`px-2 py-0.5 rounded-full border transition-opacity ${macroSmooth ? "border-primary bg-primary/10 text-foreground" : "border-border/50 text-muted-foreground opacity-60"}`}
-              aria-pressed={macroSmooth}
-              title={`Gleitender Durchschnitt (${macroSmoothWindow} Tage)`}
-            >
-              ∅{macroSmoothWindow}T
-            </button>
             <span className="w-px h-3 bg-border mx-1" />
             {([30, 60, 90, 180] as const).map(d => {
               const active = macroDays === d;
@@ -977,6 +968,15 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
                 </button>
               );
             })}
+            <button
+              type="button"
+              onClick={() => setMacroSmooth(s => !s)}
+              className={`px-2 py-0.5 rounded-full border transition-opacity ${macroSmooth ? "border-primary bg-primary/10 text-foreground" : "border-border/50 text-muted-foreground opacity-60"}`}
+              aria-pressed={macroSmooth}
+              title={`Gleitender Durchschnitt (${macroSmoothWindow} Tage)`}
+            >
+              ∅{macroSmoothWindow}T
+            </button>
           </div>
 
           {renderEditor("section-makro-verlauf")}
