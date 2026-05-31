@@ -930,7 +930,7 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
               </LineChart>
             </ResponsiveContainer>
           </div>
-          <div className="flex items-center justify-center flex-wrap gap-x-2 gap-y-1 text-[10px] mt-1">
+          <div className="flex items-center justify-center flex-wrap gap-x-1 gap-y-1 text-[10px] mt-1">
             {([
               { key: "pro" as const, label: "PRO", style: { backgroundColor: "hsl(var(--primary))" }, dashed: false },
               { key: "fat" as const, label: "FAT", style: { backgroundColor: "hsl(var(--primary) / 0.6)" }, dashed: false },
@@ -943,7 +943,7 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
                   key={item.key}
                   type="button"
                   onClick={() => setMacroVisible(prev => ({ ...prev, [item.key]: !prev[item.key] }))}
-                  className={`flex items-center gap-1 px-2 py-0.5 rounded-full border transition-opacity ${active ? "border-border bg-muted/40 text-foreground opacity-100" : "border-border/50 text-muted-foreground opacity-50"}`}
+                  className={`flex items-center gap-1 px-1.5 py-0.5 rounded-full border transition-opacity whitespace-nowrap ${active ? "border-border bg-muted/40 text-foreground opacity-100" : "border-border/50 text-muted-foreground opacity-50"}`}
                   aria-pressed={active}
                 >
                   {item.dashed
@@ -953,7 +953,7 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
                 </button>
               );
             })}
-            <span className="w-px h-3 bg-border mx-1" />
+            <span className="w-px h-3 bg-border" />
             {([30, 60, 90, 180] as const).map(d => {
               const active = macroDays === d;
               return (
@@ -961,7 +961,7 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
                   key={d}
                   type="button"
                   onClick={() => setMacroDays(d)}
-                  className={`px-2 py-0.5 rounded-full border transition-opacity ${active ? "border-primary bg-primary/10 text-foreground" : "border-border/50 text-muted-foreground opacity-60"}`}
+                  className={`px-1.5 py-0.5 rounded-full border transition-opacity whitespace-nowrap ${active ? "border-primary bg-primary/10 text-foreground" : "border-border/50 text-muted-foreground opacity-60"}`}
                   aria-pressed={active}
                 >
                   {d}T
@@ -971,7 +971,7 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
             <button
               type="button"
               onClick={() => setMacroSmooth(s => !s)}
-              className={`px-2 py-0.5 rounded-full border transition-opacity ${macroSmooth ? "border-primary bg-primary/10 text-foreground" : "border-border/50 text-muted-foreground opacity-60"}`}
+              className={`px-1.5 py-0.5 rounded-full border transition-opacity whitespace-nowrap ${macroSmooth ? "border-primary bg-primary/10 text-foreground" : "border-border/50 text-muted-foreground opacity-60"}`}
               aria-pressed={macroSmooth}
               title={`Gleitender Durchschnitt (${macroSmoothWindow} Tage)`}
             >
