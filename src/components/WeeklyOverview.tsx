@@ -908,7 +908,7 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
                 />
 
                 <YAxis
-                  domain={[0, 250]}
+                  domain={[0, 300]}
                   ticks={MACRO_HISTORY_Y_TICKS}
                   interval={0}
                   minTickGap={0}
