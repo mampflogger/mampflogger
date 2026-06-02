@@ -81,8 +81,8 @@ const MACRO_COLORS = {
   fib: "hsl(var(--macro-fib) / 0.8)",
 };
 
-const MACRO_HISTORY_Y_TICKS = [0, 50, 100, 150, 200, 250];
-const MACRO_HISTORY_GUIDE_TICKS = [25, 50, 100, 150, 200, 250];
+const MACRO_HISTORY_Y_TICKS = [0, 50, 100, 150, 200, 250, 300];
+const MACRO_HISTORY_GUIDE_TICKS = [25, 50, 100, 150, 200, 250, 300];
 
 const COLORS = {
   calories: "hsl(var(--primary))",
@@ -908,7 +908,7 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
                 />
 
                 <YAxis
-                  domain={[0, 250]}
+                  domain={[0, 300]}
                   ticks={MACRO_HISTORY_Y_TICKS}
                   interval={0}
                   minTickGap={0}
