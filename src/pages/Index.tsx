@@ -709,6 +709,7 @@ const Index = () => {
         }
       }
 
+      if (settingsOpenRef.current) {
         const currentTab = settingsTabRef.current;
         if (!isInterim) {
           const lower = transcript.toLowerCase();
