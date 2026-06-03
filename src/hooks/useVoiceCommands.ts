@@ -47,6 +47,7 @@ const COMMANDS: VoiceCommand[] = [
   { patterns: [/\bdefizit/i], action: "section:defizit-pro-tag" },
   { patterns: [/\bmakros?\s+pro\s+tag\b/i], action: "section:makros-pro-tag" },
   { patterns: [/\bmakro.?verteilung\b/i, /\bverteilung\b/i], action: "section:makro-verteilung" },
+  { patterns: [/\bmakro.?verlauf\b/i, /\bmakro.?trend\b/i, /\bmakro.?historie\b/i], action: "section:makro-verlauf" },
   { patterns: [/\bwochenprotokoll\b/i], action: "section:wochenansicht" },
 
   // Individual vitamins (BEFORE the general "Vitamine" pattern!)
@@ -210,8 +211,10 @@ const FUZZY_KEYWORD_MAP: [string, string][] = [
   ["bmi", "section:bmi"],
   ["body mass index", "section:bmi"],
   ["makros pro tag", "section:makros-pro-tag"],
-  ["makroverteilung", "section:makro-verteilung"],
-  ["verteilung", "section:makro-verteilung"],
+    ["makroverteilung", "section:makro-verteilung"],
+    ["makroverlauf", "section:makro-verlauf"],
+    ["makrotrend", "section:makro-verlauf"],
+    ["verteilung", "section:makro-verteilung"],
   ["vitamin a", "nutrient:vitA:vitamins"],
   ["vitamin d", "nutrient:vitD:vitamins"],
   ["vitamin e", "nutrient:vitE:vitamins"],
@@ -298,6 +301,7 @@ export const SECTION_PAGE_MAP: Record<string, "log" | "weekly"> = {
   "section-gewichtsverlust-pro-tag": "weekly",
   "section-makros-pro-tag": "weekly",
   "section-makro-verteilung": "weekly",
+  "section-makro-verlauf": "weekly",
   "section-wochenansicht": "weekly",
   "section-vitamine-7-tage": "weekly",
   "section-mineralstoffe-7-tage": "weekly",
