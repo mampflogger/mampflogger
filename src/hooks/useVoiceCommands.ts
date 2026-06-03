@@ -299,6 +299,7 @@ export const SECTION_PAGE_MAP: Record<string, "log" | "weekly"> = {
   "section-gewichtsverlust-pro-tag": "weekly",
   "section-makros-pro-tag": "weekly",
   "section-makro-verteilung": "weekly",
+  "section-makro-verlauf": "weekly",
   "section-wochenansicht": "weekly",
   "section-vitamine-7-tage": "weekly",
   "section-mineralstoffe-7-tage": "weekly",
