@@ -186,6 +186,34 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
     window.addEventListener("mampflogger:toggle-goal-date", handler);
     return () => window.removeEventListener("mampflogger:toggle-goal-date", handler);
   }, []);
+
+  // Voice control for Makroverlauf section
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const detail = (e as CustomEvent).detail as
+        | { type: "show-all" }
+        | { type: "only"; key: "pro" | "fat" | "kh" | "fib" }
+        | { type: "toggle"; key: "pro" | "fat" | "kh" | "fib" }
+        | { type: "days"; value: 30 | 60 | 90 | 180 }
+        | { type: "smooth-toggle" }
+        | undefined;
+      if (!detail) return;
+      if (detail.type === "show-all") {
+        setMacroVisible({ pro: true, fat: true, kh: true, fib: true });
+      } else if (detail.type === "only") {
+        setMacroVisible({ pro: false, fat: false, kh: false, fib: false, [detail.key]: true } as any);
+      } else if (detail.type === "toggle") {
+        setMacroVisible(prev => ({ ...prev, [detail.key]: !prev[detail.key] }));
+      } else if (detail.type === "days") {
+        setMacroDays(detail.value);
+      } else if (detail.type === "smooth-toggle") {
+        setMacroSmooth(s => !s);
+      }
+    };
+    window.addEventListener("mampflogger:macro-history", handler);
+    return () => window.removeEventListener("mampflogger:macro-history", handler);
+  }, []);
+
   const renderEditor = (sectionId: string) =>
     editorOpenSection === sectionId && getHelpText && updateHelpText ? (
       <AudioGuideEditor sectionId={sectionId} value={getHelpText(sectionId)} onChange={updateHelpText} />
