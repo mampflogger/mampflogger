@@ -689,7 +689,26 @@ const Index = () => {
         }
       }
 
-      if (settingsOpenRef.current) {
+      // Makroverlauf section: route toggle/timeframe/smooth commands to chart
+      if (!isInterim && !settingsOpenRef.current && activeSectionRef.current === "section-makro-verlauf" && activeTabRef.current === "weekly") {
+        const lower = transcript.toLowerCase().trim();
+        let detail: Record<string, unknown> | null = null;
+        if (/^(?:alle|alles|all)\b/.test(lower)) detail = { type: "show-all" };
+        else if (/\b(?:nur\s+)?(?:protein|eiwei(?:ß|ss))\b/.test(lower)) detail = { type: "only", key: "pro" };
+        else if (/\b(?:nur\s+)?(?:fett|fat)\b/.test(lower)) detail = { type: "only", key: "fat" };
+        else if (/\b(?:nur\s+)?(?:kohlenhydrate|kh|carbs?|zucker)\b/.test(lower)) detail = { type: "only", key: "kh" };
+        else if (/\b(?:nur\s+)?(?:ballaststoffe?|fiber|fib)\b/.test(lower)) detail = { type: "only", key: "fib" };
+        else if (/\b(?:30|drei(?:ß|ss)ig)\s*tage?\b/.test(lower)) detail = { type: "days", value: 30 };
+        else if (/\b(?:60|sechzig)\s*tage?\b/.test(lower)) detail = { type: "days", value: 60 };
+        else if (/\b(?:90|neunzig)\s*tage?\b/.test(lower)) detail = { type: "days", value: 90 };
+        else if (/\b(?:180|(?:ein)?hundertachtzig)\s*tage?\b/.test(lower)) detail = { type: "days", value: 180 };
+        else if (/(?:durchschnitt|gleitend|gl(?:ä|ae)tt|smooth)/.test(lower)) detail = { type: "smooth-toggle" };
+        if (detail) {
+          window.dispatchEvent(new CustomEvent("mampflogger:macro-history", { detail }));
+          return;
+        }
+      }
+
         const currentTab = settingsTabRef.current;
         if (!isInterim) {
           const lower = transcript.toLowerCase();
