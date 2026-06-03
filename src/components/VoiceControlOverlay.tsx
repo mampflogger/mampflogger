@@ -110,6 +110,16 @@ const SECTION_LOCAL_COMMANDS: Record<string, [string, string][]> = {
   "section-makro-verteilung": [
     ["(keine lokalen Befehle)", "Nur Anzeige"],
   ],
+  "section-makro-verlauf": [
+    ["Protein / Eiweiß", "Nur Protein-Linie"],
+    ["Fett / Fat", "Nur Fett-Linie"],
+    ["KH / Kohlenhydrate", "Nur KH-Linie"],
+    ["Ballaststoffe / Fiber", "Nur Ballaststoff-Linie"],
+    ["Alle / Alles", "Alle Linien zeigen"],
+    ["30 Tage / 60 Tage", "Zeitraum wählen"],
+    ["90 Tage / 180 Tage", "Zeitraum wählen"],
+    ["Durchschnitt / Gleitend", "Glättung ein/aus"],
+  ],
   "section-wochenansicht": [
     ["Detailansicht", "Einzelne Einträge zeigen"],
     ["Summenansicht", "Gleiche zusammenfassen"],
