@@ -47,6 +47,7 @@ const COMMANDS: VoiceCommand[] = [
   { patterns: [/\bdefizit/i], action: "section:defizit-pro-tag" },
   { patterns: [/\bmakros?\s+pro\s+tag\b/i], action: "section:makros-pro-tag" },
   { patterns: [/\bmakro.?verteilung\b/i, /\bverteilung\b/i], action: "section:makro-verteilung" },
+  { patterns: [/\bmakro.?verlauf\b/i, /\bmakro.?trend\b/i, /\bmakro.?historie\b/i], action: "section:makro-verlauf" },
   { patterns: [/\bwochenprotokoll\b/i], action: "section:wochenansicht" },
 
   // Individual vitamins (BEFORE the general "Vitamine" pattern!)
