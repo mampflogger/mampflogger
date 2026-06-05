@@ -535,20 +535,13 @@ export function useVoiceCommands({ onCommand, onUnhandledSpeech }: UseVoiceComma
 
   const arm = useCallback(() => {
     manuallyStoppedRef.current = false;
-    if (!isListening) {
-      startRecognition({ forceRestart: true });
-      isArmedRef.current = true;
-      setIsArmed(true);
-      resetTimeout();
-      return;
-    }
-
+    startRecognition({ forceRestart: true });
     activationTriggeredRef.current = false;
     isArmedRef.current = true;
     setIsArmed(true);
     resetTimeout();
     toast("🎤 Mikrofon aktiv");
-  }, [isListening, startRecognition, resetTimeout]);
+  }, [startRecognition, resetTimeout]);
 
   const disarm = useCallback(() => {
     manuallyStoppedRef.current = false;
