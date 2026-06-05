@@ -104,6 +104,7 @@ export function useSpeechRecognition({ onResult, onEnd, onError, lang = "de-DE" 
       }, delayMs);
     };
 
+    recognition.onstart = (recognition.onstart ?? null) as any;
     recognition.onresult = (event) => {
       restartTimestampsRef.current = [];
       const startIndex = typeof event.resultIndex === "number" ? event.resultIndex : processedIndexRef.current;
@@ -117,10 +118,14 @@ export function useSpeechRecognition({ onResult, onEnd, onError, lang = "de-DE" 
             if (alt.length > best.length) best = alt;
           }
           processedIndexRef.current = i + 1;
+          console.debug("[Speech] final:", best);
           onResultRef.current(best, false);
         } else {
           const interim = result[0].transcript.trim();
-          if (interim) onResultRef.current(interim, true);
+          if (interim) {
+            console.debug("[Speech] interim:", interim);
+            onResultRef.current(interim, true);
+          }
         }
       }
     };
