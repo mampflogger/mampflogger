@@ -373,7 +373,6 @@ export function useVoiceCommands({ onCommand, onUnhandledSpeech }: UseVoiceComma
   const [isArmed, setIsArmed] = useState(false);
   const isArmedRef = useRef(false);
   const activationTriggeredRef = useRef(false);
-  const autoStartAttemptedRef = useRef(false);
   const manuallyStoppedRef = useRef(false);
 
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -593,16 +592,6 @@ export function useVoiceCommands({ onCommand, onUnhandledSpeech }: UseVoiceComma
     stopRecognition();
   }, [stopRecognition, clearInactivityTimeout]);
 
-  useEffect(() => {
-    if (!isSupported || isListening || manuallyStoppedRef.current) return;
-
-    const timeoutId = window.setTimeout(() => {
-      start({ silent: true });
-    }, isArmedRef.current ? 350 : 1_200);
-
-    return () => window.clearTimeout(timeoutId);
-  }, [isSupported, isListening, start]);
-
   const toggle = useCallback(() => {
     if (isListening) {
       if (isArmedRef.current) {
@@ -617,19 +606,6 @@ export function useVoiceCommands({ onCommand, onUnhandledSpeech }: UseVoiceComma
       start();
     }
   }, [isListening, start, arm, disarm]);
-
-  useEffect(() => {
-    if (!isSupported || autoStartAttemptedRef.current) return;
-
-    autoStartAttemptedRef.current = true;
-    const timeoutId = window.setTimeout(() => {
-      start({ silent: true });
-    }, 250);
-
-    return () => {
-      window.clearTimeout(timeoutId);
-    };
-  }, [isSupported, start]);
 
   useEffect(() => {
     return () => {
