@@ -328,6 +328,7 @@ interface UseVoiceCommandsOptions {
 
 interface StartVoiceOptions {
   silent?: boolean;
+  forceRestart?: boolean;
 }
 
 type VoiceCommandScope = "global" | "scoped-input";
@@ -535,7 +536,7 @@ export function useVoiceCommands({ onCommand, onUnhandledSpeech }: UseVoiceComma
   const arm = useCallback(() => {
     manuallyStoppedRef.current = false;
     if (!isListening) {
-      startRecognition();
+      startRecognition({ forceRestart: true });
       isArmedRef.current = true;
       setIsArmed(true);
       resetTimeout();
@@ -603,7 +604,7 @@ export function useVoiceCommands({ onCommand, onUnhandledSpeech }: UseVoiceComma
       }
     } else {
       // Start fresh and arm
-      start();
+      start({ forceRestart: true });
     }
   }, [isListening, start, arm, disarm]);
 
