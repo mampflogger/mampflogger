@@ -211,7 +211,8 @@ export function useSpeechRecognition({ onResult, onEnd, onError, lang = "de-DE" 
         currentRecognition.onerror = null;
         currentRecognition.onend = null;
         try {
-          currentRecognition.abort?.() ?? currentRecognition.stop();
+          if (currentRecognition.abort) currentRecognition.abort();
+          else currentRecognition.stop();
         } catch {
           // ignore stale recognition instances
         }
