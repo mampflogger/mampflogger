@@ -18,6 +18,7 @@ interface SpeechRecognitionLike {
   onerror: ((event: { error: string }) => void) | null;
   start: () => void;
   stop: () => void;
+  abort?: () => void;
 }
 
 type SpeechRecognitionConstructor = new () => SpeechRecognitionLike;
@@ -37,6 +38,7 @@ const getSpeechRecognition = (): SpeechRecognitionConstructor | null => {
 
 interface StartRecognitionOptions {
   silent?: boolean;
+  forceRestart?: boolean;
 }
 
 export function useSpeechRecognition({ onResult, onEnd, onError, lang = "de-DE" }: UseSpeechRecognitionOptions) {
@@ -202,6 +204,21 @@ export function useSpeechRecognition({ onResult, onEnd, onError, lang = "de-DE" 
     silentStartRef.current = !!options?.silent;
 
     try {
+      if (options?.forceRestart && recognitionRef.current) {
+        const currentRecognition = recognitionRef.current;
+        currentRecognition.onstart = null;
+        currentRecognition.onresult = null;
+        currentRecognition.onerror = null;
+        currentRecognition.onend = null;
+        try {
+          currentRecognition.abort?.() ?? currentRecognition.stop();
+        } catch {
+          // ignore stale recognition instances
+        }
+        recognitionRef.current = null;
+        recognitionActiveRef.current = false;
+      }
+
       const recognition = initRecognition();
       recognition.lang = lang;
       processedIndexRef.current = 0;
