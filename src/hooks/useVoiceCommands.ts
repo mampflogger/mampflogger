@@ -583,6 +583,17 @@ export function useVoiceCommands({ onCommand, onUnhandledSpeech }: UseVoiceComma
     start(options);
   }, [isListening, resetTimeout, start]);
 
+  useEffect(() => {
+    if (!isSupported) return;
+
+    const timer = window.setTimeout(() => {
+      if (manuallyStoppedRef.current || isListening || isArmedRef.current) return;
+      startRecognition({ silent: true });
+    }, 800);
+
+    return () => window.clearTimeout(timer);
+  }, [isListening, isSupported, startRecognition]);
+
   const stop = useCallback(() => {
     manuallyStoppedRef.current = true;
     clearInactivityTimeout();
