@@ -51,7 +51,6 @@ export function useSpeechRecognition({ onResult, onEnd, onError, lang = "de-DE" 
   const silentStartRef = useRef(false);
   const restartTimestampsRef = useRef<number[]>([]);
   const restartTimerRef = useRef<number | null>(null);
-  const startDelayTimerRef = useRef<number | null>(null);
   const startWatchdogTimerRef = useRef<number | null>(null);
   const startAttemptIdRef = useRef(0);
   const onResultRef = useRef(onResult);
@@ -245,10 +244,6 @@ export function useSpeechRecognition({ onResult, onEnd, onError, lang = "de-DE" 
         window.clearTimeout(restartTimerRef.current);
         restartTimerRef.current = null;
       }
-      if (startDelayTimerRef.current !== null) {
-        window.clearTimeout(startDelayTimerRef.current);
-        startDelayTimerRef.current = null;
-      }
       clearStartWatchdog();
       if (recognitionActiveRef.current) {
         setIsListening(true);
@@ -256,7 +251,6 @@ export function useSpeechRecognition({ onResult, onEnd, onError, lang = "de-DE" 
         return;
       }
       const beginStart = () => {
-        startDelayTimerRef.current = null;
         if (!keepAliveRef.current || recognitionActiveRef.current || startAttemptIdRef.current !== startAttemptId) return;
         recognition.start();
         startWatchdogTimerRef.current = window.setTimeout(() => {
