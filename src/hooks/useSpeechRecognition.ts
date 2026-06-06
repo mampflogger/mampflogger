@@ -313,10 +313,6 @@ export function useSpeechRecognition({ onResult, onEnd, onError, lang = "de-DE" 
     startAttemptIdRef.current++;
     processedIndexRef.current = 0;
     restartTimestampsRef.current = [];
-    if (startDelayTimerRef.current !== null) {
-      window.clearTimeout(startDelayTimerRef.current);
-      startDelayTimerRef.current = null;
-    }
     clearStartWatchdog();
     if (restartTimerRef.current !== null) {
       window.clearTimeout(restartTimerRef.current);
@@ -342,10 +338,6 @@ export function useSpeechRecognition({ onResult, onEnd, onError, lang = "de-DE" 
       startAttemptIdRef.current++;
       processedIndexRef.current = 0;
       restartTimestampsRef.current = [];
-      if (startDelayTimerRef.current !== null) {
-        window.clearTimeout(startDelayTimerRef.current);
-        startDelayTimerRef.current = null;
-      }
       clearStartWatchdog();
       if (restartTimerRef.current !== null) {
         window.clearTimeout(restartTimerRef.current);
