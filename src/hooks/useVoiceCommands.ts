@@ -516,6 +516,12 @@ export function useVoiceCommands({ onCommand, onUnhandledSpeech }: UseVoiceComma
       onUnhandledRef.current(transcript, isInterim);
     }, [resetTimeout, clearInactivityTimeout]),
     onError: useCallback((error: string) => {
+      if (["not-allowed", "service-not-allowed", "audio-capture", "start-failed", "not-supported"].includes(error)) {
+        isArmedRef.current = false;
+        setIsArmed(false);
+        clearInactivityTimeout();
+      }
+
       if (error === "not-allowed" || error === "service-not-allowed") {
         toast.error("Mikrofon blockiert – bitte Browser-Zugriff erlauben.");
       } else if (error === "not-supported") {
@@ -527,7 +533,7 @@ export function useVoiceCommands({ onCommand, onUnhandledSpeech }: UseVoiceComma
       } else if (error === "start-failed") {
         toast.error("Mikrofon konnte nicht gestartet werden.");
       }
-    }, []),
+    }, [clearInactivityTimeout]),
   });
   const { isListening, start: startRecognition, stop: stopRecognition, isSupported } = voice;
 
