@@ -132,12 +132,10 @@ export function useSpeechRecognition({ onResult, onEnd, onError, lang = "de-DE" 
             if (alt.length > best.length) best = alt;
           }
           processedIndexRef.current = i + 1;
-          console.debug("[Speech] final:", best);
           onResultRef.current(best, false);
         } else {
           const interim = result[0].transcript.trim();
           if (interim) {
-            console.debug("[Speech] interim:", interim);
             onResultRef.current(interim, true);
           }
         }
