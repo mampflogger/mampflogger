@@ -217,6 +217,7 @@ export function useSpeechRecognition({ onResult, onEnd, onError, lang = "de-DE" 
 
     try {
       if (options?.forceRestart && recognitionRef.current) {
+        clearStartWatchdog();
         const currentRecognition = recognitionRef.current;
         currentRecognition.onstart = null;
         currentRecognition.onresult = null;
@@ -313,8 +314,14 @@ export function useSpeechRecognition({ onResult, onEnd, onError, lang = "de-DE" 
   const stop = useCallback(() => {
     keepAliveRef.current = false;
     restartingRef.current = false;
+    startAttemptIdRef.current++;
     processedIndexRef.current = 0;
     restartTimestampsRef.current = [];
+    if (startDelayTimerRef.current !== null) {
+      window.clearTimeout(startDelayTimerRef.current);
+      startDelayTimerRef.current = null;
+    }
+    clearStartWatchdog();
     if (restartTimerRef.current !== null) {
       window.clearTimeout(restartTimerRef.current);
       restartTimerRef.current = null;
@@ -330,14 +337,20 @@ export function useSpeechRecognition({ onResult, onEnd, onError, lang = "de-DE" 
 
     recognitionActiveRef.current = false;
     setIsListening(false);
-  }, []);
+  }, [clearStartWatchdog]);
 
   useEffect(() => {
     return () => {
       keepAliveRef.current = false;
       restartingRef.current = false;
+      startAttemptIdRef.current++;
       processedIndexRef.current = 0;
       restartTimestampsRef.current = [];
+      if (startDelayTimerRef.current !== null) {
+        window.clearTimeout(startDelayTimerRef.current);
+        startDelayTimerRef.current = null;
+      }
+      clearStartWatchdog();
       if (restartTimerRef.current !== null) {
         window.clearTimeout(restartTimerRef.current);
         restartTimerRef.current = null;
@@ -353,7 +366,7 @@ export function useSpeechRecognition({ onResult, onEnd, onError, lang = "de-DE" 
       }
       recognitionActiveRef.current = false;
     };
-  }, []);
+  }, [clearStartWatchdog]);
 
   return { isListening, start, stop, isSupported };
 }
