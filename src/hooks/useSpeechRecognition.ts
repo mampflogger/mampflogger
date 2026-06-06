@@ -281,11 +281,7 @@ export function useSpeechRecognition({ onResult, onEnd, onError, lang = "de-DE" 
           setIsListening(false);
         }, 2_500);
       };
-      if (options?.forceRestart) {
-        startDelayTimerRef.current = window.setTimeout(beginStart, 200);
-      } else {
-        beginStart();
-      }
+      beginStart();
     } catch (err) {
       console.warn("[Speech] start failed:", err);
       const silent = silentStartRef.current;
