@@ -228,11 +228,66 @@ function parseDigitSequence(normalized: string): number | null {
   return Number.isFinite(parsed) ? parsed : null;
 }
 
+const DIGIT_CODEWORDS = new Set(["ziffer", "ziffern", "zahl", "zahlen"]);
+
+function isSingleDigitToken(tk: string): boolean {
+  return /^[0-9]$/.test(tk) || tk in DIGIT_WORDS;
+}
+
 export function parseGermanSpokenNumber(transcript: string): number | null {
   const normalized = normalize(transcript);
   if (!normalized) return null;
 
-  const tokens = normalized.split(" ").filter(Boolean);
+  let tokens = normalized.split(" ").filter(Boolean);
+
+  // Codeword "ziffer"/"zahl" forces digit-by-digit parsing of what follows.
+  // Example: "ziffer eins null null" → 100, "ziffer 1 0 0" → 100, "ziffer 100" → 100.
+  const codewordIdx = tokens.findIndex((t) => DIGIT_CODEWORDS.has(t));
+  if (codewordIdx !== -1) {
+    const rest = tokens.slice(codewordIdx + 1);
+    if (rest.length === 1 && /^\d+(?:[.,]\d+)?$/.test(rest[0])) {
+      const parsed = Number.parseFloat(rest[0].replace(",", "."));
+      if (Number.isFinite(parsed)) return parsed;
+    }
+    let out = "";
+    let count = 0;
+    for (const tk of rest) {
+      if (/^[0-9]$/.test(tk)) { out += tk; count++; }
+      else if (DIGIT_WORDS[tk]) { out += DIGIT_WORDS[tk]; count++; }
+      else if (tk === "komma" || tk === "punkt") {
+        if (!out.includes(".")) out += ".";
+      } else if (/^\d+$/.test(tk)) {
+        out += tk; count += tk.length;
+      } else {
+        if (count > 0) break;
+      }
+    }
+    if (count >= 1) {
+      const parsed = Number.parseFloat(out);
+      if (Number.isFinite(parsed)) return parsed;
+    }
+    tokens = rest;
+  }
+
+  // Pure single-digit sequence (≥2 tokens) → digit-by-digit. Fixes "1 0 0" → 100.
+  if (tokens.length >= 2 && tokens.every((t) => isSingleDigitToken(t) || t === "komma" || t === "punkt")) {
+    const ds = parseDigitSequence(tokens.join(" "));
+    if (ds !== null) return ds;
+  }
+
+  // Recognizer often writes "einhundert" as "1 100" / "ein 100" / "zwei 100".
+  // Map "<1-9> 100" → N*100 instead of treating "1 100" as 1100.
+  // Recognizer often writes "einhundert" as "1 100" / "ein 100" / "zwei 100".
+  // Map "<1-9> 100 [filler...]" → N*100 instead of treating "1 100" as 1100.
+  if (tokens.length >= 2 && tokens[1] === "100") {
+    const tail = tokens.slice(2);
+    const tailHasNumber = tail.some((t) => /\d/.test(t) || t in SMALL_NUMBERS || t in TENS || t === "hundert" || t === "tausend");
+    if (!tailHasNumber) {
+      if (/^[1-9]$/.test(tokens[0])) return Number.parseInt(tokens[0], 10) * 100;
+      const w = SMALL_NUMBERS[tokens[0]];
+      if (w && w >= 1 && w <= 9) return w * 100;
+    }
+  }
 
   // Decimal: "X komma Y" → split & combine. MUST run before parseNumericLiteral,
   // otherwise "116 komma 9" returns just 9 (last numeric token wins).
@@ -242,7 +297,6 @@ export function parseGermanSpokenNumber(transcript: string): number | null {
     const fracTokens = tokens.slice(kommaIdx + 1);
     const intPart = parseGermanSpokenNumber(intStr);
     if (intPart !== null) {
-      // Try digit-sequence fraction first
       let fracStr = "";
       for (const tk of fracTokens) {
         if (DIGIT_WORDS[tk]) fracStr += DIGIT_WORDS[tk];
@@ -263,11 +317,9 @@ export function parseGermanSpokenNumber(transcript: string): number | null {
   const numericLiteral = parseNumericLiteral(normalized);
   if (numericLiteral !== null) return numericLiteral;
 
-  // Digit-by-digit sequence ("eins null null" → 100).
   const digitSeq = parseDigitSequence(normalized);
   if (digitSeq !== null) return digitSeq;
 
-  // Try longest token windows first (e.g. "fuenf tausend schritte" -> "fuenftausend")
   for (let size = tokens.length; size >= 1; size -= 1) {
     for (let start = 0; start + size <= tokens.length; start += 1) {
       const candidate = tokens.slice(start, start + size).join("");
