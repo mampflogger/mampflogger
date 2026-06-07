@@ -277,10 +277,16 @@ export function parseGermanSpokenNumber(transcript: string): number | null {
 
   // Recognizer often writes "einhundert" as "1 100" / "ein 100" / "zwei 100".
   // Map "<1-9> 100" → N*100 instead of treating "1 100" as 1100.
-  if (tokens.length === 2 && tokens[1] === "100") {
-    if (/^[1-9]$/.test(tokens[0])) return Number.parseInt(tokens[0], 10) * 100;
-    const w = SMALL_NUMBERS[tokens[0]];
-    if (w && w >= 1 && w <= 9) return w * 100;
+  // Recognizer often writes "einhundert" as "1 100" / "ein 100" / "zwei 100".
+  // Map "<1-9> 100 [filler...]" → N*100 instead of treating "1 100" as 1100.
+  if (tokens.length >= 2 && tokens[1] === "100") {
+    const tail = tokens.slice(2);
+    const tailHasNumber = tail.some((t) => /\d/.test(t) || t in SMALL_NUMBERS || t in TENS || t === "hundert" || t === "tausend");
+    if (!tailHasNumber) {
+      if (/^[1-9]$/.test(tokens[0])) return Number.parseInt(tokens[0], 10) * 100;
+      const w = SMALL_NUMBERS[tokens[0]];
+      if (w && w >= 1 && w <= 9) return w * 100;
+    }
   }
 
   // Decimal: "X komma Y" → split & combine. MUST run before parseNumericLiteral,
