@@ -53,7 +53,9 @@ interface MicronutrientCoverageCardProps {
   supplementTotals?: Record<string, number>;
 }
 
-const DAYS_IN_WINDOW = 7;
+const SHORT_WINDOW = 7;
+const LONG_WINDOW = 14;
+const HISTORY_THRESHOLD_FOR_LONG = 30;
 
 const MicronutrientCoverageCard = ({
   entries,
@@ -110,16 +112,29 @@ const MicronutrientCoverageCard = ({
     setExpandedKey((prev) => (prev === key ? null : key));
   }, [editing]);
 
+  // Determine averaging window based on available history (entries earlier than selectedDate)
+  const daysInWindow = useMemo(() => {
+    const endDate = new Date(`${selectedDate}T00:00:00`);
+    let earliest: Date | null = null;
+    for (const entry of entries) {
+      const d = new Date(`${entry.date}T00:00:00`);
+      if (!earliest || d < earliest) earliest = d;
+    }
+    if (!earliest) return SHORT_WINDOW;
+    const diffDays = Math.floor((endDate.getTime() - earliest.getTime()) / (1000 * 60 * 60 * 24));
+    return diffDays > HISTORY_THRESHOLD_FOR_LONG ? LONG_WINDOW : SHORT_WINDOW;
+  }, [entries, selectedDate]);
+
   const visibleEntries = useMemo(() => {
     const endDate = new Date(`${selectedDate}T00:00:00`);
     const startDate = new Date(endDate);
-    startDate.setDate(startDate.getDate() - (DAYS_IN_WINDOW - 1));
+    startDate.setDate(startDate.getDate() - (daysInWindow - 1));
 
     return entries.filter((entry) => {
       const entryDate = new Date(`${entry.date}T00:00:00`);
       return entryDate >= startDate && entryDate <= endDate;
     });
-  }, [entries, selectedDate]);
+  }, [entries, selectedDate, daysInWindow]);
 
   const totals = useMemo(() => aggregateMicronutrients(visibleEntries), [visibleEntries]);
 
@@ -128,10 +143,10 @@ const MicronutrientCoverageCard = ({
 
     return definitions.map((definition) => {
       const weeklyTotal = source[definition.key] ?? 0;
-      // Add daily supplement contribution (supplement amount × 7 days in window)
+      // Add daily supplement contribution (supplement amount × days in window)
       const supplementDaily = supplementTotals?.[definition.key] ?? 0;
-      const weeklyTotalWithSupplements = weeklyTotal + (supplementDaily * DAYS_IN_WINDOW);
-      const averageDaily = weeklyTotalWithSupplements / DAYS_IN_WINDOW;
+      const totalWithSupplements = weeklyTotal + (supplementDaily * daysInWindow);
+      const averageDaily = totalWithSupplements / daysInWindow;
       const defaultTarget = getMicronutrientTarget(definition, gender);
       const target = customTargets[definition.key] !== undefined ? customTargets[definition.key] : defaultTarget;
       const coverage = target && target > 0 ? (averageDaily / target) * 100 : 0;
@@ -143,13 +158,13 @@ const MicronutrientCoverageCard = ({
         fillWidth: `${Math.max(0, Math.min(coverage, 100))}%`,
       };
     });
-  }, [definitions, gender, kind, totals.minerals, totals.vitamins, customTargets, supplementTotals]);
+  }, [definitions, gender, kind, totals.minerals, totals.vitamins, customTargets, supplementTotals, daysInWindow]);
 
   return (
     <div id={sectionId} data-section className={`glass-card rounded-xl p-3 ${highlighted ? "section-card-highlight" : ""}`}>
       <div className="flex items-center justify-between mb-3">
         <SectionHeading highlighted={highlighted} className="mb-0">
-          {title}
+          {title} <span className="text-[10px] font-normal text-muted-foreground">(Ø {daysInWindow} Tage)</span>
         </SectionHeading>
         {!editing ? (
           <button
