@@ -53,7 +53,9 @@ interface MicronutrientCoverageCardProps {
   supplementTotals?: Record<string, number>;
 }
 
-const DAYS_IN_WINDOW = 7;
+const SHORT_WINDOW = 7;
+const LONG_WINDOW = 14;
+const HISTORY_THRESHOLD_FOR_LONG = 30;
 
 const MicronutrientCoverageCard = ({
   entries,
