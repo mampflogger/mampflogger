@@ -1,7 +1,7 @@
 ﻿Lebensmittel;Einheit;kcal;PRO;FAT;KH;FIB;GI;Standard;LiquidMl;Kategorie;Zusatzinfo;vitA;vitB1;vitB2;vitB3;vitB5;vitB6;vitB7;vitB9;vitB12;vitC;vitD;vitE;vitK;calcium;chlorid;eisen;fluorid;kalium;kupfer;magnesium;mangan;natrium;phosphor;schwefel;zink;VGN;VGT;LC;HP;KET;GF;LF;ZF
 "Ananas";100g;50;0.5;0.1;12.4;1.4;59;150;;Obst;"Enthält Bromelain";7;0.08;0.03;0.2;0.16;0.08;0.1;11;;47;;0.1;0.7;13;20;0.3;0.01;180;0.11;12;0.93;1;8;5;0.12;J;J;N;N;N;J;J;N
 "Apfel";100g;52;0.3;0.2;11.4;2.4;35;150;;Obst;"Durchschnittswerte für einen rohen Apfel mit Schale";6;0.02;0.03;0.1;0.1;0.05;1;8;;12;;0.5;2.2;6;2;0.2;0.01;107;0.05;5;0.05;1;12;5;0.1;J;J;N;N;N;J;J;N
-"Apfelsaft";100ml;46;0.1;0.1;11;0.2;40;200;100;Getränke;"Direktsaft, naturtrüb";;1;0.02;0.01;0.1;0.05;0.04;0.5;2;;2;;0.02;0.1;7;2;0.2;0.01;120;0.02;5;0.05;2;12;5;J;J;N;N;N;J;J;N
+"Apfelsaft";100ml;46;0.1;0.1;11;0.2;40;200;100;Getränke;"Direktsaft, naturtrüb";;1;0.02;0.01;0.1;0.05;0.04;0.5;2;;2;;0.02;0.1;7;2;0.2;0.01;;0.02;5;0.05;2;12;5;J;J;N;N;N;J;J;N
 "Apfelschorle";100ml;27;0.1;0.1;6.2;0.1;40;250;100;Getränke;"Mischverhältnis ca. 50% Apfelsaft und 50% Mineralwasser";1;0.01;0.01;0.1;0.03;0.02;0.1;1;;1;;0.05;0.3;4;2;0.1;0.01;67;0.01;3;0.05;2;5;2;0.02;J;J;N;N;N;J;J;N
 "Appenzeller 50 %";100g;394;25.4;32.1;0.1;0;;30;;Käse;"Hartkäse aus der Schweiz, laktosefrei durch lange Reifung.";320;0.04;0.4;0.1;0.4;0.08;;25;2.1;;1.1;0.8;3;730;1200;0.2;;90;0.03;28;0.02;780;530;;4.1;N;J;J;J;J;J;J;J
 "Aprikose";100g;43;0.9;0.1;8.6;1.5;35;150;;Obst;"Reich an Vitamin A";285;0.03;0.03;0.6;0.2;0.05;1;5;;9;;0.9;4;16;1;0.4;0.01;280;0.08;9;0.04;2;22;14;0.1;J;J;N;N;N;J;J;N
@@ -16,7 +16,7 @@
 "Bionade Holunder";100ml;23;0.1;0.1;5.2;0.1;35;330;100;Getränke;"Biologisches Erfrischungsgetränk durch Fermentation von Malz gewonnen. Weniger Zucker als herkömmliche Limonaden.";;0.01;0.01;0.1;0.02;0.01;;1;;;;;;2;1;0.02;0.01;5;0.01;2;0.01;1;2;1;0.01;J;J;N;N;N;J;J;N
 "Birne";100g;57;0.5;0.3;12.4;2.8;38;150;;Obst;"Frisch, mit Schale";2;0.02;0.03;0.2;0.07;0.03;0.1;7;;5;;0.5;4.4;9;2;0.2;0.01;126;0.08;7;0.03;2;15;5;0.1;J;J;N;N;N;J;J;N
 "Bitter Lemon";100ml;52;0;0;12.4;0;65;250;100;Getränke;"Enthält Chinin";;0.01;0.01;0.1;0.01;0.01;;2;;3;;0.01;;2;1;0.02;0.01;5;0.01;1;0.01;5;1;1;0.01;J;J;N;N;N;J;J;N
-"Blattspinat";100g;23;2.9;0.3;0.5;2.2;15;200;;Gemüse;"Frischer roher Blattspinat";;789;0.08;0.2;0.6;0.1;0.2;7;194;;30;;2;483;99;60;2.7;0.01;558;0.13;79;0.89;79;49;24;J;J;J;N;J;J;J;J
+"Blattspinat";100g;23;2.9;0.3;0.5;2.2;15;200;;Gemüse;"Frischer roher Blattspinat";;;0.08;0.2;0.6;0.1;0.2;7;;;30;;2;483;99;60;2.7;0.01;;0.13;79;0.89;79;49;24;J;J;J;N;J;J;J;J
 "Blumenkohl";100g;25;2.4;0.3;2;2.3;15;200;;Gemüse;"Frisch, roh verzehrt oder gegart. Reich an Vitamin C und K.";2;0.09;0.09;0.6;0.6;0.2;1.5;88;;48;;0.1;16;20;45;0.5;0.01;282;0.04;15;0.16;8;50;50;0.3;J;J;J;N;J;J;J;J
 "Blutwurst";100g;378;14.6;34.5;1.3;0;;80;;Fleisch&Wurst;"Hoher Eisengehalt";20;0.03;0.12;2.2;0.5;0.1;1.5;4;1.1;;0.4;0.2;1;12;1000;18;0.1;120;0.1;15;0.04;800;120;140;2.5;N;N;J;N;J;J;J;J
 "Bockwurst";100g;287;12.5;26.5;0.5;0;;100;;Fleisch&Wurst;"Geräucherte Brühwurst im Naturdarm. Durchschnittswerte, können je nach Hersteller variieren.";20;0.2;0.15;3.5;0.5;0.2;1.5;5;1.1;;0.3;0.2;1;15;1450;1.4;0.04;210;0.1;13;0.02;900;160;140;2.1;N;N;J;N;J;J;J;J
@@ -25,7 +25,7 @@
 "Bratwurst (Schwein)";100g;312;13.5;28.5;0.5;0;;100;;Fleisch&Wurst;"Durchschnittswerte für gebrühte Schweinebratwurst. Salzgehalt kann variieren.";15;0.35;0.18;3.8;0.5;0.25;2;4;0.9;;0.4;0.2;1;12;1200;1.4;0.12;210;0.08;15;0.04;850;165;140;2.1;N;N;J;N;J;J;J;J
 "Brie 50 %";100g;334;20;28;0.1;0;;30;;Käse;"Ein französischer Weichkäse mit weißem Edelschimmel. Die Fettangabe bezieht sich auf die Trockenmasse.";240;0.04;0.4;0.6;0.5;0.2;3;60;1.5;;0.3;0.6;3;400;1200;0.5;0.04;150;0.05;25;0.02;650;300;240;3.5;N;J;J;J;J;J;J;J
 "Brokkoli";100g;34;2.8;0.4;2.7;3;15;200;;Gemüse;"Frischer, roher Brokkoli. Reich an Vitamin C und K.";71;0.07;0.12;0.6;0.57;0.18;1.5;108;;89;;0.8;102;47;21;0.7;0.01;316;0.06;21;0.2;33;66;140;0.4;J;J;J;J;J;J;J;J
-"Brombeeren";100g;43;1.2;1;4.9;5.3;25;125;;Obst;"Frisch, roh";0.003;15;0.03;0.04;0.4;0.24;0.05;0.4;30;21;21;1.1;1.2;20;29;8;0.6;0.02;162;0.1;20;0.6;1;22;14;J;J;N;N;N;J;J;N
+"Brombeeren";100g;43;1.2;1;4.9;5.3;25;125;;Obst;"Frisch, roh";0.003;15;0.03;0.04;0.4;0.24;0.05;0.4;30;21;21;1.1;1.2;20;29;8;0.6;0.02;;0.1;20;0.6;1;22;14;J;J;N;N;N;J;J;N
 "Burrata";100g;250;16;20;1.5;0;;125;;Käse;"Frischkäsespezialität aus Kuhmilch mit cremigem Kern.";220;0.03;0.3;0.1;0.3;0.05;0.005;0.018;1.3;;0.5;0.6;;450;450;0.1;;80;;15;;350;350;;2.5;N;J;J;J;J;J;N;J
 "Bulgur";100g;342;12.3;1.3;63.3;12.5;48;75;;Brot&Teigwaren;"Werte beziehen sich auf das Trockenprodukt. Im gekochten Zustand sinken die Werte pro 100g durch die Wasseraufnahme erheblich.";;0.27;0.12;5.1;1.05;0.34;1.2;27;;;;0.8;1.9;35;45;2.5;0.02;410;0.24;164;3;17;300;110;1.9;J;J;N;N;N;N;J;J
 "Butter";100g;741;0.7;82.2;0.7;0;;10;;Öle&Fette;"Gesalzene Butter kann einen höheren Natrium- und Chloridgehalt aufweisen.";650;;0.02;0.1;0.05;0.01;1.2;2;0.2;;1.2;2;7;15;21;0.1;0.02;16;0.01;1;;7;21;14;0.1;N;J;J;N;J;J;J;J
@@ -46,10 +46,10 @@
 "Coca-Cola Classic";100ml;42;0;0;10.6;0;63;250;100;Getränke;"Enthält Koffein und Phosphorsäure";;;;;;;;;;;;;;2;4;0.1;0.01;2;0.01;1;0.01;4;17;1;0.01;J;J;N;N;N;J;J;N
 "Coca-Cola Zero";100ml;0.2;0;0;0;0;;250;100;Getränke;"Enthält Koffein und Süßungsmittel (Aspartam, Acesulfam-K). Phosporsäure dient als Säuerungsmittel.";;;;;;;;;;;;;;2;4;;0.02;2;;1;;10;13;1;;J;J;J;N;J;J;J;J
 "Couscous";100g;353;12.8;1.8;71.2;5;65;60;;Brot&Teigwaren;"Werte beziehen sich auf das Trockenprodukt. Couscous wird aus Hartweizengrieß hergestellt.";;0.16;0.04;3.5;0.6;0.11;;20;;;;0.2;0.1;24;;1.1;;166;0.25;44;0.8;10;170;;0.8;J;J;N;N;N;N;J;J
-"Dorade";100g;105;19.8;2.7;0;0;;200;;Fisch&Meeresfrüchte;"Auch als Goldbrasse bekannt";0.015;15;0.08;0.12;3.5;0.6;0.35;4;12;2.8;0.004;3;0.8;1;30;120;1.1;0.1;380;0.04;33;0.02;85;220;240;N;N;J;J;J;J;J;J
+"Dorade";100g;105;19.8;2.7;0;0;;200;;Fisch&Meeresfrüchte;"Auch als Goldbrasse bekannt";0.015;15;0.08;0.12;3.5;0.6;0.35;4;12;2.8;0.004;3;0.8;1;30;120;1.1;0.1;;0.04;33;0.02;85;220;240;N;N;J;J;J;J;J;J
 "Dr Pepper";100ml;42;0;0;10.8;0;70;330;100;Getränke;"Werte können je nach Region und Rezeptur leicht variieren. Enthält Koffein und Phosphorsäure.";;;;;;;;;;;;;;2;;;;1;;1;;15;14;;;J;J;N;N;N;J;J;N
 "Drachenfrucht";100g;50;1.2;0.4;11;1.4;50;150;;Obst;"Auch als Pitaya bekannt. Reich an Antioxidantien.";2;0.04;0.04;0.4;0.2;0.04;;0.01;;9;;0.1;;9;;0.6;;190;0.07;28;0.04;2;23;;0.1;J;J;N;N;N;J;J;N
-"Edamer 30 %";100g;256;27.1;16.4;0;0;;30;;Käse;"Fettgehalt absolut ca. 16-17 %";0.2;160;0.04;0.32;0.1;0.3;0.08;2.5;25;2.1;0.0003;0.2;0.3;3;800;800;0.4;100;90;0.04;30;0.01;650;520;3;N;J;J;J;J;J;J;J
+"Edamer 30 %";100g;256;27.1;16.4;0;0;;30;;Käse;"Fettgehalt absolut ca. 16-17 %";0.2;;0.04;0.32;0.1;0.3;0.08;2.5;25;2.1;0.0003;0.2;0.3;3;800;;0.4;100;;0.04;30;0.01;650;520;3;N;J;J;J;J;J;J;J
 "Edamer 40 %";100g;312;25.8;22.9;0.1;0;;30;;Käse;"Enthält Laktose";220;0.03;0.3;0.1;0.3;0.07;2;20;2.1;;0.2;0.6;3;731;1000;0.4;0.04;80;0.03;30;0.01;640;510;220;3.8;N;J;J;J;J;J;J;J
 "Eistee Pfirsich";100ml;30;0.1;0.1;7.2;0;60;250;100;Getränke;"Durchschnittswerte für gezuckerten Pfirsich-Eistee auf Schwarztee-Basis.";2;;;0.1;0.01;0.01;0.1;1;;1;;0.01;0.1;2;1;0.02;0.01;12;0.01;1;0.04;4;1;1;0.01;J;J;N;N;N;J;J;N
 "Emmentaler 45 %";100g;382;28.5;30.6;0;0;;30;;Käse;"Hartkäse aus Kuhmilch";285;0.05;0.3;0.1;0.25;0.08;1.8;20;2.1;;0.7;0.6;3.8;1020;240;0.5;0.04;105;0.03;33;0.02;150;630;240;4.6;N;J;J;J;J;J;J;J
@@ -69,7 +69,7 @@
 "Frankfurter Würstchen";100g;287;12;26;1;0;;100;;Fleisch&Wurst;"Enthält Nitritpökelsalz";;0.1;0.1;3.5;0.3;0.2;;3;0.0005;;;0.2;10;15;1450;1.5;;220;0.05;15;0.01;900;180;;2.4;N;N;J;J;J;J;J;J
 "Flussbarsch";100g;91;19.4;0.9;0;0;;150;;Fisch&Meeresfrüchte;"Frischwasser-Speisefisch, mageres Fleisch";6;0.08;0.12;2.1;0.6;0.15;3;5;1.9;1;1.3;0.7;1;80;80;0.9;0.03;330;0.04;30;0.02;65;200;210;0.8;N;N;J;J;J;J;J;J
 "Frischkäse 0,2 %";100g;63;11;0.2;3.9;0;30;30;;Milchprodukte;"Magerstufe, hoher Proteingehalt";2;0.03;0.18;0.1;0.4;0.04;1.5;12;0.4;;0.01;0.01;0.1;110;120;0.1;0.02;145;0.02;12;0.01;100;120;25;0.4;N;J;N;J;N;J;N;J
-"Frischkäse 20 %";100g;183;8.5;15;3.6;0;;30;;Käse;"Werte variieren je nach Hersteller";0.15;150;0.03;0.18;0.1;0.5;0.04;1.5;15;0.4;0.0002;0.1;0.3;1;80;210;0.1;0.02;120;0.02;10;0.01;250;110;15;N;J;N;N;N;J;N;J
+"Frischkäse 20 %";100g;183;8.5;15;3.6;0;;30;;Käse;"Werte variieren je nach Hersteller";0.15;;0.03;0.18;0.1;0.5;0.04;1.5;15;0.4;0.0002;0.1;0.3;1;80;210;0.1;0.02;;0.02;10;0.01;250;110;15;N;J;N;N;N;J;N;J
 "Frischkäse 60 %";100g;265;6.5;25.5;3.2;0;;30;;Milchprodukte;"Fettgehalt absolut ca. 25-26% bei dieser Stufe";280;0.03;0.18;0.1;0.3;0.04;1.5;15;0.4;;0.2;0.5;2;80;180;0.1;0.02;110;0.02;10;0.01;300;120;25;0.4;N;J;N;N;N;J;N;J
 "Fritz-Kola";100ml;42;0;0;11;0;65;330;100;Getränke;"Enthält Koffein (25mg/100ml)";;;;;;;;;;;;;;2;;0.1;;1;;1;;2;1;;0.01;J;J;N;N;N;J;J;N
 "Fritz-Limo";100ml;42;0.1;0.1;10.2;0.1;70;330;100;Getränke;"Durchschnittswerte für Orangen-Limonade. Enthält ca. 10.5% Fruchtanteil.";2;0.01;0.01;0.1;0.05;0.01;;1;;5;;0.1;;2;;0.1;;5;;1;;5;1;;;J;J;N;N;N;J;J;N
@@ -84,19 +84,19 @@
 "Ginger Ale";100ml;37;0;0;9;0;65;250;100;Getränke;"Durchschnittswerte für klassisches Ginger Ale. Kann je nach Hersteller variieren.";;;;0.01;0.01;0.01;;;;;;;;2;2;0.02;0.01;3;0.01;1;0.01;5;1;1;0.01;J;J;N;N;N;J;J;N
 "Gemüsezwiebeln";100g;28;1.1;0.2;4.9;1.4;15;150;;Gemüse;"Mildere und größere Variante der herkömmlichen Speisezwiebel.";2;0.03;0.02;0.2;0.1;0.1;0.5;20;;7;;0.1;1;25;20;0.2;0.01;160;0.05;10;0.1;4;30;50;0.1;J;J;J;N;N;J;J;N
 "Gorgonzola 48 %";100g;350;24;28;0.7;0;;30;;Käse;"Edelpilzkäse aus Kuhmilch. Fettgehalt ca. 28g absolut bei 48% Fett i. Tr.";280;0.03;0.4;0.1;0.3;0.05;;25;1.2;;0.2;0.6;;610;1000;0.2;;120;0.02;25;;1000;450;;3.5;N;J;J;J;J;J;N;J
-"Gouda 30 %";100g;265;28.5;16.5;0;0;;30;;Käse;"Fettgehalt bezieht sich auf die Trockenmasse";;220;0.03;0.3;0.1;0.35;0.06;2.5;25;2.1;;0.25;0.3;3;900;1200;0.5;0.04;90;0.03;35;0.01;750;600;240;N;J;J;J;J;J;J;J
+"Gouda 30 %";100g;265;28.5;16.5;0;0;;30;;Käse;"Fettgehalt bezieht sich auf die Trockenmasse";;;0.03;0.3;0.1;0.35;0.06;2.5;25;2.1;;0.25;0.3;3;900;;0.5;0.04;;0.03;35;0.01;750;600;240;N;J;J;J;J;J;J;J
 "Gouda 45 %";100g;356;22.7;30.8;0;0;;30;;Käse;"Durchschnittswerte für mittelalten Gouda";280;0.03;0.3;0.1;0.3;0.08;3;20;2.1;;0.3;0.6;3;700;1000;0.5;0.05;80;0.02;28;0.02;700;500;240;3.9;N;J;J;J;J;J;J;J
 "Granatapfel";100g;78;1.1;0.6;16.1;3.5;35;150;;Obst;"Reich an Antioxidantien";4;0.03;0.02;0.3;0.4;0.1;0.1;38;;7;;0.3;10;8;1;0.5;0.01;240;0.1;10;0.1;3;18;10;0.1;J;J;N;N;N;J;J;N
 "Granatapfelsaft";100ml;54;0.2;0.1;13.1;0.1;53;250;100;Getränke;"Reich an Antioxidantien";;0.01;0.01;0.2;0.1;0.04;;6;;1;;0.1;0.1;10;;0.1;;214;;7;;3;12;;0.1;J;J;N;N;N;J;J;N
 "Grapefruit";100g;42;0.7;0.1;9.2;1.6;25;200;;Obst;"Reich an Vitamin C";46;0.04;0.03;0.2;0.28;0.04;1;13;;44;;0.2;1;22;2;0.1;0.01;180;0.03;9;0.01;1;18;10;0.1;J;J;N;N;N;J;J;N
 "Griechischer Joghurt 2%";100g;73;9.9;2;3.9;0;15;150;;Milchprodukte;"Enthält Laktose";25;0.03;0.2;;;0.04;;7;0.5;1;;0.02;;110;;0.1;;141;;11;;36;135;;0.5;N;J;N;N;N;J;N;N
-"Grünkohl";100g;49;4.3;0.9;9;3.6;15;150;;Gemüse;"Frisch, roh";;500;0.11;0.13;1;0.07;0.27;0.4;141;;120;;1.5;705;150;70;1.5;0.04;491;0.29;47;0.66;38;92;140;J;J;N;N;N;J;J;N
+"Grünkohl";100g;49;4.3;0.9;9;3.6;15;150;;Gemüse;"Frisch, roh";;;0.11;0.13;1;0.07;0.27;0.4;;;120;;1.5;705;150;70;1.5;0.04;;0.29;47;0.66;38;92;140;J;J;N;N;N;J;J;N
 "Gruyère";100g;413;29.8;32.3;0.1;0;;30;;Käse;"Schweizer Hartkäse aus Rohmilch, Fettgehalt ca. 45-50% i. Tr.";260;0.04;0.4;0.1;0.5;0.08;2;20;1.6;;0.3;0.6;3;1011;1100;0.2;0.04;81;0.03;36;0.02;714;600;240;3.9;N;J;J;J;J;J;J;J
 "Gurke";100g;15;0.6;0.2;1.8;0.9;15;150;;Gemüse;"Frisch mit Schale";23;0.02;0.03;0.2;0.2;0.04;1;14;;8;;0.1;16;15;20;0.2;0.02;140;0.05;8;0.1;2;17;5;0.2;J;J;J;N;J;J;J;N
 "Brathähnchen";100g;230;24;15;0;0;;350;;Fleisch&Wurst;"Werte gelten für Fleisch mit Haut, gegart. Ein halbes Hähnchen wiegt essbar ca. 300-400g.";40;0.08;0.18;9.3;1.1;0.5;3;8;0.4;;0.15;0.3;2;12;80;1.2;0.01;260;0.07;25;0.02;90;200;240;1.1;N;N;J;J;J;J;J;J
 "Hähnchenflügel";100g;221;19.2;16;0;0;;150;;Fleisch&Wurst;"Werte gelten für gegarte Hähnchenflügel mit Haut, ohne Knochenanteil berechnet.";25;0.07;0.12;6.5;0.9;0.35;2;5;0.4;;0.2;0.3;2;12;75;1.1;0.03;210;0.06;20;0.02;82;165;210;1.1;N;N;J;J;J;J;J;J
 "Hähnchenkeule (mit Haut)";100g;214;19.4;15;0;0;;150;;Fleisch&Wurst;"Rohes Produkt, mit Haut verzehrt";45;0.08;0.18;5.2;1.1;0.25;3;7;0.4;;0.2;0.3;2;11;80;1.2;0.01;225;0.07;19;0.02;85;165;195;1.8;N;N;J;J;J;J;J;J
-"Hähnchenschenkel (ohne Haut)";100g;120;21;4;0;0;;150;;Fleisch&Wurst;"Werte für gegartes Fleisch können variieren";;19;0.08;0.18;5.8;1;0.35;3;6;0.4;;0.1;0.2;1;11;80;1.2;0.02;250;0.07;22;0.02;85;180;210;N;N;J;J;J;J;J;J
+"Hähnchenschenkel (ohne Haut)";100g;120;21;4;0;0;;150;;Fleisch&Wurst;"Werte für gegartes Fleisch können variieren";;19;0.08;0.18;5.8;1;0.35;3;6;0.4;;0.1;0.2;1;11;80;1.2;0.02;;0.07;22;0.02;85;180;210;N;N;J;J;J;J;J;J
 "Halloumi 43 %";100g;321;23;24.5;2.2;0;;125;;Käse;"Traditioneller Grillkäse aus Zypern, meist aus einer Mischung von Schafs-, Ziegen- und Kuhmilch. Hoher Salzgehalt.";240;0.02;0.4;0.1;0.3;0.05;2;15;0.6;;0.3;0.6;1.5;730;1000;0.1;0.04;80;0.02;20;0.01;1200;500;210;3.3;N;J;N;J;N;J;N;J
 "Hanföl";100g;884;0;100;0;0;;10;;Öle&Fette;"Reich an Omega-3- und Omega-6-Fettsäuren (Gamma-Linolensäure). Kaltgepresst verwenden.";;;;;;;;;;;;9;50;;;;;;;;;;;;;J;J;J;N;J;J;J;J
 "Hanfsamen (geschält)";100g;590;31.2;49.2;3.3;4;15;30;;Nüsse&Samen;"Reich an Omega-3-Fettsäuren";1;1.3;0.3;9.2;;0.6;;110;;1;;0.8;;70;;8;;1200;;700;;5;1650;;10;J;J;J;J;J;J;J;J
@@ -106,7 +106,7 @@
 "Heidelbeeren";100g;42;0.6;0.6;7.4;4.9;25;125;;Obst;"Werte gelten für frische Heidelbeeren (Blaubeeren). Hoher Gehalt an Anthocyanen.";6;0.02;0.02;0.4;0.12;0.06;1.1;6;;22;;2.1;19;10;2;0.7;0.01;78;0.06;2;0.2;1;13;10;0.1;J;J;N;N;N;J;J;N
 "Frische Hefe";100g;105;16.7;1.5;1;6.2;35;42;;Sonstiges;"Frischbackhefe (Würfel)";;0.6;1.6;12;3.5;0.6;30;700;0.1;;;;;20;50;3.2;0.04;600;0.2;35;0.1;30;380;140;4.5;J;J;J;J;J;J;J;J
 "Heilbutt (weiß)";100g;104;20.8;2.3;0;0;;150;;Fisch&Meeresfrüchte;"Reich an Omega-3-Fettsäuren";15;0.06;0.08;6.5;0.4;0.4;1;12;1;;5;0.8;1;15;100;0.7;0.04;450;0.04;28;0.02;80;220;240;0.6;N;N;J;J;J;J;J;J
-"Heringsfilet";100g;192;17.5;13.5;0;0;;100;;Fisch&Meeresfrüchte;"Werte können je nach Zubereitung (z.B. in Sauce) variieren";;24;0.04;0.25;4.5;0.8;0.3;5;7;8.5;;25;1.5;0.1;34;120;1;0.4;320;0.1;31;0.04;120;250;240;N;N;J;J;J;J;J;J
+"Heringsfilet";100g;192;17.5;13.5;0;0;;100;;Fisch&Meeresfrüchte;"Werte können je nach Zubereitung (z.B. in Sauce) variieren";;24;0.04;0.25;4.5;0.8;0.3;5;7;8.5;;25;1.5;0.1;34;120;1;0.4;;0.1;31;0.04;120;250;240;N;N;J;J;J;J;J;J
 "Hirschgulasch";100g;110;21.5;2.5;0;0;;200;;Fleisch&Wurst;"Mageres Wildfleisch, Rohzustand ohne Sauce. Reiches Mineralstoffprofil.";5;0.18;0.25;7.5;0.7;0.45;2;6;2.2;1;0.4;0.3;1;6;60;3.2;0.015;330;0.18;22;0.02;45;210;210;3.5;N;N;J;J;J;J;J;J
 "Himbeeren";100g;34;1.3;0.3;4.8;4.7;25;125;;Obst;"Frisch, roh. Reich an Vitamin C und Ballaststoffen.";4;0.02;0.05;0.3;0.2;0.05;1.5;28;;25;;0.5;10;40;5;1;0.01;170;0.1;30;0.4;3;44;18;0.4;J;J;J;N;J;J;J;N
 "Hirtenkäse 45 %";100g;278;17;23;1;0;;30;;Käse;"Salzlakenkäse aus Kuhmilch";220;0.04;0.25;;;0.1;;;1.5;;0.3;0.6;;450;1200;0.2;;80;;25;;1100;350;;1.5;N;J;J;J;J;J;N;J
@@ -131,7 +131,7 @@
 "Kalbsrücken";100g;112;22.1;2.6;0;0;;200;;Fleisch&Wurst;"Mageres Teilstück vom Kalb, reich an hochwertigem Protein.";;0.1;0.2;6.5;1;0.4;3;8;1.6;;0.2;0.3;1;10;80;1.8;0.02;330;0.1;22;0.02;60;210;240;3.3;N;N;J;J;J;J;J;J
 "Kalbsschnitzel";100g;105;22.8;1.5;0;0;;150;;Fleisch&Wurst;"Mageres Fleisch";5;0.1;0.25;6.5;0.75;0.35;3;7;1.2;;0.2;0.1;1;10;80;2;0.02;330;0.1;23;0.02;85;210;220;3.3;N;N;J;J;J;J;J;J
 "Kaninchenfleisch";100g;153;21;7.1;0;0;;150;;Fleisch&Wurst;"Mageres Fleisch, reich an Protein und B-Vitaminen. Durchsschnittswerte für das ganze Tier ohne Innereien.";;0.1;0.15;6.5;0.6;0.35;1.5;8;6;;;0.3;1;13;50;3.2;0.01;330;0.18;29;0.02;45;220;240;2.4;N;N;J;J;J;J;J;J
-"Karotten";100g;39;0.9;0.2;6.8;2.8;35;80;;Gemüse;"Frisch, roh";0.8;835;0.06;0.05;0.6;0.27;0.07;1.5;28;0.006;5;0.0006;0.5;13;33;60;0.4;0.02;320;0.04;12;0.12;60;35;14;J;J;J;N;N;J;J;N
+"Karotten";100g;39;0.9;0.2;6.8;2.8;35;80;;Gemüse;"Frisch, roh";0.8;;0.06;0.05;0.6;0.27;0.07;1.5;28;0.006;5;0.0006;0.5;13;33;60;0.4;0.02;;0.04;12;0.12;60;35;14;J;J;J;N;N;J;J;N
 "Karpfen";100g;115;18;4.8;0;0;;150;;Fisch&Meeresfrüchte;"Frischwasser-Speisefisch, Werte können je nach Fettgehalt variieren.";24;0.12;0.06;1.6;0.75;0.19;5;15;1.5;1;20;0.7;1;41;60;1.2;0.04;333;0.04;29;0.04;50;220;190;0.9;N;N;J;J;J;J;J;J
 "Kartoffeln";100g;77;2;0.1;14.8;2.1;70;200;;Gemüse;"Gekocht, mit Schale (Durchschnittswert). Der GI kann je nach Zubereitungsart variieren.";;0.11;0.05;1.2;0.4;0.25;0.1;20;;17;;0.05;2.1;6;50;0.4;0.01;417;0.1;20;0.15;3;50;14;0.3;J;J;N;N;N;J;J;J
 "Kasseler Lachs";100g;118;21;3.5;0.5;0;;150;;Fleisch&Wurst;"Geräuchertes und gepökeltes Schweinefleisch, meist aus dem Rücken (Lachs). Hoher Natriumgehalt durch Pökeln.";;0.6;0.2;5;0.7;0.5;3;4;0.6;;0.4;0.1;;8;1500;1.5;0.04;350;0.1;25;0.02;950;200;230;2.4;N;N;J;J;J;J;J;J
@@ -161,7 +161,7 @@
 "Limette";100g;30;0.7;0.2;10.5;2.8;20;67;;Obst;"Frische Limette, ganze Frucht ohne Schale";2;0.03;0.02;0.2;0.22;0.04;;8;;29;;0.2;0.6;33;2;0.6;0.01;102;0.07;6;0.01;2;18;11;0.1;J;J;N;N;N;J;J;J
 "Litschi";100g;66;0.8;0.4;15.2;1.3;50;150;;Obst;"Enthält natürlichen Zucker";;0.01;0.06;0.6;0.1;0.1;0.6;25;;71.5;;0.1;0.4;5;3;0.3;0.01;171;0.15;10;0.06;1;31;18;0.1;J;J;N;N;N;J;J;N
 "Lupinenschrot";100g;333;36.5;9.3;12.7;28.4;15;40;;Getreide und Teigwaren;"Hoher Proteingehalt, ideal als Fleischersatz oder Beilage. Reich an Ballaststoffen.";;0.6;0.3;2.5;;0.4;;190;;2;;1.2;;180;;4.4;;1000;1.1;190;2.5;15;440;;3.8;J;J;N;J;N;J;J;J
-"Lyoner";100g;264;11.8;24.1;0.5;0;;20;;Fleisch&Wurst;"Wurstsorte aus feinem Brät";;20;0.15;0.18;3.5;0.6;0.2;1.5;5;0.6;;0.3;0.2;2;7;1200;1.3;0.04;220;0.1;12;0.03;850;180;140;N;N;J;N;J;J;J;J
+"Lyoner";100g;264;11.8;24.1;0.5;0;;20;;Fleisch&Wurst;"Wurstsorte aus feinem Brät";;20;0.15;0.18;3.5;0.6;0.2;1.5;5;0.6;;0.3;0.2;2;7;;1.3;0.04;;0.1;12;0.03;850;180;140;N;N;J;N;J;J;J;J
 "Macadamianüsse";100g;718;7.9;75.8;4.6;8.6;15;30;;Nüsse&Samen;"Hoher Gehalt an einfach ungesättigten Fettsäuren.";;1.2;0.16;2.5;0.75;0.27;6;11;;1.2;;0.5;;85;180;3.7;0.04;368;0.76;130;4.1;5;188;140;1.3;J;J;J;N;J;J;J;J
 "Quark 0,2 %";100g;67;12;0.2;4;0;30;250;;Milchprodukte;"Enthält Laktose";2;0.03;0.2;0.1;0.4;0.06;3;15;0.9;;0.02;0.01;0.1;120;100;0.1;0.04;160;0.02;12;0.01;35;190;50;0.6;N;J;N;J;N;J;N;J
 "Makrele (frisch)";100g;205;18.7;13.9;0;0;;150;;Fisch&Meeresfrüchte;"Fetter Seefisch, reich an Omega-3-Fettsäuren.";45;0.13;0.3;7.7;0.9;0.63;5;4;9;;4;1.5;5;12;110;1;0.02;396;0.08;30;0.01;85;244;230;0.6;N;N;J;J;J;J;J;J
@@ -212,11 +212,11 @@
 "Physalis";100g;76;2.3;1.1;13.3;4.9;15;100;;Obst;"Reich an Vitamin C";42;0.11;0.04;2.8;;;;;;28;;0.5;;13;;1.5;;333;;26;;1;40;;0.1;J;J;N;N;N;J;J;N
 "Pinienkerne";100g;673;13.7;68.4;13.1;3.7;15;30;;Nüsse&Samen;"Reich an ungesättigten Fettsäuren";1;0.36;0.23;4.4;0.31;0.09;10;58;;0.8;;9.3;54;16;15;5.5;0.04;597;1.3;251;8.8;2;575;180;6.4;J;J;N;N;N;J;J;N
 "Pistazien";100g;615;20.2;51.6;11.7;10.6;15;30;;Nüsse&Samen;"Geröstet und ungesalzen (Durchschnittswerte)";25;0.87;0.16;1.3;0.5;1.7;12;58;;5;;2.3;13.2;105;130;7.3;0.1;1020;1.3;121;1.2;4;490;140;2.4;J;J;N;J;N;J;J;N
-"Presssack (rot)";100g;286;12.7;26.1;0.5;0;;50;;Fleisch&Wurst;"Auch als Blutpresssack bekannt";;45;0.05;0.1;1.8;0.4;0.1;1.5;5;5.2;;0.4;0.2;1;10;1600;5.8;0.1;120;0.1;15;0.04;980;180;140;N;N;J;N;J;J;J;J
-"Proteinpulver (Molkenprotein)";100g;370;78.5;3.5;5.2;0.5;30;30;;Sonstiges;"Durchschnittswerte für Whey-Konzentrat";;;0.1;1.2;;;0.1;;;1.5;1;;;;550;;0.8;;380;;60;;250;380;;N;J;J;J;J;J;N;J
+"Presssack (rot)";100g;286;12.7;26.1;0.5;0;;50;;Fleisch&Wurst;"Auch als Blutpresssack bekannt";;;0.05;0.1;1.8;0.4;0.1;1.5;5;5.2;;0.4;0.2;1;10;;5.8;0.1;;0.1;15;0.04;980;180;140;N;N;J;N;J;J;J;J
+"Proteinpulver (Molkenprotein)";100g;370;78.5;3.5;5.2;0.5;30;30;;Sonstiges;"Durchschnittswerte für Whey-Konzentrat";;;0.1;1.2;;;0.1;;;1.5;1;;;;550;;0.8;;;;60;;250;380;;N;J;J;J;J;J;N;J
 "Putenbrust";100g;105;24;1;0;0;;150;;Fleisch&Wurst;"Frisch, gegart ohne Haut";4;0.06;0.1;9.5;0.7;0.5;1.5;8;1.4;;0.2;0.2;1;7;60;0.7;0.01;330;0.05;28;0.02;45;215;240;1;N;N;J;J;J;J;J;J
-"Putenfleisch (Brust)";100g;107;24.1;1.1;0;0;;150;;Fleisch&Wurst;"Mageres Geflügelfleisch, Werte können je nach Teilstück variieren";;4;0.06;0.1;9.3;0.7;0.5;1.8;8;1.1;;0.3;0.2;;6;60;1.2;0.04;330;0.1;28;0.02;50;220;240;N;N;J;J;J;J;J;J
-"Putenkeule (mit Haut)";100g;165;20.5;9.2;0;0;;200;;Fleisch&Wurst;"Werte können je nach Hautanteil variieren";;20;0.08;0.18;4.5;0.8;0.35;3;8;1.5;;0.1;0.2;1;15;75;1.8;0.02;280;0.1;22;0.02;65;185;210;N;N;J;J;J;J;J;J
+"Putenfleisch (Brust)";100g;107;24.1;1.1;0;0;;150;;Fleisch&Wurst;"Mageres Geflügelfleisch, Werte können je nach Teilstück variieren";;4;0.06;0.1;9.3;0.7;0.5;1.8;8;1.1;;0.3;0.2;;6;60;1.2;0.04;;0.1;28;0.02;50;220;240;N;N;J;J;J;J;J;J
+"Putenkeule (mit Haut)";100g;165;20.5;9.2;0;0;;200;;Fleisch&Wurst;"Werte können je nach Hautanteil variieren";;20;0.08;0.18;4.5;0.8;0.35;3;8;1.5;;0.1;0.2;1;15;75;1.8;0.02;;0.1;22;0.02;65;185;210;N;N;J;J;J;J;J;J
 "Putenoberkeule (ohne Haut)";100g;145;19.8;7.3;0;0;;200;;Fleisch&Wurst;"Mageres Fleisch";;0.08;0.18;5.2;0.8;0.35;3;8;1.4;;;0.2;;11;74;1.5;0.02;300;0.1;22;0.02;65;185;210;2.4;N;N;J;J;J;J;J;J
 "Putenschnitzel";100g;105;24.1;1.1;0;0;;150;;Fleisch&Wurst;"Frisch, roh, ohne Panade. Mageres Geflügelbrustfleisch.";4;0.06;0.1;11;0.8;0.5;2;7;1.5;;0.2;0.2;1;12;60;1;0.02;330;0.06;28;0.02;50;220;240;1.6;N;N;J;J;J;J;J;J
 "Putensteak";100g;107;23.5;1.5;0;0;;150;;Fleisch&Wurst;"Frisch, roh, ohne Haut";2;0.07;0.12;9.5;0.75;0.55;1.5;6;1.2;;0.4;0.15;1;6;60;1;0.015;330;0.06;25;0.02;45;210;240;1.5;N;N;J;J;J;J;J;J
@@ -228,10 +228,10 @@
 "Radler (alkoholfrei)";100ml;24;0.2;0;5.5;0;60;330;100;Getränke;"Mischgetränk aus alkoholfreiem Bier und Zitronenlimonade. Werte können je nach Mischverhältnis leicht variieren.";;0.01;0.01;0.4;0.05;0.02;0.5;5;0.1;2;;;;6;10;0.02;0.02;35;0.01;6;0.02;4;12;5;0.02;J;J;N;N;N;N;J;N
 "Rapsöl";100g;884;0;100;0;0;;10;;Öle&Fette;"Reich an ungesättigten Fettsäuren und Vitamin E.";;;;;;;;;;;;17.5;71;;;;;;;;;;;;;J;J;J;N;J;J;J;J
 "Red Bull";100ml;45;0;0;11;0;70;250;100;Getränke;"Enthält Koffein (32mg/100ml) und Taurin. Klassischer Energy Drink.";;;;8;2;2;;;2;;;;;18;10;0.1;;2;;2;;40;18;;0.04;J;J;N;N;N;J;J;N
-"Regenbogen Forelle";100g;103;19.5;2.7;0;0;;150;;Fisch&Meeresfrüchte;"Frisch, roh";;16;0.12;0.1;4.4;0.7;0.35;5;7;4.5;;19;0.2;0.1;24;60;1;0.04;380;0.04;28;0.02;50;220;240;N;N;J;J;J;J;J;J
+"Regenbogen Forelle";100g;103;19.5;2.7;0;0;;150;;Fisch&Meeresfrüchte;"Frisch, roh";;16;0.12;0.1;4.4;0.7;0.35;5;7;4.5;;19;0.2;0.1;24;60;1;0.04;;0.04;28;0.02;50;220;240;N;N;J;J;J;J;J;J
 "Reis (roh)";100g;353;6.8;0.6;74.1;1.4;70;100;;Getreide und Teigwaren;"Hoher Kohlenhydratanteil";;0.06;0.03;1.3;0.6;0.15;0.5;9;;;;0.1;1;6;47;0.7;0.04;103;0.1;28;0.6;5;95;110;1.4;J;J;N;N;N;J;J;N
 "Rhabarber";100g;13;0.6;0.1;1.4;1.8;15;200;;Gemüse;"Saisonal, hoher Oxalsäuregehalt";2;0.02;0.03;0.3;0.1;0.02;0.5;7;;10;;0.2;29;86;22;0.2;0.01;270;0.03;12;0.2;4;25;11;0.1;J;J;J;N;J;J;J;J
-"Rotbarsch";100g;105;18.2;3.5;0;0;;150;;Fisch&Meeresfrüchte;"Frisch, roh";;15;0.07;0.12;3.8;0.4;0.25;1.5;8;3.5;;2.3;0.8;1;22;120;0.9;0.04;345;0.04;30;0.02;84;210;240;N;N;J;J;J;J;J;J
+"Rotbarsch";100g;105;18.2;3.5;0;0;;150;;Fisch&Meeresfrüchte;"Frisch, roh";;15;0.07;0.12;3.8;0.4;0.25;1.5;8;3.5;;2.3;0.8;1;22;120;0.9;0.04;;0.04;30;0.02;84;210;240;N;N;J;J;J;J;J;J
 "Ricotta 13 %";100g;154;7.5;13;3;0;27;30;;Käse;"Frischkäse aus Schaf- oder Kuhmilchmolke";112;0.02;0.18;0.1;0.25;0.04;1.5;12;0.3;;0.2;0.3;1;207;120;0.4;0.02;105;0.02;11;0.01;84;158;50;1.1;N;J;N;N;N;J;N;N
 "Rehkeule";100g;108;22.4;1.9;0;0;;150;;Fleisch&Wurst;"Mageres Wildfleisch, frisch, roh";4;0.18;0.25;8.2;0.7;0.45;3;8;2.8;;;0.3;;7;60;3.2;0.04;335;0.25;26;0.02;60;220;210;4.4;N;N;J;J;J;J;J;J
 "Rehrücken";100g;102;22;1.5;0;0;;150;;Fleisch&Wurst;"Mageres Wildfleisch, Reich an B-Vitaminen und Eisen.";;0.25;0.3;7.4;0.7;0.5;1;6;2;;1;0.2;;6;45;3;0.02;330;0.18;23;0.02;48;210;220;3.5;N;N;J;J;J;J;J;J
@@ -243,14 +243,14 @@
 "Rinderroulade";100g;159;22.5;6.8;1.5;0.2;;200;;Fleisch&Wurst;"Werte inkl. Füllung (Speck, Zwiebel, Gurke) und Sauce, gegart. Kann je nach Rezept variieren.";15;0.08;0.18;5.2;0.5;0.4;2.5;8;2.5;1;0.1;0.4;3;15;80;2.4;0.02;320;0.1;22;0.05;380;180;210;4.1;N;N;N;J;N;J;J;J
 "Rindersalami";100g;420;22;38;1;0;;20;;Fleisch&Wurst;"Werte können je nach Reifegrad und Fettgehalt variieren. Hoher Natriumgehalt durch Pökelung.";;0.2;0.2;5.2;0.6;0.3;;;2.5;;0.5;0.4;10;15;1800;2.8;;450;0.1;25;0.04;1600;220;;4.5;N;N;J;J;J;J;J;J
 "Rinderschnitzel";100g;108;22.5;2;0;0;;150;;Fleisch&Wurst;"Mageres Rindfleisch aus der Oberschale oder dem Rücken, roh gewogen.";;0.07;0.18;5.2;0.5;0.5;1.5;5;2;;0.1;0.2;1.5;4;60;2.3;0.02;345;0.1;22;0.01;45;190;210;4.1;N;N;J;J;J;J;J;J
-"Roastbeef";100g;120;22;3.5;0;0;;150;;Fleisch&Wurst;"Mageres Rindfleisch, gegart/gebraten";;4;0.07;0.18;5.2;0.4;0.35;2.5;8;2.2;;0.1;0.2;1;7;60;2.3;0.02;330;0.1;22;0.01;50;200;210;N;N;J;J;J;J;J;J
-"Sauerbraten (Rind)";100g;165;23;6.5;3.5;0.2;15;200;;Fleisch&Wurst;"Werte beinhalten Sauce und Marinade";;12;0.07;0.18;4.8;0.5;0.35;3.5;8;2.8;1;0.1;0.4;3;15;450;2.3;0.02;320;0.1;22;0.05;380;180;190;N;N;N;J;N;J;J;J
+"Roastbeef";100g;120;22;3.5;0;0;;150;;Fleisch&Wurst;"Mageres Rindfleisch, gegart/gebraten";;4;0.07;0.18;5.2;0.4;0.35;2.5;8;2.2;;0.1;0.2;1;7;60;2.3;0.02;;0.1;22;0.01;50;200;210;N;N;J;J;J;J;J;J
+"Sauerbraten (Rind)";100g;165;23;6.5;3.5;0.2;15;200;;Fleisch&Wurst;"Werte beinhalten Sauce und Marinade";;12;0.07;0.18;4.8;0.5;0.35;3.5;8;2.8;1;0.1;0.4;3;15;;2.3;0.02;;0.1;22;0.05;380;180;190;N;N;N;J;N;J;J;J
 "Romanasalat";100g;15;1.2;0.2;1.2;1.7;15;150;;Gemüse;"Auch bekannt als Römischer Salat oder Bindesalat. Reich an Vitamin K und Beta-Carotin.";290;0.07;0.07;0.3;0.14;0.07;1;136;;24;;0.2;102;33;45;1;0.01;247;0.03;14;0.1;8;30;11;0.2;J;J;J;N;J;J;J;J
 "Rosenkohl";100g;43;3.8;0.3;3.3;4.4;15;200;;Gemüse;"Frisch, gegart weichen die Werte leicht ab. Guter Vitamin C Lieferant.";42;0.1;0.12;0.9;0.5;0.2;1.5;101;;112;;1;236;31;21;1.3;0.01;387;0.07;22;0.2;5;71;110;0.4;J;J;N;N;N;J;J;N
 "Rote Bete (Glas)";100g;42;1.2;0.1;8.4;2.6;64;150;;Gemüse;"Werte können je nach Essig- und Zuckerzusatz leicht variieren. Natriumgehalt durch Einlegen oft höher als bei frischer Ware.";2;0.02;0.04;0.2;0.1;0.05;;50;;5;;0.04;3;16;45;0.8;0.01;350;0.07;23;0.3;40;35;15;0.3;J;J;N;N;N;J;J;N
 "Rote Bete (vorgegart)";100g;43;1.5;0.1;8.4;2.5;64;150;;Gemüse;"Vakuumierte, bereits gekochte Rote Bete ohne Zusätze. Hoher Nitratgehalt.";2;0.03;0.04;0.2;0.1;0.05;;80;;5;;0.04;3;16;60;0.8;0.02;300;0.07;20;0.3;60;35;20;0.3;J;J;N;N;N;J;J;N
-"Rotkohl";100g;22;1.5;0.2;3.5;2.5;15;200;;Gemüse;"Frisch, roh";;4;0.04;0.04;0.4;0.2;0.2;1.5;40;;50;;0.1;1.5;50;40;0.5;0.01;260;0.03;15;0.15;5;30;60;J;J;N;N;N;J;J;N
-"Salami";100g;380;20;34;1;0;;30;;Fleisch&Wurst;"Durchschnittswerte für luftgetrocknete Salami";;;0.3;0.2;5;0.6;0.3;1;5;1.5;;0.5;0.2;5;15;1200;2;0.05;350;0.1;20;0.04;1500;200;180;N;N;J;J;J;J;J;N
+"Rotkohl";100g;22;1.5;0.2;3.5;2.5;15;200;;Gemüse;"Frisch, roh";;4;0.04;0.04;0.4;0.2;0.2;1.5;40;;50;;0.1;1.5;50;40;0.5;0.01;;0.03;15;0.15;5;30;60;J;J;N;N;N;J;J;N
+"Salami";100g;380;20;34;1;0;;30;;Fleisch&Wurst;"Durchschnittswerte für luftgetrocknete Salami";;;0.3;0.2;5;0.6;0.3;1;5;1.5;;0.5;0.2;5;15;;2;0.05;;0.1;20;0.04;1500;200;180;N;N;J;J;J;J;J;N
 "Sanddornbeeren";100g;82;0.7;5;3.3;4;30;50;;Obst;"Extrem hoher Vitamin C Gehalt. Vitamin-Werte können je nach Sorte stark variieren.";250;0.03;0.05;0.4;0.2;0.1;1.5;8;;450;;3;10;42;12;0.4;0.02;133;0.1;30;0.3;4;10;14;0.3;J;J;N;N;N;J;J;N
 "Sardinen (abgetropft)";100g;208;24.6;11.5;0;0;;125;;Fisch&Meeresfrüchte;"In Öl eingelegt, nach dem Abtropfen. Werte können je nach Zubereitung variieren. Sehr reich an Omega-3-Fettsäuren.";32;0.02;0.23;5.2;0.6;0.17;5;10;8.9;;11;1.5;2;382;500;2.9;0.1;397;0.2;39;0.1;400;490;240;1.3;N;N;J;J;J;J;J;J
 "Sauerkirschen";100g;50;0.9;0.3;10.2;1.3;25;125;;Obst;"Frisch, entkernt";40;0.04;0.04;0.4;0.1;0.05;0.4;8;;12;;0.1;3;8;4;0.6;0.01;114;0.12;8;0.04;2;19;11;0.1;J;J;N;N;N;J;J;N
@@ -259,17 +259,17 @@
 "Schokolade Dunkel (70%)";100g;598;7.8;43;34;11;25;25;;Süßwaren;"Werte variieren je nach Kakaoanteil und Hersteller. Hoher Gehalt an Flavonoiden.";4;0.05;0.1;0.9;0.4;0.04;;10;;;1.6;0.7;7;73;20;12;0.04;715;1.8;230;1.9;20;308;;3.3;N;J;N;N;N;J;N;N
 "Schokolade Dunkel (85%)";100g;598;9;50;19;12;25;20;;Süßwaren;"Hoher Kakaoanteil, reich an Flavonoiden und Magnesium.";4;0.04;0.1;0.7;0.4;0.04;;8;0.1;;;1.5;8;65;;12;;715;1.8;230;1.9;15;320;;3.5;N;J;N;N;N;J;N;N
 "Schokolade Dunkel (100%)";100g;601;12;54.5;8.1;15;20;20;;Süßwaren;"100% Kakaoanteil, ungesüßt";4;0.06;0.15;1.1;0.4;0.04;;15;;;;1.2;7.3;73;;12;;715;3.8;230;3.8;20;308;;6.8;J;J;N;N;N;J;J;N
-"Schokolade Erdbeer-Joghurt";100g;560;6;38.2;49.1;1.2;45;100;;Süßwaren;"Werte variieren je nach Kakaoanteil und Joghurt-Füllung";;45;0.04;0.18;0.1;;0.04;;8;;1.5;;0.4;;180;;1.1;;330;;50;;90;190;;N;J;N;N;N;N;N;N
+"Schokolade Erdbeer-Joghurt";100g;560;6;38.2;49.1;1.2;45;100;;Süßwaren;"Werte variieren je nach Kakaoanteil und Joghurt-Füllung";;;0.04;0.18;0.1;;0.04;;8;;1.5;;0.4;;180;;1.1;;;;50;;90;190;;N;J;N;N;N;N;N;N
 "Haselnussschokolade";100g;575;7.8;38.8;47.3;4.5;45;25;;Süßwaren;"Durchschnittswerte für Milchschokolade mit ganzen Haselnüssen.";40;0.1;0.25;1.2;0.5;0.08;5;25;0.4;1;0.2;6.2;5;155;40;2.8;0.04;450;0.5;105;0.8;50;220;75;1.6;N;J;N;N;N;N;N;N
 "Schokolade Keks & Crunch";100g;548;6.1;32.4;57;2.1;60;25;;Süßwaren;"Durchschnittswerte für Milchschokolade mit Keks- und Getreidestückchen";45;0.08;0.2;0.4;;;;10;0.4;1;;0.8;;180;120;1.5;;330;;50;;90;170;;1.1;N;J;N;N;N;N;N;N
-"Schokolade Mandelsplitter";100g;560;9.1;38.2;41.5;6.2;45;25;;Süßwaren;"Werte variieren je nach Kakaoanteil und Milchgehalt der Schokolade";;40;0.12;0.35;1.2;;;;35;;0.5;;8.5;;180;;3.2;;550;;120;;40;280;;N;J;N;N;N;J;N;N
+"Schokolade Mandelsplitter";100g;560;9.1;38.2;41.5;6.2;45;25;;Süßwaren;"Werte variieren je nach Kakaoanteil und Milchgehalt der Schokolade";;;0.12;0.35;1.2;;;;35;;0.5;;8.5;;180;;3.2;;;;;;40;280;;N;J;N;N;N;J;N;N
 "Marzipanschokolade";100g;495;5.8;28.1;52.5;4.5;65;100;;Süßwaren;"Enthält Mandeln";;0.07;0.12;0.9;;;;;;;;4.5;4.2;65;;2.8;;330;;66;;15;145;;1.2;N;J;N;N;N;N;N;N
 "Schokolade Noisette";100g;557;7.4;35.8;51.3;3;45;100;;Süßwaren;"Vollmilchschokolade mit Haselnussmark (Ghazelnut)";40;0.1;0.3;0.8;0.6;0.1;4;15;0.5;1;0.2;4;3;180;80;2;0.04;450;0.5;80;0.4;60;220;50;1.5;N;J;N;N;N;N;N;N
 "Nougat-Schokolade";100g;550;6.5;34;54;3.5;45;100;;Süßwaren;"Enthält Haselnüsse";40;0.08;0.3;0.8;;;;15;;1;;4.5;;160;;2.1;;380;;65;;60;180;;1.2;N;J;N;N;N;N;N;N
 "Vollmilchschokolade";100g;535;6.7;30.4;56.4;2.1;45;100;;Süßwaren;"Enthält Laktose";45;0.04;0.2;0.2;0.4;0.05;3;8;0.5;1;;0.6;4;189;120;1.2;0.04;372;0.3;58;0.25;78;209;90;1.1;N;J;N;N;N;N;N;N
 "Schokolade Weiß";100g;539;5.9;32.1;59;0;45;25;;Süßwaren;"Weiße Schokolade besteht hauptsächlich aus Kakaobutter, Milchpulver und Zucker.";45;0.06;0.41;0.1;0.5;0.05;4;8;0.5;;0.2;1.3;4;199;150;0.2;0.04;286;0.02;26;0.01;90;176;75;0.8;N;J;N;N;N;N;N;N
 "Scholle";100g;86;18.1;1.5;0;0;;150;;Fisch&Meeresfrüchte;"Magerer Speisefisch, reich an Jod und Selen. Werte beziehen sich auf den Rohzustand.";10;0.05;0.1;2.2;0.2;0.2;1;5;1.5;;1.1;0.5;1;20;120;0.7;0.04;330;0.02;25;0.01;90;200;210;0.5;N;N;J;J;J;J;J;J
-"Schwarzwälder Schinken";100g;235;29.5;12.5;1;0;;20;;Fleisch&Wurst;"Geräucherter und luftgetrockneter Rohschinken";;;0.65;0.2;5.5;;0.5;;;0.6;;;0.2;;10;;2.1;;380;;18;;2200;190;;N;N;J;J;J;J;J;N
+"Schwarzwälder Schinken";100g;235;29.5;12.5;1;0;;20;;Fleisch&Wurst;"Geräucherter und luftgetrockneter Rohschinken";;;0.65;0.2;5.5;;0.5;;;0.6;;;0.2;;10;;2.1;;;;18;;2200;190;;N;N;J;J;J;J;J;N
 "Schweinebauch";100g;263;15.2;22.5;0;0;;150;;Fleisch&Wurst;"Frisch, roh. Werte können je nach Fettanteil variieren.";4;0.6;0.18;4.1;0.6;0.35;3;4;0.6;;0.4;0.3;1;8;55;1;0.04;260;0.08;18;0.02;50;150;140;2.1;N;N;J;J;J;J;J;J
 "Schweinebraten";100g;242;22.5;16.8;0;0;;150;;Fleisch&Wurst;"Werte beziehen sich auf gegarten Schweinebraten ohne Sauce.";3;0.65;0.2;4.5;0.6;0.4;3.5;4;0.6;;0.5;0.2;1;8;50;1.5;0.02;330;0.1;22;0.02;55;180;210;2.4;N;N;J;J;J;J;J;J
 "Schweinefilet";100g;105;21;2;0;0;;150;;Fleisch&Wurst;"Mageres Teilstück vom Schwein, reich an Protein und Vitamin B1.";2;0.9;0.2;5.2;0.6;0.5;4;4;0.6;;0.4;0.1;1;6;45;1.2;0.04;380;0.1;25;0.02;50;215;240;2.4;N;N;J;J;J;J;J;J
@@ -279,11 +279,11 @@
 "Schweinehaxe";100g;220;20.2;15.5;0;0;;400;;Fleisch&Wurst;"Werte beziehen sich auf die gegarte Haxe ohne Knochen, inklusive Schwarte. Schwankungen je nach Fettanteil möglich.";5;0.65;0.25;4.8;0.6;0.4;4;4;0.8;;0.5;0.2;1;10;60;1.8;0.02;280;0.1;20;0.02;80;180;210;3.2;N;N;J;J;J;J;J;J
 "Schweinekotelett";100g;195;22;11.8;0;0;;200;;Fleisch&Wurst;"Reich an Vitamin B";4;0.8;0.2;5.2;0.6;0.4;3;4;0.6;;0.5;0.1;;8;45;1;0.02;330;0.1;23;0.02;55;190;210;2.2;N;N;J;J;J;J;J;J
 "Schweinelende";100g;105;21.5;2.1;0;0;;150;;Fleisch&Wurst;"Mageres Teilstück vom Schwein, auch Schweinefilet genannt. Rohwerte.";2;0.95;0.2;5.2;0.7;0.5;3;4;0.6;;0.5;0.1;1;6;45;1;0.02;370;0.07;25;0.01;55;220;240;2.1;N;N;J;J;J;J;J;J
-"Schweinenacken";100g;231;19.5;17;0;0;;150;;Fleisch&Wurst;"Frisch, roh";;4;0.8;0.25;4.8;0.7;0.45;4;4;0.7;;1.1;0.2;1;8;55;1.5;0.02;330;0.1;21;0.02;65;190;210;N;N;J;J;J;J;J;J
+"Schweinenacken";100g;231;19.5;17;0;0;;150;;Fleisch&Wurst;"Frisch, roh";;4;0.8;0.25;4.8;0.7;0.45;4;4;0.7;;1.1;0.2;1;8;55;1.5;0.02;;0.1;21;0.02;65;190;210;N;N;J;J;J;J;J;J
 "Schweineschnitzel";100g;114;23.1;1.9;0;0;;150;;Fleisch&Wurst;"Frisch, roh, mager";4;0.9;0.2;5.2;0.6;0.5;3;4;0.6;;0.2;0.1;1;6;45;1.1;0.015;375;0.05;26;0.02;50;220;240;2.4;N;N;J;J;J;J;J;J
 "Seelachs (Köhler)";100g;81;18.3;0.6;0;0;;150;;Fisch&Meeresfrüchte;"Frisch, roh. Auch bekannt als Köhler. Magerfisch.";4;0.06;0.15;3.8;0.25;0.2;1;5;3.5;1;1.3;0.5;1;15;120;0.5;0.1;330;0.04;25;0.02;90;200;210;0.4;N;N;J;J;J;J;J;J
 "Staudensellerie";100g;15.8;0.7;0.2;2.2;1.6;15;150;;Gemüse;"Auch Bleichsellerie genannt, besonders kalorienarm und wasserreich.";11;0.02;0.03;0.3;0.25;0.06;1;12;;7;;0.3;29;40;150;0.2;0.01;260;0.04;11;0.1;80;24;14;0.1;J;J;J;N;N;J;J;J
-"Senf";100g;100;6.1;6.4;5.2;3.4;10;10;;Gewürze;"Mittelscharfer Tafelsenf";;1;0.06;0.04;1.1;0.2;0.1;;20;;1;;1.2;5;73;1200;2;;170;0.2;50;0.5;900;120;;J;J;J;N;N;J;J;J
+"Senf";100g;100;6.1;6.4;5.2;3.4;10;10;;Gewürze;"Mittelscharfer Tafelsenf";;1;0.06;0.04;1.1;0.2;0.1;;20;;1;;1.2;5;73;;2;;;0.2;50;0.5;900;120;;J;J;J;N;N;J;J;J
 "Serrano Schinken";100g;230;29.5;12.5;0.5;0;;20;;Fleisch&Wurst;"Luftgetrockneter Schinken";;0.6;0.25;5.2;0.6;0.5;3;5;0.9;;0.4;0.2;0.1;10;2100;1.8;0.04;330;0.1;20;0.02;2000;180;240;2.4;N;N;J;J;J;J;J;J
 "Sesamöl";100g;884;0;100;0;0;;10;;Öle&Fette;"Reines Pflanzenöl aus Sesamsamen. Hoher Anteil an ungesättigten Fettsäuren.";;;;;;;;;;;;1.4;13.6;;;;;;;;;;;;;J;J;J;N;J;J;J;J
 "Sonnenblumenkerne";100g;584;22.5;49.6;11.4;8.6;35;30;;Nüsse&Samen;"Reich an Vitamin E";2;1.48;0.35;4.5;1.1;1.2;55;230;;1.4;;37.8;5.4;78;40;5.3;0.04;737;1.8;325;1.9;2;600;240;5.1;J;J;N;J;N;J;J;J
@@ -295,10 +295,10 @@
 "Sucuk";100g;335;18;28.5;1;0;;50;;Fleisch&Wurst;"Knoblauchwurst aus Rind- oder Kalbfleisch, stark gewürzt. Werte können je nach Fettgehalt variieren.";15;0.15;0.25;4.5;0.6;0.35;2.5;5;2;;0.5;0.2;1;20;1200;2.5;0.04;320;0.1;15;0.05;1200;180;140;3.5;N;N;J;J;J;J;J;J
 "Suppengrün";100g;28;1.4;0.3;3.1;3.4;15;250;;Gemüse;"Durchschnittswerte für eine Mischung aus Karotten, Sellerie und Lauch.";450;0.05;0.05;0.6;0.2;0.12;1.5;35;;15;;0.5;40;45;80;0.8;0.02;320;0.08;18;0.2;50;40;25;0.3;J;J;N;N;N;J;J;J
 "Suppenhuhn";100g;235;19.5;17.4;0;0;;200;;Fleisch&Wurst;"Durchschnittswerte für ein ganzes Huhn mit Haut, gekocht/roh ähnlich bei Makronährstoffen. Hoher Fettanteil im Vergleich zu Hähnchenbrust.";40;0.08;0.18;6.5;0.7;0.35;3;8;0.4;;0.15;0.3;2;12;80;1.8;0.07;240;0.1;22;0.02;75;175;210;1.9;N;N;J;J;J;J;J;J
-"Süßkartoffel";100g;86;1.6;0.1;20.1;3;50;200;;Gemüse;"Gegart oder roh";;709;0.08;0.06;0.61;0.8;0.21;4;11;;2.4;;0.26;1.8;30;85;0.6;0.04;337;0.15;25;0.26;55;47;21;J;J;N;N;N;J;J;N
+"Süßkartoffel";100g;86;1.6;0.1;20.1;3;50;200;;Gemüse;"Gegart oder roh";;;0.08;0.06;0.61;0.8;0.21;4;11;;2.4;;0.26;1.8;30;85;0.6;0.04;;0.15;25;0.26;55;47;21;J;J;N;N;N;J;J;N
 "Süßkirschen";100g;63;0.9;0.3;13.3;1.9;25;150;;Obst;"Frisch, mit Stein gerechnet auf verzehrbaren Anteil";40;0.03;0.04;0.4;0.1;0.05;0.4;5;;12;;0.1;5;12;4;0.4;0.01;210;0.06;11;0.06;2;20;11;0.1;J;J;N;N;N;J;J;N
 "Teewurst";100g;394;12.1;38.2;0.5;0;;30;;Fleisch&Wurst;"Geräucherte Rohwurst aus Schweine- und Rindfleisch. Hoher Fettgehalt.";20;0.3;0.2;4.5;;0.3;;;1.2;;;0.4;3;12;1500;2;;270;;15;;950;180;;2.4;N;N;J;N;J;J;J;J
-"Thunfisch (Dose in eigenem Saft)";100g;111;25.2;0.6;0;0;;185;;Fisch&Meeresfrüchte;"Abtropfgewicht beachten";;15;0.02;0.06;12.8;0.4;0.35;3;4;4.3;;2.4;0.2;0.1;10;410;1.2;0.04;280;0.04;26;0.01;350;220;240;N;N;J;J;J;J;J;J
+"Thunfisch (Dose in eigenem Saft)";100g;111;25.2;0.6;0;0;;185;;Fisch&Meeresfrüchte;"Abtropfgewicht beachten";;15;0.02;0.06;12.8;0.4;0.35;3;4;4.3;;2.4;0.2;0.1;10;;1.2;0.04;;0.04;26;0.01;350;220;240;N;N;J;J;J;J;J;J
 "Thunfisch (frisch)";100g;108;25;0.9;0;0;;150;;Fisch&Meeresfrüchte;"Reich an Omega-3-Fettsäuren";15;0.1;0.1;13;0.5;0.5;3;5;4.3;;5;0.3;1;4;60;1;0.04;330;0.05;33;0.02;40;200;240;0.7;N;N;J;J;J;J;J;J
 "Tilsiter 30 %";100g;260;28.5;16.2;0.1;0;;30;;Käse;"Werte beziehen sich auf den absoluten Fettgehalt bei 30% Fett i. Tr. (ca. 16% absolut)";180;0.03;0.3;0.1;0.4;0.08;2.5;25;1.8;;0.2;0.4;3;750;1200;0.2;;90;0.02;25;0.01;750;550;;3.5;N;J;J;J;J;J;J;J
 "Tilsiter 45 %";100g;340;25.5;26;0.1;0;;30;;Käse;"Schnittkäse aus Kuhmilch";220;0.03;0.35;0.1;0.5;0.1;3;30;2.1;;0.3;0.6;3;730;1200;0.5;0.02;80;0.02;30;0.01;750;480;240;3.5;N;J;J;J;J;J;J;J
@@ -320,7 +320,7 @@
 "Wels (Europäischer Wels)";100g;163;16;11;0;0;;150;;Fisch&Meeresfrüchte;"Reich an Omega-3-Fettsäuren";20;0.08;0.12;3.2;0.7;0.3;5;5;2.1;1.5;10;0.8;1;20;80;1.2;0.04;330;0.04;25;0.02;50;210;210;0.6;N;N;J;J;J;J;J;J
 "Weißwurst";100g;264;12.5;23.5;0.5;0;;60;;Fleisch&Wurst;"Traditionelle bayerische Brühwurst aus Kalbfleisch und Schweinerückenspeck.";10;0.15;0.18;3.5;;0.2;;;1.2;;;0.2;5;15;800;1.5;;240;0.1;15;;850;180;;2.5;N;N;J;N;J;J;J;J
 "Wiener Würstchen";100g;286;12;26;1;0;;50;;Fleisch&Wurst;"Durchschnittswerte für gebrühte Wiener Würstchen aus Schweine- und Rindfleisch.";10;0.25;0.18;3.5;0.5;0.2;1.5;5;1.2;;0.3;0.2;1.5;15;1350;1.6;0.04;225;0.1;15;0.04;850;180;170;2.1;N;N;J;N;J;J;J;J
-"Wildschweingulasch";100g;104;20.5;2.4;0;0;;200;;Fleisch&Wurst;"Werte für mageres Wildschweinfleisch";;4;0.6;0.25;5.2;0.7;0.4;3;6;1.1;;0.4;0.2;1;10;50;3.2;0.015;330;0.18;22;0.02;50;190;210;N;N;J;J;J;J;J;J
+"Wildschweingulasch";100g;104;20.5;2.4;0;0;;200;;Fleisch&Wurst;"Werte für mageres Wildschweinfleisch";;4;0.6;0.25;5.2;0.7;0.4;3;6;1.1;;0.4;0.2;1;10;50;3.2;0.015;;0.18;22;0.02;50;190;210;N;N;J;J;J;J;J;J
 "Wirsing";100g;27;2;0.4;2.4;2.3;15;200;;Gemüse;"Werte gelten für rohen Wirsingkohl. Reich an Chlorophyll und Vitamin K.";42;0.05;0.05;0.7;0.2;0.2;1.5;70;;50;;2.5;800;40;45;1;0.01;230;0.06;12;0.18;7;42;70;0.3;J;J;N;N;N;J;J;J
 "Ziegenkäse 45 %";100g;320.1;21.5;25.5;1.2;0;;30;;Käse;"Durchschnittswerte für Ziegenweichkäse (45% F.i.Tr.)";280;0.04;0.25;0.4;0.3;0.07;1.5;25;0.5;;0.3;0.4;3;450;610;0.5;0.02;120;0.04;25;0.01;500;380;210;2.1;N;J;J;J;J;J;N;J
 "Zitrone";100g;29;1.1;0.3;9.3;2.8;20;50;;Obst;"Frisch, geschält. Reich an Vitamin C.";2;0.04;0.02;0.1;0.19;0.08;0.4;11;;53;;0.15;;26;5;0.6;0.01;138;0.04;8;0.03;2;16;11;0.1;J;J;N;N;N;J;J;J
@@ -333,12 +333,12 @@
 "Zwiebeln";100g;40;1.1;0.1;9.3;1.7;15;80;;Gemüse;"Frisch, roh. Reich an Schwefelverbindungen und Quercetin.";2;0.03;0.02;0.2;0.1;0.12;0.9;19;;7;;0.02;0.4;23;25;0.2;0.01;146;0.04;10;0.13;4;29;50;0.2;J;J;N;N;N;J;J;J
 "Gekochter Schinken";100g;118;20.5;3.5;1;0;;30;;Fleisch&Wurst;"Reich an Vitamin B1, B3, B6, B12 und Zink";;0.6;0.2;4.5;;0.4;;;0.6;;0.3;0.1;1.1;10;1500;1.5;;320;;18;;950;200;;2.5;N;N;N;J;J;J;J;J
 "Basmati Reis (ungekocht)";100g;351;7.4;0.6;77.3;1.3;50;100;;Getreide und Teigwaren;"Werte beziehen sich auf das trockene Produkt. Gekochter Reis hat durch Wasseraufnahme niedrigere Werte pro 100g.";;0.07;0.02;1.8;0.6;0.2;1.5;8;;;;0.1;1;9;44;0.7;0.04;115;0.1;28;0.6;5;120;50;1.1;J;J;N;N;N;J;J;J
-"Rucola";100g;28;2.6;0.7;2.1;1.6;15;30;;Gemüse;"Auch bekannt als Rauke";0.19;119;0.04;0.09;0.4;0.4;0.1;0.1;97;;15;0.43;0.5;109;160;45;1.5;0.01;369;0.08;47;0.3;27;52;110;J;J;J;N;J;J;J;J
+"Rucola";100g;28;2.6;0.7;2.1;1.6;15;30;;Gemüse;"Auch bekannt als Rauke";0.19;;0.04;0.09;0.4;0.4;0.1;0.1;97;;15;0.43;0.5;109;160;45;1.5;0.01;;0.08;47;0.3;27;52;110;J;J;J;N;J;J;J;J
 "Oliven (schwarz)";100g;145;1.2;15;0.4;3;15;30;;Gemüse;"Nährwerte beziehen sich auf eingelegte Oliven. Natriumgehalt kann je nach Lake stark variieren.";28;0.01;0.02;0.1;0.01;0.02;0.1;7;;;;1.7;3.8;64;2100;1.6;0.01;40;0.2;22;0.02;800;17;14;0.1;J;J;N;N;N;J;J;J
 "Getrocknete Tomaten";100g;258;14.1;3;43.5;12.3;15;20;;Gemüse;"Werte gelten für getrocknete Tomaten ohne Öl. Bei Einlegung in Öl verschieben sich Fett- und Kalorienwerte massiv.";44;0.05;0.1;3.6;0.5;0.3;4;68;;39.2;;0.1;5.9;110;1200;9.1;0.04;3427;0.4;81;0.3;2090;356;110;0.8;J;J;J;N;N;J;J;N
 "Kirschtomaten";100g;18;0.9;0.2;2.6;1.2;15;15;;Gemüse;"Reich an Vitamin C";85;0.05;0.03;0.5;0.3;0.08;1.5;20;;25;;0.8;6;11;25;0.3;0.02;235;0.06;10;0.09;3;27;11;0.2;N;N;J;J;J;J;J;J
 "Lachsfilet";100g;208;20;13;0;0;;125;;Fisch&Meeresfrüchte;"Frischer Atlantik-Lachs, roh. Reich an Omega-3-Fettsäuren.";40;0.2;0.15;7.5;0.8;0.6;5;25;3.5;;16;1.5;0.1;12;60;0.7;0.04;360;0.05;29;0.02;50;240;240;0.6;J;J;N;N;N;J;J;N
-"Paprika (gelb)";100g;30;1;0.2;5.3;1.4;15;150;;Gemüse;"Frisch, roh";0.18;20;0.03;0.03;0.4;0.2;0.2;1;26;183.5;140;0.8;0.7;10;11;10;0.4;0.02;210;0.08;12;0.1;2;24;14;N;N;N;N;N;N;N;N
+"Paprika (gelb)";100g;30;1;0.2;5.3;1.4;15;150;;Gemüse;"Frisch, roh";0.18;20;0.03;0.03;0.4;0.2;0.2;1;26;183.5;140;0.8;0.7;10;11;10;0.4;0.02;;0.08;12;0.1;2;24;14;N;N;N;N;N;N;N;N
 "Lasagne (Fertiggericht)";100g;165;7.4;8.5;14.5;1.4;50;400;;Fertiggerichte;"Durchschnittswerte für eine klassische Lasagne Bolognese zum Aufwärmen.";65;0.08;0.1;1.8;0.3;0.12;1.5;12;0.4;1.5;0.1;0.8;4;95;350;1.1;0.02;210;0.12;22;0.15;410;120;85;1.3;N;N;N;N;N;N;N;N
 "Chicken Nuggets TK";100g;256;14.6;14.2;17.4;1.2;60;150;;Fertiggerichte;"Durchschnittswerte für panierte, tiefgekühlte Chicken Nuggets, zubereitet im Ofen.";15;0.08;0.1;4.8;0.6;0.35;1.5;8;0.3;;0.1;0.9;4;18;450;0.9;0.04;225;0.07;22;0.1;500;165;180;0.8;N;N;N;N;N;N;N;N
 "Fischstäbchen TK";100g;198;12;9.5;18;1;60;150;;Fertiggerichte;"Werte variieren je nach Panade und Fischart (meist Alaska-Seelachs), tiefgekühlt unzubereitet.";20;0.05;0.04;2.5;0.2;0.15;1;7;0.8;;1;1.8;5;20;350;0.7;0.1;280;0.04;25;0.03;400;180;150;0.4;N;N;N;N;N;N;N;N
@@ -383,7 +383,7 @@
 "Big Tasty Bacon";100g;280;14.5;12.8;28;1.4;65;350;;Fast Food;"McDonald's: Großer Burger mit Rinderfleisch, Bacon, Käse und würziger Soße.";;;;;;;;;;;;;;;;;;;;;;;;;;N;N;N;N;N;N;N;N
 "Chicken McNuggets (6er)";100g;250;15.3;14.6;14.2;0.5;45;104;;Fast Food;"Frittiertes Hähnchenbrustfleisch in Panade. Nährwerte können je nach Zubereitung leicht variieren. Portionsgröße ca. 104g für 6 Stück.";;;;5.2;;0.2;;;;;;0.5;;15;;0.7;;260;;25;;500;180;;0.8;N;N;N;J;N;N;J;N
 "Chicken McNuggets (9er)";100g;250;16.8;13.8;14.2;1.2;60;154;;Fast Food;"Werte basieren auf frittierten Nuggets ohne Sauce. 9 Stück entsprechen ca. 154g.";20;0.1;0.1;5.2;0.6;0.3;2;5;0.3;;0.2;0.8;5;20;450;1.1;0.02;210;0.1;25;0.1;480;180;140;0.8;N;N;N;J;N;N;N;N
-"Chicken McNuggets (20er Packung)";100g;252;15.5;15;18;1.2;50;350;;Fast Food;"Werte variieren leicht je nach Region und Zubereitung";;;0.1;0.1;5.2;0.6;0.3;1.5;8;0.3;0.5;0.1;0.3;1.1;11;450;0.7;0.02;267;0.06;23;0.04;580;180;180;;N;N;N;J;N;N;N
+"Chicken McNuggets (20er Packung)";100g;252;15.5;15;18;1.2;50;350;;Fast Food;"Werte variieren leicht je nach Region und Zubereitung";;;0.1;0.1;5.2;0.6;0.3;1.5;8;0.3;0.5;0.1;0.3;1.1;11;;0.7;0.02;;0.06;23;0.04;580;180;180;;N;N;N;J;N;N;N
 "Pommes Frites TK";100g;289;3;13.9;36.1;3.4;75;150;;Fertiggerichte;"Frittiert, Durchschnittswerte gesalzen. Kohlenhydratreich mit hohem GI.";;0.12;0.04;1.8;0.4;0.35;1;30;;9;;1.2;10;15;210;0.9;0.04;540;0.18;28;0.2;210;120;40;0.4;J;J;N;N;N;J;J;J
 "Curly Fries";100g;285;3.5;15;32;3.2;75;176;;Fertiggerichte;"Frittierte, spiralförmige Kartoffelspalten mit Panade/Gewürzmischung. Werte können je nach Zubereitung (Ofen vs. Fritteuse) variieren.";2;0.08;0.03;1.8;0.4;0.3;0.5;15;;12;;0.8;5;15;210;0.8;0.02;380;0.12;22;0.15;450;60;25;0.4;J;J;N;N;N;N;J;N
 "McFlurry (Milcheis)";100g;165;3;6.2;24.1;0.6;60;180;;Süßwaren;"Durchschnittswerte ohne Toppings. Enthält Gluten durch Waffelstückchen oder Toppings möglich. Hoher Zuckeranteil.";;;0.18;;;;;;0.4;1;;;;125;;;;190;;13;;90;105;;;N;J;N;N;N;N;N;N
