@@ -53,9 +53,15 @@ interface MicronutrientCoverageCardProps {
   supplementTotals?: Record<string, number>;
 }
 
-const SHORT_WINDOW = 7;
-const LONG_WINDOW = 14;
-const HISTORY_THRESHOLD_FOR_LONG = 30;
+// Window tiers based on available history (days):
+//   < 14 Tage Historie  → 7-Tages-Durchschnitt
+//   14–29 Tage Historie → 14-Tages-Durchschnitt
+//   ≥ 30 Tage Historie  → 30-Tages-Durchschnitt
+const WINDOW_TIERS = [
+  { minHistory: 30, window: 30 },
+  { minHistory: 14, window: 14 },
+  { minHistory: 0, window: 7 },
+] as const;
 
 const MicronutrientCoverageCard = ({
   entries,
@@ -120,9 +126,9 @@ const MicronutrientCoverageCard = ({
       const d = new Date(`${entry.date}T00:00:00`);
       if (!earliest || d < earliest) earliest = d;
     }
-    if (!earliest) return SHORT_WINDOW;
+    if (!earliest) return WINDOW_TIERS[WINDOW_TIERS.length - 1].window;
     const diffDays = Math.floor((endDate.getTime() - earliest.getTime()) / (1000 * 60 * 60 * 24));
-    return diffDays > HISTORY_THRESHOLD_FOR_LONG ? LONG_WINDOW : SHORT_WINDOW;
+    return (WINDOW_TIERS.find((tier) => diffDays >= tier.minHistory) ?? WINDOW_TIERS[WINDOW_TIERS.length - 1]).window;
   }, [entries, selectedDate]);
 
   const visibleEntries = useMemo(() => {
