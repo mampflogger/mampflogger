@@ -1069,7 +1069,7 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
         entries={entries}
         selectedDate={selectedDate}
         gender={profile?.gender ?? "male"}
-        title="Vitamine (Ø 7 Tage)"
+        title="Vitamine"
         kind="vitamins"
         highlighted={hl === "section-vitamine-7-tage"}
         sectionId="section-vitamine-7-tage"
@@ -1083,7 +1083,7 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
         entries={entries}
         selectedDate={selectedDate}
         gender={profile?.gender ?? "male"}
-        title="Mineralstoffe & Spurenelemente (Ø 7 Tage)"
+        title="Mineralstoffe & Spurenelemente"
         kind="minerals"
         highlighted={hl === "section-mineralstoffe-7-tage"}
         sectionId="section-mineralstoffe-7-tage"
