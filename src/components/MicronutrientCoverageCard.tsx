@@ -53,9 +53,15 @@ interface MicronutrientCoverageCardProps {
   supplementTotals?: Record<string, number>;
 }
 
-const SHORT_WINDOW = 7;
-const LONG_WINDOW = 14;
-const HISTORY_THRESHOLD_FOR_LONG = 30;
+// Window tiers based on available history (days):
+//   < 14 Tage Historie  → 7-Tages-Durchschnitt
+//   14–29 Tage Historie → 14-Tages-Durchschnitt
+//   ≥ 30 Tage Historie  → 30-Tages-Durchschnitt
+const WINDOW_TIERS = [
+  { minHistory: 30, window: 30 },
+  { minHistory: 14, window: 14 },
+  { minHistory: 0, window: 7 },
+] as const;
 
 const MicronutrientCoverageCard = ({
   entries,
