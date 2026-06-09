@@ -126,9 +126,9 @@ const MicronutrientCoverageCard = ({
       const d = new Date(`${entry.date}T00:00:00`);
       if (!earliest || d < earliest) earliest = d;
     }
-    if (!earliest) return SHORT_WINDOW;
+    if (!earliest) return WINDOW_TIERS[WINDOW_TIERS.length - 1].window;
     const diffDays = Math.floor((endDate.getTime() - earliest.getTime()) / (1000 * 60 * 60 * 24));
-    return diffDays > HISTORY_THRESHOLD_FOR_LONG ? LONG_WINDOW : SHORT_WINDOW;
+    return (WINDOW_TIERS.find((tier) => diffDays >= tier.minHistory) ?? WINDOW_TIERS[WINDOW_TIERS.length - 1]).window;
   }, [entries, selectedDate]);
 
   const visibleEntries = useMemo(() => {
