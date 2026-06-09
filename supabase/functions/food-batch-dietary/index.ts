@@ -87,6 +87,12 @@ VITAMINE (Wert: mg pro 100g, Dezimalzahl, 0 wenn nicht vorhanden):
 MINERALSTOFFE (Wert: mg pro 100g, Dezimalzahl, 0 wenn nicht vorhanden):
 - calcium, chlorid, eisen, fluorid, kalium, kupfer, magnesium, mangan, natrium, phosphor, schwefel, zink
 
+PLAUSIBILITÄTSGRENZEN (orientiert an BLS / DGE – Werte pro 100g NIEMALS überschreiten):
+- vitA ≤ 15000 µg (nur Leber kommt nah ran), vitB1/B2/B6 ≤ 5 mg, vitB3 ≤ 30 mg, vitB12 ≤ 100 µg, vitC ≤ 1500 mg, vitD ≤ 50 µg, vitE ≤ 100 mg, vitK ≤ 1000 µg, vitB9 ≤ 1500 µg, vitB5 ≤ 30 mg, vitB7 ≤ 200 µg
+- calcium ≤ 1200 mg, eisen ≤ 30 mg (nur Leber/Innereien höher, max 100), kupfer ≤ 5 mg, zink ≤ 15 mg (Austern bis 80), magnesium ≤ 600 mg, mangan ≤ 15 mg, phosphor ≤ 1500 mg, kalium ≤ 2500 mg, fluorid ≤ 5 mg
+- natrium/chlorid dürfen bei Salz/sehr salzigen Produkten hoch sein (bis 40000)
+- Wenn du unsicher bist oder kein verlässlicher Referenzwert existiert: gib 0 zurück, KEINE Schätzung über die Grenze hinaus.
+
 Wichtige Regeln:
 - Fleisch & Wurst → IMMER vgn=N, vgt=N
 - Fisch & Meeresfrüchte → IMMER vgn=N, vgt=N
