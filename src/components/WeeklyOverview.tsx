@@ -675,7 +675,7 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
       {weightHistory && weightHistory.points.length > 0 && (
         <div id="section-gewichts-verlauf" data-section className={`glass-card rounded-xl p-3 ${hl === "section-gewichts-verlauf" ? "section-card-highlight" : ""}`}>
           <SectionHeading highlighted={hl === "section-gewichts-verlauf"} className="mb-2">
-            Gewichtsverlauf
+            Gewichtsverlauf (kg)
           </SectionHeading>
           <div className="h-44">
             <ResponsiveContainer width="100%" height="100%">
@@ -696,9 +696,8 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
                   axisLine={false}
                   tickLine={false}
                   tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }}
-                  width={48}
+                  width={32}
                   tickFormatter={(v: number) => `${Math.round(v)}`}
-                  label={{ value: "kg", angle: -90, position: "insideLeft", offset: 18, style: { fontSize: 10, fill: "hsl(var(--muted-foreground))" } }}
                 />
                 <Tooltip
                   content={({ active, payload }: any) => {
