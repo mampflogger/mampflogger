@@ -811,6 +811,7 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
                   tickLine={false}
                   domain={[(dataMin: number) => Math.floor(Math.min(dataMin, 0) / 300) * 300, (dataMax: number) => Math.ceil(Math.max(dataMax, profile?.goalDeficit ?? 0, 1200) / 300) * 300]}
                   ticks={deficitTicks}
+                  interval={0}
                   tick={(props: any) => {
                     const { x, y, payload } = props;
                     const isGoal = !!profile?.goalDeficit && Math.abs(Number(payload.value) - profile.goalDeficit) < 0.5;
