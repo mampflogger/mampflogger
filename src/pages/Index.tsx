@@ -1163,13 +1163,16 @@ const Index = () => {
     const loadedProfile = loadProfile();
     const loadedActivities = loadBookedActivities();
     const loadedSupplements = loadSupplements();
+    const loadedWeightLog = loadWeightLog();
 
     setEntries(loadedEntries);
     setProfile(loadedProfile);
     setBookedActivities(loadedActivities);
     setSupplements(loadedSupplements);
+    setWeightLog(loadedWeightLog);
     setDarkMode(localStorage.getItem("mampflogger-dark-mode") === "true");
     setColorTheme((localStorage.getItem("mampflogger-color-theme") as ColorTheme) || "yellow");
+
 
     const hasProfile = hasConfiguredPersonalProfile(loadedProfile);
     setStartupProfilePrompt(!hasProfile);
