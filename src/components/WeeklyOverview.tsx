@@ -753,6 +753,7 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
                 tickLine={false}
                 domain={[0, (dataMax: number) => Math.ceil(Math.max(dataMax, bmr ?? 0, 2000) / 500) * 500]}
                 ticks={calorieTicks}
+                interval={0}
                 tick={(props: any) => {
                   const { x, y, payload } = props;
                   const isBmr = !!bmr && Math.abs(Number(payload.value) - bmr) < 0.5;
