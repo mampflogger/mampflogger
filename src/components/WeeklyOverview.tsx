@@ -874,6 +874,7 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
                   tickLine={false}
                   domain={[(dataMin: number) => Math.floor(Math.min(dataMin, 0) / 50) * 50, (dataMax: number) => Math.ceil(Math.max(dataMax, 200) / 50) * 50]}
                   ticks={weightLossTicks}
+                  interval={0}
                   tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }}
                 />
                 {weightLossTicks.map((v) => (
