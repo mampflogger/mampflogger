@@ -754,18 +754,7 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
                 domain={[0, (dataMax: number) => Math.ceil(Math.max(dataMax, bmr ?? 0, 2000) / 500) * 500]}
                 ticks={calorieTicks}
                 interval={0}
-                tick={(props: any) => {
-                  const { x, y, payload } = props;
-                  const isBmr = !!bmr && Math.abs(Number(payload.value) - bmr) < 0.5;
-                  return (
-                    <text x={x} y={y} dy={4} textAnchor="end" fontSize={10}
-                      fontWeight={isBmr ? 600 : 400}
-                      fill={isBmr ? "hsl(var(--destructive))" : "hsl(var(--muted-foreground))"}
-                    >
-                      {payload.value}
-                    </text>
-                  );
-                }}
+                tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }}
               />
               {calorieTicks.filter(v => !bmr || Math.abs(v - bmr) > 0.5).map((v) => (
                 <ReferenceLine key={v} y={v} stroke="hsl(var(--muted-foreground) / 0.25)" strokeWidth={0.5} />
@@ -812,18 +801,7 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
                   domain={[(dataMin: number) => Math.floor(Math.min(dataMin, 0) / 300) * 300, (dataMax: number) => Math.ceil(Math.max(dataMax, profile?.goalDeficit ?? 0, 1200) / 300) * 300]}
                   ticks={deficitTicks}
                   interval={0}
-                  tick={(props: any) => {
-                    const { x, y, payload } = props;
-                    const isGoal = !!profile?.goalDeficit && Math.abs(Number(payload.value) - profile.goalDeficit) < 0.5;
-                    return (
-                      <text x={x} y={y} dy={4} textAnchor="end" fontSize={10}
-                        fontWeight={isGoal ? 600 : 400}
-                        fill={isGoal ? "hsl(var(--destructive))" : "hsl(var(--muted-foreground))"}
-                      >
-                        {payload.value}
-                      </text>
-                    );
-                  }}
+                  tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }}
                 />
                 {deficitTicks.filter(v => !profile?.goalDeficit || Math.abs(v - profile.goalDeficit) > 0.5).map((v) => (
                   <ReferenceLine key={v} y={v} stroke="hsl(var(--muted-foreground) / 0.25)" strokeWidth={0.5} />
