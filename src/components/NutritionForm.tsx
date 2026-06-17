@@ -85,6 +85,19 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
   const amountValueRef = useRef(amount);
   const amountVoiceBufferRef = useRef("");
   const amountVoiceTimerRef = useRef<number | null>(null);
+  const amountVoiceDigitModeRef = useRef(false);
+
+  // Detect digit-by-digit dictation (codeword "Ziffer/Zahl" or a sequence of
+  // bare single digits). In this mode we must delay the focus advance so the
+  // last digit isn't cut off when the recognizer is still sending tokens.
+  const isDigitSpellingTranscript = useCallback((text: string): boolean => {
+    const lower = text.toLowerCase();
+    if (/\b(ziffer|ziffern|zahl|zahlen)\b/.test(lower)) return true;
+    const tokens = lower.replace(/[.,]/g, " ").split(/\s+/).filter(Boolean);
+    if (tokens.length < 2) return false;
+    const DIGIT_WORDS = new Set(["null","eins","ein","eine","zwei","drei","vier","fuenf","fünf","sechs","sieben","acht","neun","komma","punkt"]);
+    return tokens.every((t) => /^[0-9]$/.test(t) || DIGIT_WORDS.has(t));
+  }, []);
 
   // Keep refs in sync with state
   useEffect(() => {
@@ -119,19 +132,23 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
 
   const flushAmountVoiceBuffer = useCallback(() => {
     const bufferedTranscript = amountVoiceBufferRef.current.trim();
+    const wasDigitMode = amountVoiceDigitModeRef.current;
     amountVoiceBufferRef.current = "";
     amountVoiceTimerRef.current = null;
+    amountVoiceDigitModeRef.current = false;
 
     const resolved = parseGermanSpokenNumber(bufferedTranscript);
     if (resolved === null || resolved <= 0) return;
 
-    // Commit the value but keep focus on the amount field so the user can
-    // still correct it / append a scale word like "hundert" via a follow-up
-    // utterance. Moving focus to submit here loses any subsequent speech
-    // (e.g. saying "einhundert" → "ein" arrives first, gets committed as 1,
-    // focus jumps to submit, then "hundert" is dropped because submit only
-    // accepts "buchen").
     handleAmountChangeRef.current(String(resolved));
+
+    // In digit-spelling mode the focus advance was deferred so the recognizer
+    // had time to deliver the final digit(s). Now that no further tokens
+    // arrived within the timeout, move on to the submit button.
+    if (wasDigitMode && focusedFieldRef.current === "amount") {
+      submitButtonRef.current?.focus();
+      setFocusedField("submit");
+    }
   }, []);
 
   // Voice input handler – receives transcripts from global voice command system
@@ -288,7 +305,21 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
       amountVoiceBufferRef.current = bufferedTranscript;
       const resolved = parseGermanSpokenNumber(bufferedTranscript);
 
+      // Digit-by-digit dictation ("Ziffer eins null null" or bare "eins null null").
+      // The recognizer often emits chunks like "ziffer eins null" first and the
+      // final "null" arrives a moment later. If we advance focus immediately,
+      // that last digit lands in the next field. Stay on the amount field and
+      // keep extending a timer; flushAmountVoiceBuffer commits + advances once
+      // the user is really done speaking.
+      const digitMode = isDigitSpellingTranscript(bufferedTranscript);
+      if (digitMode) amountVoiceDigitModeRef.current = true;
+
       if (resolved === null) {
+        if (amountVoiceDigitModeRef.current) {
+          if (amountVoiceTimerRef.current !== null) window.clearTimeout(amountVoiceTimerRef.current);
+          amountVoiceTimerRef.current = window.setTimeout(flushAmountVoiceBuffer, 1800);
+          return;
+        }
         const digits = transcript.replace(/[^\d.,]/g, "").replace(",", ".");
         if (digits) {
           amountVoiceBufferRef.current = "";
@@ -302,6 +333,15 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
             setFocusedField("submit");
           }, 0);
         }
+        return;
+      }
+
+      if (amountVoiceDigitModeRef.current) {
+        // Commit the running value but defer the focus jump – wait for further
+        // digits. The timer flushes and advances focus once speech really stops.
+        if (amountVoiceTimerRef.current !== null) window.clearTimeout(amountVoiceTimerRef.current);
+        amountVoiceTimerRef.current = window.setTimeout(flushAmountVoiceBuffer, 1800);
+        handleAmountChangeRef.current(String(resolved));
         return;
       }
 
@@ -322,6 +362,7 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
       }
 
       amountVoiceBufferRef.current = "";
+      amountVoiceDigitModeRef.current = false;
       if (amountVoiceTimerRef.current !== null) {
         window.clearTimeout(amountVoiceTimerRef.current);
         amountVoiceTimerRef.current = null;
