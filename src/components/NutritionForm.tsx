@@ -305,7 +305,21 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
       amountVoiceBufferRef.current = bufferedTranscript;
       const resolved = parseGermanSpokenNumber(bufferedTranscript);
 
+      // Digit-by-digit dictation ("Ziffer eins null null" or bare "eins null null").
+      // The recognizer often emits chunks like "ziffer eins null" first and the
+      // final "null" arrives a moment later. If we advance focus immediately,
+      // that last digit lands in the next field. Stay on the amount field and
+      // keep extending a timer; flushAmountVoiceBuffer commits + advances once
+      // the user is really done speaking.
+      const digitMode = isDigitSpellingTranscript(bufferedTranscript);
+      if (digitMode) amountVoiceDigitModeRef.current = true;
+
       if (resolved === null) {
+        if (amountVoiceDigitModeRef.current) {
+          if (amountVoiceTimerRef.current !== null) window.clearTimeout(amountVoiceTimerRef.current);
+          amountVoiceTimerRef.current = window.setTimeout(flushAmountVoiceBuffer, 1800);
+          return;
+        }
         const digits = transcript.replace(/[^\d.,]/g, "").replace(",", ".");
         if (digits) {
           amountVoiceBufferRef.current = "";
@@ -319,6 +333,15 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
             setFocusedField("submit");
           }, 0);
         }
+        return;
+      }
+
+      if (amountVoiceDigitModeRef.current) {
+        // Commit the running value but defer the focus jump – wait for further
+        // digits. The timer flushes and advances focus once speech really stops.
+        if (amountVoiceTimerRef.current !== null) window.clearTimeout(amountVoiceTimerRef.current);
+        amountVoiceTimerRef.current = window.setTimeout(flushAmountVoiceBuffer, 1800);
+        handleAmountChangeRef.current(String(resolved));
         return;
       }
 
@@ -339,6 +362,7 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
       }
 
       amountVoiceBufferRef.current = "";
+      amountVoiceDigitModeRef.current = false;
       if (amountVoiceTimerRef.current !== null) {
         window.clearTimeout(amountVoiceTimerRef.current);
         amountVoiceTimerRef.current = null;
