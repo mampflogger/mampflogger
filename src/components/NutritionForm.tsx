@@ -85,6 +85,19 @@ const NutritionForm = ({ onAdd, selectedDate, editingEntry, onCancelEdit, onNewF
   const amountValueRef = useRef(amount);
   const amountVoiceBufferRef = useRef("");
   const amountVoiceTimerRef = useRef<number | null>(null);
+  const amountVoiceDigitModeRef = useRef(false);
+
+  // Detect digit-by-digit dictation (codeword "Ziffer/Zahl" or a sequence of
+  // bare single digits). In this mode we must delay the focus advance so the
+  // last digit isn't cut off when the recognizer is still sending tokens.
+  const isDigitSpellingTranscript = useCallback((text: string): boolean => {
+    const lower = text.toLowerCase();
+    if (/\b(ziffer|ziffern|zahl|zahlen)\b/.test(lower)) return true;
+    const tokens = lower.replace(/[.,]/g, " ").split(/\s+/).filter(Boolean);
+    if (tokens.length < 2) return false;
+    const DIGIT_WORDS = new Set(["null","eins","ein","eine","zwei","drei","vier","fuenf","fünf","sechs","sieben","acht","neun","komma","punkt"]);
+    return tokens.every((t) => /^[0-9]$/.test(t) || DIGIT_WORDS.has(t));
+  }, []);
 
   // Keep refs in sync with state
   useEffect(() => {
