@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { foodDatabase, saveFoodDatabase, guessCategory, addFoodItem, type FoodItem } from "@/data/foodDatabase";
-import { deriveRecipeNutrition, registerRecipeAsFood } from "@/lib/recipeAsFood";
+import { deriveRecipeIngredientMacros, deriveRecipeNutrition, registerRecipeAsFood } from "@/lib/recipeAsFood";
 import ManualRecipeForm from "@/components/ManualRecipeForm";
 import {
   Dialog,
@@ -568,7 +568,7 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry, voiceExpandIndex, onVoi
     // Flüssigkeit aus ml-Zutaten berechnen
     const entryLiquidMl = liquidPerServing > 0 ? liquidPerServing : undefined;
 
-    const micronutrients = estimateRecipeMicronutrients(recipe.ingredients, servings);
+    const micronutrients = estimateRecipeMicronutrients(recipe.ingredients, Math.max(1, recipe.servings || 1));
 
     const entry: NutritionEntry = {
       id: generateId(),
@@ -867,6 +867,7 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry, voiceExpandIndex, onVoi
             ingredients: displayIngredients,
             servings: currentServings,
           });
+          const ingredientMacros = deriveRecipeIngredientMacros(displayIngredients);
           const headerPerServingKcal = derivedNutrition.perServing.calories;
 
           return (
@@ -962,7 +963,7 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry, voiceExpandIndex, onVoi
                           const parsed = extractNumber(ing.amount);
                           const hasNumber = !!parsed;
 
-                          const ingKcal = ingKcals[i];
+                          const ingKcal = ingredientMacros[i]?.calories ?? null;
 
                           return (
                             <li key={i} className="text-[11px] text-foreground flex items-baseline gap-0">

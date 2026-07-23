@@ -111,6 +111,10 @@ function getIngredientMacros(ingredient: RecipeIngredient): RecipeMacros | null 
   };
 }
 
+export function deriveRecipeIngredientMacros(ingredients: RecipeIngredient[]): Array<RecipeMacros | null> {
+  return ingredients.map(getIngredientMacros);
+}
+
 function sumMacros(items: RecipeMacros[]): RecipeMacros {
   const total = items.reduce((sum, item) => ({
     calories: sum.calories + item.calories,
