@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { foodDatabase, saveFoodDatabase, guessCategory, addFoodItem, type FoodItem } from "@/data/foodDatabase";
-import { registerRecipeAsFood } from "@/lib/recipeAsFood";
+import { deriveRecipeIngredientMacros, deriveRecipeNutrition, registerRecipeAsFood } from "@/lib/recipeAsFood";
 import ManualRecipeForm from "@/components/ManualRecipeForm";
 import {
   Dialog,
@@ -364,7 +364,7 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry, voiceExpandIndex, onVoi
       .map((ing) => formatIngredientForShare(ing))
       .join("\n");
     const stepsList = recipe.steps.map((s, i) => `${i + 1}. ${s.replace(/^\d+\.\s*/, "")}`).join("\n");
-    const ps = recipe.perServing;
+    const ps = deriveRecipeNutrition(recipe).perServing;
 
     return [
       `*${recipe.name}*`,
@@ -563,56 +563,19 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry, voiceExpandIndex, onVoi
     const now = new Date();
     const time = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
 
-    // Kalorien konsistent aus Zutatensumme ableiten (fällt zurück auf perServing)
-    const ingKcals: (number | null)[] = recipe.ingredients.map((ing) => {
-      const parsed = extractNumber(ing.amount);
-      if (!parsed) return null;
-      const val = parseFloat(parsed.num.replace(",", "."));
-      if (val <= 0) return null;
-      if ((ing as any).per100g?.calories != null) {
-        return Math.round(((ing as any).per100g.calories / 100) * val);
-      }
-      const ingNameLower = ing.name.toLowerCase();
-      const food = foodDatabase.find((f) => f.name.toLowerCase() === ingNameLower)
-        || foodDatabase.find((f) => ingNameLower.includes(f.name.toLowerCase()) || f.name.toLowerCase().includes(ingNameLower));
-      if (food) return Math.round((food.calories / food.baseAmount) * val);
-      return null;
-    });
-    const sumKcal = ingKcals.length > 0 && ingKcals.every((v) => v !== null)
-      ? (ingKcals as number[]).reduce((s, v) => s + v, 0)
-      : null;
-
-    const servings = Math.max(1, recipe.servings || 1);
-    let ps = { ...recipe.perServing };
-    if (sumKcal !== null && recipe.totalMacros.calories > 0) {
-      const ratio = sumKcal / recipe.totalMacros.calories;
-      ps = {
-        calories: Math.round(sumKcal / servings),
-        protein: Math.round((recipe.totalMacros.protein * ratio / servings) * 10) / 10,
-        fat: Math.round((recipe.totalMacros.fat * ratio / servings) * 10) / 10,
-        carbs: Math.round((recipe.totalMacros.carbs * ratio / servings) * 10) / 10,
-        fiber: Math.round((recipe.totalMacros.fiber * ratio / servings) * 10) / 10,
-      };
-    }
+    const { perServing: ps, servingWeight, liquidPerServing } = deriveRecipeNutrition(recipe);
 
     // Flüssigkeit aus ml-Zutaten berechnen
-    const recipeLiquidMl = recipe.ingredients.reduce((sum, ing) => {
-      if (/ml\b/i.test(ing.amount)) {
-        const match = ing.amount.match(/[\d.,]+/);
-        return sum + (match ? parseFloat(match[0].replace(",", ".")) : 0);
-      }
-      return sum;
-    }, 0);
-    const entryLiquidMl = recipeLiquidMl > 0 ? Math.round(recipeLiquidMl / servings) : undefined;
+    const entryLiquidMl = liquidPerServing > 0 ? liquidPerServing : undefined;
 
-    const micronutrients = estimateRecipeMicronutrients(recipe.ingredients, servings);
+    const micronutrients = estimateRecipeMicronutrients(recipe.ingredients, Math.max(1, recipe.servings || 1));
 
     const entry: NutritionEntry = {
       id: generateId(),
       date: selectedDate,
       time,
       food: `${recipe.name} (1 Portion)`,
-      amount: Math.round(ps.calories),
+      amount: servingWeight,
       calories: ps.calories,
       protein: ps.protein,
       carbs: ps.carbs,
@@ -899,29 +862,13 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry, voiceExpandIndex, onVoi
             ? Math.max(1, Math.round(Number.parseFloat(editServings.replace(",", ".")) || sr.servings))
             : sr.servings;
 
-          // Compute per-ingredient kcal so totals stay consistent with what's displayed.
-          // Used for both the collapsed header and the expanded details.
-          const ingKcals: (number | null)[] = displayIngredients.map((ing) => {
-            const parsed = extractNumber(ing.amount);
-            if (!parsed) return null;
-            const val = parseFloat(parsed.num.replace(",", "."));
-            if (val <= 0) return null;
-            if ((ing as any).per100g?.calories != null) {
-              return Math.round(((ing as any).per100g.calories / 100) * val);
-            }
-            const ingNameLower = ing.name.toLowerCase();
-            const food = foodDatabase.find((f) => f.name.toLowerCase() === ingNameLower)
-              || foodDatabase.find((f) => ingNameLower.includes(f.name.toLowerCase()) || f.name.toLowerCase().includes(ingNameLower));
-            if (food) return Math.round((food.calories / food.baseAmount) * val);
-            return null;
+          const derivedNutrition = deriveRecipeNutrition({
+            ...sr,
+            ingredients: displayIngredients,
+            servings: currentServings,
           });
-          const allHaveKcal = ingKcals.length > 0 && ingKcals.every((v) => v !== null);
-          const sumKcal = allHaveKcal ? ingKcals.reduce((s, v) => (s as number) + (v as number), 0)! : null;
-          const headerPerServingKcal = sumKcal !== null
-            ? Math.round(sumKcal / Math.max(1, currentServings))
-            : (currentServings !== sr.servings
-                ? Math.round(sr.totalMacros.calories / Math.max(1, currentServings))
-                : sr.perServing.calories);
+          const ingredientMacros = deriveRecipeIngredientMacros(displayIngredients);
+          const headerPerServingKcal = derivedNutrition.perServing.calories;
 
           return (
             <div key={sr.id} className="rounded-lg bg-background border border-border/50">
@@ -980,28 +927,8 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry, voiceExpandIndex, onVoi
 
               {/* Expanded details */}
               {expandedId === sr.id && (() => {
-                // Derive consistent totals: use summed ingredient kcal when available, keep AI ratios for macros
-                const displayTotal = { ...sr.totalMacros };
-                const displayPerServing = { ...sr.perServing };
-                if (sumKcal !== null && sr.totalMacros.calories > 0) {
-                  const ratio = sumKcal / sr.totalMacros.calories;
-                  displayTotal.calories = sumKcal;
-                  displayTotal.protein = Math.round(sr.totalMacros.protein * ratio * 10) / 10;
-                  displayTotal.fat = Math.round(sr.totalMacros.fat * ratio * 10) / 10;
-                  displayTotal.carbs = Math.round(sr.totalMacros.carbs * ratio * 10) / 10;
-                  displayTotal.fiber = Math.round(sr.totalMacros.fiber * ratio * 10) / 10;
-                  displayPerServing.calories = Math.round(sumKcal / currentServings);
-                  displayPerServing.protein = Math.round(displayTotal.protein / currentServings * 10) / 10;
-                  displayPerServing.fat = Math.round(displayTotal.fat / currentServings * 10) / 10;
-                  displayPerServing.carbs = Math.round(displayTotal.carbs / currentServings * 10) / 10;
-                  displayPerServing.fiber = Math.round(displayTotal.fiber / currentServings * 10) / 10;
-                } else if (currentServings !== sr.servings) {
-                  displayPerServing.calories = Math.round(displayTotal.calories / currentServings);
-                  displayPerServing.protein = Math.round(displayTotal.protein / currentServings * 10) / 10;
-                  displayPerServing.fat = Math.round(displayTotal.fat / currentServings * 10) / 10;
-                  displayPerServing.carbs = Math.round(displayTotal.carbs / currentServings * 10) / 10;
-                  displayPerServing.fiber = Math.round(displayTotal.fiber / currentServings * 10) / 10;
-                }
+                const displayTotal = derivedNutrition.totalMacros;
+                const displayPerServing = derivedNutrition.perServing;
 
 
 
@@ -1036,7 +963,7 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry, voiceExpandIndex, onVoi
                           const parsed = extractNumber(ing.amount);
                           const hasNumber = !!parsed;
 
-                          const ingKcal = ingKcals[i];
+                          const ingKcal = ingredientMacros[i]?.calories ?? null;
 
                           return (
                             <li key={i} className="text-[11px] text-foreground flex items-baseline gap-0">
