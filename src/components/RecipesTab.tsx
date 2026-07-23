@@ -866,6 +866,30 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry, voiceExpandIndex, onVoi
             ? Math.max(1, Math.round(Number.parseFloat(editServings.replace(",", ".")) || sr.servings))
             : sr.servings;
 
+          // Compute per-ingredient kcal so totals stay consistent with what's displayed.
+          // Used for both the collapsed header and the expanded details.
+          const ingKcals: (number | null)[] = displayIngredients.map((ing) => {
+            const parsed = extractNumber(ing.amount);
+            if (!parsed) return null;
+            const val = parseFloat(parsed.num.replace(",", "."));
+            if (val <= 0) return null;
+            if ((ing as any).per100g?.calories != null) {
+              return Math.round(((ing as any).per100g.calories / 100) * val);
+            }
+            const ingNameLower = ing.name.toLowerCase();
+            const food = foodDatabase.find((f) => f.name.toLowerCase() === ingNameLower)
+              || foodDatabase.find((f) => ingNameLower.includes(f.name.toLowerCase()) || f.name.toLowerCase().includes(ingNameLower));
+            if (food) return Math.round((food.calories / food.baseAmount) * val);
+            return null;
+          });
+          const allHaveKcal = ingKcals.length > 0 && ingKcals.every((v) => v !== null);
+          const sumKcal = allHaveKcal ? ingKcals.reduce((s, v) => (s as number) + (v as number), 0)! : null;
+          const headerPerServingKcal = sumKcal !== null
+            ? Math.round(sumKcal / Math.max(1, currentServings))
+            : (currentServings !== sr.servings
+                ? Math.round(sr.totalMacros.calories / Math.max(1, currentServings))
+                : sr.perServing.calories);
+
           return (
             <div key={sr.id} className="rounded-lg bg-background border border-border/50">
               {/* Header row */}
@@ -891,8 +915,9 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry, voiceExpandIndex, onVoi
                       <span className="block text-[11px] font-medium text-foreground">{sr.name}</span>
                     )}
                     <span className="block text-[10px] text-muted-foreground font-normal">
-                      {sr.perServing.calories} kcal/Portion · {currentServings} Portionen
+                      {headerPerServingKcal} kcal/Portion · {currentServings} Portionen
                     </span>
+
                   </div>
                 </button>
                 <div className="flex items-center gap-1 shrink-0 ml-2">
@@ -922,24 +947,6 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry, voiceExpandIndex, onVoi
 
               {/* Expanded details */}
               {expandedId === sr.id && (() => {
-                // Compute per-ingredient kcal so totals are always consistent with what's displayed
-                const ingKcals: (number | null)[] = (isEditing ? editIngredients : sr.ingredients).map((ing) => {
-                  const parsed = extractNumber(ing.amount);
-                  if (!parsed) return null;
-                  const val = parseFloat(parsed.num.replace(",", "."));
-                  if (val <= 0) return null;
-                  if ((ing as any).per100g?.calories != null) {
-                    return Math.round(((ing as any).per100g.calories / 100) * val);
-                  }
-                  const ingNameLower = ing.name.toLowerCase();
-                  const food = foodDatabase.find((f) => f.name.toLowerCase() === ingNameLower)
-                    || foodDatabase.find((f) => ingNameLower.includes(f.name.toLowerCase()) || f.name.toLowerCase().includes(ingNameLower));
-                  if (food) return Math.round((food.calories / food.baseAmount) * val);
-                  return null;
-                });
-                const allHaveKcal = ingKcals.every((v) => v !== null);
-                const sumKcal = allHaveKcal ? ingKcals.reduce((s, v) => s! + v!, 0)! : null;
-
                 // Derive consistent totals: use summed ingredient kcal when available, keep AI ratios for macros
                 const displayTotal = { ...sr.totalMacros };
                 const displayPerServing = { ...sr.perServing };
@@ -962,6 +969,8 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry, voiceExpandIndex, onVoi
                   displayPerServing.carbs = Math.round(displayTotal.carbs / currentServings * 10) / 10;
                   displayPerServing.fiber = Math.round(displayTotal.fiber / currentServings * 10) / 10;
                 }
+
+
 
                 return (
                 <div className="px-2.5 pb-2.5 space-y-2 border-t border-border/30 pt-2">
