@@ -562,7 +562,39 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry, voiceExpandIndex, onVoi
   const handleAddToLog = (recipe: SavedRecipe) => {
     const now = new Date();
     const time = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
-    const ps = recipe.perServing;
+
+    // Kalorien konsistent aus Zutatensumme ableiten (fällt zurück auf perServing)
+    const ingKcals: (number | null)[] = recipe.ingredients.map((ing) => {
+      const parsed = extractNumber(ing.amount);
+      if (!parsed) return null;
+      const val = parseFloat(parsed.num.replace(",", "."));
+      if (val <= 0) return null;
+      if ((ing as any).per100g?.calories != null) {
+        return Math.round(((ing as any).per100g.calories / 100) * val);
+      }
+      const ingNameLower = ing.name.toLowerCase();
+      const food = foodDatabase.find((f) => f.name.toLowerCase() === ingNameLower)
+        || foodDatabase.find((f) => ingNameLower.includes(f.name.toLowerCase()) || f.name.toLowerCase().includes(ingNameLower));
+      if (food) return Math.round((food.calories / food.baseAmount) * val);
+      return null;
+    });
+    const sumKcal = ingKcals.length > 0 && ingKcals.every((v) => v !== null)
+      ? (ingKcals as number[]).reduce((s, v) => s + v, 0)
+      : null;
+
+    const servings = Math.max(1, recipe.servings || 1);
+    let ps = { ...recipe.perServing };
+    if (sumKcal !== null && recipe.totalMacros.calories > 0) {
+      const ratio = sumKcal / recipe.totalMacros.calories;
+      ps = {
+        calories: Math.round(sumKcal / servings),
+        protein: Math.round((recipe.totalMacros.protein * ratio / servings) * 10) / 10,
+        fat: Math.round((recipe.totalMacros.fat * ratio / servings) * 10) / 10,
+        carbs: Math.round((recipe.totalMacros.carbs * ratio / servings) * 10) / 10,
+        fiber: Math.round((recipe.totalMacros.fiber * ratio / servings) * 10) / 10,
+      };
+    }
+
     // Flüssigkeit aus ml-Zutaten berechnen
     const recipeLiquidMl = recipe.ingredients.reduce((sum, ing) => {
       if (/ml\b/i.test(ing.amount)) {
@@ -571,9 +603,9 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry, voiceExpandIndex, onVoi
       }
       return sum;
     }, 0);
-    const entryLiquidMl = recipeLiquidMl > 0 ? Math.round(recipeLiquidMl / recipe.servings) : undefined;
+    const entryLiquidMl = recipeLiquidMl > 0 ? Math.round(recipeLiquidMl / servings) : undefined;
 
-    const micronutrients = estimateRecipeMicronutrients(recipe.ingredients, recipe.servings);
+    const micronutrients = estimateRecipeMicronutrients(recipe.ingredients, servings);
 
     const entry: NutritionEntry = {
       id: generateId(),
@@ -591,6 +623,7 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry, voiceExpandIndex, onVoi
       ...(micronutrients.minerals ? { minerals: micronutrients.minerals } : {}),
     };
     onAddEntry(entry);
+
 
     // Rezept als Lebensmittel registrieren (idempotent – auch beim Buchen)
     registerRecipeAsFood(recipe);
