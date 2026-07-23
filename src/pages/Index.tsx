@@ -21,6 +21,7 @@ import {
 import { loadEntries, saveEntries } from "@/lib/storage";
 import { applyEmbeddedTestDataset, hasConfiguredPersonalProfile, TestDataGender } from "@/lib/embeddedTestData";
 import { reloadFoodDatabase } from "@/data/foodDatabase";
+import { syncSavedRecipesAsFoods } from "@/lib/recipeAsFood";
 import NutritionForm from "@/components/NutritionForm";
 import NutritionTable, { TableViewMode } from "@/components/NutritionTable";
 import MacroBar from "@/components/MacroBar";
@@ -1164,6 +1165,7 @@ const Index = () => {
     const loadedActivities = loadBookedActivities();
     const loadedSupplements = loadSupplements();
     const loadedWeightLog = loadWeightLog();
+    syncSavedRecipesAsFoods();
 
     setEntries(loadedEntries);
     setProfile(loadedProfile);
@@ -1191,6 +1193,7 @@ const Index = () => {
         } else if (added > 0) {
           console.info(`[App] ${added} neue Lebensmittel aus Remote-DB geladen`);
           reloadFoodDatabase();
+          syncSavedRecipesAsFoods();
         }
       });
     }
