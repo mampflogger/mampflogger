@@ -38,6 +38,8 @@ interface DerivedRecipeNutrition {
   liquidPerServing: number;
 }
 
+const SAVED_RECIPES_KEY = "mampflogger-saved-recipes";
+
 function roundMacro(value: number): number {
   return Math.round(value * 10) / 10;
 }
@@ -210,5 +212,19 @@ export function registerRecipeAsFood(recipe: RecipeLike): void {
     updateFoodItem(existing.name, { ...existing, ...foodItem, name: existing.name });
   } else {
     addFoodItem(foodItem);
+  }
+}
+
+export function syncSavedRecipesAsFoods(): void {
+  try {
+    const raw = localStorage.getItem(SAVED_RECIPES_KEY);
+    if (!raw) return;
+
+    const recipes = JSON.parse(raw) as RecipeLike[];
+    if (!Array.isArray(recipes)) return;
+
+    recipes.forEach((recipe) => registerRecipeAsFood(recipe));
+  } catch (error) {
+    console.warn("[Recipes] Gespeicherte Rezepte konnten nicht als Lebensmittel synchronisiert werden", error);
   }
 }
