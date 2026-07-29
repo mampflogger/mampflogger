@@ -180,7 +180,7 @@ const MicronutrientCoverageCard = ({
     <div id={sectionId} data-section className={`glass-card rounded-xl p-3 ${highlighted ? "section-card-highlight" : ""}`}>
       <div className="flex items-center justify-between mb-3">
         <SectionHeading highlighted={highlighted} className="mb-0">
-          {title} <span className="text-[10px] font-normal text-muted-foreground">(Ø {daysInWindow} Tage)</span>
+          {title} <span className="text-[10px] font-normal text-muted-foreground">(Ø {daysWithData || daysInWindow} Tage)</span>
         </SectionHeading>
         {!editing ? (
           <button
