@@ -1071,6 +1071,46 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
         {renderEditor("section-makro-verteilung")}
       </div>
 
+      {/* Macro Distribution 30 days */}
+      {monthMacroTotals.daysWithData >= 30 && (
+        <div className="glass-card rounded-xl p-3">
+          <SectionHeading className="mb-2">Makro-Verteilung (Ø 30 Tage)</SectionHeading>
+          <div className="space-y-1.5">
+            {[
+              { label: "PRO", percent: monthMacroTotals.proteinPercent, grams: monthMacroTotals.avgProtein, goal: profile?.goalProteinG },
+              { label: "FAT", percent: monthMacroTotals.fatPercent, grams: monthMacroTotals.avgFat, goal: profile?.goalFatG },
+              { label: "KH", percent: monthMacroTotals.carbsPercent, grams: monthMacroTotals.avgCarbs, goal: profile?.goalCarbsG },
+              { label: "FIB", percent: monthMacroTotals.fiberPercent, grams: monthMacroTotals.avgFiber, goal: profile?.goalFiberG },
+            ].map((m) => {
+              const totalAvgG = monthMacroTotals.avgProtein + monthMacroTotals.avgFat + monthMacroTotals.avgCarbs + monthMacroTotals.avgFiber;
+              const goalPct = m.goal && totalAvgG > 0 ? Math.round((m.goal / totalAvgG) * 100) : null;
+              return (
+                <div key={m.label} className="flex items-center gap-2 text-[11px]">
+                  <span className="w-7 font-semibold text-muted-foreground shrink-0">{m.label}</span>
+                  <div className="relative flex-1 h-3 rounded-full overflow-hidden bg-muted">
+                    <div
+                      className="h-full rounded-full transition-all duration-500"
+                      style={{
+                        width: `${m.percent}%`,
+                        background: "linear-gradient(90deg, hsl(var(--primary) / 0.9), hsl(var(--primary) / 0.35))",
+                      }}
+                    />
+                    {goalPct !== null && goalPct > 0 && goalPct <= 100 && (
+                      <div
+                        className="absolute top-0 bottom-0 w-[2px]"
+                        style={{ left: `${goalPct}%`, backgroundColor: "hsl(var(--destructive))" }}
+                      />
+                    )}
+                  </div>
+                  <span className="w-10 text-right font-semibold tabular-nums text-foreground shrink-0">{m.grams}g</span>
+                  <span className="w-8 text-right tabular-nums text-muted-foreground shrink-0">{m.percent}%</span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
       {/* Weekly Nutrition Table */}
       <WeeklyNutritionTable
         entries={entries}
