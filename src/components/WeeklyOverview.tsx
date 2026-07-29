@@ -977,10 +977,10 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
                 {MACRO_HISTORY_GUIDE_TICKS.map((v) => (
                   <ReferenceLine key={v} y={v} stroke="hsl(var(--muted-foreground) / 0.25)" strokeWidth={0.5} />
                 ))}
-                {macroVisible.pro && <Line type="monotone" dataKey="pro" stroke="hsl(var(--primary))" strokeWidth={1.8} dot={false} isAnimationActive={false} />}
-                {macroVisible.fat && <Line type="monotone" dataKey="fat" stroke="hsl(var(--primary) / 0.6)" strokeWidth={1.5} dot={false} isAnimationActive={false} />}
-                {macroVisible.kh && <Line type="monotone" dataKey="kh" stroke="hsl(var(--primary) / 0.3)" strokeWidth={1.5} dot={false} isAnimationActive={false} />}
-                {macroVisible.fib && <Line type="monotone" dataKey="fib" stroke="hsl(var(--muted-foreground))" strokeWidth={1.2} strokeDasharray="3 3" dot={false} isAnimationActive={false} />}
+                {macroVisible.pro && <Line type="monotone" dataKey="pro" connectNulls stroke="hsl(var(--primary))" strokeWidth={1.8} dot={false} isAnimationActive={false} />}
+                {macroVisible.fat && <Line type="monotone" dataKey="fat" connectNulls stroke="hsl(var(--primary) / 0.6)" strokeWidth={1.5} dot={false} isAnimationActive={false} />}
+                {macroVisible.kh && <Line type="monotone" dataKey="kh" connectNulls stroke="hsl(var(--primary) / 0.3)" strokeWidth={1.5} dot={false} isAnimationActive={false} />}
+                {macroVisible.fib && <Line type="monotone" dataKey="fib" connectNulls stroke="hsl(var(--muted-foreground))" strokeWidth={1.2} strokeDasharray="3 3" dot={false} isAnimationActive={false} />}
               </LineChart>
             </ResponsiveContainer>
           </div>
