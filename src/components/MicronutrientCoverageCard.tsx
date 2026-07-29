@@ -173,7 +173,8 @@ const MicronutrientCoverageCard = ({
         fillWidth: `${Math.max(0, Math.min(coverage, 100))}%`,
       };
     });
-  }, [definitions, gender, kind, totals.minerals, totals.vitamins, customTargets, supplementTotals, daysInWindow]);
+  }, [definitions, gender, kind, totals.minerals, totals.vitamins, customTargets, supplementTotals, daysWithData]);
+
 
   return (
     <div id={sectionId} data-section className={`glass-card rounded-xl p-3 ${highlighted ? "section-card-highlight" : ""}`}>
