@@ -381,10 +381,15 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
       fat += s.totalFat;
       fiber += s.totalFiber;
     }
+    const firstEntryDate = entries.length > 0 ? entries.map(e => e.date).sort()[0] : null;
+    const historyStart = new Date(today);
+    historyStart.setDate(historyStart.getDate() - 29);
+    const hasMonthHistory = !!firstEntryDate && firstEntryDate <= formatDate(historyStart) && daysWithData > 0;
     const totalW = protein + carbs + fat + fiber;
     const dc = daysWithData || 1;
     return {
       daysWithData,
+      hasMonthHistory,
       proteinPercent: totalW > 0 ? Math.round((protein / totalW) * 100) : 0,
       carbsPercent: totalW > 0 ? Math.round((carbs / totalW) * 100) : 0,
       fatPercent: totalW > 0 ? Math.round((fat / totalW) * 100) : 0,
@@ -1072,7 +1077,7 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
       </div>
 
       {/* Macro Distribution 30 days */}
-      {monthMacroTotals.daysWithData >= 30 && (
+      {monthMacroTotals.hasMonthHistory && (
         <div className="glass-card rounded-xl p-3">
           <SectionHeading className="mb-2">Makro-Verteilung (Ø 30 Tage)</SectionHeading>
           <div className="space-y-1.5">
