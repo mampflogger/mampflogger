@@ -57,8 +57,11 @@ const NutritionCoach = ({
         d.setDate(d.getDate() - i);
         const dateStr = formatDate(d);
         const dayEntries = entries.filter((e) => e.date === dateStr);
+        // Tage ohne Einträge komplett ausklammern (keine Null-Tage in der Analyse)
+        if (dayEntries.length === 0) continue;
         allWeekEntries.push(...dayEntries);
         const summary = calculateDailySummary(dayEntries);
+
         const bonus = calculateBookedActivityBonus(bookedActivities, dateStr);
         const bmr = profile ? calculateBMR(profile) : null;
 
