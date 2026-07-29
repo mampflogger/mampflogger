@@ -144,15 +144,24 @@ const MicronutrientCoverageCard = ({
 
   const totals = useMemo(() => aggregateMicronutrients(visibleEntries), [visibleEntries]);
 
+  // Nur Tage mit tatsächlichen Einträgen zählen – leere Tage (z. B. fehlende Sync-Tage)
+  // dürfen den Durchschnitt nicht nach unten verfälschen.
+  const daysWithData = useMemo(() => {
+    const set = new Set(visibleEntries.map((e) => e.date));
+    return set.size;
+  }, [visibleEntries]);
+
   const items = useMemo(() => {
     const source = kind === "vitamins" ? totals.vitamins : totals.minerals;
+    const divisor = daysWithData > 0 ? daysWithData : 1;
 
     return definitions.map((definition) => {
       const weeklyTotal = source[definition.key] ?? 0;
-      // Add daily supplement contribution (supplement amount × days in window)
+      // Add daily supplement contribution (supplement amount × days with data)
       const supplementDaily = supplementTotals?.[definition.key] ?? 0;
-      const totalWithSupplements = weeklyTotal + (supplementDaily * daysInWindow);
-      const averageDaily = totalWithSupplements / daysInWindow;
+      const totalWithSupplements = weeklyTotal + (supplementDaily * divisor);
+      const averageDaily = totalWithSupplements / divisor;
+
       const defaultTarget = getMicronutrientTarget(definition, gender);
       const target = customTargets[definition.key] !== undefined ? customTargets[definition.key] : defaultTarget;
       const coverage = target && target > 0 ? (averageDaily / target) * 100 : 0;
