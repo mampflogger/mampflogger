@@ -211,7 +211,9 @@ export function registerRecipeAsFood(recipe: RecipeLike): void {
   if (existing) {
     updateFoodItem(existing.name, { ...existing, ...foodItem, name: existing.name });
   } else {
-    addFoodItem(foodItem);
+    // Rezeptwerte sind bereits aus Zutaten berechnet. Keine zusätzliche KI-Anreicherung
+    // starten, sonst lösen gespeicherte Rezepte beim App-Start unnötige food-lookup-Calls aus.
+    addFoodItem(foodItem, true);
   }
 }
 

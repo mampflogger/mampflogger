@@ -159,8 +159,12 @@ Regeln:
         });
       }
       if (response.status === 402) {
-        return new Response(JSON.stringify({ error: "KI-Kontingent erschöpft." }), {
-          status: 402,
+        return new Response(JSON.stringify({
+          success: false,
+          code: "ai_quota_exhausted",
+          error: "KI-Kontingent erschöpft.",
+        }), {
+          status: 200,
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
