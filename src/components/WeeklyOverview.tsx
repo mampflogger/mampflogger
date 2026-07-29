@@ -364,6 +364,39 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
     };
   }, [entries, selectedDate, profile, bookedActivities, weightLog]);
 
+  // Macro distribution over the last 30 days (only shown with enough history)
+  const monthMacroTotals = useMemo(() => {
+    const today = new Date(selectedDate + "T00:00:00");
+    let protein = 0, carbs = 0, fat = 0, fiber = 0, daysWithData = 0;
+    for (let i = 29; i >= 0; i--) {
+      const d = new Date(today);
+      d.setDate(d.getDate() - i);
+      const dateStr = formatDate(d);
+      const dayEntries = entries.filter((e) => e.date === dateStr);
+      if (dayEntries.length === 0) continue;
+      daysWithData++;
+      const s = calculateDailySummary(dayEntries);
+      protein += s.totalProtein;
+      carbs += s.totalCarbs;
+      fat += s.totalFat;
+      fiber += s.totalFiber;
+    }
+    const totalW = protein + carbs + fat + fiber;
+    const dc = daysWithData || 1;
+    return {
+      daysWithData,
+      proteinPercent: totalW > 0 ? Math.round((protein / totalW) * 100) : 0,
+      carbsPercent: totalW > 0 ? Math.round((carbs / totalW) * 100) : 0,
+      fatPercent: totalW > 0 ? Math.round((fat / totalW) * 100) : 0,
+      fiberPercent: totalW > 0 ? Math.round((fiber / totalW) * 100) : 0,
+      avgProtein: Math.round(protein / dc),
+      avgCarbs: Math.round(carbs / dc),
+      avgFat: Math.round(fat / dc),
+      avgFiber: Math.round(fiber / dc),
+    };
+  }, [entries, selectedDate]);
+
+
   const daysToGoal = useMemo(() => {
     if (!profile || !profile.goalWeightKg) return null;
     // Prefer 30-day avg deficit when a full month of data exists; otherwise fall back to 7-day avg.
