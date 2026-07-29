@@ -364,6 +364,44 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
     };
   }, [entries, selectedDate, profile, bookedActivities, weightLog]);
 
+  // Macro distribution over the last 30 days (only shown with enough history)
+  const monthMacroTotals = useMemo(() => {
+    const today = new Date(selectedDate + "T00:00:00");
+    let protein = 0, carbs = 0, fat = 0, fiber = 0, daysWithData = 0;
+    for (let i = 29; i >= 0; i--) {
+      const d = new Date(today);
+      d.setDate(d.getDate() - i);
+      const dateStr = formatDate(d);
+      const dayEntries = entries.filter((e) => e.date === dateStr);
+      if (dayEntries.length === 0) continue;
+      daysWithData++;
+      const s = calculateDailySummary(dayEntries);
+      protein += s.totalProtein;
+      carbs += s.totalCarbs;
+      fat += s.totalFat;
+      fiber += s.totalFiber;
+    }
+    const firstEntryDate = entries.length > 0 ? entries.map(e => e.date).sort()[0] : null;
+    const historyStart = new Date(today);
+    historyStart.setDate(historyStart.getDate() - 29);
+    const hasMonthHistory = !!firstEntryDate && firstEntryDate <= formatDate(historyStart) && daysWithData > 0;
+    const totalW = protein + carbs + fat + fiber;
+    const dc = daysWithData || 1;
+    return {
+      daysWithData,
+      hasMonthHistory,
+      proteinPercent: totalW > 0 ? Math.round((protein / totalW) * 100) : 0,
+      carbsPercent: totalW > 0 ? Math.round((carbs / totalW) * 100) : 0,
+      fatPercent: totalW > 0 ? Math.round((fat / totalW) * 100) : 0,
+      fiberPercent: totalW > 0 ? Math.round((fiber / totalW) * 100) : 0,
+      avgProtein: Math.round(protein / dc),
+      avgCarbs: Math.round(carbs / dc),
+      avgFat: Math.round(fat / dc),
+      avgFiber: Math.round(fiber / dc),
+    };
+  }, [entries, selectedDate]);
+
+
   const daysToGoal = useMemo(() => {
     if (!profile || !profile.goalWeightKg) return null;
     // Prefer 30-day avg deficit when a full month of data exists; otherwise fall back to 7-day avg.
@@ -1037,6 +1075,46 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
         </div>
         {renderEditor("section-makro-verteilung")}
       </div>
+
+      {/* Macro Distribution 30 days */}
+      {monthMacroTotals.hasMonthHistory && (
+        <div className="glass-card rounded-xl p-3">
+          <SectionHeading className="mb-2">Makro-Verteilung (Ø 30 Tage)</SectionHeading>
+          <div className="space-y-1.5">
+            {[
+              { label: "PRO", percent: monthMacroTotals.proteinPercent, grams: monthMacroTotals.avgProtein, goal: profile?.goalProteinG },
+              { label: "FAT", percent: monthMacroTotals.fatPercent, grams: monthMacroTotals.avgFat, goal: profile?.goalFatG },
+              { label: "KH", percent: monthMacroTotals.carbsPercent, grams: monthMacroTotals.avgCarbs, goal: profile?.goalCarbsG },
+              { label: "FIB", percent: monthMacroTotals.fiberPercent, grams: monthMacroTotals.avgFiber, goal: profile?.goalFiberG },
+            ].map((m) => {
+              const totalAvgG = monthMacroTotals.avgProtein + monthMacroTotals.avgFat + monthMacroTotals.avgCarbs + monthMacroTotals.avgFiber;
+              const goalPct = m.goal && totalAvgG > 0 ? Math.round((m.goal / totalAvgG) * 100) : null;
+              return (
+                <div key={m.label} className="flex items-center gap-2 text-[11px]">
+                  <span className="w-7 font-semibold text-muted-foreground shrink-0">{m.label}</span>
+                  <div className="relative flex-1 h-3 rounded-full overflow-hidden bg-muted">
+                    <div
+                      className="h-full rounded-full transition-all duration-500"
+                      style={{
+                        width: `${m.percent}%`,
+                        background: "linear-gradient(90deg, hsl(var(--primary) / 0.9), hsl(var(--primary) / 0.35))",
+                      }}
+                    />
+                    {goalPct !== null && goalPct > 0 && goalPct <= 100 && (
+                      <div
+                        className="absolute top-0 bottom-0 w-[2px]"
+                        style={{ left: `${goalPct}%`, backgroundColor: "hsl(var(--destructive))" }}
+                      />
+                    )}
+                  </div>
+                  <span className="w-10 text-right font-semibold tabular-nums text-foreground shrink-0">{m.grams}g</span>
+                  <span className="w-8 text-right tabular-nums text-muted-foreground shrink-0">{m.percent}%</span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {/* Weekly Nutrition Table */}
       <WeeklyNutritionTable
