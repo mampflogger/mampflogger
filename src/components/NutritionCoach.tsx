@@ -57,8 +57,11 @@ const NutritionCoach = ({
         d.setDate(d.getDate() - i);
         const dateStr = formatDate(d);
         const dayEntries = entries.filter((e) => e.date === dateStr);
+        // Tage ohne Einträge komplett ausklammern (keine Null-Tage in der Analyse)
+        if (dayEntries.length === 0) continue;
         allWeekEntries.push(...dayEntries);
         const summary = calculateDailySummary(dayEntries);
+
         const bonus = calculateBookedActivityBonus(bookedActivities, dateStr);
         const bmr = profile ? calculateBMR(profile) : null;
 
@@ -85,23 +88,25 @@ const NutritionCoach = ({
         });
       }
 
-      // Build micronutrient summary
+      // Build micronutrient summary – nur Tage mit Einträgen zählen
       const gender: MicronutrientGender = profile?.gender === "female" ? "female" : "male";
       const microTotals = aggregateMicronutrients(allWeekEntries);
+      const microDays = new Set(allWeekEntries.map((e) => e.date)).size || 1;
       const microSummary = {
         vitamins: VITAMIN_DEFINITIONS.map((d) => ({
           name: `${d.label} (${d.fullName})`,
           unit: d.unit,
-          avgDaily: +(microTotals.vitamins[d.key] / 7).toFixed(2),
+          avgDaily: +(microTotals.vitamins[d.key] / microDays).toFixed(2),
           target: getMicronutrientTarget(d, gender),
         })),
         minerals: MINERAL_DEFINITIONS.map((d) => ({
           name: `${d.label} (${d.fullName})`,
           unit: d.unit,
-          avgDaily: +(microTotals.minerals[d.key] / 7).toFixed(2),
+          avgDaily: +(microTotals.minerals[d.key] / microDays).toFixed(2),
           target: getMicronutrientTarget(d, gender),
         })),
       };
+
 
       const { data, error } = await supabase.functions.invoke("nutrition-coach", {
         body: { weekData, profile, micronutrients: microSummary },

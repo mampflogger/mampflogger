@@ -537,12 +537,18 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
   const macroHistory = useMemo(() => {
     const days = macroDays;
     const today = new Date(selectedDate + "T00:00:00");
-    const raw: { t: number; date: string; pro: number; fat: number; kh: number; fib: number }[] = [];
+    type MacroPoint = { t: number; date: string; pro: number | null; fat: number | null; kh: number | null; fib: number | null };
+    const raw: MacroPoint[] = [];
     for (let i = days; i >= 1; i--) {
       const d = new Date(today);
       d.setDate(d.getDate() - i);
       const dateStr = formatDate(d);
       const dayEntries = entries.filter((e) => e.date === dateStr);
+      if (dayEntries.length === 0) {
+        // Tage ohne jegliche Einträge werden komplett ausgeklammert (Lücke statt 0-Wert).
+        raw.push({ t: days - i, date: dateStr, pro: null, fat: null, kh: null, fib: null });
+        continue;
+      }
       const s = calculateDailySummary(dayEntries);
       raw.push({
         t: days - i,
@@ -553,24 +559,26 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
         fib: s.totalFiber,
       });
     }
-    const hasData = raw.some((p) => p.pro + p.fat + p.kh + p.fib > 0);
+    const hasData = raw.some((p) => p.pro !== null);
     if (!hasData) return null;
     if (!macroSmooth) return raw;
-    // Centered moving average over `macroSmoothWindow` days
+    // Centered moving average over `macroSmoothWindow` days – leere Tage zählen nicht mit
     const w = macroSmoothWindow;
     const half = Math.floor(w / 2);
     const keys = ["pro", "fat", "kh", "fib"] as const;
-    return raw.map((_, idx) => {
+    return raw.map((point, idx) => {
+      if (point.pro === null) return point;
       const start = Math.max(0, idx - half);
       const end = Math.min(raw.length, idx + half + 1);
-      const slice = raw.slice(start, end);
-      const avg: any = { t: raw[idx].t, date: raw[idx].date };
+      const slice = raw.slice(start, end).filter((p) => p.pro !== null);
+      const avg: MacroPoint = { t: point.t, date: point.date, pro: null, fat: null, kh: null, fib: null };
       for (const k of keys) {
-        avg[k] = Math.round(slice.reduce((sum, p) => sum + p[k], 0) / slice.length);
+        avg[k] = Math.round(slice.reduce((sum, p) => sum + (p[k] as number), 0) / slice.length);
       }
       return avg;
     });
   }, [entries, selectedDate, macroDays, macroSmooth, macroSmoothWindow]);
+
 
 
 
@@ -969,10 +977,10 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
                 {MACRO_HISTORY_GUIDE_TICKS.map((v) => (
                   <ReferenceLine key={v} y={v} stroke="hsl(var(--muted-foreground) / 0.25)" strokeWidth={0.5} />
                 ))}
-                {macroVisible.pro && <Line type="monotone" dataKey="pro" stroke="hsl(var(--primary))" strokeWidth={1.8} dot={false} isAnimationActive={false} />}
-                {macroVisible.fat && <Line type="monotone" dataKey="fat" stroke="hsl(var(--primary) / 0.6)" strokeWidth={1.5} dot={false} isAnimationActive={false} />}
-                {macroVisible.kh && <Line type="monotone" dataKey="kh" stroke="hsl(var(--primary) / 0.3)" strokeWidth={1.5} dot={false} isAnimationActive={false} />}
-                {macroVisible.fib && <Line type="monotone" dataKey="fib" stroke="hsl(var(--muted-foreground))" strokeWidth={1.2} strokeDasharray="3 3" dot={false} isAnimationActive={false} />}
+                {macroVisible.pro && <Line type="monotone" dataKey="pro" connectNulls stroke="hsl(var(--primary))" strokeWidth={1.8} dot={false} isAnimationActive={false} />}
+                {macroVisible.fat && <Line type="monotone" dataKey="fat" connectNulls stroke="hsl(var(--primary) / 0.6)" strokeWidth={1.5} dot={false} isAnimationActive={false} />}
+                {macroVisible.kh && <Line type="monotone" dataKey="kh" connectNulls stroke="hsl(var(--primary) / 0.3)" strokeWidth={1.5} dot={false} isAnimationActive={false} />}
+                {macroVisible.fib && <Line type="monotone" dataKey="fib" connectNulls stroke="hsl(var(--muted-foreground))" strokeWidth={1.2} strokeDasharray="3 3" dot={false} isAnimationActive={false} />}
               </LineChart>
             </ResponsiveContainer>
           </div>
