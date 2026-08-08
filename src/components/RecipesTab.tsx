@@ -703,7 +703,7 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry, voiceExpandIndex, onVoi
         ingredients: finalIngredients,
         servings: normalizedServings,
       });
-      const updatedIngredients = data.ingredients || finalIngredients;
+      const updatedIngredients = data?.ingredients || finalIngredients;
       const totalMacros = data?.totalMacros || localDerived.totalMacros;
       const perServing = data?.perServing || localDerived.perServing;
       const updatedSteps = data?.steps || recipe.steps;
