@@ -550,7 +550,13 @@ const ManualRecipeForm = ({ onSave, onCancel, voiceInputRef, isVoiceActive = fal
       };
 
       onSave(recipe);
-      toast({ title: "Gespeichert!", description: `${recipe.name} wurde angelegt.` });
+      toast({
+        title: "Gespeichert!",
+        description: aiUnavailable
+          ? `${recipe.name} lokal berechnet gespeichert (KI nicht verfügbar).`
+          : `${recipe.name} wurde angelegt.`,
+      });
+
     } catch (e) {
       console.error("Manual recipe save error:", e);
       toast({ title: "Fehler", description: "Rezept konnte nicht gespeichert werden.", variant: "destructive" });
