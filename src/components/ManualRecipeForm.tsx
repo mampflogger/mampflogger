@@ -9,6 +9,8 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { foodDatabase, saveFoodDatabase, guessCategory, type FoodItem } from "@/data/foodDatabase";
 import { mergeGermanSpokenNumberTranscript, parseGermanSpokenNumber, shouldDeferGermanSpokenNumber } from "@/lib/spokenNumbers";
+import { deriveRecipeNutrition } from "@/lib/recipeAsFood";
+
 
 interface RecipeMacros {
   calories: number;
@@ -470,8 +472,10 @@ const ManualRecipeForm = ({ onSave, onCancel, voiceInputRef, isVoiceActive = fal
       : [];
 
     setSaving(true);
+    let data: any = null;
+    let aiUnavailable = false;
     try {
-      const { data, error } = await supabase.functions.invoke("recipe-recalculate", {
+      const res = await supabase.functions.invoke("recipe-recalculate", {
         body: {
           ingredients: finalIngredients,
           servings: servingsNum,
@@ -480,18 +484,32 @@ const ManualRecipeForm = ({ onSave, onCancel, voiceInputRef, isVoiceActive = fal
           generateSteps: aiGenerateSteps || userSteps.length === 0,
         },
       });
-
-      if (error) throw error;
-      if (data?.error) {
-        toast({ title: "Fehler", description: data.error, variant: "destructive" });
-        setSaving(false);
-        return;
+      if (res.error || res.data?.error) {
+        aiUnavailable = true;
+        console.warn("recipe-recalculate nicht verfügbar:", res.error || res.data?.error);
+      } else {
+        data = res.data;
       }
+    } catch (e) {
+      aiUnavailable = true;
+      console.warn("recipe-recalculate Aufruf fehlgeschlagen:", e);
+    }
 
-      const totalMacros = data.totalMacros || { calories: 0, protein: 0, fat: 0, carbs: 0, fiber: 0 };
-      const perServing = data.perServing || { calories: 0, protein: 0, fat: 0, carbs: 0, fiber: 0 };
-      const steps = data.steps || userSteps;
-      const updatedIngredients = data.ingredients || finalIngredients;
+    try {
+      // Fallback: Nährwerte lokal aus der Lebensmittel-Datenbank berechnen,
+      // damit Rezepte auch ohne KI gespeichert werden können.
+      const localDerived = deriveRecipeNutrition({
+        name: name.trim(),
+        servings: servingsNum,
+        ingredients: finalIngredients,
+        perServing: { calories: 0, protein: 0, fat: 0, carbs: 0, fiber: 0 },
+      });
+
+      const totalMacros = data?.totalMacros || localDerived.totalMacros;
+      const perServing = data?.perServing || localDerived.perServing;
+      const steps = data?.steps || userSteps;
+      const updatedIngredients = data?.ingredients || finalIngredients;
+
 
       // Add new foods to database
       if (data.ingredients && Array.isArray(data.ingredients)) {
@@ -532,7 +550,13 @@ const ManualRecipeForm = ({ onSave, onCancel, voiceInputRef, isVoiceActive = fal
       };
 
       onSave(recipe);
-      toast({ title: "Gespeichert!", description: `${recipe.name} wurde angelegt.` });
+      toast({
+        title: "Gespeichert!",
+        description: aiUnavailable
+          ? `${recipe.name} lokal berechnet gespeichert (KI nicht verfügbar).`
+          : `${recipe.name} wurde angelegt.`,
+      });
+
     } catch (e) {
       console.error("Manual recipe save error:", e);
       toast({ title: "Fehler", description: "Rezept konnte nicht gespeichert werden.", variant: "destructive" });
