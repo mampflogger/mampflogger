@@ -512,7 +512,7 @@ const ManualRecipeForm = ({ onSave, onCancel, voiceInputRef, isVoiceActive = fal
 
 
       // Add new foods to database
-      if (data.ingredients && Array.isArray(data.ingredients)) {
+      if (data?.ingredients && Array.isArray(data.ingredients)) {
         const existingNames = new Set(foodDatabase.map(f => f.name.toLowerCase()));
         const newFoods: FoodItem[] = [];
         for (const ing of data.ingredients) {
