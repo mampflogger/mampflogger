@@ -671,12 +671,11 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry, voiceExpandIndex, onVoi
 
     const normalizedServings = Math.max(1, Math.round(Number.parseFloat(editServings.replace(",", ".")) || recipe.servings));
 
-    // Always recalculate when user explicitly saves (even if ingredients look the same)
-
-    // Recalculate macros via AI
     setRecalculating(true);
+    let data: any = null;
+    let aiUnavailable = false;
     try {
-      const { data, error } = await supabase.functions.invoke("recipe-recalculate", {
+      const result = await supabase.functions.invoke("recipe-recalculate", {
         body: {
           ingredients: finalIngredients,
           servings: normalizedServings,
@@ -685,20 +684,32 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry, voiceExpandIndex, onVoi
         },
       });
 
-      if (error) throw error;
-      if (data?.error) {
-        toast({ title: "Fehler", description: data.error, variant: "destructive" });
-        setRecalculating(false);
-        return;
+      if (result.error || result.data?.error) {
+        aiUnavailable = true;
+        console.warn("recipe-recalculate nicht verfügbar:", result.error || result.data?.error);
+      } else {
+        data = result.data;
       }
+    } catch (error) {
+      aiUnavailable = true;
+      console.warn("recipe-recalculate Aufruf fehlgeschlagen:", error);
+    }
 
-      const updatedIngredients = data.ingredients || finalIngredients;
-      const totalMacros = data.totalMacros || recipe.totalMacros;
-      const perServing = data.perServing || recipe.perServing;
-      const updatedSteps = data.steps || recipe.steps;
+    try {
+      const finalName = editName.trim() || recipe.name;
+      const localDerived = deriveRecipeNutrition({
+        ...recipe,
+        name: finalName,
+        ingredients: finalIngredients,
+        servings: normalizedServings,
+      });
+      const updatedIngredients = data?.ingredients || finalIngredients;
+      const totalMacros = data?.totalMacros || localDerived.totalMacros;
+      const perServing = data?.perServing || localDerived.perServing;
+      const updatedSteps = data?.steps || recipe.steps;
 
       // Add new ingredients to food database
-      if (data.ingredients && Array.isArray(data.ingredients)) {
+      if (data?.ingredients && Array.isArray(data.ingredients)) {
         const existingNames = new Set(foodDatabase.map(f => f.name.toLowerCase()));
         const newFoods: FoodItem[] = [];
 
@@ -726,17 +737,21 @@ const RecipesTab = ({ entries, selectedDate, onAddEntry, voiceExpandIndex, onVoi
         }
       }
 
-      const finalName = editName.trim() || recipe.name;
       const updatedRecipe: SavedRecipe = { ...recipe, name: finalName, ingredients: updatedIngredients, servings: normalizedServings, totalMacros, perServing, steps: updatedSteps };
       setSavedRecipes((prev) =>
         prev.map((r) => (r.id === recipeId ? updatedRecipe : r))
       );
       registerRecipeAsFood(updatedRecipe);
       stopEditing();
-      toast({ title: "Gespeichert", description: "Rezept, Nährwerte und Zubereitung wurden aktualisiert." });
+      toast({
+        title: "Gespeichert",
+        description: aiUnavailable
+          ? "Rezept wurde gespeichert; Nährwerte wurden lokal berechnet."
+          : "Rezept, Nährwerte und Zubereitung wurden aktualisiert.",
+      });
     } catch (e) {
-      console.error("Recalculate error:", e);
-      toast({ title: "Fehler", description: "Nährwerte konnten nicht neu berechnet werden.", variant: "destructive" });
+      console.error("Recipe save error:", e);
+      toast({ title: "Fehler", description: "Rezept konnte nicht gespeichert werden.", variant: "destructive" });
     } finally {
       setRecalculating(false);
     }
