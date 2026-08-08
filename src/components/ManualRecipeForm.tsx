@@ -9,6 +9,8 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { foodDatabase, saveFoodDatabase, guessCategory, type FoodItem } from "@/data/foodDatabase";
 import { mergeGermanSpokenNumberTranscript, parseGermanSpokenNumber, shouldDeferGermanSpokenNumber } from "@/lib/spokenNumbers";
+import { deriveRecipeNutrition } from "@/lib/recipeAsFood";
+
 
 interface RecipeMacros {
   calories: number;
