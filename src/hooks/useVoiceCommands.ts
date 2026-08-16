@@ -319,7 +319,7 @@ export const SECTION_SETTINGS_TAB: Record<string, string> = {
   "section-loeschen": "data",
 };
 
-const INACTIVITY_TIMEOUT_MS = 60_000;
+const INACTIVITY_TIMEOUT_MS = 180_000;
 
 interface UseVoiceCommandsOptions {
   onCommand: (action: string) => void;
@@ -394,7 +394,7 @@ export function useVoiceCommands({ onCommand, onUnhandledSpeech }: UseVoiceComma
         isArmedRef.current = false;
         setIsArmed(false);
         clearInactivityTimeout();
-        toast("🎤 Mikrofon nach 1 Min. Inaktivität in Standby.");
+        toast("🎤 Mikrofon nach 3 Min. Inaktivität in Standby.");
       }, INACTIVITY_TIMEOUT_MS);
     }
   }, [clearInactivityTimeout]);
