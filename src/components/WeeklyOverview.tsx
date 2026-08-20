@@ -532,7 +532,7 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
 
   // Daily macro history (Makroverlauf) – timeframe configurable
   const [macroDays, setMacroDays] = useState<30 | 60 | 90 | 180>(30);
-  const [macroSmooth, setMacroSmooth] = useState(false);
+  const [macroSmooth, setMacroSmooth] = useState(true);
   const macroSmoothWindow = macroDays === 30 ? 7 : macroDays === 60 ? 7 : macroDays === 90 ? 14 : 21;
   const macroHistory = useMemo(() => {
     const days = macroDays;
