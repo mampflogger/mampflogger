@@ -371,8 +371,8 @@ export function useVoiceCommands({ onCommand, onUnhandledSpeech }: UseVoiceComma
   onCommandRef.current = onCommand;
   onUnhandledRef.current = onUnhandledSpeech;
 
-  const [isArmed, setIsArmed] = useState(false);
-  const isArmedRef = useRef(false);
+  const [isArmed, setIsArmed] = useState(true);
+  const isArmedRef = useRef(true);
   const activationTriggeredRef = useRef(false);
   const manuallyStoppedRef = useRef(false);
 
@@ -587,12 +587,17 @@ export function useVoiceCommands({ onCommand, onUnhandledSpeech }: UseVoiceComma
     if (!isSupported) return;
 
     const timer = window.setTimeout(() => {
-      if (manuallyStoppedRef.current || isListening || isArmedRef.current) return;
-      startRecognition({ silent: true });
+      if (manuallyStoppedRef.current || isListening) return;
+      if (isArmedRef.current) {
+        startRecognition({ forceRestart: true });
+        resetTimeout();
+      } else {
+        startRecognition({ silent: true });
+      }
     }, 800);
 
     return () => window.clearTimeout(timer);
-  }, [isListening, isSupported, startRecognition]);
+  }, [isListening, isSupported, startRecognition, resetTimeout]);
 
   const stop = useCallback(() => {
     manuallyStoppedRef.current = true;
