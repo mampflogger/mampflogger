@@ -251,7 +251,10 @@ const FUZZY_KEYWORD_MAP: [string, string][] = [
   ["backup", "section:backup"],
   ["sicherung", "section:backup"],
   ["sichern", "backup-create"],
+  ["sicherungskopie", "backup-create"],
+  ["speichern", "backup-create"],
   ["upload", "backup-create"],
+
   ["laden", "backup-load"],
   ["download", "backup-load"],
   ["einstellungen", "settings:open"],
