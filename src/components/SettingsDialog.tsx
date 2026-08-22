@@ -45,7 +45,7 @@ import RecipeGenerator from "@/components/RecipeGenerator";
 import RecipesTab from "@/components/RecipesTab";
 import { CloudBackupSettings } from "@/components/CloudBackupSettings";
 import VoiceControlOverlay from "@/components/VoiceControlOverlay";
-import { collectManualBackupSnapshot, queuePendingManualCloudRestoreSnapshot, restoreManualBackupSnapshot } from "@/lib/cloudBackup";
+import { collectManualBackupSnapshot, downloadManualBackupFile, queuePendingManualCloudRestoreSnapshot, restoreManualBackupSnapshot } from "@/lib/cloudBackup";
 
 type SettingsTab = "profile" | "design" | "food" | "recipes" | "data";
 
