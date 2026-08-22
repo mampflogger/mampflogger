@@ -140,6 +140,15 @@ const COMMANDS: VoiceCommand[] = [
   { patterns: [/\brezepte?\b/i], action: "settings:recipes" },
   { patterns: [/\bdaten\b/i], action: "settings:data" },
 
+  // Global backup save: "speichern" only when no input/form is focused
+  // (inside forms "speichern" must keep saving the current entry).
+  { patterns: [/\bsicherungskopie\b/i], action: "backup-create" },
+  {
+    patterns: [/\bspeichern\b/i, /\bspeicherung\b/i],
+    action: () => (getVoiceCommandScope() === "global" ? "backup-create" : null),
+  },
+
+
   // Theme – specific color commands BEFORE generic "design"
   { patterns: [/\bdesign\s+blau\b/i, /\bblau(?:es?)?\s+design\b/i], action: "theme:blue" },
   { patterns: [/\bdesign\s+gelb\b/i, /\bgelb(?:es?)?\s+design\b/i], action: "theme:yellow" },
