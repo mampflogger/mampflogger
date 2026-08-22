@@ -57,6 +57,19 @@ export function collectManualBackupSnapshot(storage: Storage = localStorage): Re
   return collectCloudBackupSnapshot(storage);
 }
 
+/** Creates and downloads a manual backup file (JSON). Usable from anywhere in the app. */
+export function downloadManualBackupFile(): void {
+  const backup = collectManualBackupSnapshot();
+  const blob = new Blob([JSON.stringify(backup, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `mampflogger-backup-${new Date().toISOString().slice(0, 10)}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+
 export function queuePendingManualCloudRestoreSnapshot(snapshot: Record<string, unknown>, userId: string | null): void {
   const payload: PendingManualRestore = { userId, snapshot };
   sessionStorage.setItem(PENDING_MANUAL_RESTORE_SESSION_KEY, JSON.stringify(payload));

@@ -45,7 +45,7 @@ import RecipeGenerator from "@/components/RecipeGenerator";
 import RecipesTab from "@/components/RecipesTab";
 import { CloudBackupSettings } from "@/components/CloudBackupSettings";
 import VoiceControlOverlay from "@/components/VoiceControlOverlay";
-import { collectManualBackupSnapshot, queuePendingManualCloudRestoreSnapshot, restoreManualBackupSnapshot } from "@/lib/cloudBackup";
+import { collectManualBackupSnapshot, downloadManualBackupFile, queuePendingManualCloudRestoreSnapshot, restoreManualBackupSnapshot } from "@/lib/cloudBackup";
 
 type SettingsTab = "profile" | "design" | "food" | "recipes" | "data";
 
@@ -2356,16 +2356,10 @@ const SettingsDialog = ({
                   size="sm"
                   className="h-9 text-xs gap-1.5"
                   onClick={() => {
-                    const backup = collectManualBackupSnapshot();
-                    const blob = new Blob([JSON.stringify(backup, null, 2)], { type: "application/json" });
-                    const url = URL.createObjectURL(blob);
-                    const a = document.createElement("a");
-                    a.href = url;
-                    a.download = `mampflogger-backup-${new Date().toISOString().slice(0, 10)}.json`;
-                    a.click();
-                    URL.revokeObjectURL(url);
+                    downloadManualBackupFile();
                     toast.success("Backup erstellt und heruntergeladen!");
                   }}
+
                 >
                   <Upload className="w-3.5 h-3.5" />
                   Speichern
