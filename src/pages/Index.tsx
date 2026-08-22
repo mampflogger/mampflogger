@@ -563,13 +563,15 @@ const Index = () => {
         window.dispatchEvent(new Event("mampflogger:toggle-goal-date"));
       }
       else if (action === "backup-create") {
-        if (!settingsOpenRef.current) {
-          setSettingsVoiceTab("data");
-          setTimeout(() => setSettingsVoiceAction("backup-create"), 300);
-        } else {
-          setSettingsVoiceAction("backup-create");
+        // Global: works from any tab, no need to open settings
+        try {
+          downloadManualBackupFile();
+          toast.success("Backup erstellt und heruntergeladen!");
+        } catch {
+          toast.error("Backup konnte nicht erstellt werden.");
         }
       }
+
       else if (action === "backup-load") {
         if (!settingsOpenRef.current) {
           setSettingsVoiceTab("data");
