@@ -70,7 +70,7 @@ const DEFAULT_HELP_TEXTS: Record<string, string> = {
 
   "section-export": `Hier kannst du deine Daten als CSV-Dateien exportieren. Du hast die Wahl zwischen verschiedenen Export-Formaten: Ernährungseinträge, Lebensmitteldatenbank, Kalorienbilanz oder Aktivitäten. Die exportierten Dateien kannst du in anderen Programmen wie Excel öffnen.`,
 
-  "section-backup": `Im Backup-Bereich kannst du eine lokale Sicherungsdatei deiner gesamten App-Daten erstellen. Das Backup enthält alle Einträge, Einstellungen und Lebensmitteldaten als JSON-Datei. Du kannst ein Backup auch wiederherstellen, um deine Daten auf einem anderen Gerät zu laden.`,
+  "section-backup": `Im Bereich Sicherung kannst du eine lokale Sicherungsdatei deiner gesamten App-Daten erstellen. Die Sicherung enthält alle Einträge, Einstellungen und Lebensmitteldaten als Datei. Du kannst eine Sicherung auch wiederherstellen, um deine Daten auf einem anderen Gerät zu laden. Sage Sicherung, um diesen Kasten zu fokussieren. Die Sprachbefehle Backup und Sicherungskopie lösen dagegen sofort aus jedem Bereich heraus eine Sicherungsdatei aus.`,
 
   "section-cloud-backup": `Das Cloud-Backup synchronisiert deine Daten automatisch in die Cloud. Du erhältst einen sechsstelligen Sync-Code, mit dem du deine Daten auf anderen Geräten wiederherstellen kannst. Aktiviere die Echtzeit-Synchronisation, damit Änderungen sofort gesichert werden.`,
 
