@@ -2347,7 +2347,7 @@ const SettingsDialog = ({
             <div id="section-backup" className={`glass-card rounded-xl p-3 space-y-1.5 ${highlightedSettingsSection === "section-backup" ? "section-card-highlight" : ""}`}>
               <div className="flex items-center gap-1.5">
                 <Download className="w-3.5 h-3.5 text-primary" />
-                <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Backup</h2>
+                <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Sicherung</h2>
               </div>
               <div className="grid grid-cols-2 gap-1.5">
                 <Button
