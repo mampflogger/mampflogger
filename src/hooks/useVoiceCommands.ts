@@ -249,7 +249,7 @@ const FUZZY_KEYWORD_MAP: [string, string][] = [
   ["gespeicherte rezepte", "section:gespeicherte-rezepte"],
   ["import", "section:import"],
   ["export", "section:export"],
-  ["backup", "section:backup"],
+  ["backup", "backup-create"],
   ["sicherung", "section:backup"],
   ["sichern", "backup-create"],
   ["sicherungskopie", "backup-create"],
