@@ -26,6 +26,7 @@ import { TrendingDown, TrendingUp, Target, RefreshCw } from "lucide-react";
 import NutritionCoach from "./NutritionCoach";
 import MicronutrientCoverageCard from "./MicronutrientCoverageCard";
 import WeeklyNutritionTable from "./WeeklyNutritionTable";
+import { calculateWeightLossSummary } from "@/lib/weightLossSummary";
 
 interface WeeklyOverviewProps {
   entries: NutritionEntry[];
@@ -177,6 +178,10 @@ const DailyMacroCard = ({ weekData, highlighted, profile }: { weekData: DayData[
 const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [], weightLog = [], highlightedSection, analyzeCoachRequestId, editorOpenSection, getHelpText, updateHelpText, supplementVitamins, supplementMinerals }: WeeklyOverviewProps) => {
   const effectiveWeight = profile ? getEffectiveWeightKg(profile, weightLog, selectedDate) : null;
   const bmr = profile ? calculateBMR(profile, effectiveWeight ?? undefined) : null;
+  const weightLossSummary = useMemo(
+    () => calculateWeightLossSummary(profile, entries, bookedActivities, weightLog, selectedDate),
+    [profile, entries, bookedActivities, weightLog, selectedDate],
+  );
   const [showGoalDate, setShowGoalDate] = useState(false);
   const [macroVisible, setMacroVisible] = useState<{ pro: boolean; fat: boolean; kh: boolean; fib: boolean }>({ pro: true, fat: true, kh: true, fib: true });
 
@@ -637,16 +642,15 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
       {/* Stats Row */}
       <div id="section-uebersicht" data-section className={`glass-card rounded-xl p-3 ${hl === "section-uebersicht" ? "section-card-highlight" : ""}`}>
         <SectionHeading highlighted={hl === "section-uebersicht"} className="mb-2">Übersicht</SectionHeading>
-        <div className="grid gap-3 w-full grid-cols-2 sm:grid-cols-3">
-          {/* Mobile 2-col: Left=ØTag,Woche,Monat Right=Def7,DefMonat,Ziel */}
-          {/* Desktop 3-col: Row1=ØTag,Woche,Monat Row2=Def7,DefMonat,Ziel */}
+        <div className="grid gap-2 sm:gap-3 w-full grid-cols-3 [&>div]:min-w-0 [&>div]:px-1 sm:[&>div]:px-3">
+          {/* Three rows: calories, deficits/goal, weight loss. */}
           <div className="rounded-xl bg-background p-3 text-center order-[0]">
             <p className="text-xs text-muted-foreground font-medium">Ø Tag</p>
             <p className="text-xl font-bold text-foreground mt-0.5 tabular-nums tracking-tight leading-tight">{weekTotals.avgCalories}</p>
             <p className="text-xs text-muted-foreground">kcal</p>
           </div>
           {avgDeficit7 !== null && (
-            <div className="rounded-xl bg-background p-3 text-center order-[1] sm:order-[3]">
+            <div className="rounded-xl bg-background p-3 text-center order-[3]">
               <p className="text-xs text-muted-foreground font-medium">Ø Defizit 7 Tage</p>
               <div className="flex items-center justify-center gap-0.5 mt-0.5">
                 {avgDeficit7 > 0 ? (
@@ -661,13 +665,20 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
               <p className="text-xs text-muted-foreground">kcal</p>
             </div>
           )}
-          <div className="rounded-xl bg-background p-3 text-center order-[2] sm:order-[1]">
+          {avgDeficit7 === null && (
+            <div className="rounded-xl bg-background p-3 text-center order-[3]">
+              <p className="text-xs text-muted-foreground font-medium">Ø Defizit 7 Tage</p>
+              <p className="text-xl font-bold text-primary mt-0.5">—</p>
+              <p className="text-xs text-muted-foreground">kcal</p>
+            </div>
+          )}
+          <div className="rounded-xl bg-background p-3 text-center order-[1]">
             <p className="text-xs text-muted-foreground font-medium">Woche</p>
             <p className="text-xl font-bold text-foreground mt-0.5 tabular-nums tracking-tight leading-tight">{weekTotals.totalCalories}</p>
             <p className="text-xs text-muted-foreground">kcal</p>
           </div>
           {monthlyStats.avgDeficit !== null && profile && (
-            <div className="rounded-xl bg-background p-3 text-center order-[3] sm:order-[4]">
+            <div className="rounded-xl bg-background p-3 text-center order-[4]">
               <p className="text-xs text-muted-foreground font-medium">Ø Defizit Monat</p>
               <div className="flex items-center justify-center gap-0.5 mt-0.5">
                 {monthlyStats.avgDeficit > 0 ? (
@@ -682,7 +693,14 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
               <p className="text-xs text-muted-foreground">kcal</p>
             </div>
           )}
-          <div className="rounded-xl bg-background p-3 text-center order-[4] sm:order-[2]">
+          {(monthlyStats.avgDeficit === null || !profile) && (
+            <div className="rounded-xl bg-background p-3 text-center order-[4]">
+              <p className="text-xs text-muted-foreground font-medium">Ø Defizit Monat</p>
+              <p className="text-xl font-bold text-primary mt-0.5">—</p>
+              <p className="text-xs text-muted-foreground">kcal</p>
+            </div>
+          )}
+          <div className="rounded-xl bg-background p-3 text-center order-[2]">
             <p className="text-xs text-muted-foreground font-medium">Monat</p>
             <p className="text-xl font-bold text-foreground mt-0.5 tabular-nums tracking-tight leading-tight">{monthlyStats.totalCalories}</p>
             <p className="text-xs text-muted-foreground">kcal</p>
@@ -713,6 +731,27 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
               <p className="text-xs text-muted-foreground">{daysToGoal === 0 ? "Erreicht!" : showGoalDate ? "" : "Tagen"}</p>
             </div>);
           })()}
+          {daysToGoal === null && (
+            <div className="rounded-xl bg-background p-3 text-center order-[5]">
+              <p className="text-xs text-muted-foreground font-medium">Zielgewicht</p>
+              <p className="text-xl font-bold text-primary mt-0.5">—</p>
+            </div>
+          )}
+          {[
+            { label: "7 Tage", value: weightLossSummary.sevenDays },
+            { label: "pro Monat", value: weightLossSummary.thirtyDays },
+            { label: "seit Beginn", value: weightLossSummary.sinceStart },
+          ].map(({ label, value }) => (
+            <div key={label} className="rounded-xl bg-background p-3 text-center order-[6]">
+              <p className="text-[11px] sm:text-xs text-foreground font-medium leading-tight min-h-8">
+                Gewichtsverlust<br />{label}
+              </p>
+              <p className="text-xl font-bold text-primary mt-0.5 tabular-nums leading-tight">
+                {value === null ? "—" : value.toLocaleString("de-DE")}
+              </p>
+              <p className="text-xs text-foreground">g</p>
+            </div>
+          ))}
         </div>
         {renderEditor("section-uebersicht")}
       </div>
