@@ -95,7 +95,7 @@ const COMMANDS: VoiceCommand[] = [
   { patterns: [/\bexport\b/i], action: "section:export" },
   { patterns: [/\bsicherung\b/i], action: "section:backup" },
   { patterns: [/\bbackup\b/i], action: "backup-create" },
-  { patterns: [/\bsichern\b/i, /\bupload\b/i], action: "backup-create" },
+  { patterns: [/\bupload\b/i], action: "backup-create" },
   { patterns: [/\bladen\b/i, /\bdownload\b/i], action: "backup-load" },
   { patterns: [/\bcancel\b/i], action: "section:loeschen" },
 
@@ -141,12 +141,11 @@ const COMMANDS: VoiceCommand[] = [
   { patterns: [/\brezepte?\b/i], action: "settings:recipes" },
   { patterns: [/\bdaten\b/i], action: "settings:data" },
 
-  // Global backup save: "speichern" only when no input/form is focused
-  // (inside forms "speichern" must keep saving the current entry).
+  // Only explicit backup words are global; ordinary save words belong to the active tile/form.
   { patterns: [/\bsicherungskopie\b/i], action: "backup-create" },
   {
-    patterns: [/\bspeichern\b/i, /\bspeicherung\b/i],
-    action: () => (getVoiceCommandScope() === "global" ? "backup-create" : null),
+    patterns: [/\bsichern\b/i, /\bspeichern\b/i, /\bspeicherung\b/i],
+    action: () => (isBackupSectionActive() ? "backup-create" : null),
   },
 
 
@@ -251,9 +250,7 @@ const FUZZY_KEYWORD_MAP: [string, string][] = [
   ["export", "section:export"],
   ["backup", "backup-create"],
   ["sicherung", "section:backup"],
-  ["sichern", "backup-create"],
   ["sicherungskopie", "backup-create"],
-  ["speichern", "backup-create"],
   ["upload", "backup-create"],
 
   ["laden", "backup-load"],
@@ -376,6 +373,12 @@ function isActionAllowedInScope(action: string, scope: VoiceCommandScope): boole
   if (scope === "global") return true;
   if (SCOPED_INPUT_ALLOWED_PREFIXES.some((prefix) => action.startsWith(prefix))) return true;
   return SCOPED_INPUT_ALLOWED_ACTIONS.has(action);
+}
+
+function isBackupSectionActive(): boolean {
+  if (getVoiceCommandScope() !== "global") return false;
+  return !!document.activeElement?.closest("#section-backup") ||
+    !!document.querySelector('#section-backup[data-section-active="true"]');
 }
 
 export function useVoiceCommands({ onCommand, onUnhandledSpeech }: UseVoiceCommandsOptions) {
@@ -508,6 +511,12 @@ export function useVoiceCommands({ onCommand, onUnhandledSpeech }: UseVoiceComma
               }
             }
           }
+        }
+
+        // Rejected local save words must not become backups or navigation through fuzzy matching.
+        if (/\b(?:sichern|speichern|speicherung)\b/i.test(lower)) {
+          onUnhandledRef.current(transcript, isInterim);
+          return;
         }
 
         // 2. Fuzzy fallback – only in global scope to avoid accidental tab/section jumps while typing
