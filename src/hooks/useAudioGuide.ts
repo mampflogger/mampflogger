@@ -36,7 +36,7 @@ const DEFAULT_HELP_TEXTS: Record<string, string> = {
 
   "section-supplements": `Im Supplement-Kasten verwaltest du deine Nahrungsergänzungsmittel. Du kannst Vitamine und Mineralstoffe als Kapseln eintragen, inklusive der Menge pro Einheit und der Stückzahl. Aktiviere die Checkbox „Täglich", damit die Dosen automatisch jeden Tag in deine Vitamin- und Mineralstoffbilanz eingerechnet werden. So musst du nicht jeden Tag einzeln dokumentieren. Du kannst auch Kombipräparate anlegen, die mehrere Nährstoffe gleichzeitig enthalten.`,
 
-  "section-uebersicht": `Die Übersicht zeigt dir die wichtigsten Kennzahlen der letzten sieben Tage auf einen Blick. Du siehst den Durchschnitt deiner täglichen Kalorienaufnahme, dein durchschnittliches Defizit und – falls ein Zielgewicht hinterlegt ist – die geschätzte Anzahl der Tage bis zum Ziel.`,
+  "section-uebersicht": `Die Übersicht zeigt dir die wichtigsten Kennzahlen auf einen Blick. Du siehst den Durchschnitt deiner täglichen Kalorienaufnahme, dein durchschnittliches Defizit und – falls ein Zielgewicht hinterlegt ist – die geschätzte Anzahl der Tage bis zum Ziel. Darunter stehen der durchschnittliche Gewichtsverlust pro Tag in Gramm über die letzten sieben und dreißig Tage, jeweils als Schätzung aus deinem Kaloriendefizit, sowie der gemessene Verlust seit deinem Startgewicht.`,
 
   "section-kalorien-pro-tag": `Dieses Diagramm zeigt dir die Kalorienaufnahme der letzten sieben Tage als Balkendiagramm. Jeder Balken steht für einen Tag. Dein Tagesziel wird als gestrichelte Linie angezeigt, sodass du sofort erkennst, an welchen Tagen du über oder unter dem Ziel lagst.`,
 
