@@ -1,6 +1,10 @@
 import { NutritionEntry, calculateDailySummary, formatDate } from "@/types/nutrition";
 import { BookedActivity, UserProfile, WeightEntry, calculateBMR, calculateBookedActivityBonus, getEffectiveWeightKg } from "@/types/profile";
 
+export function formatWeightLossKg(grams: number): string {
+  return (grams / 1000).toLocaleString("de-DE", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+}
+
 /**
  * Average daily loss in grams over a completed calendar window that includes the selected day.
  * Days without food entries are skipped instead of diluting the average; loss since start is the

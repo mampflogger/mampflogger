@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { calculateWeightLossSummary } from "@/lib/weightLossSummary";
+import { calculateWeightLossSummary, formatWeightLossKg } from "@/lib/weightLossSummary";
 import { calculateBMR, UserProfile } from "@/types/profile";
 import { NutritionEntry } from "@/types/nutrition";
 
@@ -9,6 +9,11 @@ const entry = (date: string, deficit = 770): NutritionEntry => ({
   calories: calculateBMR(profile) - deficit, protein: 0, carbs: 0, fat: 0, fiber: 0,
 });
 describe("weight-loss overview", () => {
+  it("displays 13700 grams as 13,7 kilograms with exactly one decimal place", () => {
+    expect(formatWeightLossKg(13700)).toBe("13,7");
+    expect(formatWeightLossKg(13000)).toBe("13,0");
+    expect(formatWeightLossKg(13760)).toBe("13,8");
+  });
   it("averages the daily losses of the last seven days in grams", () => {
     const result = calculateWeightLossSummary(profile, [entry("2026-10-20", 770), entry("2026-10-21", 1540)], [], [], "2026-10-21");
     expect(result.avgSevenDays).toBe(150);

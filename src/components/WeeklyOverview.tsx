@@ -26,7 +26,8 @@ import { TrendingDown, TrendingUp, Target, RefreshCw } from "lucide-react";
 import NutritionCoach from "./NutritionCoach";
 import MicronutrientCoverageCard from "./MicronutrientCoverageCard";
 import WeeklyNutritionTable from "./WeeklyNutritionTable";
-import { calculateWeightLossSummary } from "@/lib/weightLossSummary";
+import { calculateWeightLossSummary, formatWeightLossKg } from "@/lib/weightLossSummary";
+import { calculateAverageCalorieIntake } from "@/lib/calorieOverview";
 
 interface WeeklyOverviewProps {
   entries: NutritionEntry[];
@@ -182,6 +183,10 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
     () => calculateWeightLossSummary(profile, entries, bookedActivities, weightLog, selectedDate),
     [profile, entries, bookedActivities, weightLog, selectedDate],
   );
+  const calorieAverages = useMemo(() => ({
+    sevenDays: calculateAverageCalorieIntake(entries, selectedDate, 7),
+    thirtyDays: calculateAverageCalorieIntake(entries, selectedDate, 30),
+  }), [entries, selectedDate]);
   const [showGoalDate, setShowGoalDate] = useState(false);
   const [macroVisible, setMacroVisible] = useState<{ pro: boolean; fat: boolean; kh: boolean; fib: boolean }>({ pro: true, fat: true, kh: true, fib: true });
 
@@ -646,7 +651,7 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
           {/* Three rows: calories, deficits/goal, weight loss. */}
           <div className="rounded-xl bg-background p-3 text-center order-[0]">
             <p className="text-xs text-muted-foreground font-medium">Ø Tag</p>
-            <p className="text-xl font-bold text-foreground mt-0.5 tabular-nums tracking-tight leading-tight">{weekTotals.avgCalories}</p>
+            <p className="text-xl font-bold text-primary mt-0.5 tabular-nums tracking-tight leading-tight">{weekTotals.avgCalories}</p>
             <p className="text-xs text-muted-foreground">kcal</p>
           </div>
           {avgDeficit7 !== null && (
@@ -673,13 +678,13 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
             </div>
           )}
           <div className="rounded-xl bg-background p-3 text-center order-[1]">
-            <p className="text-xs text-muted-foreground font-medium">Woche</p>
-            <p className="text-xl font-bold text-foreground mt-0.5 tabular-nums tracking-tight leading-tight">{weekTotals.totalCalories}</p>
+            <p className="text-xs text-muted-foreground font-medium">Ø 7 Tage</p>
+            <p className="text-xl font-bold text-primary mt-0.5 tabular-nums tracking-tight leading-tight">{calorieAverages.sevenDays}</p>
             <p className="text-xs text-muted-foreground">kcal</p>
           </div>
           {monthlyStats.avgDeficit !== null && profile && (
             <div className="rounded-xl bg-background p-3 text-center order-[4]">
-              <p className="text-xs text-muted-foreground font-medium">Ø Defizit Monat</p>
+              <p className="text-xs text-muted-foreground font-medium">Ø Defizit 30 Tage</p>
               <div className="flex items-center justify-center gap-0.5 mt-0.5">
                 {monthlyStats.avgDeficit > 0 ? (
                   <TrendingDown className="w-3.5 h-3.5 shrink-0" style={{ color: "hsl(var(--primary))" }} />
@@ -695,14 +700,14 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
           )}
           {(monthlyStats.avgDeficit === null || !profile) && (
             <div className="rounded-xl bg-background p-3 text-center order-[4]">
-              <p className="text-xs text-muted-foreground font-medium">Ø Defizit Monat</p>
+              <p className="text-xs text-muted-foreground font-medium">Ø Defizit 30 Tage</p>
               <p className="text-xl font-bold text-primary mt-0.5">—</p>
               <p className="text-xs text-muted-foreground">kcal</p>
             </div>
           )}
           <div className="rounded-xl bg-background p-3 text-center order-[2]">
-            <p className="text-xs text-muted-foreground font-medium">Monat</p>
-            <p className="text-xl font-bold text-foreground mt-0.5 tabular-nums tracking-tight leading-tight">{monthlyStats.totalCalories}</p>
+            <p className="text-xs text-muted-foreground font-medium">Ø 30 Tage</p>
+            <p className="text-xl font-bold text-primary mt-0.5 tabular-nums tracking-tight leading-tight">{calorieAverages.thirtyDays}</p>
             <p className="text-xs text-muted-foreground">kcal</p>
           </div>
           {daysToGoal !== null && (() => {
@@ -738,18 +743,18 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
             </div>
           )}
           {[
-            { heading: "Ø Gewichtsverlust", label: "7 Tage", value: weightLossSummary.avgSevenDays },
-            { heading: "Ø Gewichtsverlust", label: "30 Tage", value: weightLossSummary.avgThirtyDays },
-            { heading: "Gewichtsverlust", label: "seit Beginn", value: weightLossSummary.sinceStart },
-          ].map(({ heading, label, value }) => (
+            { heading: "Ø Gewichtsverlust", label: "7 Tage", value: weightLossSummary.avgSevenDays, unit: "g" },
+            { heading: "Ø Gewichtsverlust", label: "30 Tage", value: weightLossSummary.avgThirtyDays, unit: "g" },
+            { heading: "Gewichtsverlust", label: "seit Beginn", value: weightLossSummary.sinceStart, unit: "kg" },
+          ].map(({ heading, label, value, unit }) => (
             <div key={label} className="rounded-xl bg-background p-3 text-center order-[6]">
               <p className="text-[11px] sm:text-xs text-muted-foreground font-medium leading-tight min-h-8">
                 {heading}<br />{label}
               </p>
               <p className="text-xl font-bold text-primary mt-0.5 tabular-nums leading-tight">
-                {value === null ? "—" : value.toLocaleString("de-DE")}
+                {value === null ? "—" : unit === "kg" ? formatWeightLossKg(value) : value.toLocaleString("de-DE")}
               </p>
-              <p className="text-xs text-muted-foreground">g</p>
+              <p className="text-xs text-muted-foreground">{unit}</p>
             </div>
           ))}
         </div>
