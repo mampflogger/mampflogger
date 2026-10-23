@@ -9,26 +9,30 @@ const entry = (date: string, deficit = 770): NutritionEntry => ({
   calories: calculateBMR(profile) - deficit, protein: 0, carbs: 0, fat: 0, fiber: 0,
 });
 describe("weight-loss overview", () => {
-  it("sums only the last seven completed calendar days in grams", () => {
-    const result = calculateWeightLossSummary(profile, [entry("2026-10-14"), entry("2026-10-20"), entry("2026-10-13"), entry("2026-10-21")], [], [], "2026-10-21");
-    expect(result.sevenDays).toBe(200);
+  it("averages the daily losses of the last seven days in grams", () => {
+    const result = calculateWeightLossSummary(profile, [entry("2026-10-20", 770), entry("2026-10-21", 1540)], [], [], "2026-10-21");
+    expect(result.avgSevenDays).toBe(150);
   });
-  it("uses the last 30 days for monthly loss, not older entries", () => {
-    const result = calculateWeightLossSummary(profile, [entry("2026-09-21"), entry("2026-10-20"), entry("2026-09-20")], [], [], "2026-10-21");
-    expect(result.thirtyDays).toBe(200);
+  it("includes the selected day and the six days before it, not the day before that", () => {
+    const result = calculateWeightLossSummary(profile, [entry("2026-10-14", 0), entry("2026-10-15", 770), entry("2026-10-21", 770)], [], [], "2026-10-21");
+    expect(result.avgSevenDays).toBe(100);
+  });
+  it("averages the thirty days ending with the selected day, ignoring older entries", () => {
+    const result = calculateWeightLossSummary(profile, [entry("2026-09-21", 0), entry("2026-09-22", 770), entry("2026-10-21", 770)], [], [], "2026-10-21");
+    expect(result.avgThirtyDays).toBe(100);
+  });
+  it("does not let unlogged days dilute the average", () => {
+    expect(calculateWeightLossSummary(profile, [entry("2026-10-20", 770)], [], [], "2026-10-21").avgSevenDays).toBe(100);
+  });
+  it("keeps weight gain negative and includes booked activity calories", () => {
+    const result = calculateWeightLossSummary(profile, [entry("2026-10-20", -1540)], [{ id: "a", date: "2026-10-20", activityTypeId: "a", activityName: "Test", value: 1, calories: 770, unit: "min" }], [], "2026-10-21");
+    expect(result.avgSevenDays).toBe(-100);
   });
   it("uses starting weight minus latest measured weight for loss since start", () => {
     const result = calculateWeightLossSummary(profile, [], [], [{ date: "2026-10-20", kg: 77.5 }, { date: "2026-10-22", kg: 75 }], "2026-10-21");
     expect(result.sinceStart).toBe(2500);
   });
-  it("does not assume weight loss on days without entries", () => {
-    expect(calculateWeightLossSummary(profile, [entry("2026-10-20")], [], [], "2026-10-21").sevenDays).toBe(100);
-  });
-  it("keeps weight gain negative and includes booked activity calories", () => {
-    const result = calculateWeightLossSummary(profile, [entry("2026-10-20", -1540)], [{ id: "a", date: "2026-10-20", activityTypeId: "a", activityName: "Test", value: 1, calories: 770, unit: "min" }], [], "2026-10-21");
-    expect(result.sevenDays).toBe(-100);
-  });
   it("returns unavailable values rather than inventing measured loss", () => {
-    expect(calculateWeightLossSummary(profile, [], [], [], "2026-10-21")).toEqual({ sevenDays: null, thirtyDays: null, sinceStart: null });
+    expect(calculateWeightLossSummary(profile, [], [], [], "2026-10-21")).toEqual({ avgSevenDays: null, avgThirtyDays: null, sinceStart: null });
   });
 });

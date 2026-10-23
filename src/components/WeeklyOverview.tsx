@@ -738,18 +738,18 @@ const WeeklyOverview = ({ entries, selectedDate, profile, bookedActivities = [],
             </div>
           )}
           {[
-            { label: "7 Tage", value: weightLossSummary.sevenDays },
-            { label: "pro Monat", value: weightLossSummary.thirtyDays },
-            { label: "seit Beginn", value: weightLossSummary.sinceStart },
-          ].map(({ label, value }) => (
+            { heading: "Ø Gewichtsverlust", label: "7 Tage", value: weightLossSummary.avgSevenDays },
+            { heading: "Ø Gewichtsverlust", label: "30 Tage", value: weightLossSummary.avgThirtyDays },
+            { heading: "Gewichtsverlust", label: "seit Beginn", value: weightLossSummary.sinceStart },
+          ].map(({ heading, label, value }) => (
             <div key={label} className="rounded-xl bg-background p-3 text-center order-[6]">
-              <p className="text-[11px] sm:text-xs text-foreground font-medium leading-tight min-h-8">
-                Gewichtsverlust<br />{label}
+              <p className="text-[11px] sm:text-xs text-muted-foreground font-medium leading-tight min-h-8">
+                {heading}<br />{label}
               </p>
               <p className="text-xl font-bold text-primary mt-0.5 tabular-nums leading-tight">
                 {value === null ? "—" : value.toLocaleString("de-DE")}
               </p>
-              <p className="text-xs text-foreground">g</p>
+              <p className="text-xs text-muted-foreground">g</p>
             </div>
           ))}
         </div>

@@ -1,15 +1,19 @@
 import { NutritionEntry, calculateDailySummary, formatDate } from "@/types/nutrition";
 import { BookedActivity, UserProfile, WeightEntry, calculateBMR, calculateBookedActivityBonus, getEffectiveWeightKg } from "@/types/profile";
 
-/** Completed calendar windows; missing food-log days contribute no assumed deficit. */
+/**
+ * Average daily loss in grams over a completed calendar window that includes the selected day.
+ * Days without food entries are skipped instead of diluting the average; loss since start is the
+ * measured difference between the starting weight and the latest weight on or before the selected day.
+ */
 export function calculateWeightLossSummary(
   profile: UserProfile | null | undefined,
   entries: NutritionEntry[],
   activities: BookedActivity[],
   weightLog: WeightEntry[],
   selectedDate: string,
-): { sevenDays: number | null; thirtyDays: number | null; sinceStart: number | null } {
-  if (!profile) return { sevenDays: null, thirtyDays: null, sinceStart: null };
+): { avgSevenDays: number | null; avgThirtyDays: number | null; sinceStart: number | null } {
+  if (!profile) return { avgSevenDays: null, avgThirtyDays: null, sinceStart: null };
   const bmr = calculateBMR(profile, getEffectiveWeightKg(profile, weightLog, selectedDate));
   const totals = new Map<string, NutritionEntry[]>();
   for (const entry of entries) {
@@ -17,23 +21,23 @@ export function calculateWeightLossSummary(
     day.push(entry);
     totals.set(entry.date, day);
   }
-  const periodLoss = (days: number): number | null => {
+  const averageLoss = (days: number): number | null => {
     const start = new Date(`${selectedDate}T00:00:00`);
-    start.setDate(start.getDate() - days);
+    start.setDate(start.getDate() - (days - 1));
     const startDate = formatDate(start);
     let deficit = 0;
-    let hasData = false;
+    let daysWithData = 0;
     for (const [date, dayEntries] of totals) {
-      if (date < startDate || date >= selectedDate) continue;
-      hasData = true;
+      if (date < startDate || date > selectedDate) continue;
+      daysWithData++;
       deficit += bmr + calculateBookedActivityBonus(activities, date) - calculateDailySummary(dayEntries).totalCalories;
     }
-    return hasData ? Math.round(deficit / 7.7) : null;
+    return daysWithData > 0 ? Math.round(deficit / daysWithData / 7.7) : null;
   };
   const hasMeasurement = weightLog.some((entry) => entry.date <= selectedDate);
   return {
-    sevenDays: periodLoss(7),
-    thirtyDays: periodLoss(30),
+    avgSevenDays: averageLoss(7),
+    avgThirtyDays: averageLoss(30),
     sinceStart: hasMeasurement ? Math.round((profile.weightKg - getEffectiveWeightKg(profile, weightLog, selectedDate)) * 1000) : null,
   };
 }
