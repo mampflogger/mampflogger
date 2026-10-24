@@ -27,7 +27,7 @@ import NutritionCoach from "./NutritionCoach";
 import MicronutrientCoverageCard from "./MicronutrientCoverageCard";
 import WeeklyNutritionTable from "./WeeklyNutritionTable";
 import { calculateWeightLossSummary, formatWeightLossKg } from "@/lib/weightLossSummary";
-import { calculateAverageCalorieIntake } from "@/lib/calorieOverview";
+import { calculateAverageCalorieIntake, calculatePreviousDayCalorieIntake } from "@/lib/calorieOverview";
 
 interface WeeklyOverviewProps {
   entries: NutritionEntry[];
